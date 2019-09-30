@@ -1,0 +1,20 @@
+{
+    "builders": [
+        {
+            "image_family": "multi-vhost",
+            "type": "googlecompute",
+            "preemptible": true,
+            "project_id": "code-supply",
+            "source_image_family": "debian-10",
+            "ssh_username": "packer",
+            "zone": "europe-west2-b"
+        }
+    ],
+
+    "provisioners": [
+        {
+            "type": "ansible",
+            "playbook_file": "./playbook.yaml"
+        }
+    ]
+}

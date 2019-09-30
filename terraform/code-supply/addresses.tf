@@ -4,3 +4,9 @@ resource "google_compute_address" "istio-ingress-production" {
   address_type = "EXTERNAL"
   network_tier = "PREMIUM"
 }
+
+resource "google_compute_address" "multi-vhost" {
+  name         = "multi-vhost"
+  address_type = "EXTERNAL"
+  region       = "us-east1"
+}

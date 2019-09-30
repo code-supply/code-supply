@@ -1,1 +1,2 @@
 terraform/.terraform/plugins/linux_amd64/terraform-provider*
+playbook.retry
