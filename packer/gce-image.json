@@ -1,6 +1,7 @@
 {
     "builders": [
         {
+            "image_name": "multi-vhost-{{timestamp}}",
             "image_family": "multi-vhost",
             "type": "googlecompute",
             "preemptible": true,
