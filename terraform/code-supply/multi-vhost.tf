@@ -16,4 +16,11 @@ resource "google_compute_instance" "multi-vhost" {
       nat_ip = google_compute_address.multi-vhost.address
     }
   }
+
+  service_account {
+    email = google_service_account.certbot-dns.email
+    scopes = [
+      "cloud-platform",
+    ]
+  }
 }
