@@ -8,7 +8,7 @@ resource "google_container_node_pool" "pooly" {
   name     = "pooly"
   location = "europe-west2-b"
   cluster  = data.google_container_cluster.code-supply.name
-  version  = "1.13.7-gke.8"
+  version  = "1.13.11-gke.14"
 
   node_config {
     preemptible = true
