@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -eu
+
+cwd=$(dirname "$0")
+
+bin/server &
+pid=$!
+
+$cwd/wkhtmltopdf \
+    --print-media-type \
+    http://localhost:8080/cv/ public/cv.pdf
+
+kill $pid
