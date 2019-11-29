@@ -27,7 +27,6 @@
     shell: |-
       tries=0
       until /certbot/env/bin/certbot certonly \
-        --test-cert \
         --agree-tos \
         --non-interactive \
         --dns-google \
