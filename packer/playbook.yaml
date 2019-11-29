@@ -1,37 +1,70 @@
 ---
-- hosts: []
+- hosts: all
+  become: "true"
+
   tasks:
 
-  - name: install packages
+  - name: install apt packages
     apt:
       name:
-      - certbot
+      - python3-pip
+      - python3-venv
       - nginx
       - policykit-1
       update_cache: "true"
-    become: "true"
+
+  - name: install python packages
+    pip:
+      virtualenv_command: /usr/bin/python3 -m venv
+      virtualenv: /certbot/env
+      name:
+      - certbot
+      - certbot-dns-google
+
+  - name: obtain certificate
+    args:
+      executable: /bin/bash
+    shell: |-
+      tries=0
+      until /certbot/env/bin/certbot certonly \
+        --test-cert \
+        --agree-tos \
+        --non-interactive \
+        --dns-google \
+        --email me@andrewbruce.net \
+        --domain andrewbruce.net \
+        --domain '*.andrewbruce.net' \
+        --domain code.supply \
+        --domain '*.code.supply' \
+        || [ $tries -eq 5 ]
+      do
+        echo "Re-trying certificate acquisition"
+        (( tries++ ))
+      done
+
+  - name: link code.supply certificate
+    file:
+      src: /etc/letsencrypt/live/andrewbruce.net/fullchain.pem
+      path: /etc/nginx/code.supply.crt
+      state: link
 
   - name: remove default vhost
     file:
       path: /etc/nginx/sites-enabled/default
       state: absent
-    become: "true"
 
   - name: install code.supply vhost
     copy:
       src: ../web/code-supply/nginx.conf
       dest: /etc/nginx/sites-available/code.supply
-    become: "true"
 
   - name: install code.supply code
     copy:
       src: ../web/code-supply/public/
       dest: /var/www/code.supply/
-    become: "true"
 
   - name: enable code.supply vhost
     file:
       src: /etc/nginx/sites-available/code.supply
       path: /etc/nginx/sites-enabled/code.supply
       state: link
-    become: "true"

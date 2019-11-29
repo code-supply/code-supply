@@ -1,0 +1,2 @@
+[multi-vhost]
+35.211.191.104 ansible_user=packer

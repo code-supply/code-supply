@@ -2,10 +2,11 @@ resource "google_compute_instance" "multi-vhost" {
   name         = "multi-vhost"
   machine_type = "f1-micro"
   zone         = "us-east1-b"
+  tags         = ["web"]
 
   boot_disk {
     initialize_params {
-      image = "multi-vhost"
+      image = "multi-vhost-1575021243"
     }
   }
 
@@ -23,4 +24,16 @@ resource "google_compute_instance" "multi-vhost" {
       "cloud-platform",
     ]
   }
+}
+
+resource "google_compute_firewall" "web" {
+  name    = "web"
+  network = data.google_compute_network.default.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "443"]
+  }
+
+  target_tags = ["web"]
 }
