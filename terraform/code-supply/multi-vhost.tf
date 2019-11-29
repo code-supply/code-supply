@@ -6,7 +6,7 @@ resource "google_compute_instance" "multi-vhost" {
 
   boot_disk {
     initialize_params {
-      image = "multi-vhost-1575021243"
+      image = "multi-vhost-1575025152"
     }
   }
 
