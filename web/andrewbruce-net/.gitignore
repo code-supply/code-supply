@@ -1,7 +1,7 @@
 *.ibc
 *~
 bin/server
-public
+public/*.pdf
 .bundle
 bin/wkhtmltopdf
 bin/bundle
