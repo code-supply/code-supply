@@ -24,6 +24,7 @@
   - name: obtain certificate
     args:
       executable: /bin/bash
+      creates: &cert-path /etc/letsencrypt/live/andrewbruce.net/fullchain.pem
     shell: |-
       tries=0
       until /certbot/env/bin/certbot certonly \
@@ -43,7 +44,7 @@
 
   - name: link code.supply certificate
     file:
-      src: /etc/letsencrypt/live/andrewbruce.net/fullchain.pem
+      src: *cert-path
       path: /etc/nginx/code.supply.crt
       state: link
 
