@@ -6,7 +6,7 @@ resource "google_dns_managed_zone" "root" {
 resource "google_dns_record_set" "root" {
   name         = google_dns_managed_zone.root.dns_name
   managed_zone = google_dns_managed_zone.root.name
-  rrdatas      = [google_compute_address.istio-ingress-production.address]
+  rrdatas      = [google_compute_address.multi-vhost.address]
   ttl          = 1800
   type         = "A"
 }
