@@ -48,6 +48,12 @@
       path: /etc/nginx/code.supply.crt
       state: link
 
+  - name: link code.supply key
+    file:
+      src: /etc/letsencrypt/live/andrewbruce.net/privkey.pem
+      path: /etc/nginx/code.supply.key
+      state: link
+
   - name: remove default vhost
     file:
       path: /etc/nginx/sites-enabled/default
