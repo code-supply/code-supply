@@ -92,17 +92,27 @@
       dest: /etc/nginx/sites-available/www.andrewbruce.net
     notify: reload nginx
 
-  - name: install www.andrewbruce.net code
+  - name: create andrewbruce.net bin dir
+    file:
+      path: /var/www/www.andrewbruce.net/bin
+      state: directory
+      mode: '0755'
+      owner: www-data
+
+  - name: install www.andrewbruce.net server
     copy:
       src: ../web/andrewbruce-net/bin/server
-      dest: /var/www/www.andrewbruce.net/
+      dest: /var/www/www.andrewbruce.net/bin/server
+      mode: '0555'
+      owner: www-data
     notify: reload nginx
 
-  - name: make server executable
-    file:
-      path: /var/www/www.andrewbruce.net/bin/server
-      mode: '0500'
+  - name: install www.andrewbruce.net public
+    copy:
+      src: ../web/andrewbruce-net/public
+      dest: /var/www/www.andrewbruce.net/
       owner: www-data
+    notify: reload nginx
 
   - name: install andrewbruce.net systemd service
     copy:
