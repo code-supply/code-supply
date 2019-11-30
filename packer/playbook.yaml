@@ -105,7 +105,7 @@
       dest: /var/www/www.andrewbruce.net/bin/server
       mode: '0555'
       owner: www-data
-    notify: reload nginx
+    notify: restart andrewbruce
 
   - name: install www.andrewbruce.net public
     copy:
