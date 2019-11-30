@@ -58,19 +58,30 @@
     file:
       path: /etc/nginx/sites-enabled/default
       state: absent
+    notify: reload nginx
 
   - name: install code.supply vhost
     copy:
       src: ../web/code-supply/nginx.conf
       dest: /etc/nginx/sites-available/code.supply
+    notify: reload nginx
 
   - name: install code.supply code
     copy:
       src: ../web/code-supply/public/
       dest: /var/www/code.supply/
+    notify: reload nginx
 
   - name: enable code.supply vhost
     file:
       src: /etc/nginx/sites-available/code.supply
       path: /etc/nginx/sites-enabled/code.supply
       state: link
+    notify: reload nginx
+
+  handlers:
+
+  - name: reload nginx
+    service:
+      name: nginx
+      state: reloaded
