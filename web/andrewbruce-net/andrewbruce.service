@@ -1,0 +1,8 @@
+[Unit]
+Description=andrewbruce.net
+[Service]
+RootDirectory=/var/www/www.andrewbruce.net
+ExecStart=/var/www/www.andrewbruce.net/bin/server
+User=www-data
+[Install]
+WantedBy=multi-user.target

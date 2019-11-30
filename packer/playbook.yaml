@@ -7,10 +7,11 @@
   - name: install apt packages
     apt:
       name:
+      - nginx
+      - nodejs
+      - policykit-1
       - python3-pip
       - python3-venv
-      - nginx
-      - policykit-1
       update_cache: "true"
 
   - name: install python packages
@@ -79,9 +80,56 @@
       state: link
     notify: reload nginx
 
+  - name: create andrewbruce.net systemd dir
+    file:
+      path: /etc/systemd/system/andrewbruce.service.d
+      state: directory
+      mode: '0755'
+
+  - name: install www.andrewbruce.net vhost
+    copy:
+      src: ../web/andrewbruce-net/nginx.conf
+      dest: /etc/nginx/sites-available/www.andrewbruce.net
+    notify: reload nginx
+
+  - name: install www.andrewbruce.net code
+    copy:
+      src: ../web/andrewbruce-net/bin/server
+      dest: /var/www/www.andrewbruce.net/
+    notify: reload nginx
+
+  - name: make server executable
+    file:
+      path: /var/www/www.andrewbruce.net/bin/server
+      mode: '0500'
+      owner: www-data
+
+  - name: install andrewbruce.net systemd service
+    copy:
+      src: ../web/andrewbruce-net/andrewbruce.service
+      dest: /etc/systemd/system/andrewbruce.service
+    notify: restart andrewbruce
+
+  - name: enable andrewbruce.net systemd service
+    systemd:
+      name: andrewbruce
+      state: started
+
+  - name: enable www.andrewbruce.net vhost
+    file:
+      src: /etc/nginx/sites-available/www.andrewbruce.net
+      path: /etc/nginx/sites-enabled/www.andrewbruce.net
+      state: link
+    notify: reload nginx
+
   handlers:
 
   - name: reload nginx
     service:
       name: nginx
       state: reloaded
+
+  - name: restart andrewbruce
+    systemd:
+      name: andrewbruce
+      state: restarted
