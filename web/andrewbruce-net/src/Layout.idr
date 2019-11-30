@@ -33,7 +33,7 @@ page headTitle pageTitle content = do
           menuItem "/contact/" "Contact"
         content
         p [ClassNames [NoPrint]] $ do
-          a (Just "https://github.com/camelpunch/andrewbrucenet") "Source"
+          a (Just "https://gitlab.com/code-supply/mono/tree/master/web/andrewbruce-net") "Source"
 
 -- Local Variables:
 -- idris-load-packages: ("mrk")
