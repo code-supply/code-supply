@@ -123,6 +123,7 @@
   - name: enable andrewbruce.net systemd service
     systemd:
       name: andrewbruce
+      enabled: "true"
       state: started
 
   - name: enable www.andrewbruce.net vhost
