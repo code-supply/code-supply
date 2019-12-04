@@ -18,7 +18,7 @@ page : (headTitle : String) ->
        Document Div ->
        Document Root
 page headTitle pageTitle content = do
-  html $ do
+  html [Lang English] $ do
     head $ do
       meta $ Charset UTF8
       title headTitle
