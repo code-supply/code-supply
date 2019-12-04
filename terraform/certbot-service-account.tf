@@ -4,7 +4,7 @@ resource "google_service_account" "certbot-dns" {
 }
 
 resource "google_project_iam_member" "project" {
-  role   = "projects/${var.gcp_project}/roles/${google_project_iam_custom_role.dns-automation.role_id}"
+  role   = "projects/code-supply/roles/${google_project_iam_custom_role.dns-automation.role_id}"
   member = "serviceAccount:${google_service_account.certbot-dns.email}"
 }
 

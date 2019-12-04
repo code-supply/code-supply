@@ -1,7 +1,7 @@
 provider "google" {
   credentials = ""
-  project     = var.gcp_project
-  region      = var.gcp_region
+  project     = "code-supply"
+  region      = "europe-west2"
 
   version = "~> 2.5"
 }
