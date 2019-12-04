@@ -3,6 +3,10 @@ body {
   padding-bottom: 1.5rem;
 }
 
+a {
+    color: blue;
+}
+
 .company-info {
   font-size: 75%;
 }
