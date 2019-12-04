@@ -22,7 +22,8 @@ bin/server: bin src/*.idr .packages
 clean:
 	rm -rf \
 		bin/server \
-		src/*.ibc
+		src/*.ibc \
+		.packages
 .packages: vendor
 	cd vendor/mrk && idris --install mrk.ipkg
 	cd vendor/idris-web-server && idris --install webserver.ipkg
