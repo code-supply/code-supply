@@ -43,6 +43,12 @@
         (( tries++ ))
       done
 
+  - name: install cron.daily for certificate renewal
+    copy:
+      content: /certbot/env/bin/certbot renew
+      dest: /etc/cron.daily/certbot-renew-certificates
+      mode: '744'
+
   - name: link code.supply certificate
     file:
       src: *cert-path
