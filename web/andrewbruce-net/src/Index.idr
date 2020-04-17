@@ -16,8 +16,6 @@ index = page "Andrew Bruce: A software person" "A software person" $ do
   h2 "Blog posts"
   ul $ do
     li $ do
-      a (Just "https://pivotal.io/search?utf8=%E2%9C%93&q=andrew+bruce") "Whilst at Pivotal"
-    li $ do
       a (Just "https://medium.com/@andrewofbruce") "On Medium"
   h2 "Things people usually pay me for."
   ul $ do
