@@ -3,5 +3,5 @@ provider "google" {
   project     = "code-supply"
   region      = "europe-west2"
 
-  version = "~> 2.5"
+  version = "~> 3.30"
 }
