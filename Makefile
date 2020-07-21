@@ -9,6 +9,14 @@ manifest.yaml: \
 	k8s/affable/kustomization.yaml
 	kustomize build k8s/affable > $@
 
+.PHONY: triggers
+triggers:
+	gcloud beta builds triggers create cloud-source-repositories \
+		--description=affable \
+		--repo=mono \
+		--tag-pattern="affable-.*" \
+		--build-config=web/affable/cloudbuild.yaml
+
 .PHONY: build_vm
 build_vm:
 	cd packer && packer build ./gce-image.json
