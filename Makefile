@@ -9,6 +9,11 @@ manifest.yaml: \
 	k8s/affable/kustomization.yaml
 	kustomize build k8s/affable > $@
 
+.PHONY: set_image_affable
+set_image_affable:
+	cd k8s/affable && \
+		kustomize edit set image "affable=eu.gcr.io/code-supply/affable:$$(git rev-parse --short HEAD)"
+
 .PHONY: list_triggers
 list_triggers:
 	gcloud beta builds triggers list
