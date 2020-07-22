@@ -9,12 +9,16 @@ manifest.yaml: \
 	k8s/affable/kustomization.yaml
 	kustomize build k8s/affable > $@
 
+.PHONY: list_triggers
+list_triggers:
+	gcloud beta builds triggers list
+
 .PHONY: triggers
 triggers:
 	gcloud beta builds triggers create cloud-source-repositories \
 		--description=affable \
 		--repo=mono \
-		--tag-pattern="affable-.*" \
+		--branch-pattern="^master$$" \
 		--build-config=web/affable/cloudbuild.yaml
 
 .PHONY: build_vm
