@@ -1,13 +1,22 @@
+manifest.yaml: \
+	manifests/affable.yaml \
+	manifests/operators.yaml
+	cat $^ > $@
+
 apply: manifest.yaml
 	kubectl apply -f manifest.yaml
 
 diff: manifest.yaml
 	kubectl diff -f manifest.yaml
 
-manifest.yaml: \
+manifests/affable.yaml: \
 	k8s/affable/stateful-set.yaml \
 	k8s/affable/kustomization.yaml
 	kustomize build k8s/affable > $@
+
+manifests/operators.yaml: \
+	k8s/operators/postgres-operator.yaml
+	cat k8s/operators/* > $@
 
 .PHONY: set_image_affable
 set_image_affable:

@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: affable
+    istio-injection: enabled
+  name: affable
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: affable
+  name: affable
+  namespace: affable
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: affable
+  serviceName: affable
+  template:
+    metadata:
+      labels:
+        app: affable
+    spec:
+      containers:
+      - image: eu.gcr.io/code-supply/affable:e4f04d5
+        name: affable
