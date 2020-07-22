@@ -25,7 +25,7 @@ resource "google_container_node_pool" "london_c" {
   node_count = 2
 
   node_config {
-    machine_type = "g1-small"
+    machine_type = "n1-standard-1"
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/compute",
