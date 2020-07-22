@@ -22,7 +22,7 @@ resource "google_container_node_pool" "london_c" {
   name       = "london-reliable"
   location   = "europe-west2-c"
   cluster    = google_container_cluster.london_pink.name
-  node_count = 1
+  node_count = 2
 
   node_config {
     machine_type = "g1-small"
