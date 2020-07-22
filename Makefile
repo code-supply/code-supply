@@ -16,7 +16,8 @@ manifests/affable.yaml: \
 
 manifests/operators.yaml: \
 	k8s/operators/postgres-operator.yaml
-	cat k8s/operators/* > $@
+	echo "---" > $@
+	cat k8s/operators/postgres-operator.yaml >> $@
 
 .PHONY: set_image_affable
 set_image_affable:
