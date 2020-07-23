@@ -34,7 +34,6 @@ resource "google_sql_database_instance" "shared" {
 resource "google_sql_user" "andrew" {
   name     = "andrew"
   instance = google_sql_database_instance.shared.name
-  host     = var.andrew_ip
   password = "changeme"
 }
 
