@@ -12,11 +12,6 @@ set_image_affable:
 	cd k8s/affable && \
 		kustomize edit set image "affable=eu.gcr.io/code-supply/affable:$$(git rev-parse --short HEAD)"
 
-.PHONY: install_olm
-install_olm:
-	kubectl apply -f https://github.com/operator-framework/operator-lifecycle-manager/releases/download/0.15.1/crds.yaml
-	kubectl apply -f https://github.com/operator-framework/operator-lifecycle-manager/releases/download/0.15.1/olm.yaml
-
 .PHONY: list_triggers
 list_triggers:
 	gcloud beta builds triggers list
