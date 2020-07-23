@@ -1,7 +1,8 @@
-manifest.yaml: \
-	manifests/affable.yaml \
-	manifests/operators.yaml
-	cat $^ > $@
+manifest.yaml: manifests/*.yaml
+	find manifests/ \
+		-type f \
+		-exec bash -c "cat {}; echo '...'" ';' \
+		> $@
 
 apply: manifest.yaml
 	kubectl apply -f manifest.yaml
