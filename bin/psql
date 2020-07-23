@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+cwd="$(cd "$(dirname "$0")" && pwd)"
+
+terraform_output () {
+    (
+    cd "$cwd/../terraform" || exit
+    terraform output "$1"
+    )
+}
+
+terraform_output_file () {
+    mkdir -p /tmp/cloud_sql_certs
+    path="/tmp/cloud_sql_certs/$1"
+    if [ ! -e "$path" ]
+    then
+        terraform_output "$1" > "$path"
+        chmod 0600 "$path"
+    fi
+    echo "$path"
+}
+
+PGSSLROOTCERT=$(terraform_output_file sql_shared_andrew_ca_cert) \
+PGSSLCERT=$(terraform_output_file sql_shared_andrew_cert) \
+PGSSLKEY=$(terraform_output_file sql_shared_andrew_key) \
+PGHOSTADDR="$(cat "$(terraform_output_file sql_shared_public_ip)")" \
+PGUSER=andrew \
+PGDATABASE=postgres \
+psql "$@"
