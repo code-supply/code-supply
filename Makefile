@@ -1,24 +1,11 @@
-manifest.yaml: manifests/*.yaml
-	find manifests/ \
-		-type f \
-		-exec bash -c "cat {}; echo '...'" ';' \
-		> $@
+manifest.yaml:
+	kustomize build k8s > $@
 
 apply: manifest.yaml
 	kubectl apply -f manifest.yaml
 
 diff: manifest.yaml
 	kubectl diff -f manifest.yaml
-
-manifests/affable.yaml: \
-	k8s/affable/stateful-set.yaml \
-	k8s/affable/kustomization.yaml
-	kustomize build k8s/affable > $@
-
-manifests/operators.yaml: \
-	k8s/operators/postgres-operator.yaml
-	echo "---" > $@
-	cat k8s/operators/postgres-operator.yaml >> $@
 
 .PHONY: set_image_affable
 set_image_affable:

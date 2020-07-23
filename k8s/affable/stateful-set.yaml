@@ -9,3 +9,32 @@ spec:
       containers:
       - name: affable
         image: affable:0
+        env:
+        - name: DATABASE_URL
+          value: ecto://affable:affable@postgres/affable
+      - name: cloudsql-proxy
+        image: eu.gcr.io/cloudsql-docker/gce-proxy:1.17
+        securityContext:
+          allowPrivilegeEscalation: false
+
+        command:
+        - /cloud_sql_proxy
+        args:
+        - -credential_file=/secrets/cloudsql/key.json
+
+        envFrom:
+        - configMapRef:
+            name: cloud-sql
+
+        volumeMounts:
+        - name: google-credentials
+          mountPath: /secrets/cloudsql
+          readOnly: true
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 48Mi
+          limits:
+            cpu: 100m
+            memory: 48Mi
