@@ -16,6 +16,19 @@ resource "google_container_cluster" "london_pink" {
       disabled = false
     }
   }
+
+  private_cluster_config {
+    enable_private_nodes    = true
+    enable_private_endpoint = false
+    master_ipv4_cidr_block  = "172.16.0.0/28"
+  }
+
+  networking_mode = "VPC_NATIVE"
+
+  ip_allocation_policy {
+    cluster_ipv4_cidr_block  = ""
+    services_ipv4_cidr_block = ""
+  }
 }
 
 resource "google_container_node_pool" "london_c" {
