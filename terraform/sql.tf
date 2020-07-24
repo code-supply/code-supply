@@ -42,6 +42,11 @@ resource "google_sql_ssl_cert" "shared_andrew" {
   instance    = google_sql_database_instance.shared.name
 }
 
+resource "google_service_account" "sql_shared_affable" {
+  account_id   = "sql-shared-affable"
+  display_name = "sql-shared-affable"
+}
+
 output "sql_shared_andrew_key" {
   value = google_sql_ssl_cert.shared_andrew.private_key
 }
