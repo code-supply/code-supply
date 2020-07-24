@@ -47,6 +47,13 @@ resource "google_service_account" "sql_shared_affable" {
   display_name = "sql-shared-affable"
 }
 
+resource "google_project_iam_member" "sql_shared_affable" {
+  project = "code-supply"
+  role    = "roles/cloudsql.client"
+
+  member = "serviceAccount:${google_service_account.sql_shared_affable.email}"
+}
+
 output "sql_shared_andrew_key" {
   value = google_sql_ssl_cert.shared_andrew.private_key
 }

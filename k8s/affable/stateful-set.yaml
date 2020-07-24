@@ -9,7 +9,7 @@ spec:
       volumes:
       - name: google-credentials
         secret:
-          secretName: affable-google-credentials
+          secretName: google-credentials
 
       containers:
 
@@ -24,13 +24,14 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
 
+        command:
+        - /cloud_sql_proxy
+
         env:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /secrets/cloudsql/key.json
-
-        envFrom:
-        - configMapRef:
-            name: cloud-sql
+        - name: INSTANCES
+          value: code-supply:europe-west2:shared=tcp:5432
 
         volumeMounts:
         - name: google-credentials
