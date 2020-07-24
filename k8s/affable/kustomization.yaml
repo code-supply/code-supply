@@ -13,4 +13,4 @@ commonLabels:
 images:
 - name: affable
   newName: eu.gcr.io/code-supply/affable
-  newTag: cd44164
+  newTag: 6dcfe28
