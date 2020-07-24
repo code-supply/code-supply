@@ -31,15 +31,16 @@ resource "google_sql_database_instance" "shared" {
   }
 }
 
-resource "google_sql_user" "andrew" {
-  name     = "andrew"
+resource "google_sql_user" "affable" {
+  name     = "affable"
   instance = google_sql_database_instance.shared.name
   password = "changeme"
 }
 
-resource "google_sql_ssl_cert" "shared_andrew" {
-  common_name = "andrew"
-  instance    = google_sql_database_instance.shared.name
+resource "google_sql_user" "andrew" {
+  name     = "andrew"
+  instance = google_sql_database_instance.shared.name
+  password = "changeme"
 }
 
 resource "google_service_account" "sql_shared_affable" {
@@ -52,18 +53,6 @@ resource "google_project_iam_member" "sql_shared_affable" {
   role    = "roles/cloudsql.client"
 
   member = "serviceAccount:${google_service_account.sql_shared_affable.email}"
-}
-
-output "sql_shared_andrew_key" {
-  value = google_sql_ssl_cert.shared_andrew.private_key
-}
-
-output "sql_shared_andrew_cert" {
-  value = google_sql_ssl_cert.shared_andrew.cert
-}
-
-output "sql_shared_andrew_ca_cert" {
-  value = google_sql_ssl_cert.shared_andrew.server_ca_cert
 }
 
 output "sql_shared_public_ip" {
