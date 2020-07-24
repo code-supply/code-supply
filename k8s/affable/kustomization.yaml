@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: affable
 resources:
 - namespace.yaml
+- service.yaml
 - stateful-set.yaml
 replicas:
 - count: 2

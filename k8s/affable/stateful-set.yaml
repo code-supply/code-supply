@@ -19,6 +19,10 @@ spec:
         - secretRef:
             name: affable
 
+        ports:
+        - name: http
+          containerPort: 4000
+
       - name: cloudsql-proxy
         image: eu.gcr.io/cloudsql-docker/gce-proxy:1.17
         securityContext:
