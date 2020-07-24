@@ -31,6 +31,11 @@ resource "google_sql_database_instance" "shared" {
   }
 }
 
+resource "google_sql_database" "affable" {
+  name     = "affable"
+  instance = google_sql_database_instance.shared.name
+}
+
 resource "google_sql_user" "affable" {
   name     = "affable"
   instance = google_sql_database_instance.shared.name
