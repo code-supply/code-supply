@@ -1,4 +1,4 @@
-manifest.yaml:
+manifest.yaml: k8s/*/*.yaml
 	kustomize build k8s > $@
 
 apply: manifest.yaml
