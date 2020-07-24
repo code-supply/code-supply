@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: affable
+spec:
+  hosts:
+  - www.affable.app
+  gateways:
+  - affable
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: affable
