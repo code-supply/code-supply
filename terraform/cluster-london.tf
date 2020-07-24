@@ -11,13 +11,6 @@ resource "google_container_cluster" "london_pink" {
     channel = "REGULAR"
   }
 
-  addons_config {
-    istio_config {
-      disabled = false
-      auth     = "AUTH_MUTUAL_TLS"
-    }
-  }
-
   private_cluster_config {
     enable_private_nodes    = true
     enable_private_endpoint = false
