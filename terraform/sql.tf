@@ -13,26 +13,15 @@ resource "google_sql_database_instance" "shared" {
     }
 
     backup_configuration {
-      enabled = true
+      enabled  = true
+      location = "eu"
+    }
+
+    maintenance_window {
+      day  = 2
+      hour = 1
     }
   }
-}
-
-resource "google_sql_database" "affable" {
-  name     = "affable"
-  instance = google_sql_database_instance.shared.name
-}
-
-resource "google_sql_user" "affable" {
-  name     = "affable"
-  instance = google_sql_database_instance.shared.name
-  password = "changeme"
-}
-
-resource "google_sql_user" "andrew" {
-  name     = "andrew"
-  instance = google_sql_database_instance.shared.name
-  password = "changeme"
 }
 
 resource "google_service_account" "sql_shared_affable" {
