@@ -14,6 +14,7 @@ resource "google_container_cluster" "london_pink" {
   addons_config {
     istio_config {
       disabled = false
+      auth     = "AUTH_MUTUAL_TLS"
     }
   }
 
