@@ -1,7 +1,3 @@
-variable "andrew_ip" {
-  default = "81.187.237.24"
-}
-
 resource "google_sql_database_instance" "shared" {
   name             = "shared"
   database_version = "POSTGRES_12"
@@ -18,15 +14,6 @@ resource "google_sql_database_instance" "shared" {
 
     backup_configuration {
       enabled = true
-    }
-
-    ip_configuration {
-      require_ssl = true
-
-      authorized_networks {
-        name  = "andrew"
-        value = var.andrew_ip
-      }
     }
   }
 }
