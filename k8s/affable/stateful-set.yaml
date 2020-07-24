@@ -6,21 +6,27 @@ spec:
   serviceName: affable
   template:
     spec:
+      volumes:
+      - name: google-credentials
+        secret:
+          secretName: affable-google-credentials
+
       containers:
+
       - name: affable
         image: affable:0
-        env:
-        - name: DATABASE_URL
-          value: ecto://affable:affable@postgres/affable
+        envFrom:
+        - secretRef:
+            name: affable
+
       - name: cloudsql-proxy
         image: eu.gcr.io/cloudsql-docker/gce-proxy:1.17
         securityContext:
           allowPrivilegeEscalation: false
 
-        command:
-        - /cloud_sql_proxy
-        args:
-        - -credential_file=/secrets/cloudsql/key.json
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /secrets/cloudsql/key.json
 
         envFrom:
         - configMapRef:
