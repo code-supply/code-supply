@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+cwd="$(cd "$(dirname "$0")" && pwd)"
+
+gcloud builds log \
+    --stream \
+    "$("$cwd/ongoing-build")"
