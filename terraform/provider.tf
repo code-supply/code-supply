@@ -1,7 +1,7 @@
 provider "google" {
   credentials = ""
   project     = "code-supply"
-  region      = "europe-west2"
+  region      = "europe-west1"
 
   version = "~> 3.30"
 }
@@ -9,7 +9,7 @@ provider "google" {
 provider "google-beta" {
   credentials = ""
   project     = "code-supply"
-  region      = "europe-west2"
+  region      = "europe-west1"
 
   version = "~> 3.30"
 }
