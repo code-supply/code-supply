@@ -35,7 +35,7 @@ spec:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /secrets/cloudsql/key.json
         - name: INSTANCES
-          value: code-supply:europe-west2:shared=tcp:5432
+          value: code-supply:europe-west2:shared-belgium=tcp:5432
 
         volumeMounts:
         - name: google-credentials

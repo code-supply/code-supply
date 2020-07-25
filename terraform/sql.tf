@@ -1,7 +1,7 @@
-resource "google_sql_database_instance" "shared" {
-  name             = "shared"
+resource "google_sql_database_instance" "shared_belgium" {
+  name             = "shared-belgium"
   database_version = "POSTGRES_12"
-  region           = "europe-west2"
+  region           = "europe-west1"
 
   settings {
     tier              = "db-f1-micro"
@@ -9,7 +9,7 @@ resource "google_sql_database_instance" "shared" {
     availability_type = "ZONAL"
 
     location_preference {
-      zone = "europe-west2-c"
+      zone = "europe-west1-b"
     }
 
     backup_configuration {
@@ -37,5 +37,5 @@ resource "google_project_iam_member" "sql_shared_affable" {
 }
 
 output "sql_shared_public_ip" {
-  value = google_sql_database_instance.shared.public_ip_address
+  value = google_sql_database_instance.shared_belgium.public_ip_address
 }

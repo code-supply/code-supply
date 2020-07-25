@@ -1,8 +1,29 @@
-resource "google_container_cluster" "london_pink" {
+variable "cluster_cidr_block" {
+  default = "172.16.0.0/28"
+}
+
+variable "standard_node_tag" {
+  default = "codesupplyk8s"
+}
+
+resource "google_compute_firewall" "permit_istio_master" {
+  name    = "istio-master"
+  network = data.google_compute_network.default.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["15017"]
+  }
+
+  source_ranges = [var.cluster_cidr_block]
+  target_tags   = [var.standard_node_tag]
+}
+
+resource "google_container_cluster" "belgium_pink" {
   provider = google-beta
 
   name     = "pink"
-  location = "europe-west2-c"
+  location = "europe-west1-b"
 
   remove_default_node_pool = true
   initial_node_count       = 1
@@ -14,7 +35,7 @@ resource "google_container_cluster" "london_pink" {
   private_cluster_config {
     enable_private_nodes    = true
     enable_private_endpoint = false
-    master_ipv4_cidr_block  = "172.16.0.0/28"
+    master_ipv4_cidr_block  = var.cluster_cidr_block
   }
 
   networking_mode = "VPC_NATIVE"
@@ -25,11 +46,11 @@ resource "google_container_cluster" "london_pink" {
   }
 }
 
-resource "google_container_node_pool" "london_c" {
-  name       = "london-reliable"
-  location   = "europe-west2-c"
-  cluster    = google_container_cluster.london_pink.name
-  node_count = 2
+resource "google_container_node_pool" "belgium_c" {
+  name       = "chips"
+  location   = "europe-west1-b"
+  cluster    = google_container_cluster.belgium_pink.name
+  node_count = 3
 
   node_config {
     machine_type = "e2-medium"
@@ -42,6 +63,8 @@ resource "google_container_node_pool" "london_c" {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring",
     ]
+
+    tags = [var.standard_node_tag]
   }
 
   management {
