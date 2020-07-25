@@ -28,6 +28,19 @@ triggers:
 install_istio:
 	istioctl install --set values.kiali.enabled=true
 
+.PHONY: kubectl_set_contexts
+kubectl_set_contexts:
+	kubectl config set-context \
+		affable \
+		--cluster=gke_code-supply_europe-west1-b_pink \
+		--user=gke_code-supply_europe-west1-b_pink \
+		--namespace=affable
+	kubectl config set-context \
+		istio-system \
+		--cluster=gke_code-supply_europe-west1-b_pink \
+		--user=gke_code-supply_europe-west1-b_pink \
+		--namespace=istio-system
+
 .PHONY: build_vm
 build_vm:
 	cd packer && packer build ./gce-image.json
