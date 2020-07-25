@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: affable
 resources:
 - namespace.yaml
-- certificate.yaml
 - service.yaml
 - stateful-set.yaml
 - gateway.yaml

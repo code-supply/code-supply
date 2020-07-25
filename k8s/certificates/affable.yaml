@@ -1,12 +1,11 @@
 kind: Certificate
 apiVersion: cert-manager.io/v1alpha2
 metadata:
-  name: www
-  namespace: affable
+  name: affable-www
 spec:
-  secretName: tls
+  secretName: affable-www
   issuerRef:
-    name: letsencrypt-staging
+    name: letsencrypt-production
     kind: ClusterIssuer
   dnsNames:
   - www.affable.app
