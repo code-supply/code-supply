@@ -1,3 +1,6 @@
+.POSIX:
+affable_version = k8s/affable/version.yaml
+
 manifest.yaml: k8s/*/*.yaml
 	kustomize build k8s > $@
 
@@ -7,10 +10,28 @@ apply: manifest.yaml
 diff: manifest.yaml
 	kubectl diff -f manifest.yaml
 
-.PHONY: set_image_affable
-set_image_affable:
+.PHONY:
+affable_use_head:
 	cd k8s/affable && \
 		kustomize edit set image "affable=eu.gcr.io/code-supply/affable:$$(git rev-parse --short HEAD)"
+	> $(affable_version)
+	echo "apiVersion: apps/v1" >> $(affable_version)
+	echo "kind: StatefulSet" >> $(affable_version)
+	echo "metadata:" >> $(affable_version)
+	echo "  name: affable" >> $(affable_version)
+	echo "spec:" >> $(affable_version)
+	echo "  template:" >> $(affable_version)
+	echo "    metadata:" >> $(affable_version)
+	echo "      labels:" >> $(affable_version)
+	echo "        version: $$(git rev-parse --short HEAD)" >> $(affable_version)
+
+.PHONY: affable_rotate_sql_credentials
+affable_rotate_sql_credentials:
+	bin/rotate-google-service-account-key \
+		affable \
+		google-credentials \
+		key.json \
+		sql-shared-affable@code-supply.iam.gserviceaccount.com
 
 .PHONY: list_triggers
 list_triggers:
@@ -44,14 +65,6 @@ kubectl_set_contexts:
 		--cluster=gke_code-supply_europe-west1-b_pink \
 		--user=gke_code-supply_europe-west1-b_pink \
 		--namespace=istio-system
-
-.PHONY: affable_rotate_sql_credentials
-affable_rotate_sql_credentials:
-	bin/rotate-google-service-account-key \
-		affable \
-		google-credentials \
-		key.json \
-		sql-shared-affable@code-supply.iam.gserviceaccount.com
 
 .PHONY: build_vm
 build_vm:
