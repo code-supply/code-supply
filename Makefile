@@ -24,6 +24,10 @@ triggers:
 		--branch-pattern="^master$$" \
 		--build-config=web/affable/cloudbuild.yaml
 
+.PHONY: install_istio
+install_istio:
+	istioctl install --set values.kiali.enabled=true
+
 .PHONY: build_vm
 build_vm:
 	cd packer && packer build ./gce-image.json
