@@ -1,7 +1,7 @@
 import Config
 
 config :affable, Affable.Repo,
-  socket_dir: "/tmp/cloudsql=tcp:5432/code-supply:europe-west2:shared/",
+  socket_dir: "/tmp/cloudsql/code-supply:europe-west1:shared-belgium/",
   database: "affable",
   username: "affable",
   password:
