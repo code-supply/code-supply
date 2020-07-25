@@ -41,6 +41,14 @@ kubectl_set_contexts:
 		--user=gke_code-supply_europe-west1-b_pink \
 		--namespace=istio-system
 
+.PHONY: affable_rotate_sql_credentials
+affable_rotate_sql_credentials:
+	bin/rotate-google-service-account-key \
+		affable \
+		google-credentials \
+		key.json \
+		sql-shared-affable@code-supply.iam.gserviceaccount.com
+
 .PHONY: build_vm
 build_vm:
 	cd packer && packer build ./gce-image.json
