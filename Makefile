@@ -26,7 +26,11 @@ triggers:
 
 .PHONY: install_istio
 install_istio:
-	istioctl install --set values.kiali.enabled=true
+	istioctl install \
+		--set values.kiali.enabled=true \
+		--set values.grafana.enabled=true \
+		--set values.tracing.enabled=true
+
 
 .PHONY: kubectl_set_contexts
 kubectl_set_contexts:
