@@ -53,6 +53,8 @@ resource "google_container_node_pool" "belgium_c" {
   node_count = 3
 
   node_config {
+    preemptible = true
+
     machine_type = "e2-medium"
 
     oauth_scopes = [
