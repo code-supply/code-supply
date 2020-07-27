@@ -8,17 +8,11 @@ defmodule Affable.Domains do
 
   alias Affable.Domains.Domain
 
-  @doc """
-  Returns the list of domains.
-
-  ## Examples
-
-      iex> list_domains()
-      [%Domain{}, ...]
-
-  """
-  def list_domains do
-    Repo.all(Domain)
+  def list_domains(user) do
+    Domain
+    |> where(user_id: ^user.id)
+    |> order_by(desc: :id)
+    |> Repo.all()
   end
 
   @doc """

@@ -18,15 +18,17 @@ h2 {
     @apply mr-1;
 }
 
-.field {
-    @apply flex border mt-4 text-right;
-}
 .field label {
-    @apply flex-none w-32 p-2 bg-gray-400;
+    @apply w-32 p-2 bg-gray-400;
 }
 .field input {
-    @apply flex-auto p-2;
+    @apply p-2;
 }
 .field input:focus {
     @apply bg-yellow-200 outline-none;
+}
+
+.invalid-feedback {
+    display: block;
+    @apply text-red-800 font-bold;
 }

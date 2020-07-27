@@ -1,0 +1,23 @@
+<h1>Account</h1>
+
+<h2>My Domains</h2>
+
+<%= form_for @domain_changeset, "#", [phx_submit: "create-domain", id: "create-domain"], fn f -> %>
+  <div class="field">
+    <div class="flex">
+      <%= label f, :name, "New domain", class: "flex-none" %>
+      <%= text_input f, :name, placeholder: "best-bargains.com", class: "flex-initial" %>
+      <div class="flex-auto">
+        <%= submit "Add", class: "bg-gray-600 text-white p-2" %>
+      </div>
+    </div>
+    <%= error_tag f, :name %>
+  </div>
+
+<% end %>
+
+<ol class="mt-8">
+  <%= for domain <- @domains do %>
+    <li class="domain"><%= domain.name %></li>
+  <% end %>
+</ol>

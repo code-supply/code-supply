@@ -26,9 +26,14 @@ defmodule Affable.DomainsTest do
       domain
     end
 
-    test "list_domains/0 returns all domains", %{user: user} do
-      domain = domain_fixture(user)
-      assert Domains.list_domains() == [domain]
+    test "list_domains/1 returns all domains for a user (reverse creation order)", %{user: user} do
+      foo = domain_fixture(user, name: "foo.com")
+      another_user = user_fixture()
+      bar = domain_fixture(another_user, name: "bar.com")
+      baz = domain_fixture(another_user, name: "baz.com")
+
+      assert Domains.list_domains(user) == [foo]
+      assert Domains.list_domains(another_user) == [baz, bar]
     end
 
     test "get_domain!/1 returns the domain with given id", %{user: user} do
