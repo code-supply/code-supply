@@ -2,12 +2,15 @@ defmodule Affable.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Affable.Domains.Domain
+
   @derive {Inspect, except: [:password]}
   schema "users" do
     field :email, :string
     field :password, :string, virtual: true
     field :hashed_password, :string
     field :confirmed_at, :naive_datetime
+    has_many :domains, Domain
 
     timestamps()
   end

@@ -211,6 +211,10 @@ defmodule Affable.Accounts do
     end
   end
 
+  def delete_user(user) do
+    Repo.delete(user)
+  end
+
   ## Session
 
   @doc """

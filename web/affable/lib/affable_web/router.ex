@@ -20,7 +20,8 @@ defmodule AffableWeb.Router do
   scope "/", AffableWeb do
     pipe_through :browser
 
-    live "/", PageLive, :index
+    get "/", HomeController, :show
+    live "/account", AccountLive
   end
 
   # Other scopes may use custom stacks.
