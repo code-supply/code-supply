@@ -1,3 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+h1 {
+    @apply text-4xl text-black mb-4;
+}
+
+h2 {
+    @apply text-2xl text-black mt-4 mb-4;
+}
+
+.btn {
+    @apply bg-gray-600 text-white p-2 mt-4 mb-4;
+}
+
+.chk {
+    @apply mr-1;
+}
+
+.field {
+    @apply flex border mt-4 text-right;
+}
+.field label {
+    @apply flex-none w-32 p-2 bg-gray-400;
+}
+.field input {
+    @apply flex-auto p-2;
+}
+.field input:focus {
+    @apply bg-yellow-200 outline-none;
+}

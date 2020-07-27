@@ -7,16 +7,20 @@
     </div>
   <% end %>
 
-  <%= label f, :email %>
-  <%= email_input f, :email, required: true %>
-  <%= error_tag f, :email %>
+  <div class="field">
+    <%= label f, :email %>
+    <%= email_input f, :email, required: true %>
+    <%= error_tag f, :email %>
+  </div>
 
-  <%= label f, :password %>
-  <%= password_input f, :password, required: true %>
-  <%= error_tag f, :password %>
+  <div class="field">
+    <%= label f, :password %>
+    <%= password_input f, :password, required: true %>
+    <%= error_tag f, :password %>
+  </div>
 
   <div>
-    <%= submit "Register" %>
+    <%= submit "Register", class: "btn" %>
   </div>
 <% end %>
 
