@@ -21,6 +21,11 @@ resource "google_sql_database_instance" "shared_belgium" {
       day  = 2
       hour = 1
     }
+
+    database_flags {
+      name  = "max_connections"
+      value = 200
+    }
   }
 }
 
