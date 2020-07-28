@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+cwd="$(cd "$(dirname "$0")" && pwd)"
+password="$("$cwd/show-affable-db-password")"
+
+bin/sql_proxy &
+cd web/affable || exit
+MIX_ENV=prod-migrate PASSWORD="$password" mix ecto.migrate
+
+wait
