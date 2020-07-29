@@ -1,3 +1,6 @@
+data "google_project" "project" {
+}
+
 provider "google" {
   credentials = ""
   project     = "code-supply"
