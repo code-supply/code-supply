@@ -51,7 +51,8 @@ install_istio:
 		--set values.kiali.enabled=true \
 		--set values.grafana.enabled=true \
 		--set values.tracing.enabled=true \
-		--set meshConfig.outboundTrafficPolicy.mode=REGISTRY_ONLY
+		--set meshConfig.outboundTrafficPolicy.mode=REGISTRY_ONLY \
+		--set values.gateways.istio-egressgateway.enabled=true
 
 
 .PHONY: kubectl_set_contexts
