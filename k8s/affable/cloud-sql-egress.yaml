@@ -4,9 +4,8 @@ metadata:
   name: cloud-sql-instance
 spec:
   hosts:
-  - example.com
-  addresses:
-  - "34.77.128.188/32"
+  - "188.128.77.34.bc.googleusercontent.com."
+  resolution: DNS
   ports:
   - name: tcp
     number: 3307
