@@ -21,6 +21,7 @@ defmodule AffableWeb.Router do
     pipe_through :browser
 
     get "/", HomeController, :show
+    get "/k8s", K8sController, :index
     live "/account", AccountLive
   end
 
