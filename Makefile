@@ -50,7 +50,8 @@ install_istio:
 	istioctl install \
 		--set values.kiali.enabled=true \
 		--set values.grafana.enabled=true \
-		--set values.tracing.enabled=true
+		--set values.tracing.enabled=true \
+		--set meshConfig.outboundTrafficPolicy.mode=REGISTRY_ONLY
 
 
 .PHONY: kubectl_set_contexts

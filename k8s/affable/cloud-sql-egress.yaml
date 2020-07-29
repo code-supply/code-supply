@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: cloud-sql-instance
+spec:
+  hosts:
+  - example.com
+  addresses:
+  - "34.77.128.188/32"
+  ports:
+  - name: tcp
+    number: 3307
+    protocol: tcp
+  location: MESH_EXTERNAL

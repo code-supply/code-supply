@@ -7,6 +7,8 @@ resources:
 - stateful-set.yaml
 - gateway.yaml
 - virtual-service.yaml
+- cloud-sql-egress.yaml
+- google-api-egress.yaml
 replicas:
 - count: 2
   name: affable
