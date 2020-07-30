@@ -66,7 +66,7 @@ defmodule SiteOperator.Controller.V1.Site do
   # @group "your-operator.your-domain.com"
   # @version "v1"
 
-  @scope :namespaced
+  @scope :cluster
   @names %{
     plural: "sites",
     singular: "site",
