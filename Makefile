@@ -10,6 +10,12 @@ apply: manifest.yaml
 diff: manifest.yaml
 	kubectl diff -f manifest.yaml
 
+operators/site_operator/manifest.yaml: \
+	operators/site_operator/lib/**/* \
+	operators/site_operator/config/*
+	cd operators/site_operator && \
+		mix bonny.gen.manifest --namespace operators
+
 .PHONY:
 affable_use_head:
 	cd k8s/affable && \
