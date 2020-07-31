@@ -4,11 +4,19 @@ affable_version = k8s/affable/version.yaml
 manifest.yaml: k8s/*.yaml k8s/*/*.yaml
 	kustomize build k8s > $@
 
-apply: manifest.yaml
-	kubectl apply -f manifest.yaml
+apply: \
+	manifest.yaml \
+	operators/site_operator/manifest.yaml
+	kubectl apply \
+		-f manifest.yaml \
+		-f operators/site_operator/manifest.yaml
 
-diff: manifest.yaml
-	kubectl diff -f manifest.yaml
+diff: \
+	manifest.yaml \
+	operators/site_operator/manifest.yaml
+	kubectl diff \
+		-f manifest.yaml \
+		-f operators/site_operator/manifest.yaml
 
 operators/site_operator/manifest.yaml: \
 	operators/site_operator/lib/**/* \
