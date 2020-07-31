@@ -1,6 +1,6 @@
-defmodule SiteOperator.Controller.V1.Site do
+defmodule SiteOperator.Controller.V1.AffiliateSite do
   @moduledoc """
-  SiteOperator: Site CRD.
+  SiteOperator: AffiliateSite CRD.
 
   ## Kubernetes CRD Spec
 
@@ -11,7 +11,7 @@ defmodule SiteOperator.Controller.V1.Site do
   # Kubernetes API version of this CRD, defaults to value in module name
   @version "v2alpha1"
 
-  # Kubernetes API group of this CRD, defaults to "site-operator.example.com"
+  # Kubernetes API group of this CRD, defaults to "site-operator.code.supply"
   @group "kewl.example.io"
 
   The scope of the CRD. Defaults to `:namespaced`
@@ -48,7 +48,7 @@ defmodule SiteOperator.Controller.V1.Site do
   [Additional Printer Columns docs](https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/#additional-printer-columns)
 
   ### Examples
-  
+
   ```
   @additional_printer_columns [
     %{
@@ -59,7 +59,7 @@ defmodule SiteOperator.Controller.V1.Site do
     }
   ]
   ```
-  
+
   """
   use Bonny.Controller
 
@@ -68,9 +68,9 @@ defmodule SiteOperator.Controller.V1.Site do
 
   @scope :cluster
   @names %{
-    plural: "sites",
-    singular: "site",
-    kind: "Site",
+    plural: "affiliatesites",
+    singular: "affiliatesite",
+    kind: "AffiliateSite",
     shortNames: []
   }
 
@@ -82,8 +82,8 @@ defmodule SiteOperator.Controller.V1.Site do
   """
   @spec add(map()) :: :ok | :error
   @impl Bonny.Controller
-  def add(%{} = site) do
-    IO.inspect(site)
+  def add(%{} = affiliatesite) do
+    IO.inspect(affiliatesite)
     :ok
   end
 
@@ -92,8 +92,8 @@ defmodule SiteOperator.Controller.V1.Site do
   """
   @spec modify(map()) :: :ok | :error
   @impl Bonny.Controller
-  def modify(%{} = site) do
-    IO.inspect(site)
+  def modify(%{} = affiliatesite) do
+    IO.inspect(affiliatesite)
     :ok
   end
 
@@ -102,8 +102,8 @@ defmodule SiteOperator.Controller.V1.Site do
   """
   @spec delete(map()) :: :ok | :error
   @impl Bonny.Controller
-  def delete(%{} = site) do
-    IO.inspect(site)
+  def delete(%{} = affiliatesite) do
+    IO.inspect(affiliatesite)
     :ok
   end
 
@@ -112,8 +112,8 @@ defmodule SiteOperator.Controller.V1.Site do
   """
   @spec reconcile(map()) :: :ok | :error
   @impl Bonny.Controller
-  def reconcile(%{} = site) do
-    IO.inspect(site)
+  def reconcile(%{} = affiliatesite) do
+    IO.inspect(affiliatesite)
     :ok
   end
 end

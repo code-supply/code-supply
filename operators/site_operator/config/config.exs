@@ -10,7 +10,7 @@ config :k8s,
 config :bonny,
   # Add each CRD Controller module for this operator to load here
   controllers: [
-    SiteOperator.Controller.V1.Site
+    SiteOperator.Controller.V1.AffiliateSite
   ],
   cluster_name: :default,
   namespace: :all,
