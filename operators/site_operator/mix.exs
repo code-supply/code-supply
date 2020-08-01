@@ -23,7 +23,8 @@ defmodule SiteOperator.MixProject do
     [
       {:bonny, "~> 0.4.0"},
       {:httpoison, "~> 1.7.0"},
-      {:poison, "~> 4.0.1"}
+      {:poison, "~> 4.0.1"},
+      {:hammox, "~> 0.2", only: [:test]}
     ]
   end
 end
