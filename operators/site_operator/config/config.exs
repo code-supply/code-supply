@@ -1,11 +1,7 @@
 import Config
 
 config :k8s,
-  clusters: %{
-    default: %{
-      conn: "~/.kube/config"
-    }
-  }
+  clusters: %{}
 
 config :bonny,
   # Add each CRD Controller module for this operator to load here
