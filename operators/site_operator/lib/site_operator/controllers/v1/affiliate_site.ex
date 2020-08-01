@@ -82,8 +82,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   """
   @spec add(map()) :: :ok | :error
   @impl Bonny.Controller
-  def add(%{} = affiliatesite) do
-    IO.inspect(affiliatesite)
+  def add(%{"metadata" => %{"name" => namespace}}) do
+    affiliate_site().create(namespace)
     :ok
   end
 
@@ -115,5 +115,9 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   def reconcile(%{} = affiliatesite) do
     IO.inspect(affiliatesite)
     :ok
+  end
+
+  defp affiliate_site do
+    Application.get_env(:site_operator, :affiliate_site)
   end
 end
