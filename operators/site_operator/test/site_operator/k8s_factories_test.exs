@@ -15,7 +15,7 @@ defmodule SiteOperator.K8sFactoriesTest do
              "spec",
              "selector",
              "matchLabels",
-             "affable-app"
+             "so-app"
            ]) ==
              "my-name"
 
@@ -24,7 +24,7 @@ defmodule SiteOperator.K8sFactoriesTest do
              "template",
              "metadata",
              "labels",
-             "affable-app"
+             "so-app"
            ]) == "my-name"
 
     assert get_in(deployment, [

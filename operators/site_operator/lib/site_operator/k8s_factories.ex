@@ -10,13 +10,13 @@ defmodule SiteOperator.K8sFactories do
       "spec" => %{
         "selector" => %{
           "matchLabels" => %{
-            "affable-app" => namespace_name
+            "so-app" => namespace_name
           }
         },
         "template" => %{
           "metadata" => %{
             "labels" => %{
-              "affable-app" => namespace_name
+              "so-app" => namespace_name
             }
           },
           "spec" => %{
