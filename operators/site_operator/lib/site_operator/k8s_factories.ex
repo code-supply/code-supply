@@ -16,24 +16,24 @@ defmodule SiteOperator.K8sFactories do
     }
   end
 
-  def deployment(namespace_name) do
+  def deployment(name) do
     %{
       "apiVersion" => "apps/v1",
       "kind" => "Deployment",
       "metadata" => %{
-        "name" => "deleteme",
-        "namespace" => namespace_name
+        "name" => name,
+        "namespace" => name
       },
       "spec" => %{
         "selector" => %{
           "matchLabels" => %{
-            "so-app" => namespace_name
+            "so-app" => name
           }
         },
         "template" => %{
           "metadata" => %{
             "labels" => %{
-              "so-app" => namespace_name
+              "so-app" => name
             }
           },
           "spec" => %{

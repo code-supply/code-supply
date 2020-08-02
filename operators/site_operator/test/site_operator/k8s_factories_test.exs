@@ -29,6 +29,11 @@ defmodule SiteOperator.K8sFactoriesTest do
 
     assert get_in(deployment, [
              "metadata",
+             "name"
+           ]) == "my-name"
+
+    assert get_in(deployment, [
+             "metadata",
              "namespace"
            ]) == "my-name"
 
