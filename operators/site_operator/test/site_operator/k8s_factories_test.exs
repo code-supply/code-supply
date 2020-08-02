@@ -3,6 +3,27 @@ defmodule SiteOperator.K8sFactoriesTest do
 
   import SiteOperator.K8sFactories
 
+  test "generates a parameterised service" do
+    service = service("my-name")
+
+    assert get_in(service, [
+             "metadata",
+             "namespace"
+           ]) == "my-name"
+
+    assert get_in(service, [
+             "spec",
+             "selector",
+             "so-app"
+           ]) ==
+             "my-name"
+
+    assert get_in(service, [
+             "spec",
+             "ports"
+           ]) == [%{"name" => "http", "port" => 80}]
+  end
+
   test "generates a parameterised deployment" do
     deployment = deployment("my-name")
 

@@ -1,4 +1,21 @@
 defmodule SiteOperator.K8sFactories do
+  def service(name) do
+    %{
+      "apiVersion" => "v1",
+      "kind" => "Service",
+      "metadata" => %{
+        "name" => name,
+        "namespace" => name
+      },
+      "spec" => %{
+        "selector" => %{
+          "so-app" => name
+        },
+        "ports" => [%{"name" => "http", "port" => 80}]
+      }
+    }
+  end
+
   def deployment(namespace_name) do
     %{
       "apiVersion" => "apps/v1",

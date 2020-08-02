@@ -3,19 +3,21 @@ defmodule SiteOperator.K8sAffiliateSite do
   import SiteOperator.K8sFactories
 
   @impl SiteOperator.AffiliateSite
-  def create(namespace_name) do
-    namespace_operation = K8s.Client.create(ns(namespace_name))
-    deployment_operation = K8s.Client.create(deployment(namespace_name))
+  def create(name) do
+    namespace_operation = K8s.Client.create(ns(name))
+    deployment_operation = K8s.Client.create(deployment(name))
+    service_operation = K8s.Client.create(service(name))
 
     {:ok, _} = run(namespace_operation)
     {:ok, _} = run(deployment_operation)
+    {:ok, _} = run(service_operation)
 
     {:ok, ""}
   end
 
   @impl SiteOperator.AffiliateSite
-  def delete(namespace_name) do
-    operation = K8s.Client.delete("v1", "Namespace", name: namespace_name)
+  def delete(name) do
+    operation = K8s.Client.delete("v1", "Namespace", name: name)
     run(operation)
   end
 
