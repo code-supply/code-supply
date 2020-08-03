@@ -46,7 +46,7 @@ defmodule AccountLiveTest do
 
       assert view
              |> form("#create-domain", %{"domain" => %{"name" => "foo.com"}})
-             |> render_submit() =~ "foo.com</li>"
+             |> render_submit() =~ "foo.com</td>"
     end
 
     test "entering an invalid domain shows an error and clears the change", %{conn: conn} do
@@ -61,6 +61,20 @@ defmodule AccountLiveTest do
       refute view
              |> form("#create-domain", %{"domain" => %{"name" => "foo.com"}})
              |> render_submit() =~ "must be a valid domain"
+    end
+
+    test "hitting deploy shows the deploying state", %{conn: conn} do
+      conn = get(conn, path(conn))
+
+      {:ok, view, _html} = live(conn, path(conn))
+
+      view
+      |> form("#create-domain", %{"domain" => %{"name" => "example.com"}})
+      |> render_submit()
+
+      assert view
+             |> element("table td.action button")
+             |> render_click() =~ "Deploying example.com…"
     end
   end
 end

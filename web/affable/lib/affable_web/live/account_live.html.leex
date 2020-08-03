@@ -13,11 +13,28 @@
     </div>
     <%= error_tag f, :name %>
   </div>
-
 <% end %>
 
-<ol class="mt-8">
-  <%= for domain <- @domains do %>
-    <li class="domain"><%= domain.name %></li>
-  <% end %>
-</ol>
+<table class="mt-8">
+  <thead>
+    <tr>
+      <th>Domain</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for domain <- @domains do %>
+      <tr>
+        <td class="domain"><%= domain.name %></td>
+        <td class="action">
+          <%= case domain.events do %>
+            <% [] -> %>
+              <button phx-click="deploy" phx-value-domain_id="<%= domain.id %>">Deploy</button>
+            <% _ -> %>
+              Deploying <%= domain.name %>…
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

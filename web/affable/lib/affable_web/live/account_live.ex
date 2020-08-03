@@ -37,6 +37,15 @@ defmodule AffableWeb.AccountLive do
     end
   end
 
+  def handle_event(
+        "deploy",
+        %{"domain_id" => domain_id},
+        %{assigns: %{user: user}} = socket
+      ) do
+    Domains.deploy!(user, domain_id)
+    {:noreply, retrieve_state(user, socket)}
+  end
+
   defp redirect_to_login(socket) do
     {:ok, redirect(socket, to: "/users/log_in")}
   end

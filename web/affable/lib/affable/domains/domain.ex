@@ -3,10 +3,12 @@ defmodule Affable.Domains.Domain do
   import Ecto.Changeset
 
   alias Affable.Accounts.User
+  alias Affable.Events.Event
 
   schema "domains" do
     field :name, :string
     belongs_to(:user, User)
+    has_many :events, Event
 
     timestamps()
   end

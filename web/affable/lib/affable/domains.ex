@@ -7,32 +7,47 @@ defmodule Affable.Domains do
   alias Affable.Repo
 
   alias Affable.Domains.Domain
+  alias Affable.Events.Event
+
+  def deploy!(user, domain_id) do
+    domain = get_domain!(user, domain_id)
+
+    Event.changeset(%Event{}, %{
+      event_type: "deployment_request",
+      domain_id: domain_id,
+      description: "Deploying #{domain.name}"
+    })
+    |> Repo.insert!()
+  end
+
+  def state(domain) do
+    IO.inspect(Repo.all(Event))
+    events = Repo.all(Ecto.assoc(domain, :events))
+
+    case events do
+      [] ->
+        :new
+
+      _ ->
+        :deploying
+    end
+  end
 
   def list_domains(user) do
     Domain
     |> where(user_id: ^user.id)
     |> order_by(desc: :id)
     |> Repo.all()
+    |> Repo.preload(:events)
   end
 
-  @doc """
-  Gets a single domain.
-
-  Raises `Ecto.NoResultsError` if the Domain does not exist.
-
-  ## Examples
-
-      iex> get_domain!(123)
-      %Domain{}
-
-      iex> get_domain!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_domain!(id), do: Repo.get!(Domain, id)
+  def get_domain!(user, id) do
+    Repo.get_by!(Domain, id: id, user_id: user.id)
+    |> Repo.preload(:events)
+  end
 
   def create_domain(user, attrs \\ %{}) do
-    Ecto.build_assoc(user, :domains)
+    Ecto.build_assoc(user, :domains, %{events: []})
     |> Domain.changeset(attrs)
     |> Repo.insert()
   end

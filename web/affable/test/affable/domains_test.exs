@@ -36,9 +36,17 @@ defmodule Affable.DomainsTest do
       assert Domains.list_domains(another_user) == [baz, bar]
     end
 
-    test "get_domain!/1 returns the domain with given id", %{user: user} do
+    test "get_domain!/2 returns the domain with given id", %{user: user} do
       domain = domain_fixture(user)
-      assert Domains.get_domain!(domain.id) == domain
+      assert Domains.get_domain!(user, domain.id) == domain
+    end
+
+    test "get_domain!/2 fails if user doesn't own the domain", %{user: user} do
+      domain = domain_fixture(user)
+
+      assert_raise(Ecto.NoResultsError, fn ->
+        Domains.get_domain!(user_fixture(), domain.id) == domain
+      end)
     end
 
     test "create_domain/2 with valid data creates a domain", %{user: user} do
@@ -59,13 +67,13 @@ defmodule Affable.DomainsTest do
     test "update_domain/2 with invalid data returns error changeset", %{user: user} do
       domain = domain_fixture(user)
       assert {:error, %Ecto.Changeset{}} = Domains.update_domain(domain, @invalid_attrs)
-      assert domain == Domains.get_domain!(domain.id)
+      assert domain == Domains.get_domain!(user, domain.id)
     end
 
     test "delete_domain/1 deletes the domain", %{user: user} do
       domain = domain_fixture(user)
       assert {:ok, %Domain{}} = Domains.delete_domain(domain)
-      assert_raise Ecto.NoResultsError, fn -> Domains.get_domain!(domain.id) end
+      assert_raise Ecto.NoResultsError, fn -> Domains.get_domain!(user, domain.id) end
     end
 
     test "change_domain/1 returns a domain changeset", %{user: user} do
