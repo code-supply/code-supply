@@ -10,6 +10,22 @@ h2 {
     @apply text-2xl text-black mt-4 mb-4;
 }
 
+th {
+    @apply text-left;
+}
+
+th,td {
+    @apply pt-4 pr-4 pb-4;
+}
+
+thead tr {
+    @apply bg-gray-400;
+}
+
+tbody tr:hover {
+    @apply bg-gray-100;
+}
+
 .btn {
     @apply bg-gray-600 text-white p-2 mt-4 mb-4;
 }

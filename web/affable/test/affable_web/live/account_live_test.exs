@@ -1,6 +1,7 @@
-defmodule AccountLiveTest do
+defmodule AffableWeb.AccountLiveTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
+  import Hammox
 
   alias Affable.Accounts
 
@@ -72,9 +73,17 @@ defmodule AccountLiveTest do
       |> form("#create-domain", %{"domain" => %{"name" => "example.com"}})
       |> render_submit()
 
+      refute view
+             |> has_element?(".deployment-request")
+
+      stub(Affable.MockK8s, :deploy, fn _ -> {:ok, ""} end)
+
+      view
+      |> element("table td.action button")
+      |> render_click()
+
       assert view
-             |> element("table td.action button")
-             |> render_click() =~ "Deploying example.com…"
+             |> has_element?(".deployment-request")
     end
   end
 end

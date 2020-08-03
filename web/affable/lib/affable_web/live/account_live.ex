@@ -42,7 +42,7 @@ defmodule AffableWeb.AccountLive do
         %{"domain_id" => domain_id},
         %{assigns: %{user: user}} = socket
       ) do
-    Domains.deploy!(user, domain_id)
+    Domains.deploy!(user, domain_id, k8s())
     {:noreply, retrieve_state(user, socket)}
   end
 
@@ -56,5 +56,9 @@ defmodule AffableWeb.AccountLive do
       domain_changeset: Domains.change_domain(%Domain{}),
       domains: Domains.list_domains(user)
     )
+  end
+
+  defp k8s() do
+    Application.get_env(:affable, :k8s)
   end
 end

@@ -9,15 +9,17 @@ defmodule Affable.Domains do
   alias Affable.Domains.Domain
   alias Affable.Events.Event
 
-  def deploy!(user, domain_id) do
+  def deploy!(user, domain_id, k8s) do
     domain = get_domain!(user, domain_id)
 
     Event.changeset(%Event{}, %{
-      event_type: "deployment_request",
+      event_type: "deployment-request",
       domain_id: domain_id,
-      description: "Deploying #{domain.name}"
+      description: "Deploying site"
     })
     |> Repo.insert!()
+
+    k8s.deploy(domain.name)
   end
 
   def state(domain) do

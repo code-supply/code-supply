@@ -8,7 +8,8 @@
 use Mix.Config
 
 config :affable,
-  ecto_repos: [Affable.Repo]
+  ecto_repos: [Affable.Repo],
+  k8s: Affable.RealK8s
 
 # Configures the endpoint
 config :affable, AffableWeb.Endpoint,

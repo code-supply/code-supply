@@ -3,6 +3,9 @@ use Mix.Config
 # Only in tests, remove the complexity from the password hashing algorithm
 config :bcrypt_elixir, :log_rounds, 1
 
+config :affable,
+  k8s: Affable.MockK8s
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used

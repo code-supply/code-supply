@@ -1,10 +1,12 @@
 defmodule Affable.DomainsTest do
   use Affable.DataCase
+  import Hammox
 
   alias Affable.Domains
 
   describe "domains" do
     alias Affable.Domains.Domain
+    alias Affable.Events.Event
     import Affable.AccountsFixtures
 
     @valid_attrs %{name: "somename.com"}
@@ -15,6 +17,8 @@ defmodule Affable.DomainsTest do
       %{user: user_fixture()}
     end
 
+    setup :verify_on_exit!
+
     def domain_fixture(user, attrs \\ %{}) do
       {:ok, domain} =
         Domains.create_domain(
@@ -24,6 +28,29 @@ defmodule Affable.DomainsTest do
         )
 
       domain
+    end
+
+    test "deploying records an event", %{user: user} do
+      domain = domain_fixture(user)
+
+      stub(Affable.MockK8s, :deploy, fn _ -> {:ok, ""} end)
+
+      Domains.deploy!(user, domain.id, Affable.MockK8s)
+
+      [%Event{description: description}] = Domains.get_domain!(user, domain.id).events
+
+      assert description == "Deploying site"
+    end
+
+    test "deploying creates an AffiliateSite in Kubernetes", %{user: user} do
+      domain = domain_fixture(user)
+
+      expect(Affable.MockK8s, :deploy, fn received_domain ->
+        assert received_domain == domain.name
+        {:ok, ""}
+      end)
+
+      Domains.deploy!(user, domain.id, Affable.MockK8s)
     end
 
     test "list_domains/1 returns all domains for a user (reverse creation order)", %{user: user} do
