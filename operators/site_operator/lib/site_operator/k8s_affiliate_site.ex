@@ -9,8 +9,13 @@ defmodule SiteOperator.K8sAffiliateSite do
     service_operation = K8s.Client.create(service(name))
 
     {:ok, _} = run(namespace_operation)
-    {:ok, _} = run(deployment_operation)
-    {:ok, _} = run(service_operation)
+
+    [ok: _, ok: _] =
+      K8s.Client.parallel(
+        [deployment_operation, service_operation],
+        cluster_name(),
+        []
+      )
 
     {:ok, ""}
   end
