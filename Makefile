@@ -37,7 +37,7 @@ affable_use_head:
 	echo "  template:" >> $(affable_version)
 	echo "    metadata:" >> $(affable_version)
 	echo "      labels:" >> $(affable_version)
-	echo "        version: $$(git rev-parse --short HEAD)" >> $(affable_version)
+	echo "        version: \"$$(git rev-parse --short HEAD)\"" >> $(affable_version)
 
 .PHONY: affable_rotate_sql_credentials
 affable_rotate_sql_credentials:
