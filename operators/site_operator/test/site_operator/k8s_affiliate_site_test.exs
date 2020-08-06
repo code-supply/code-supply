@@ -88,7 +88,7 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
 
     @tag :external
     test "returns error when we ask for an invalid domain name", %{create_2: create} do
-      assert elem(create.("good-namespace-name", "bad domain name"), 0) == :error
+      assert elem(create.(@namespace, "bad domain name"), 0) == :error
     end
   end
 

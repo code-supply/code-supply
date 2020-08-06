@@ -23,19 +23,8 @@ defmodule SiteOperator.K8sAffiliateSite do
 
   @impl SiteOperator.AffiliateSite
   def delete(name) do
-    case Client.parallel(delete_operations(name), cluster_name(), []) do
-      [ok: _, ok: _] ->
-        {:ok, ""}
-
-      [error: message, ok: _] ->
-        {:error, "Namespace: #{message}"}
-
-      [ok: _, cert_message: message] ->
-        {:error, "Certificate: #{message}"}
-
-      [error: ns_message, error: cert_message] ->
-        {:error, "Namespace: #{ns_message}, Certificate: #{cert_message}"}
-    end
+    [ok: _, ok: _] = Client.parallel(delete_operations(name), cluster_name(), [])
+    {:ok, ""}
   end
 
   defp create_operations(name, domain) do
