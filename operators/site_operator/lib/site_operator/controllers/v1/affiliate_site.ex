@@ -83,8 +83,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   @spec add(map()) :: :ok | :error
   @impl Bonny.Controller
   def add(%{"metadata" => %{"name" => namespace}, "spec" => %{"domain" => domain}}) do
-    affiliate_site().create(namespace, domain)
-    :ok
+    {result, _} = affiliate_site().create(namespace, domain)
+    result
   end
 
   @doc """
@@ -102,9 +102,9 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   """
   @spec delete(map()) :: :ok | :error
   @impl Bonny.Controller
-  def delete(%{} = affiliatesite) do
-    IO.inspect(affiliatesite)
-    :ok
+  def delete(%{"metadata" => %{"name" => namespace}}) do
+    {result, _} = affiliate_site().delete(namespace)
+    result
   end
 
   @doc """

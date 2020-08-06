@@ -8,24 +8,37 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
   setup :verify_on_exit!
 
   describe "add/1" do
-    test "creates the site and returns :ok" do
-      expect(MockAffiliateSite, :create, fn ns, domain ->
-        assert ns == "justatest"
-        assert domain == "www.example.com"
+    setup do
+      %{
+        add: fn ->
+          AffiliateSite.add(%{
+            "apiVersion" => "site-operator.code.supply/v1alpha1",
+            "kind" => "AffiliateSite",
+            "metadata" => %{"name" => "justatest"},
+            "spec" => %{
+              "domain" => "www.example.com"
+            }
+          })
+        end
+      }
+    end
+
+    test "returns :ok on success", %{add: add} do
+      stub(MockAffiliateSite, :create, fn _, _ -> {:ok, ""} end)
+      assert add.() == :ok
+    end
+
+    test "creates the site", %{add: add} do
+      expect(MockAffiliateSite, :create, fn "justatest", "www.example.com" ->
         {:ok, "some message"}
       end)
 
-      result =
-        AffiliateSite.add(%{
-          "apiVersion" => "site-operator.code.supply/v1alpha1",
-          "kind" => "AffiliateSite",
-          "metadata" => %{"name" => "justatest"},
-          "spec" => %{
-            "domain" => "www.example.com"
-          }
-        })
+      add.()
+    end
 
-      assert result == :ok
+    test "returns :error on error", %{add: add} do
+      stub(MockAffiliateSite, :create, fn _, _ -> {:error, ""} end)
+      assert add.() == :error
     end
   end
 
@@ -38,10 +51,23 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
   end
 
   describe "delete/1" do
-    test "returns :ok" do
-      event = %{}
-      result = AffiliateSite.delete(event)
-      assert result == :ok
+    setup do
+      %{delete: fn -> AffiliateSite.delete(%{"metadata" => %{"name" => "deleteme"}}) end}
+    end
+
+    test "returns :ok on success", %{delete: delete} do
+      stub(MockAffiliateSite, :delete, fn _ -> {:ok, ""} end)
+      assert delete.() == :ok
+    end
+
+    test "deletes the site", %{delete: delete} do
+      expect(MockAffiliateSite, :delete, fn "deleteme" -> {:ok, ""} end)
+      delete.()
+    end
+
+    test "returns :error on error", %{delete: delete} do
+      stub(MockAffiliateSite, :delete, fn _ -> {:error, ""} end)
+      assert delete.() == :error
     end
   end
 
