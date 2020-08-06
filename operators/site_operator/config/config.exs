@@ -19,4 +19,12 @@ config :bonny,
   namespace: :all,
   group: "site-operator.code.supply"
 
+config :logger_json,
+       :backend,
+       formatter: LoggerJSON.Formatters.GoogleCloudLogger,
+       metadata: :all
+
+config :logger,
+  backends: [LoggerJSON]
+
 import_config "#{Mix.env()}.exs"

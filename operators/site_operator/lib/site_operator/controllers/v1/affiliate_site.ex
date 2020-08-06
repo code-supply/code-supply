@@ -62,6 +62,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
 
   """
   use Bonny.Controller
+  require Logger
 
   # @group "your-operator.your-domain.com"
   # @version "v1"
@@ -91,8 +92,9 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   """
   @spec add(map()) :: :ok | :error
   @impl Bonny.Controller
-  def add(%{"metadata" => %{"name" => namespace}, "spec" => %{"domain" => domain}}) do
-    {result, _} = affiliate_site().create(namespace, domain)
+  def add(%{"metadata" => %{"name" => name}, "spec" => %{"domain" => domain}}) do
+    {result, _} = affiliate_site().create(name, domain)
+    Logger.info("created", action: "add", name: name, domain_name: domain)
     result
   end
 
@@ -101,8 +103,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   """
   @spec modify(map()) :: :ok | :error
   @impl Bonny.Controller
-  def modify(%{} = affiliatesite) do
-    IO.inspect(affiliatesite)
+  def modify(%{}) do
+    Logger.info("modify", action: "modify")
     :ok
   end
 
@@ -111,8 +113,9 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   """
   @spec delete(map()) :: :ok | :error
   @impl Bonny.Controller
-  def delete(%{"metadata" => %{"name" => namespace}}) do
-    {result, _} = affiliate_site().delete(namespace)
+  def delete(%{"metadata" => %{"name" => name}}) do
+    {result, _} = affiliate_site().delete(name)
+    Logger.info("deleted", action: "delete", name: name)
     result
   end
 
@@ -121,8 +124,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   """
   @spec reconcile(map()) :: :ok | :error
   @impl Bonny.Controller
-  def reconcile(%{} = affiliatesite) do
-    IO.inspect(affiliatesite)
+  def reconcile(%{}) do
+    Logger.info("reconcile", action: "reconcile")
     :ok
   end
 

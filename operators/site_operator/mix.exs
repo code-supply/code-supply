@@ -14,7 +14,7 @@ defmodule SiteOperator.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:jason, :logger_json]
     ]
   end
 
@@ -24,7 +24,8 @@ defmodule SiteOperator.MixProject do
       {:bonny, "~> 0.4.0"},
       {:httpoison, "~> 1.7.0"},
       {:poison, "~> 4.0.1"},
-      {:hammox, "~> 0.2", only: [:test]}
+      {:hammox, "~> 0.2", only: [:test]},
+      {:logger_json, "~> 4.0"}
     ]
   end
 end
