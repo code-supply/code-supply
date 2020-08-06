@@ -71,8 +71,17 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
     plural: "affiliatesites",
     singular: "affiliatesite",
     kind: "AffiliateSite",
-    shortNames: []
+    shortNames: ["as"]
   }
+
+  @additional_printer_columns [
+    %{
+      name: "domain",
+      type: "string",
+      description: "Domain name of the website",
+      JSONPath: ".spec.domain"
+    }
+  ]
 
   # @rule {"", ["pods", "configmap"], ["*"]}
   # @rule {"", ["secrets"], ["create"]}
