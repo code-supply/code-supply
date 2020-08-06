@@ -82,8 +82,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   """
   @spec add(map()) :: :ok | :error
   @impl Bonny.Controller
-  def add(%{"metadata" => %{"name" => namespace}}) do
-    affiliate_site().create(namespace)
+  def add(%{"metadata" => %{"name" => namespace}, "spec" => %{"domain" => domain}}) do
+    affiliate_site().create(namespace, domain)
     :ok
   end
 

@@ -9,8 +9,9 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
 
   describe "add/1" do
     test "creates the site and returns :ok" do
-      expect(MockAffiliateSite, :create, fn ns ->
+      expect(MockAffiliateSite, :create, fn ns, domain ->
         assert ns == "justatest"
+        assert domain == "www.example.com"
         {:ok, "some message"}
       end)
 

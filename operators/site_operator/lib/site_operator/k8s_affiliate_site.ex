@@ -2,32 +2,67 @@ defmodule SiteOperator.K8sAffiliateSite do
   @behaviour SiteOperator.AffiliateSite
   import SiteOperator.K8sFactories
 
+  alias K8s.Client
+
   @impl SiteOperator.AffiliateSite
-  def create(name) do
-    namespace_operation = K8s.Client.create(ns(name))
-    deployment_operation = K8s.Client.create(deployment(name))
-    service_operation = K8s.Client.create(service(name))
+  def create(name, domain) do
+    case create_ns(name) do
+      {:ok, _} ->
+        case Client.parallel(create_operations(name, domain), cluster_name(), []) do
+          [ok: _, ok: _, ok: _, ok: _, ok: _] ->
+            {:ok, "Site created"}
 
-    {:ok, _} = run(namespace_operation)
+          [ok: _, ok: _, error: _gateway_error, error: _vs_error, error: _cert_error] ->
+            {:error, "Bad domain name"}
+        end
 
-    [ok: _, ok: _] =
-      K8s.Client.parallel(
-        [deployment_operation, service_operation],
-        cluster_name(),
-        []
-      )
-
-    {:ok, ""}
+      {:error, %{body: body}} ->
+        {:error, body}
+    end
   end
 
   @impl SiteOperator.AffiliateSite
   def delete(name) do
-    operation = K8s.Client.delete("v1", "Namespace", name: name)
-    run(operation)
+    case Client.parallel(delete_operations(name), cluster_name(), []) do
+      [ok: _, ok: _] ->
+        {:ok, ""}
+
+      [error: message, ok: _] ->
+        {:error, "Namespace: #{message}"}
+
+      [ok: _, cert_message: message] ->
+        {:error, "Certificate: #{message}"}
+
+      [error: ns_message, error: cert_message] ->
+        {:error, "Namespace: #{ns_message}, Certificate: #{cert_message}"}
+    end
   end
 
-  defp run(operation) do
-    K8s.Client.run(operation, cluster_name())
+  defp create_operations(name, domain) do
+    Enum.map(
+      [
+        deployment(name),
+        service(name),
+        gateway(name, domain),
+        virtual_service(name, domain),
+        certificate(name, domain)
+      ],
+      &Client.create/1
+    )
+  end
+
+  defp delete_operations(name) do
+    [
+      Client.delete("v1", "Namespace", name: name),
+      Client.delete("cert-manager.io/v1alpha2", "Certificate",
+        name: name,
+        namespace: "istio-system"
+      )
+    ]
+  end
+
+  defp create_ns(name) do
+    Client.run(Client.create(ns(name)), cluster_name())
   end
 
   defp cluster_name do
