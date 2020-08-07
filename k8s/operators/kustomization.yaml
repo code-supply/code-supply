@@ -3,3 +3,4 @@ kind: Kustomization
 namespace: operators
 resources:
 - namespace.yaml
+- rbac-site-operator.yaml
