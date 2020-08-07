@@ -9,3 +9,6 @@ config :k8s,
 config :bonny,
   controllers: [],
   cluster_name: :test
+
+config :logger,
+  backends: [:console]

@@ -1,7 +1,11 @@
 defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
   @moduledoc false
   use ExUnit.Case, async: true
+
+  @moduletag capture_log: true
+  import ExUnit.CaptureLog
   import Hammox
+
   alias SiteOperator.Controller.V1.AffiliateSite
   alias SiteOperator.MockAffiliateSite
 
@@ -28,6 +32,11 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
       assert add.() == :ok
     end
 
+    test "logs success", %{add: add} do
+      stub(MockAffiliateSite, :create, fn _, _ -> {:ok, ""} end)
+      assert capture_log(add) =~ "created"
+    end
+
     test "creates the site", %{add: add} do
       expect(MockAffiliateSite, :create, fn "justatest", "www.example.com" ->
         {:ok, "some message"}
@@ -39,6 +48,11 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     test "returns :error on error", %{add: add} do
       stub(MockAffiliateSite, :create, fn _, _ -> {:error, ""} end)
       assert add.() == :error
+    end
+
+    test "logs failure", %{add: add} do
+      stub(MockAffiliateSite, :create, fn _, _ -> {:error, "upstream error"} end)
+      assert capture_log(add) =~ "upstream error"
     end
   end
 
@@ -60,6 +74,11 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
       assert delete.() == :ok
     end
 
+    test "logs success", %{delete: delete} do
+      stub(MockAffiliateSite, :delete, fn _ -> {:ok, ""} end)
+      assert capture_log(delete) =~ "deleted"
+    end
+
     test "deletes the site", %{delete: delete} do
       expect(MockAffiliateSite, :delete, fn "deleteme" -> {:ok, ""} end)
       delete.()
@@ -68,6 +87,11 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     test "returns :error on error", %{delete: delete} do
       stub(MockAffiliateSite, :delete, fn _ -> {:error, ""} end)
       assert delete.() == :error
+    end
+
+    test "logs failure", %{delete: delete} do
+      stub(MockAffiliateSite, :delete, fn _ -> {:error, "upstream error"} end)
+      assert capture_log(delete) =~ "upstream error"
     end
   end
 

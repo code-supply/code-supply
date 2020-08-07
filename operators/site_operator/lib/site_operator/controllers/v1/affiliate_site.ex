@@ -93,9 +93,17 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   @spec add(map()) :: :ok | :error
   @impl Bonny.Controller
   def add(%{"metadata" => %{"name" => name}, "spec" => %{"domain" => domain}}) do
-    {result, _} = affiliate_site().create(name, domain)
-    Logger.info("created", action: "add", name: name, domain_name: domain)
-    result
+    log_metadata = [action: "add", name: name, domain_name: domain]
+
+    case affiliate_site().create(name, domain) do
+      {:ok, _} ->
+        Logger.info("created", log_metadata)
+        :ok
+
+      {:error, message} ->
+        Logger.error(message, log_metadata)
+        :error
+    end
   end
 
   @doc """
@@ -114,9 +122,17 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   @spec delete(map()) :: :ok | :error
   @impl Bonny.Controller
   def delete(%{"metadata" => %{"name" => name}}) do
-    {result, _} = affiliate_site().delete(name)
-    Logger.info("deleted", action: "delete", name: name)
-    result
+    log_metadata = [action: "delete", name: name]
+
+    case affiliate_site().delete(name) do
+      {:ok, _} ->
+        Logger.info("deleted", log_metadata)
+        :ok
+
+      {:error, message} ->
+        Logger.error(message, log_metadata)
+        :error
+    end
   end
 
   @doc """
