@@ -22,7 +22,9 @@ operators/site_operator/manifest.yaml: \
 	operators/site_operator/lib/**/* \
 	operators/site_operator/config/*
 	cd operators/site_operator && \
-		mix bonny.gen.manifest --namespace operators
+		mix bonny.gen.manifest \
+		--namespace operators \
+		--image eu.gcr.io/code-supply/site-operator:$$(git rev-parse --short HEAD)
 
 .PHONY:
 affable_use_head:
