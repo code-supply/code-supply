@@ -3,7 +3,8 @@ defmodule Affable.K8sFactories do
     %{
       "apiVersion" => "site-operator.code.supply/v1",
       "kind" => "AffiliateSite",
-      "metadata" => %{"name" => String.replace(domain_name, ".", "-")}
+      "metadata" => %{"name" => String.replace(domain_name, ".", "-")},
+      "spec" => %{"domain" => domain_name}
     }
   end
 end
