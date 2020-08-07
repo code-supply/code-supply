@@ -58,6 +58,11 @@ triggers:
 		--repo=mono \
 		--branch-pattern="^master$$" \
 		--build-config=web/affable/cloudbuild.yaml
+	gcloud beta builds triggers create cloud-source-repositories \
+		--description=site_operator \
+		--repo=mono \
+		--branch-pattern="^master$$" \
+		--build-config=operators/site_operator/cloudbuild.yaml
 
 .PHONY: install_istio
 install_istio:
