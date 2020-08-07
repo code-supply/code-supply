@@ -27,7 +27,7 @@ RUN mix release
 ##### Release Image #####
 #########################
 
-FROM alpine:3.10
+FROM alpine:3.12
 
 RUN apk add --update openssl ncurses
 
