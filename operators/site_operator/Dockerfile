@@ -2,7 +2,7 @@
 ###### Build Image ######
 #########################
 
-FROM bitwalker/alpine-elixir:1.9.4 as builder
+FROM bitwalker/alpine-elixir:1.10.4 as builder
 
 ENV MIX_ENV=prod \
   MIX_HOME=/opt/mix \
