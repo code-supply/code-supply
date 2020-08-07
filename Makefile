@@ -8,8 +8,8 @@ apply: \
 	manifest.yaml \
 	operators/site_operator/manifest.yaml
 	kubectl apply \
-		-f manifest.yaml \
-		-f operators/site_operator/manifest.yaml
+		-f operators/site_operator/manifest.yaml \
+		-f manifest.yaml
 
 diff: \
 	manifest.yaml \
