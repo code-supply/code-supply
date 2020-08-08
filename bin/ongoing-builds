@@ -3,4 +3,4 @@
 gcloud builds list \
     --ongoing \
     --format=json \
-    | jq --raw-output .[0].id
+    | jq --raw-output .[].id
