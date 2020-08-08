@@ -25,7 +25,7 @@ defmodule SiteOperator.MixProject do
       {:httpoison, "~> 1.7.0"},
       {:poison, "~> 4.0.1"},
       {:hammox, "~> 0.2", only: [:test]},
-      {:logger_json, "~> 4.0"}
+      {:logger_json, github: "portal-labs/logger_json", ref: "17aa009"}
     ]
   end
 end
