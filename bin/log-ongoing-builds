@@ -2,9 +2,22 @@
 
 cwd="$(cd "$(dirname "$0")" && pwd)"
 
-tmux new-session -s logs
-tmux select-layout -t logs even-horizontal
+args=""
+open=false
 for id in $("$cwd/ongoing-builds")
 do
-    tmux split-window -t logs "echo 'Streaming $id'; gcloud builds log --stream $id; bash"
+    if $open
+    then
+        args+="\; split-window -h "
+    fi
+    args+="\"echo 'Streaming $id'; gcloud builds log --stream $id; bash\" "
+    open=true
 done
+
+if [ "$args" == "" ]
+then
+    echo "No builds ongoing."
+    exit 1
+fi
+
+eval "tmux new-session $args"
