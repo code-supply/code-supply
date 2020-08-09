@@ -15,8 +15,8 @@ diff: \
 	manifest.yaml \
 	operators/site_operator/manifest.yaml
 	kubectl diff \
-		-f manifest.yaml \
-		-f operators/site_operator/manifest.yaml
+		-f operators/site_operator/manifest.yaml \
+		-f manifest.yaml
 
 operators/site_operator/manifest.yaml: \
 	operators/site_operator/lib/**/* \
