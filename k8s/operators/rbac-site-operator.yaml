@@ -34,6 +34,12 @@ rules:
   verbs:
   - create
   - delete
+- apiGroups:
+  - site-operator.code.supply/v1
+  resources:
+  - affiliatesites
+  verbs:
+  - list
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
