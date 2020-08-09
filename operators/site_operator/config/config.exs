@@ -17,7 +17,11 @@ config :bonny,
   ],
   cluster_name: :default,
   namespace: :all,
-  group: "site-operator.code.supply"
+  group: "site-operator.code.supply",
+  labels: %{
+    app: "site-operator",
+    version: "VERSION" |> File.read!() |> String.trim()
+  }
 
 config :logger_json,
        :backend,

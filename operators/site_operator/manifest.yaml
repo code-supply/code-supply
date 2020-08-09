@@ -4,6 +4,8 @@
   "kind": "Deployment",
   "metadata": {
     "labels": {
+      "app": "site-operator",
+      "version": "92d964b",
       "k8s-app": "site-operator"
     },
     "name": "site-operator",
@@ -13,12 +15,16 @@
     "replicas": 1,
     "selector": {
       "matchLabels": {
+        "app": "site-operator",
+        "version": "92d964b",
         "k8s-app": "site-operator"
       }
     },
     "template": {
       "metadata": {
         "labels": {
+          "app": "site-operator",
+          "version": "92d964b",
           "k8s-app": "site-operator"
         }
       },
@@ -94,6 +100,8 @@
   "kind": "CustomResourceDefinition",
   "metadata": {
     "labels": {
+      "app": "site-operator",
+      "version": "92d964b",
       "k8s-app": "site-operator"
     },
     "name": "affiliatesites.site-operator.code.supply"
@@ -132,6 +140,8 @@
   "kind": "ClusterRole",
   "metadata": {
     "labels": {
+      "app": "site-operator",
+      "version": "92d964b",
       "k8s-app": "site-operator"
     },
     "name": "site-operator"
@@ -167,6 +177,8 @@
   "kind": "ServiceAccount",
   "metadata": {
     "labels": {
+      "app": "site-operator",
+      "version": "92d964b",
       "k8s-app": "site-operator"
     },
     "name": "site-operator",
@@ -179,6 +191,8 @@
   "kind": "ClusterRoleBinding",
   "metadata": {
     "labels": {
+      "app": "site-operator",
+      "version": "92d964b",
       "k8s-app": "site-operator"
     },
     "name": "site-operator"
