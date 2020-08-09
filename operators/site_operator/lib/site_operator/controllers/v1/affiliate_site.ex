@@ -84,8 +84,10 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
     }
   ]
 
-  # @rule {"", ["pods", "configmap"], ["*"]}
-  # @rule {"", ["secrets"], ["create"]}
+  @rule {"", ["namespaces", "services"], ["create", "delete"]}
+  @rule {"apps", ["deployments"], ["create", "delete"]}
+  @rule {"networking.istio.io", ["gateways", "virtualservices"], ["create", "delete"]}
+  @rule {"cert-manager.io", ["certificates"], ["create", "delete"]}
 
   @doc """
   Handles an `ADDED` event

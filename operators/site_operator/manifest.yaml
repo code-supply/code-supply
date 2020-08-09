@@ -168,6 +168,56 @@
       "verbs": [
         "*"
       ]
+    },
+    {
+      "apiGroups": [
+        ""
+      ],
+      "resources": [
+        "namespaces",
+        "services"
+      ],
+      "verbs": [
+        "create",
+        "delete"
+      ]
+    },
+    {
+      "apiGroups": [
+        "apps"
+      ],
+      "resources": [
+        "deployments"
+      ],
+      "verbs": [
+        "create",
+        "delete"
+      ]
+    },
+    {
+      "apiGroups": [
+        "networking.istio.io"
+      ],
+      "resources": [
+        "gateways",
+        "virtualservices"
+      ],
+      "verbs": [
+        "create",
+        "delete"
+      ]
+    },
+    {
+      "apiGroups": [
+        "cert-manager.io"
+      ],
+      "resources": [
+        "certificates"
+      ],
+      "verbs": [
+        "create",
+        "delete"
+      ]
     }
   ]
 }

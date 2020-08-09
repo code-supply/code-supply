@@ -33,6 +33,7 @@ operators/site_operator/manifest.yaml: \
 	operators/site_operator/lib/**/* \
 	operators/site_operator/config/*
 	cd operators/site_operator && \
+		mix compile && \
 		yes | mix bonny.gen.manifest \
 		--namespace operators \
 		--image eu.gcr.io/code-supply/site-operator:$$(cat VERSION) && \
