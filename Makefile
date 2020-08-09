@@ -1,22 +1,22 @@
 .POSIX:
 affable_version = k8s/affable/version.yaml
 
-manifest.yaml: k8s/*.yaml k8s/*/*.yaml
+k8s/manifest.yaml: k8s/*.yaml k8s/*/*.yaml
 	kustomize build k8s > $@
 
 apply: \
-	manifest.yaml \
+	k8s/manifest.yaml \
 	operators/site_operator/manifest.yaml
 	kubectl apply \
 		-f operators/site_operator/manifest.yaml \
-		-f manifest.yaml
+		-f k8s/manifest.yaml
 
 diff: \
-	manifest.yaml \
+	k8s/manifest.yaml \
 	operators/site_operator/manifest.yaml
 	kubectl diff \
 		-f operators/site_operator/manifest.yaml \
-		-f manifest.yaml
+		-f k8s/manifest.yaml
 
 .PHONY:
 operator_use_head:
