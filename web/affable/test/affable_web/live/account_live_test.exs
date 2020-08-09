@@ -74,16 +74,55 @@ defmodule AffableWeb.AccountLiveTest do
       |> render_submit()
 
       refute view
-             |> has_element?(".deployment-request")
+             |> has_element?(".deploying")
+
+      expect(Affable.MockK8s, :deploy, fn _ -> {:ok, ""} end)
+
+      view
+      |> element("table td.action button", "Deploy")
+      |> render_click()
+
+      assert view
+             |> has_element?(".deploying")
+    end
+
+    test "hitting undeploy returns to the undeployed state", %{conn: conn} do
+      conn = get(conn, path(conn))
+
+      {:ok, view, _html} = live(conn, path(conn))
+
+      view
+      |> form("#create-domain", %{"domain" => %{"name" => "example.com"}})
+      |> render_submit()
 
       stub(Affable.MockK8s, :deploy, fn _ -> {:ok, ""} end)
 
       view
-      |> element("table td.action button")
+      |> element("table td.action button", "Deploy")
       |> render_click()
 
-      assert view
-             |> has_element?(".deployment-request")
+      expect(Affable.MockK8s, :undeploy, fn _ -> {:ok, ""} end)
+
+      view
+      |> element("table td.action button", "Undeploy")
+      |> render_click()
+
+      refute view
+             |> has_element?(".deploying")
+
+      # again!
+      view
+      |> element("table td.action button", "Deploy")
+      |> render_click()
+
+      expect(Affable.MockK8s, :undeploy, fn _ -> {:ok, ""} end)
+
+      view
+      |> element("table td.action button", "Undeploy")
+      |> render_click()
+
+      refute view
+             |> has_element?(".deploying")
     end
   end
 end

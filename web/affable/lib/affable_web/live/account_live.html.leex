@@ -25,7 +25,7 @@
   </thead>
   <tbody>
     <%= for domain <- @domains do %>
-      <tr class="<%= for %{event_type: t} <- domain.events, do: t %>">
+      <tr class="<%= Domains.state(domain) %>">
         <td class="domain"><%= domain.name %></td>
         <td class="last-event">
           <%= case domain.events do %>
@@ -35,8 +35,14 @@
           <% end %>
         </td>
         <td class="action">
-          <%= if Enum.empty?(domain.events) do %>
+          <%= case Domains.state(domain) do %>
+
+            <% :undeployed -> %>
             <button phx-click="deploy" phx-value-domain_id="<%= domain.id %>">Deploy</button>
+
+            <% :deploying -> %>
+            <button phx-click="undeploy" phx-value-domain_id="<%= domain.id %>">Undeploy</button>
+
           <% end %>
         </td>
       </tr>

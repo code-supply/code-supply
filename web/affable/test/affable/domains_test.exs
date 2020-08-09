@@ -35,7 +35,7 @@ defmodule Affable.DomainsTest do
 
       stub(Affable.MockK8s, :deploy, fn _ -> {:ok, ""} end)
 
-      Domains.deploy!(user, domain.id, Affable.MockK8s)
+      {:ok, _} = Domains.deploy(user, domain.id, Affable.MockK8s)
 
       [%Event{description: description}] = Domains.get_domain!(user, domain.id).events
 
@@ -50,7 +50,69 @@ defmodule Affable.DomainsTest do
         {:ok, ""}
       end)
 
-      Domains.deploy!(user, domain.id, Affable.MockK8s)
+      {:ok, _} = Domains.deploy(user, domain.id, Affable.MockK8s)
+    end
+
+    test "undeploying records an event", %{user: user} do
+      domain = domain_fixture(user)
+
+      stub(Affable.MockK8s, :deploy, fn _ -> {:ok, ""} end)
+      {:ok, _} = Domains.deploy(user, domain.id, Affable.MockK8s)
+
+      stub(Affable.MockK8s, :undeploy, fn _ -> {:ok, ""} end)
+      {:ok, _} = Domains.undeploy(user, domain.id, Affable.MockK8s)
+
+      [%Event{description: description} | _] = Domains.get_domain!(user, domain.id).events
+
+      assert description == "Undeploying site"
+    end
+
+    test "undeploying deletes the AffiliateSite from Kubernetes", %{user: user} do
+      domain = domain_fixture(user)
+
+      stub(Affable.MockK8s, :deploy, fn _ -> {:ok, ""} end)
+      {:ok, _} = Domains.deploy(user, domain.id, Affable.MockK8s)
+
+      expect(Affable.MockK8s, :undeploy, fn received_domain ->
+        assert received_domain == domain.name
+        {:ok, ""}
+      end)
+
+      {:ok, _} = Domains.undeploy(user, domain.id, Affable.MockK8s)
+    end
+
+    test "cannot undeploy without having first deployed", %{user: user} do
+      domain = domain_fixture(user)
+
+      assert Domains.undeploy(user, domain.id, Affable.MockK8s) ==
+               {:error, "Not yet deployed"}
+    end
+
+    test "reports as being deployed/undeployed", %{user: user} do
+      domain = domain_fixture(user)
+
+      stub(Affable.MockK8s, :deploy, fn _ -> {:ok, ""} end)
+      stub(Affable.MockK8s, :undeploy, fn _ -> {:ok, ""} end)
+
+      {:ok, _} = Domains.deploy(user, domain.id, Affable.MockK8s)
+      assert Domains.state(Domains.get_domain!(user, domain.id)) == :deploying
+
+      {:ok, _} = Domains.undeploy(user, domain.id, Affable.MockK8s)
+      assert Domains.state(Domains.get_domain!(user, domain.id)) == :undeployed
+
+      {:ok, _} = Domains.deploy(user, domain.id, Affable.MockK8s)
+
+      Event.changeset(%Event{}, %{
+        event_type: "some-other-event",
+        domain_id: domain.id,
+        description: "-"
+      })
+      |> Repo.insert!()
+
+      assert Domains.state(Domains.get_domain!(user, domain.id)) == :deploying
+
+      {:ok, _} = Domains.undeploy(user, domain.id, Affable.MockK8s)
+      assert Domains.state(Domains.get_domain!(user, domain.id)) == :undeployed
     end
 
     test "list_domains/1 returns all domains for a user (reverse creation order)", %{user: user} do

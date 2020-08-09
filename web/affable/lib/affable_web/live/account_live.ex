@@ -42,7 +42,16 @@ defmodule AffableWeb.AccountLive do
         %{"domain_id" => domain_id},
         %{assigns: %{user: user}} = socket
       ) do
-    Domains.deploy!(user, domain_id, k8s())
+    {:ok, _} = Domains.deploy(user, domain_id, k8s())
+    {:noreply, retrieve_state(user, socket)}
+  end
+
+  def handle_event(
+        "undeploy",
+        %{"domain_id" => domain_id},
+        %{assigns: %{user: user}} = socket
+      ) do
+    {:ok, _} = Domains.undeploy(user, domain_id, k8s())
     {:noreply, retrieve_state(user, socket)}
   end
 
