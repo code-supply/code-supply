@@ -33,9 +33,10 @@ operators/site_operator/manifest.yaml: \
 	operators/site_operator/lib/**/* \
 	operators/site_operator/config/*
 	cd operators/site_operator && \
-		mix bonny.gen.manifest \
+		yes | mix bonny.gen.manifest \
 		--namespace operators \
-		--image eu.gcr.io/code-supply/site-operator:$$(cat VERSION)
+		--image eu.gcr.io/code-supply/site-operator:$$(cat VERSION) && \
+		echo
 
 .PHONY:
 affable_use_head:
