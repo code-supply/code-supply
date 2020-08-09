@@ -1,7 +1,13 @@
 .POSIX:
 affable_version = k8s/affable/version.yaml
 
-k8s/manifest.yaml: k8s/*.yaml k8s/*/*.yaml
+all: \
+	k8s/manifest.yaml \
+	operators/site_operator/manifest.yaml
+
+k8s/manifest.yaml: \
+	k8s/kustomization.yaml \
+	k8s/*/*.yaml
 	kustomize build k8s > $@
 
 apply: \
