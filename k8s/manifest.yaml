@@ -10519,7 +10519,7 @@ rules:
   - create
   - delete
 - apiGroups:
-  - site-operator.code.supply/v1
+  - site-operator.code.supply
   resources:
   - affiliatesites
   verbs:
