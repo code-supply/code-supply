@@ -11521,7 +11521,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.serviceAccountName
-        image: eu.gcr.io/code-supply/site-operator:e53e669
+        image: eu.gcr.io/code-supply/site-operator:2d07ad9
         name: site-operator
         resources:
           limits:
@@ -11554,13 +11554,13 @@ spec:
     metadata:
       labels:
         app: affable
-        version: e53e669
+        version: 2d07ad9
     spec:
       containers:
       - envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:e53e669
+        image: eu.gcr.io/code-supply/affable:2d07ad9
         name: affable
         ports:
         - containerPort: 4000
