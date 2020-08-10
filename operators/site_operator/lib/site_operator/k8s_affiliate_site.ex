@@ -23,8 +23,13 @@ defmodule SiteOperator.K8sAffiliateSite do
 
   @impl SiteOperator.AffiliateSite
   def delete(name) do
-    [ok: _, ok: _] = Client.parallel(delete_operations(name), cluster_name(), [])
-    {:ok, ""}
+    case Client.parallel(delete_operations(name), cluster_name(), []) do
+      [ok: _, ok: _] ->
+        {:ok, ""}
+
+      [error: :not_found, error: :not_found] ->
+        {:error, "Dependents no longer exist"}
+    end
   end
 
   defp create_operations(name, domain) do

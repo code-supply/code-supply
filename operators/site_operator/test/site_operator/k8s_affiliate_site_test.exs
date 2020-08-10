@@ -83,7 +83,9 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
 
     @tag :external
     test "returns error when we ask for an invalid name", %{create_2: create} do
-      assert elem(create.("", ""), 0) == :error
+      result = create.("", "")
+      assert elem(result, 0) == :error
+      assert elem(result, 1) =~ "Required value"
     end
 
     @tag :external
