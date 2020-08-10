@@ -11554,17 +11554,21 @@ spec:
     metadata:
       labels:
         app: affable
-        version: ff257fe
+        version: 03f8fb3
     spec:
       containers:
       - envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:ff257fe
+        image: eu.gcr.io/code-supply/affable:03f8fb3
         name: affable
         ports:
         - containerPort: 4000
           name: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
       - command:
         - /cloud_sql_proxy
         env:

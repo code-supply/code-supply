@@ -23,6 +23,11 @@ spec:
         - name: http
           containerPort: 4000
 
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+
       - name: cloudsql-proxy
         image: eu.gcr.io/cloudsql-docker/gce-proxy:1.17
         securityContext:
