@@ -20,6 +20,10 @@ config :bonny,
   group: "site-operator.code.supply",
   labels: %{
     app: "site-operator"
+  },
+  resources: %{
+    limits: %{cpu: "100m", memory: "200Mi"},
+    requests: %{cpu: "100m", memory: "200Mi"}
   }
 
 config :logger_json,
