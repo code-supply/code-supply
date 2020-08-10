@@ -89,9 +89,6 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   @rule {"networking.istio.io", ["gateways", "virtualservices"], ["create", "delete"]}
   @rule {"cert-manager.io", ["certificates"], ["create", "delete"]}
 
-  @doc """
-  Handles an `ADDED` event
-  """
   @spec add(map()) :: :ok | :error
   @impl Bonny.Controller
   def add(%{"metadata" => %{"name" => name}, "spec" => %{"domain" => domain}}) do
@@ -108,9 +105,6 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
     end
   end
 
-  @doc """
-  Handles a `MODIFIED` event
-  """
   @spec modify(map()) :: :ok | :error
   @impl Bonny.Controller
   def modify(%{}) do
@@ -118,9 +112,6 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
     :ok
   end
 
-  @doc """
-  Handles a `DELETED` event
-  """
   @spec delete(map()) :: :ok | :error
   @impl Bonny.Controller
   def delete(%{"metadata" => %{"name" => name}}) do
@@ -137,9 +128,6 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
     end
   end
 
-  @doc """
-  Called periodically for each existing CustomResource to allow for reconciliation.
-  """
   @spec reconcile(map()) :: :ok | :error
   @impl Bonny.Controller
   def reconcile(%{}) do
