@@ -5,6 +5,16 @@ defmodule SiteOperator.K8sAffiliateSite do
   alias K8s.Client
 
   @impl SiteOperator.AffiliateSite
+  def create("", _) do
+    {:error, "Empty name"}
+  end
+
+  @impl SiteOperator.AffiliateSite
+  def create(_, "") do
+    {:error, "Empty domain"}
+  end
+
+  @impl SiteOperator.AffiliateSite
   def create(name, domain) do
     case create_ns(name) do
       {:ok, _} ->
@@ -12,12 +22,12 @@ defmodule SiteOperator.K8sAffiliateSite do
           [ok: _, ok: _, ok: _, ok: _, ok: _] ->
             {:ok, "Site created"}
 
-          [ok: _, ok: _, error: _gateway_error, error: _vs_error, error: _cert_error] ->
-            {:error, "Bad domain name"}
+          [{_, _}, {_, _}, {:error, %HTTPoison.Response{body: gateway_error_body}} | _] ->
+            {:error, "Failed to create gateway: #{gateway_error_body}"}
         end
 
-      {:error, %{body: body}} ->
-        {:error, body}
+      {:error, %{body: ns_error_body}} ->
+        {:error, ns_error_body}
     end
   end
 
@@ -25,10 +35,16 @@ defmodule SiteOperator.K8sAffiliateSite do
   def delete(name) do
     case Client.parallel(delete_operations(name), cluster_name(), []) do
       [ok: _, ok: _] ->
-        {:ok, ""}
+        {:ok, "Deleted #{name}"}
 
       [error: :not_found, error: :not_found] ->
-        {:error, "Dependents no longer exist"}
+        {:error, "Dependents no longer exist."}
+
+      [error: :not_found, ok: _] ->
+        {:ok, "Namespace already gone, deleted certificate anyway."}
+
+      [ok: _, error: :not_found] ->
+        {:ok, "Certificate already gone, deleted namespace anyway."}
     end
   end
 
@@ -47,11 +63,8 @@ defmodule SiteOperator.K8sAffiliateSite do
 
   defp delete_operations(name) do
     [
-      Client.delete("v1", "Namespace", name: name),
-      Client.delete("cert-manager.io/v1alpha2", "Certificate",
-        name: name,
-        namespace: "istio-system"
-      )
+      Client.delete(ns(name)),
+      Client.delete(certificate(name, "irrelevant-deleting.example.com"))
     ]
   end
 

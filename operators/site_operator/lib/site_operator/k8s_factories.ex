@@ -129,7 +129,7 @@ defmodule SiteOperator.K8sFactories do
       "apiVersion" => "v1",
       "kind" => "Namespace",
       "metadata" => %{
-        "name" => name,
+        "name" => prefixed(name),
         "labels" => %{
           "istio-injection" => "enabled"
         }
@@ -137,11 +137,15 @@ defmodule SiteOperator.K8sFactories do
     }
   end
 
+  def prefixed(name) do
+    "customer-#{name}"
+  end
+
   defp certificate_secret_name(name) do
     "tls-#{name}"
   end
 
   defp standard_metadata(name) do
-    %{"name" => name, "namespace" => name}
+    %{"name" => name, "namespace" => prefixed(name)}
   end
 end

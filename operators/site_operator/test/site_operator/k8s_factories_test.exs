@@ -19,8 +19,8 @@ defmodule SiteOperator.K8sFactoriesTest do
   end
 
   describe "namespace" do
-    test "has correct name", %{namespace: namespace} do
-      assert get_in(namespace, ["metadata", "name"]) == @name
+    test "has prefixed name", %{namespace: namespace} do
+      assert get_in(namespace, ["metadata", "name"]) == "customer-#{@name}"
     end
 
     test "enables Istio sidecar injection", %{namespace: namespace} do
@@ -33,7 +33,7 @@ defmodule SiteOperator.K8sFactoriesTest do
       assert get_in(service, [
                "metadata",
                "namespace"
-             ]) == @name
+             ]) == "customer-#{@name}"
     end
 
     test "selects correct pods", %{service: service} do
@@ -55,7 +55,7 @@ defmodule SiteOperator.K8sFactoriesTest do
 
   describe "deployment" do
     test "named and namespaced correctly", %{deployment: deployment} do
-      assert name_and_namespace(deployment) == {@name, @name}
+      assert name_and_namespace(deployment) == {@name, "customer-#{@name}"}
     end
 
     test "matches on correct labels", %{deployment: deployment} do
@@ -91,7 +91,7 @@ defmodule SiteOperator.K8sFactoriesTest do
 
   describe "virtual service" do
     test "named and namespaced correctly", %{virtual_service: virtual_service} do
-      assert name_and_namespace(virtual_service) == {@name, @name}
+      assert name_and_namespace(virtual_service) == {@name, "customer-#{@name}"}
     end
 
     test "external host is set", %{virtual_service: virtual_service} do
@@ -133,7 +133,7 @@ defmodule SiteOperator.K8sFactoriesTest do
 
   describe "gateway" do
     test "named and namespaced correctly", %{gateway: gateway} do
-      assert name_and_namespace(gateway) == {@name, @name}
+      assert name_and_namespace(gateway) == {@name, "customer-#{@name}"}
     end
 
     test "configures servers with insecure and TLS endpoints", %{

@@ -1,8 +1,8 @@
 defmodule SiteOperator.K8sAffiliateSiteTest do
   use ExUnit.Case, async: false
 
-  alias SiteOperator.K8sAffiliateSite
-  alias SiteOperator.AffiliateSite
+  alias SiteOperator.{AffiliateSite, K8sAffiliateSite}
+  import SiteOperator.K8sFactories, only: [prefixed: 1]
   import Access
 
   @namespace "site-operator-test"
@@ -13,14 +13,14 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
     conn = K8s.Conn.from_file("~/.kube/config", context: "site-operator-test")
     K8s.Cluster.Registry.add(@cluster, conn)
 
-    ns_check = K8s.Client.get("v1", "Namespace", name: @namespace)
+    ns_check = K8s.Client.get("v1", "Namespace", name: prefixed(@namespace))
 
     case K8s.Client.run(ns_check, @cluster) do
       {:error, :not_found} ->
         :ok
 
-      {:ok, %{"status" => _}} ->
-        raise "#{@namespace} namespace exists from previous run. Please wait and try again."
+      {:ok, _} ->
+        raise "#{prefixed(@namespace)} namespace exists from previous run. Please wait and try again."
     end
 
     delete =
@@ -82,10 +82,16 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
     end
 
     @tag :external
+    test "returns error when we ask for an empty name or domain", %{create_2: create} do
+      assert create.("", "") == {:error, "Empty name"}
+      assert create.("hi", "") == {:error, "Empty domain"}
+    end
+
+    @tag :external
     test "returns error when we ask for an invalid name", %{create_2: create} do
-      result = create.("", "")
+      result = create.("<>@", "!!")
       assert elem(result, 0) == :error
-      assert elem(result, 1) =~ "Required value"
+      assert elem(result, 1) =~ "Invalid value"
     end
 
     @tag :external
@@ -95,6 +101,6 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
   end
 
   defp list(version, kind) do
-    K8s.Client.list(version, kind, namespace: @namespace)
+    K8s.Client.list(version, kind, namespace: prefixed(@namespace))
   end
 end
