@@ -40,4 +40,4 @@ config :affable, Affable.Mailer,
       """)
 
 config :bamboo,
-  sendgrid_base_uri: "https://api.sendgrid.com/v3/",
+  sendgrid_base_uri: "https://api.sendgrid.com/v3/"
