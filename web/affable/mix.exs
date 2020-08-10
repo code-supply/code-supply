@@ -50,7 +50,8 @@ defmodule Affable.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:phx_gen_auth, "~> 0.4.0", only: [:dev], runtime: false},
       {:hammox, "~> 0.2", only: [:test]},
-      {:k8s, "~> 0.5", ony: [:dev, :prod]}
+      {:k8s, "~> 0.5", only: [:dev, :prod]},
+      {:bamboo, "~> 1.5"}
     ]
   end
 

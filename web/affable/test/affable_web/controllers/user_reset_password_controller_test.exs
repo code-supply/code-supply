@@ -1,5 +1,6 @@
 defmodule AffableWeb.UserResetPasswordControllerTest do
   use AffableWeb.ConnCase, async: true
+  use Bamboo.Test
 
   alias Affable.Accounts
   alias Affable.Repo
@@ -18,8 +19,16 @@ defmodule AffableWeb.UserResetPasswordControllerTest do
   end
 
   describe "POST /users/reset_password" do
+    setup do
+      %{expected_subject: "Affable password reset request"}
+    end
+
     @tag :capture_log
-    test "sends a new reset password token", %{conn: conn, user: user} do
+    test "sends a new reset password token", %{
+      conn: conn,
+      user: user,
+      expected_subject: expected_subject
+    } do
       conn =
         post(conn, Routes.user_reset_password_path(conn, :create), %{
           "user" => %{"email" => user.email}
@@ -28,9 +37,17 @@ defmodule AffableWeb.UserResetPasswordControllerTest do
       assert redirected_to(conn) == "/"
       assert get_flash(conn, :info) =~ "If your e-mail is in our system"
       assert Repo.get_by!(Accounts.UserToken, user_id: user.id).context == "reset_password"
+
+      assert_email_delivered_with(
+        to: [nil: user.email],
+        subject: expected_subject
+      )
     end
 
-    test "does not send reset password token if email is invalid", %{conn: conn} do
+    test "does not send reset password token if email is invalid", %{
+      conn: conn,
+      expected_subject: expected_subject
+    } do
       conn =
         post(conn, Routes.user_reset_password_path(conn, :create), %{
           "user" => %{"email" => "unknown@example.com"}
@@ -39,6 +56,8 @@ defmodule AffableWeb.UserResetPasswordControllerTest do
       assert redirected_to(conn) == "/"
       assert get_flash(conn, :info) =~ "If your e-mail is in our system"
       assert Repo.all(Accounts.UserToken) == []
+
+      refute_email_delivered_with(subject: expected_subject)
     end
   end
 

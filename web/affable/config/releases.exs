@@ -30,3 +30,11 @@ config :affable, AffableWeb.Endpoint,
   ],
   secret_key_base: secret_key_base,
   server: true
+
+config :affable, Affable.Mailer,
+  adapter: Bamboo.SendgridAdapter,
+  api_key:
+    System.get_env("SENDGRID_API_KEY") ||
+      raise("""
+      environment variable SENDGRID_API_KEY is missing.
+      """)

@@ -24,5 +24,7 @@ config :affable, AffableWeb.Endpoint,
   http: [port: 4002],
   server: false
 
+config :affable, Affable.Mailer, adapter: Bamboo.TestAdapter
+
 # Print only warnings and errors during test
 config :logger, level: :warn
