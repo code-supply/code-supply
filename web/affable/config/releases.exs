@@ -33,9 +33,11 @@ config :affable, AffableWeb.Endpoint,
 
 config :affable, Affable.Mailer,
   adapter: Bamboo.SendGridAdapter,
-  sendgrid_base_uri: "https://api.sendgrid.com/v3/",
   api_key:
     System.get_env("SENDGRID_API_KEY") ||
       raise("""
       environment variable SENDGRID_API_KEY is missing.
       """)
+
+config :bamboo,
+  sendgrid_base_uri: "https://api.sendgrid.com/v3/",
