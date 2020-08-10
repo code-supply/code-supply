@@ -5,7 +5,6 @@
   "metadata": {
     "labels": {
       "app": "site-operator",
-      "version": "92d964b",
       "k8s-app": "site-operator"
     },
     "name": "site-operator",
@@ -16,7 +15,6 @@
     "selector": {
       "matchLabels": {
         "app": "site-operator",
-        "version": "92d964b",
         "k8s-app": "site-operator"
       }
     },
@@ -24,7 +22,6 @@
       "metadata": {
         "labels": {
           "app": "site-operator",
-          "version": "92d964b",
           "k8s-app": "site-operator"
         }
       },
@@ -101,7 +98,6 @@
   "metadata": {
     "labels": {
       "app": "site-operator",
-      "version": "92d964b",
       "k8s-app": "site-operator"
     },
     "name": "affiliatesites.site-operator.code.supply"
@@ -141,7 +137,6 @@
   "metadata": {
     "labels": {
       "app": "site-operator",
-      "version": "92d964b",
       "k8s-app": "site-operator"
     },
     "name": "site-operator"
@@ -228,7 +223,6 @@
   "metadata": {
     "labels": {
       "app": "site-operator",
-      "version": "92d964b",
       "k8s-app": "site-operator"
     },
     "name": "site-operator",
@@ -242,7 +236,6 @@
   "metadata": {
     "labels": {
       "app": "site-operator",
-      "version": "92d964b",
       "k8s-app": "site-operator"
     },
     "name": "site-operator"
@@ -260,3 +253,4 @@
     }
   ]
 }
+

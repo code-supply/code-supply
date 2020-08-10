@@ -1,43 +1,51 @@
 .POSIX:
 affable_version = k8s/affable/version.yaml
-
-all: \
-	k8s/manifest.yaml \
-	operators/site_operator/manifest.yaml
+operator_version = k8s/operators/site-operator-version.yaml
 
 k8s/manifest.yaml: \
 	k8s/kustomization.yaml \
-	k8s/*/*.yaml
+	k8s/*/*.yaml \
+	k8s/operators/site-operator.yaml \
+	k8s/operators/site-operator-version.yaml
 	kustomize build k8s > $@
 
 apply: \
-	k8s/manifest.yaml \
-	operators/site_operator/manifest.yaml
+	k8s/manifest.yaml
 	kubectl apply \
-		-f operators/site_operator/manifest.yaml \
 		-f k8s/manifest.yaml
 
 diff: \
-	k8s/manifest.yaml \
-	operators/site_operator/manifest.yaml
+	k8s/manifest.yaml
 	kubectl diff \
-		-f operators/site_operator/manifest.yaml \
 		-f k8s/manifest.yaml
 
 .PHONY:
 operator_use_head:
 	git rev-parse --short HEAD > operators/site_operator/VERSION
 
-operators/site_operator/manifest.yaml: \
-	operators/site_operator/VERSION \
+k8s/operators/site-operator.yaml: \
 	operators/site_operator/lib/**/* \
 	operators/site_operator/config/*
 	cd operators/site_operator && \
 		mix compile && \
-		yes | mix bonny.gen.manifest \
+		mix bonny.gen.manifest \
 		--namespace operators \
-		--image eu.gcr.io/code-supply/site-operator:$$(cat VERSION) && \
-		echo
+		--image eu.gcr.io/code-supply/site-operator:$$(cat VERSION) \
+		--out - \
+		> ../../$@
+
+k8s/operators/site-operator-version.yaml:
+	> $(operator_version)
+	echo "apiVersion: apps/v1" >> $(operator_version)
+	echo "kind: Deployment" >> $(operator_version)
+	echo "metadata:" >> $(operator_version)
+	echo "  name: site-operator" >> $(operator_version)
+	echo "  namespace: operators" >> $(operator_version)
+	echo "spec:" >> $(operator_version)
+	echo "  template:" >> $(operator_version)
+	echo "    metadata:" >> $(operator_version)
+	echo "      labels:" >> $(operator_version)
+	echo "        version: \"$$(cat operators/site_operator/VERSION)\"" >> $(operator_version)
 
 .PHONY:
 affable_use_head:

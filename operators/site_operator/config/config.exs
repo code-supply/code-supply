@@ -19,8 +19,7 @@ config :bonny,
   namespace: :all,
   group: "site-operator.code.supply",
   labels: %{
-    app: "site-operator",
-    version: "VERSION" |> File.read!() |> String.trim()
+    app: "site-operator"
   }
 
 config :logger_json,
