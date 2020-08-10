@@ -25,7 +25,8 @@ operator_use_head:
 
 k8s/operators/site-operator.yaml: \
 	operators/site_operator/lib/**/* \
-	operators/site_operator/config/*
+	operators/site_operator/config/* \
+	operators/site_operator/VERSION
 	cd operators/site_operator && \
 		mix compile && \
 		mix bonny.gen.manifest \
