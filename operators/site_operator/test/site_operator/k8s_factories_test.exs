@@ -148,7 +148,10 @@ defmodule SiteOperator.K8sFactoriesTest do
                      "name" => "http",
                      "protocol" => "HTTP"
                    },
-                   "hosts" => [@domain]
+                   "hosts" => [@domain],
+                   "tls" => %{
+                     "httpsRedirect" => true
+                   }
                  },
                  %{
                    "port" => %{

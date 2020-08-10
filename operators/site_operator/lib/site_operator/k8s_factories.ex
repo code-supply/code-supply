@@ -84,6 +84,9 @@ defmodule SiteOperator.K8sFactories do
               "name" => "http",
               "number" => 80,
               "protocol" => "HTTP"
+            },
+            "tls" => %{
+              "httpsRedirect" => true
             }
           },
           %{
