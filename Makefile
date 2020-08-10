@@ -95,6 +95,8 @@ install_istio:
 		--set values.grafana.enabled=true \
 		--set values.tracing.enabled=true \
 		--set meshConfig.outboundTrafficPolicy.mode=REGISTRY_ONLY \
+		--set meshConfig.accessLogFile=/dev/stdout \
+		--set meshConfig.accessLogEncoding=JSON \
 		--set values.gateways.istio-egressgateway.enabled=true
 
 
