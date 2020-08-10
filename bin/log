@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -x
+ns=$1
+app=$2
+
+if [ -z "$app" ]
+then
+    app="$ns"
+fi
+
+kubectl \
+    --namespace="$ns" \
+    logs \
+    --follow \
+    --selector app="$app" \
+    --container "$app"
