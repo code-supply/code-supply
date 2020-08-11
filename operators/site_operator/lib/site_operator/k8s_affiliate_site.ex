@@ -4,6 +4,15 @@ defmodule SiteOperator.K8sAffiliateSite do
 
   alias K8s.Client
 
+  alias SiteOperator.K8s.{
+    Certificate,
+    Deployment,
+    Gateway,
+    Namespace,
+    Service,
+    VirtualService
+  }
+
   @impl SiteOperator.AffiliateSite
   def create("", _) do
     {:error, "Empty name"}
@@ -49,27 +58,26 @@ defmodule SiteOperator.K8sAffiliateSite do
   end
 
   defp create_operations(name, domain) do
-    Enum.map(
-      [
-        deployment(name),
-        service(name),
-        gateway(name, domain),
-        virtual_service(name, domain),
-        certificate(name, domain)
-      ],
-      &Client.create/1
-    )
+    [
+      %Deployment{name: name},
+      %Service{name: name},
+      %Gateway{name: name, domain: domain},
+      %VirtualService{name: name, domain: domain},
+      %Certificate{name: name, domains: [domain]}
+    ]
+    |> Enum.map(&to_k8s/1)
+    |> Enum.map(&Client.create/1)
   end
 
   defp delete_operations(name) do
     [
-      Client.delete(ns(name)),
-      Client.delete(certificate(name, "irrelevant-deleting.example.com"))
+      Client.delete(%Namespace{name: name} |> to_k8s()),
+      Client.delete(%Certificate{name: name, domains: []} |> to_k8s())
     ]
   end
 
   defp create_ns(name) do
-    Client.run(Client.create(ns(name)), cluster_name())
+    Client.run(Client.create(%Namespace{name: name} |> to_k8s()), cluster_name())
   end
 
   defp cluster_name do

@@ -1,24 +1,30 @@
 defmodule SiteOperator.K8sFactories do
-  def service(name) do
+  alias SiteOperator.K8s.{
+    Certificate,
+    Deployment,
+    Gateway,
+    Namespace,
+    Service,
+    VirtualService
+  }
+
+  def to_k8s(%Certificate{name: name, domains: domains}) do
     %{
-      "apiVersion" => "v1",
-      "kind" => "Service",
-      "metadata" => standard_metadata(name),
+      "apiVersion" => "cert-manager.io/v1alpha2",
+      "kind" => "Certificate",
+      "metadata" => standard_metadata(name) |> Map.put("namespace", "istio-system"),
       "spec" => %{
-        "selector" => %{
-          "so-app" => name
+        "secretName" => certificate_secret_name(name),
+        "issuerRef" => %{
+          "name" => "letsencrypt-production",
+          "kind" => "ClusterIssuer"
         },
-        "ports" => [
-          %{
-            "name" => "http",
-            "port" => 80
-          }
-        ]
+        "dnsNames" => domains
       }
     }
   end
 
-  def deployment(name) do
+  def to_k8s(%Deployment{name: name}) do
     %{
       "apiVersion" => "apps/v1",
       "kind" => "Deployment",
@@ -48,25 +54,7 @@ defmodule SiteOperator.K8sFactories do
     }
   end
 
-  def virtual_service(name, domain) do
-    %{
-      "apiVersion" => "networking.istio.io/v1beta1",
-      "kind" => "VirtualService",
-      "metadata" => standard_metadata(name),
-      "spec" => %{
-        "gateways" => [name],
-        "hosts" => [domain],
-        "http" => [
-          %{
-            "match" => [%{"uri" => %{"prefix" => "/"}}],
-            "route" => [%{"destination" => %{"host" => name}}]
-          }
-        ]
-      }
-    }
-  end
-
-  def gateway(name, domain) do
+  def to_k8s(%Gateway{name: name, domain: domain}) do
     %{
       "apiVersion" => "networking.istio.io/v1beta1",
       "kind" => "Gateway",
@@ -108,23 +96,26 @@ defmodule SiteOperator.K8sFactories do
     }
   end
 
-  def certificate(name, domain) do
+  def to_k8s(%Service{name: name}) do
     %{
-      "apiVersion" => "cert-manager.io/v1alpha2",
-      "kind" => "Certificate",
-      "metadata" => standard_metadata(name) |> Map.put("namespace", "istio-system"),
+      "apiVersion" => "v1",
+      "kind" => "Service",
+      "metadata" => standard_metadata(name),
       "spec" => %{
-        "secretName" => certificate_secret_name(name),
-        "issuerRef" => %{
-          "name" => "letsencrypt-production",
-          "kind" => "ClusterIssuer"
+        "selector" => %{
+          "so-app" => name
         },
-        "dnsNames" => [domain]
+        "ports" => [
+          %{
+            "name" => "http",
+            "port" => 80
+          }
+        ]
       }
     }
   end
 
-  def ns(name) do
+  def to_k8s(%Namespace{name: name}) do
     %{
       "apiVersion" => "v1",
       "kind" => "Namespace",
@@ -133,6 +124,24 @@ defmodule SiteOperator.K8sFactories do
         "labels" => %{
           "istio-injection" => "enabled"
         }
+      }
+    }
+  end
+
+  def to_k8s(%VirtualService{name: name, domain: domain}) do
+    %{
+      "apiVersion" => "networking.istio.io/v1beta1",
+      "kind" => "VirtualService",
+      "metadata" => standard_metadata(name),
+      "spec" => %{
+        "gateways" => [name],
+        "hosts" => [domain],
+        "http" => [
+          %{
+            "match" => [%{"uri" => %{"prefix" => "/"}}],
+            "route" => [%{"destination" => %{"host" => name}}]
+          }
+        ]
       }
     }
   end

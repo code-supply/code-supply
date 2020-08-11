@@ -4,17 +4,27 @@ defmodule SiteOperator.K8sFactoriesTest do
   import SiteOperator.K8sFactories
   import Access
 
+  alias SiteOperator.K8s.{
+    Certificate,
+    Deployment,
+    Gateway,
+    Namespace,
+    Service,
+    VirtualService
+  }
+
   @name "my-name"
   @domain "my-domain.com"
+  @domains [@domain, "another-domain.biz"]
 
   setup do
     %{
-      certificate: certificate(@name, @domain),
-      deployment: deployment(@name),
-      gateway: gateway(@name, @domain),
-      namespace: ns(@name),
-      service: service(@name),
-      virtual_service: virtual_service(@name, @domain)
+      certificate: %Certificate{name: @name, domains: @domains} |> to_k8s(),
+      deployment: %Deployment{name: @name} |> to_k8s(),
+      gateway: %Gateway{name: @name, domain: @domain} |> to_k8s(),
+      namespace: %Namespace{name: @name} |> to_k8s(),
+      service: %Service{name: @name} |> to_k8s(),
+      virtual_service: %VirtualService{name: @name, domain: @domain} |> to_k8s()
     }
   end
 
@@ -162,7 +172,7 @@ defmodule SiteOperator.K8sFactoriesTest do
                    "hosts" => [@domain],
                    "tls" => %{
                      "mode" => "SIMPLE",
-                     "credentialName" => get_in(certificate, ["spec", "secretName"])
+                     "credentialName" => certificate |> get_in(["spec", "secretName"])
                    }
                  }
                ]
@@ -171,7 +181,9 @@ defmodule SiteOperator.K8sFactoriesTest do
 
   describe "certificate" do
     test "uses production letsencrypt issuer", %{certificate: certificate} do
-      assert get_in(certificate, ["spec", "issuerRef", "name"]) == "letsencrypt-production"
+      assert get_in(certificate, ["spec", "issuerRef", "name"]) ==
+               "letsencrypt-production"
+
       assert get_in(certificate, ["spec", "issuerRef", "kind"]) == "ClusterIssuer"
     end
 
@@ -183,8 +195,8 @@ defmodule SiteOperator.K8sFactoriesTest do
       assert get_in(certificate, ["spec", "secretName"]) == "tls-my-name"
     end
 
-    test "domain name is set", %{certificate: certificate} do
-      assert get_in(certificate, ["spec", "dnsNames"]) == [@domain]
+    test "domain names are set", %{certificate: certificate} do
+      assert get_in(certificate, ["spec", "dnsNames"]) == @domains
     end
   end
 
