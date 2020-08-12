@@ -66,7 +66,7 @@
                 }
               }
             ],
-            "image": "eu.gcr.io/code-supply/site-operator:09c6e12",
+            "image": "eu.gcr.io/code-supply/site-operator:c46ea9d",
             "name": "site-operator",
             "resources": {
               "limits": {
