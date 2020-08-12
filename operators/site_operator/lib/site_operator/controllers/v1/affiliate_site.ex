@@ -140,11 +140,11 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
         "metadata" => %{"name" => name},
         "spec" => %{"domain" => domain}
       }) do
-    log_metadata = [action: "reconcile", name: name, domain: domain]
+    log_metadata = [action: "reconcile", name: name, domain_name: domain]
 
     case affiliate_site().reconcile(name, domain) do
       {:ok, :nothing_to_do} ->
-        Logger.info("nothing to do")
+        Logger.info("nothing to do", log_metadata)
         :ok
 
       {:ok, recreated: resources} ->
