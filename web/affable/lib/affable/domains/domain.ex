@@ -4,10 +4,12 @@ defmodule Affable.Domains.Domain do
 
   alias Affable.Accounts.User
   alias Affable.Events.Event
+  alias Affable.Sites.Site
 
   schema "domains" do
     field :name, :string
-    belongs_to(:user, User)
+    belongs_to :user, User
+    belongs_to :site, Site
     has_many :events, Event
 
     timestamps()
