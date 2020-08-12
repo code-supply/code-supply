@@ -25,13 +25,18 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
   describe "creation" do
     test "creates namespace with deployment, service, gateway, virtual service, certificate in istio-system",
          %{create_2: create} do
-      MockK8s
-      |> expect(:execute, fn [%Operation{action: :create, resource: resource}] ->
-        assert resource == %Namespace{name: @namespace} |> to_k8s()
+      ns = %Namespace{name: @namespace}
+      ns_k8s = ns |> to_k8s
 
-        MockK8s
-        |> expect(:execute, fn operations ->
-          assert operations == Operations.create_operations(@namespace, @domain)
+      cert = %Certificate{name: @namespace, domains: [@domain]}
+      cert_k8s = cert |> to_k8s
+
+      expect(MockK8s, :execute, fn [
+                                     %Operation{action: :create, resource: ^ns_k8s},
+                                     %Operation{action: :create, resource: ^cert_k8s}
+                                   ] ->
+        expect(MockK8s, :execute, fn operations ->
+          assert operations == Operations.inner_ns_creations(@namespace, @domain)
           {:ok, "don't match on this"}
         end)
 
@@ -62,7 +67,7 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
     test "deletes namespace and certificate in parallel", %{delete_1: delete} do
       MockK8s
       |> expect(:execute, fn operations ->
-        assert operations == Operations.delete_operations(@namespace)
+        assert operations == Operations.deletions(@namespace)
         {:ok, "pass message through"}
       end)
 
@@ -100,6 +105,11 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
 
       stub(MockK8s, :execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _] ->
         expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^ns_k8s}] ->
+          expect(MockK8s, :execute, fn operations ->
+            assert operations == Operations.inner_ns_creations(@namespace, @domain)
+            {:ok, "don't match on this"}
+          end)
+
           {:ok, ""}
         end)
 

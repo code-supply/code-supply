@@ -1,7 +1,7 @@
 defmodule SiteOperator.K8sAffiliateSite do
   @behaviour SiteOperator.AffiliateSite
 
-  alias SiteOperator.K8s.Namespace
+  alias SiteOperator.K8s.{Certificate, Namespace}
 
   import SiteOperator.K8s.Operations
 
@@ -17,9 +17,9 @@ defmodule SiteOperator.K8sAffiliateSite do
 
   @impl SiteOperator.AffiliateSite
   def create(name, domain) do
-    case execute([create(%Namespace{name: name})]) do
+    case execute(initial_creations(name, domain)) do
       {:ok, _} ->
-        case execute(create_operations(name, domain)) do
+        case execute(inner_ns_creations(name, domain)) do
           {:ok, _} ->
             {:ok, "Site created"}
         end
@@ -31,19 +31,39 @@ defmodule SiteOperator.K8sAffiliateSite do
 
   @impl SiteOperator.AffiliateSite
   def delete(name) do
-    execute(delete_operations(name))
+    execute(deletions(name))
   end
 
   @impl SiteOperator.AffiliateSite
   def reconcile(name, domain) do
-    case execute(check_operations(name, domain)) do
+    case execute(checks(name, domain)) do
       {:ok, _} ->
         {:ok, :nothing_to_do}
 
       {:error, some_resources_missing: missing_resources} ->
-        execute(Enum.map(missing_resources, &create/1))
+        Enum.each(missing_resources, fn resource ->
+          {:ok, _} = recreate(resource, name, domain)
+        end)
+
         {:ok, recreated: missing_resources}
     end
+  end
+
+  defp recreate(%Namespace{} = ns, name, domain) do
+    case execute([create(ns)]) do
+      {:ok, _} ->
+        case execute(inner_ns_creations(name, domain)) do
+          {:ok, _} ->
+            {:ok, "Site created"}
+        end
+
+      {:error, _} = res ->
+        res
+    end
+  end
+
+  defp recreate(%Certificate{} = cert, _name, _domain) do
+    execute([create(cert)])
   end
 
   defp execute(ops) do
