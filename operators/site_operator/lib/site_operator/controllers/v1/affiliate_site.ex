@@ -84,10 +84,11 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
     }
   ]
 
+  @rule {"", ["namespaces"], ["get"]}
   @rule {"", ["namespaces", "services"], ["create", "delete"]}
   @rule {"apps", ["deployments"], ["create", "delete"]}
   @rule {"networking.istio.io", ["gateways", "virtualservices"], ["create", "delete"]}
-  @rule {"cert-manager.io", ["certificates"], ["create", "delete"]}
+  @rule {"cert-manager.io", ["certificates"], ["get", "create", "delete"]}
 
   @spec add(map()) :: :ok | :error
   @impl Bonny.Controller

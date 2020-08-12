@@ -10546,6 +10546,12 @@ rules:
   - ""
   resources:
   - namespaces
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
   - services
   verbs:
   - create
@@ -10570,6 +10576,7 @@ rules:
   resources:
   - certificates
   verbs:
+  - get
   - create
   - delete
 ---

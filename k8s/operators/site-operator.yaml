@@ -169,6 +169,17 @@
         ""
       ],
       "resources": [
+        "namespaces"
+      ],
+      "verbs": [
+        "get"
+      ]
+    },
+    {
+      "apiGroups": [
+        ""
+      ],
+      "resources": [
         "namespaces",
         "services"
       ],
@@ -210,6 +221,7 @@
         "certificates"
       ],
       "verbs": [
+        "get",
         "create",
         "delete"
       ]
