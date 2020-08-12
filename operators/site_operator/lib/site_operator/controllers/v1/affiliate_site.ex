@@ -135,9 +135,25 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
 
   @spec reconcile(map()) :: :ok | :error
   @impl Bonny.Controller
-  def reconcile(%{}) do
-    Logger.info("reconcile", action: "reconcile")
-    :ok
+  def reconcile(%{
+        "metadata" => %{"name" => name},
+        "spec" => %{"domain" => domain}
+      }) do
+    log_metadata = [action: "reconcile", name: name, domain: domain]
+
+    case affiliate_site().reconcile(name, domain) do
+      {:ok, :nothing_to_do} ->
+        Logger.info("nothing to do")
+        :ok
+
+      {:ok, recreated: resources} ->
+        Logger.info("reconciled", log_metadata ++ [recreated: resources])
+        :ok
+
+      {:error, message} ->
+        Logger.error(message, log_metadata)
+        :error
+    end
   end
 
   defp affiliate_site do

@@ -1,7 +1,8 @@
 import Config
 
 config :site_operator,
-  affiliate_site: SiteOperator.MockAffiliateSite
+  affiliate_site: SiteOperator.MockAffiliateSite,
+  k8s: SiteOperator.MockK8s
 
 config :k8s,
   clusters: %{}

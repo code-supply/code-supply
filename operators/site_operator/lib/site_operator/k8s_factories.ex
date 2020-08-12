@@ -8,6 +8,8 @@ defmodule SiteOperator.K8sFactories do
     VirtualService
   }
 
+  @prefix "customer-"
+
   def to_k8s(%Certificate{name: name, domains: domains}) do
     %{
       "apiVersion" => "cert-manager.io/v1alpha2",
@@ -54,7 +56,7 @@ defmodule SiteOperator.K8sFactories do
     }
   end
 
-  def to_k8s(%Gateway{name: name, domain: domain}) do
+  def to_k8s(%Gateway{name: name, domains: domains}) do
     %{
       "apiVersion" => "networking.istio.io/v1beta1",
       "kind" => "Gateway",
@@ -65,9 +67,7 @@ defmodule SiteOperator.K8sFactories do
         },
         "servers" => [
           %{
-            "hosts" => [
-              domain
-            ],
+            "hosts" => domains,
             "port" => %{
               "name" => "http",
               "number" => 80,
@@ -78,9 +78,7 @@ defmodule SiteOperator.K8sFactories do
             }
           },
           %{
-            "hosts" => [
-              domain
-            ],
+            "hosts" => domains,
             "port" => %{
               "name" => "https",
               "number" => 443,
@@ -128,14 +126,14 @@ defmodule SiteOperator.K8sFactories do
     }
   end
 
-  def to_k8s(%VirtualService{name: name, domain: domain}) do
+  def to_k8s(%VirtualService{name: name, domains: domains}) do
     %{
       "apiVersion" => "networking.istio.io/v1beta1",
       "kind" => "VirtualService",
       "metadata" => standard_metadata(name),
       "spec" => %{
         "gateways" => [name],
-        "hosts" => [domain],
+        "hosts" => domains,
         "http" => [
           %{
             "match" => [%{"uri" => %{"prefix" => "/"}}],
@@ -146,8 +144,49 @@ defmodule SiteOperator.K8sFactories do
     }
   end
 
+  def from_k8s(%{"kind" => "Deployment", "metadata" => %{"name" => name}}) do
+    %Deployment{name: unprefixed(name)}
+  end
+
+  def from_k8s(%{"kind" => "Namespace", "metadata" => %{"name" => name}}) do
+    %Namespace{name: unprefixed(name)}
+  end
+
+  def from_k8s(%{
+        "kind" => "Certificate",
+        "metadata" => %{"name" => name},
+        "spec" => %{"dnsNames" => domains}
+      }) do
+    %Certificate{name: unprefixed(name), domains: domains}
+  end
+
+  def from_k8s(%{
+        "kind" => "Gateway",
+        "metadata" => %{"name" => name},
+        "spec" => %{"servers" => [%{"hosts" => domains} | _]}
+      }) do
+    %Gateway{name: unprefixed(name), domains: domains}
+  end
+
+  def from_k8s(%{
+        "kind" => "VirtualService",
+        "metadata" => %{"name" => name},
+        "spec" => %{"hosts" => domains}
+      }) do
+    %VirtualService{name: unprefixed(name), domains: domains}
+  end
+
+  def from_k8s(%{"kind" => "Service", "metadata" => %{"name" => name}}) do
+    %Service{name: unprefixed(name)}
+  end
+
   def prefixed(name) do
-    "customer-#{name}"
+    "#{@prefix}#{name}"
+  end
+
+  def unprefixed(name) do
+    name
+    |> String.replace_prefix(@prefix, "")
   end
 
   defp certificate_secret_name(name) do

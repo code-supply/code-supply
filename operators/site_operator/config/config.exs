@@ -1,7 +1,8 @@
 import Config
 
 config :site_operator,
-  affiliate_site: SiteOperator.K8sAffiliateSite
+  affiliate_site: SiteOperator.K8sAffiliateSite,
+  k8s: SiteOperator.RealK8s
 
 config :k8s,
   clusters: %{

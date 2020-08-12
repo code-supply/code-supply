@@ -14,17 +14,16 @@ defmodule SiteOperator.K8sFactoriesTest do
   }
 
   @name "my-name"
-  @domain "my-domain.com"
-  @domains [@domain, "another-domain.biz"]
+  @domains ["some-domain.example.com", "another-domain.biz"]
 
   setup do
     %{
       certificate: %Certificate{name: @name, domains: @domains} |> to_k8s(),
       deployment: %Deployment{name: @name} |> to_k8s(),
-      gateway: %Gateway{name: @name, domain: @domain} |> to_k8s(),
+      gateway: %Gateway{name: @name, domains: @domains} |> to_k8s(),
       namespace: %Namespace{name: @name} |> to_k8s(),
       service: %Service{name: @name} |> to_k8s(),
-      virtual_service: %VirtualService{name: @name, domain: @domain} |> to_k8s()
+      virtual_service: %VirtualService{name: @name, domains: @domains} |> to_k8s()
     }
   end
 
@@ -35,6 +34,10 @@ defmodule SiteOperator.K8sFactoriesTest do
 
     test "enables Istio sidecar injection", %{namespace: namespace} do
       assert get_in(namespace, ["metadata", "labels", "istio-injection"]) == "enabled"
+    end
+
+    test "can be turned back into a struct", %{namespace: namespace} do
+      assert namespace |> from_k8s() == %Namespace{name: @name}
     end
   end
 
@@ -60,6 +63,10 @@ defmodule SiteOperator.K8sFactoriesTest do
                "spec",
                "ports"
              ]) == [%{"name" => "http", "port" => 80}]
+    end
+
+    test "can be turned back into a struct", %{service: service} do
+      assert service |> from_k8s() == %Service{name: @name}
     end
   end
 
@@ -97,6 +104,10 @@ defmodule SiteOperator.K8sFactoriesTest do
              ]) ==
                "app"
     end
+
+    test "can be turned back into a struct", %{deployment: deployment} do
+      assert deployment |> from_k8s() == %Deployment{name: @name}
+    end
   end
 
   describe "virtual service" do
@@ -105,7 +116,7 @@ defmodule SiteOperator.K8sFactoriesTest do
     end
 
     test "external host is set", %{virtual_service: virtual_service} do
-      assert get_in(virtual_service, ["spec", "hosts"]) == [@domain]
+      assert get_in(virtual_service, ["spec", "hosts"]) == @domains
     end
 
     test "internal host is set", %{virtual_service: virtual_service} do
@@ -139,6 +150,10 @@ defmodule SiteOperator.K8sFactoriesTest do
                "prefix"
              ]) == "/"
     end
+
+    test "can be turned back into a struct", %{virtual_service: virtual_service} do
+      assert virtual_service |> from_k8s() == %VirtualService{name: @name, domains: @domains}
+    end
   end
 
   describe "gateway" do
@@ -158,7 +173,7 @@ defmodule SiteOperator.K8sFactoriesTest do
                      "name" => "http",
                      "protocol" => "HTTP"
                    },
-                   "hosts" => [@domain],
+                   "hosts" => @domains,
                    "tls" => %{
                      "httpsRedirect" => true
                    }
@@ -169,13 +184,17 @@ defmodule SiteOperator.K8sFactoriesTest do
                      "name" => "https",
                      "protocol" => "HTTPS"
                    },
-                   "hosts" => [@domain],
+                   "hosts" => @domains,
                    "tls" => %{
                      "mode" => "SIMPLE",
                      "credentialName" => certificate |> get_in(["spec", "secretName"])
                    }
                  }
                ]
+    end
+
+    test "can be turned back into a struct", %{gateway: gateway} do
+      assert gateway |> from_k8s() == %Gateway{name: @name, domains: @domains}
     end
   end
 
@@ -197,6 +216,10 @@ defmodule SiteOperator.K8sFactoriesTest do
 
     test "domain names are set", %{certificate: certificate} do
       assert get_in(certificate, ["spec", "dnsNames"]) == @domains
+    end
+
+    test "can be turned back into a struct", %{certificate: certificate} do
+      assert certificate |> from_k8s() == %Certificate{name: @name, domains: @domains}
     end
   end
 

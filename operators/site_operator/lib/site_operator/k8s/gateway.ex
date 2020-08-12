@@ -1,4 +1,4 @@
 defmodule SiteOperator.K8s.Gateway do
-  @enforce_keys [:name, :domain]
-  defstruct [:name, :domain]
+  @enforce_keys [:name, :domains]
+  defstruct [:name, :domains]
 end

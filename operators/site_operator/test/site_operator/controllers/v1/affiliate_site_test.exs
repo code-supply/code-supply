@@ -96,10 +96,67 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
   end
 
   describe "reconcile/1" do
-    test "returns :ok" do
-      event = %{}
-      result = AffiliateSite.reconcile(event)
+    setup do
+      %{
+        reconcile: fn ->
+          AffiliateSite.reconcile(%{
+            "metadata" => %{"name" => "mysite"},
+            "spec" => %{
+              "domain" => "www.example.com"
+            }
+          })
+        end,
+        stub_error: fn ->
+          stub(MockAffiliateSite, :reconcile, fn "mysite", "www.example.com" ->
+            {:error, "upstream error"}
+          end)
+        end,
+        stub_nothing_to_do: fn ->
+          stub(MockAffiliateSite, :reconcile, fn "mysite", "www.example.com" ->
+            {:ok, :nothing_to_do}
+          end)
+        end,
+        stub_success: fn ->
+          stub(MockAffiliateSite, :reconcile, fn "mysite", "www.example.com" ->
+            {:ok, recreated: [%SiteOperator.K8s.Namespace{name: "mysite"}]}
+          end)
+        end
+      }
+    end
+
+    test "returns :ok", %{reconcile: reconcile, stub_success: stub} do
+      stub.()
+      result = reconcile.()
       assert result == :ok
+    end
+
+    test "logs success with nothing to do", %{reconcile: reconcile, stub_nothing_to_do: stub} do
+      stub.()
+      assert capture_log(reconcile) =~ "nothing to do"
+    end
+
+    test "reconciles", %{reconcile: reconcile} do
+      expect(MockAffiliateSite, :reconcile, fn "mysite", "www.example.com" ->
+        {:ok, recreated: [%SiteOperator.K8s.Namespace{name: "therightone"}]}
+      end)
+
+      reconcile.()
+    end
+
+    test "logs successful reconciliation", %{reconcile: reconcile, stub_success: stub} do
+      stub.()
+      logs = capture_log(reconcile)
+      assert logs =~ "reconciled"
+    end
+
+    test "returns :error on error", %{reconcile: reconcile, stub_error: stub} do
+      stub.()
+      assert reconcile.() == :error
+    end
+
+    test "logs failure", %{reconcile: reconcile, stub_error: stub} do
+      stub.()
+      assert capture_log(reconcile) =~ "upstream error"
     end
   end
 end

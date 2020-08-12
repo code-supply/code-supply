@@ -1,106 +1,112 @@
 defmodule SiteOperator.K8sAffiliateSiteTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
 
-  alias SiteOperator.{AffiliateSite, K8sAffiliateSite}
-  import SiteOperator.K8sFactories, only: [prefixed: 1]
-  import Access
+  alias SiteOperator.{K8sAffiliateSite, AffiliateSite, MockK8s}
+  alias SiteOperator.K8s.{Certificate, Namespace, Operation, Operations}
+
+  import SiteOperator.K8sFactories, only: [to_k8s: 1]
+  import Hammox
 
   @namespace "site-operator-test"
   @domain "testdomain.example.com"
-  @cluster :test
 
-  setup_all do
-    conn = K8s.Conn.from_file("~/.kube/config", context: "site-operator-test")
-    K8s.Cluster.Registry.add(@cluster, conn)
+  setup :verify_on_exit!
 
-    ns_check = K8s.Client.get("v1", "Namespace", name: prefixed(@namespace))
-
-    case K8s.Client.run(ns_check, @cluster) do
-      {:error, :not_found} ->
-        :ok
-
-      {:ok, _} ->
-        raise "#{prefixed(@namespace)} namespace exists from previous run. Please wait and try again."
-    end
-
-    delete =
-      Hammox.protect(
-        {K8sAffiliateSite, :delete, 1},
-        AffiliateSite
-      )
-
-    on_exit(fn ->
-      delete.(@namespace)
-    end)
-
+  setup do
     Hammox.protect(
       K8sAffiliateSite,
       AffiliateSite,
-      create: 2
+      create: 2,
+      delete: 1,
+      reconcile: 2
     )
   end
 
   describe "creation" do
-    @tag :external
     test "creates namespace with deployment, service, gateway, virtual service, certificate in istio-system",
          %{create_2: create} do
+      MockK8s
+      |> expect(:execute, fn [%Operation{action: :create, resource: resource}] ->
+        assert resource == %Namespace{name: @namespace} |> to_k8s()
+
+        MockK8s
+        |> expect(:execute, fn operations ->
+          assert operations == Operations.create_operations(@namespace, @domain)
+          {:ok, "don't match on this"}
+        end)
+
+        {:ok, ""}
+      end)
+
       {:ok, _} = create.(@namespace, @domain)
-
-      [
-        ok: %{"items" => deployments},
-        ok: %{"items" => services},
-        ok: %{"items" => gateways},
-        ok: %{"items" => virtual_services},
-        ok: certificate
-      ] =
-        K8s.Client.parallel(
-          [
-            list("apps/v1", "Deployment"),
-            list("v1", "Service"),
-            list("networking.istio.io/v1alpha3", "Gateway"),
-            list("networking.istio.io/v1alpha3", "VirtualService"),
-            K8s.Client.get("cert-manager.io/v1alpha2", "Certificate",
-              namespace: "istio-system",
-              name: @namespace
-            )
-          ],
-          @cluster,
-          []
-        )
-
-      assert length(deployments) == 1
-      assert length(services) == 1
-      assert length(gateways) == 1
-      assert length(virtual_services) == 1
-
-      assert get_in(deployments, [at(0), "spec", "replicas"]) == 1
-      assert get_in(services, [at(0), "spec", "selector"]) == %{"so-app" => @namespace}
-      assert get_in(gateways, [at(0), "spec", "servers", at(0), "port", "number"]) == 80
-      assert get_in(gateways, [at(0), "spec", "servers", at(1), "port", "number"]) == 443
-      assert get_in(virtual_services, [at(0), "spec", "hosts"]) == [@domain]
-      assert get_in(certificate, ["spec", "dnsNames", all()]) == [@domain]
     end
 
-    @tag :external
     test "returns error when we ask for an empty name or domain", %{create_2: create} do
       assert create.("", "") == {:error, "Empty name"}
       assert create.("hi", "") == {:error, "Empty domain"}
     end
 
-    @tag :external
-    test "returns error when we ask for an invalid name", %{create_2: create} do
+    test "returns error when we get a k8s error", %{create_2: create} do
+      MockK8s
+      |> stub(:execute, fn _ ->
+        {:error, "Bad news"}
+      end)
+
       result = create.("<>@", "!!")
       assert elem(result, 0) == :error
-      assert elem(result, 1) =~ "Invalid value"
-    end
-
-    @tag :external
-    test "returns error when we ask for an invalid domain name", %{create_2: create} do
-      assert elem(create.(@namespace, "bad domain name"), 0) == :error
+      assert elem(result, 1) == "Bad news"
     end
   end
 
-  defp list(version, kind) do
-    K8s.Client.list(version, kind, namespace: prefixed(@namespace))
+  describe "deletion" do
+    test "deletes namespace and certificate in parallel", %{delete_1: delete} do
+      MockK8s
+      |> expect(:execute, fn operations ->
+        assert operations == Operations.delete_operations(@namespace)
+        {:ok, "pass message through"}
+      end)
+
+      {:ok, "pass message through"} = delete.(@namespace)
+    end
+  end
+
+  describe "reconciliation" do
+    test "does nothing when namespace and cert are available", %{reconcile_2: reconcile} do
+      stub(MockK8s, :execute, fn [%Operation{action: :get}, %Operation{action: :get}] ->
+        {:ok, "Some message"}
+      end)
+
+      assert reconcile.(@namespace, @domain) == {:ok, :nothing_to_do}
+    end
+
+    test "creates missing certificate", %{reconcile_2: reconcile} do
+      cert = %Certificate{name: @namespace, domains: [@domain]}
+      cert_k8s = cert |> to_k8s
+
+      stub(MockK8s, :execute, fn [_, %Operation{action: :get, resource: ^cert_k8s}] ->
+        expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^cert_k8s}] ->
+          {:ok, ""}
+        end)
+
+        {:error, some_resources_missing: [cert]}
+      end)
+
+      {:ok, recreated: [^cert]} = reconcile.(@namespace, @domain)
+    end
+
+    test "creates missing namespace and its resources", %{reconcile_2: reconcile} do
+      ns = %Namespace{name: @namespace}
+      ns_k8s = ns |> to_k8s
+
+      stub(MockK8s, :execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _] ->
+        expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^ns_k8s}] ->
+          {:ok, ""}
+        end)
+
+        {:error, some_resources_missing: [ns]}
+      end)
+
+      {:ok, recreated: [^ns]} = reconcile.(@namespace, @domain)
+    end
   end
 end
