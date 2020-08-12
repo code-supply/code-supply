@@ -11528,7 +11528,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.serviceAccountName
-        image: eu.gcr.io/code-supply/site-operator:2d07ad9
+        image: eu.gcr.io/code-supply/site-operator:09c6e12
         name: site-operator
         resources:
           limits:
