@@ -39,7 +39,7 @@ defmodule AffableWeb.Router do
   if Mix.env() in [:dev, :test] do
     import Phoenix.LiveDashboard.Router
 
-    scope "/" do
+    scope "/dev" do
       pipe_through :browser
       live_dashboard "/dashboard", metrics: AffableWeb.Telemetry
     end
@@ -67,6 +67,7 @@ defmodule AffableWeb.Router do
   scope "/", AffableWeb do
     pipe_through [:browser, :require_authenticated_user]
 
+    get "/dashboard", DashboardController, :show
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings/update_password", UserSettingsController, :update_password
     put "/users/settings/update_email", UserSettingsController, :update_email
