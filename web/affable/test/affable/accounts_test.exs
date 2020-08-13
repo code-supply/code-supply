@@ -4,6 +4,7 @@ defmodule Affable.AccountsTest do
   alias Affable.Accounts
   import Affable.AccountsFixtures
   alias Affable.Accounts.{User, UserToken}
+  alias Affable.Sites.Site
 
   describe "get_user_by_email/1" do
     test "does not return the user if the email does not exist" do
@@ -48,6 +49,13 @@ defmodule Affable.AccountsTest do
   end
 
   describe "register_user/1" do
+    test "sets up default site" do
+      user = user_fixture()
+      [%Site{domains: [domain]}] = user.sites
+
+      assert domain.name =~ ~r/site[a-z0-9]+\.affable\.app/
+    end
+
     test "requires email and password to be set" do
       {:error, changeset} = Accounts.register_user(%{})
 

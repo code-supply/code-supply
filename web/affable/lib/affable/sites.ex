@@ -1,104 +1,54 @@
 defmodule Affable.Sites do
-  @moduledoc """
-  The Sites context.
-  """
-
   import Ecto.Query, warn: false
   alias Affable.Repo
-
+  alias Affable.Accounts.User
   alias Affable.Sites.Site
 
-  @doc """
-  Returns the list of sites.
+  alias Ecto.Multi
 
-  ## Examples
-
-      iex> list_sites()
-      [%Site{}, ...]
-
-  """
-  def list_sites do
-    Repo.all(Site)
+  def get_site!(id) do
+    Repo.get!(Site, id)
+    |> Repo.preload([:domains, :members])
   end
 
-  @doc """
-  Gets a single site.
+  def create_site(%User{} = user, attrs \\ %{}) do
+    case Multi.new()
+         |> Multi.insert(
+           :site,
+           %Site{}
+           |> Site.changeset(attrs)
+           |> Ecto.Changeset.put_assoc(:members, [Ecto.build_assoc(user, :site_members)])
+         )
+         |> Multi.insert(
+           :domain,
+           fn %{site: site} ->
+             Ecto.build_assoc(site, :domains, %{name: generate_domain_name(site.id)})
+           end
+         )
+         |> Repo.transaction() do
+      {:ok, %{site: site}} ->
+        {:ok, site |> Repo.preload(:domains)}
 
-  Raises `Ecto.NoResultsError` if the Site does not exist.
-
-  ## Examples
-
-      iex> get_site!(123)
-      %Site{}
-
-      iex> get_site!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_site!(id), do: Repo.get!(Site, id)
-
-  @doc """
-  Creates a site.
-
-  ## Examples
-
-      iex> create_site(%{field: value})
-      {:ok, %Site{}}
-
-      iex> create_site(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_site(attrs \\ %{}) do
-    %Site{}
-    |> Site.changeset(attrs)
-    |> Repo.insert()
+      {:error, :site, site, %{} = _domain} ->
+        {:error, site}
+    end
   end
 
-  @doc """
-  Updates a site.
-
-  ## Examples
-
-      iex> update_site(site, %{field: new_value})
-      {:ok, %Site{}}
-
-      iex> update_site(site, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_site(%Site{} = site, attrs) do
     site
     |> Site.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a site.
-
-  ## Examples
-
-      iex> delete_site(site)
-      {:ok, %Site{}}
-
-      iex> delete_site(site)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_site(%Site{} = site) do
     Repo.delete(site)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking site changes.
-
-  ## Examples
-
-      iex> change_site(site)
-      %Ecto.Changeset{data: %Site{}}
-
-  """
   def change_site(%Site{} = site, attrs \\ %{}) do
     Site.changeset(site, attrs)
+  end
+
+  def generate_domain_name(number) do
+    "site#{Affable.ID.encode(number)}.affable.app"
   end
 end

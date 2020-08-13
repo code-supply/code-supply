@@ -1,41 +1,37 @@
 defmodule Affable.SitesTest do
   use Affable.DataCase
 
+  import Affable.{AccountsFixtures, SitesFixtures}
+
   alias Affable.Sites
+  alias Affable.Sites.{Site, SiteMember}
+  alias Affable.Domains.Domain
 
   describe "sites" do
     alias Affable.Sites.Site
 
-    @valid_attrs %{name: "some name"}
     @update_attrs %{name: "some updated name"}
     @invalid_attrs %{name: nil}
-
-    def site_fixture(attrs \\ %{}) do
-      {:ok, site} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Sites.create_site()
-
-      site
-    end
-
-    test "list_sites/0 returns all sites" do
-      site = site_fixture()
-      assert Sites.list_sites() == [site]
-    end
 
     test "get_site!/1 returns the site with given id" do
       site = site_fixture()
       assert Sites.get_site!(site.id) == site
     end
 
-    test "create_site/1 with valid data creates a site" do
-      assert {:ok, %Site{} = site} = Sites.create_site(@valid_attrs)
-      assert site.name == "some name"
+    test "new sites have a name, member and default domain" do
+      user = user_fixture()
+      site = site_fixture(user, %{name: "some name !@#!@#$@#%#$"})
+
+      [%SiteMember{user_id: received_user_id}] = site.members
+      [%Domain{name: domain_name}] = site.domains
+
+      assert site.name == "some name !@#!@#$@#%#$"
+      assert received_user_id == user.id
+      assert domain_name == "site#{Affable.ID.encode(site.id)}.affable.app"
     end
 
     test "create_site/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Sites.create_site(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Sites.create_site(user_fixture(), @invalid_attrs)
     end
 
     test "update_site/2 with valid data updates the site" do

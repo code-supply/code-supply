@@ -7,70 +7,14 @@ defmodule Affable.Domains do
   alias Affable.Repo
 
   alias Affable.Domains.Domain
-  alias Affable.Events.Event
+  alias Affable.Sites.Site
 
-  @deployment_request "deployment-request"
-  @undeployment_request "undeployment-request"
-
-  def state(domain) do
-    last_request =
-      Repo.one(
-        from(e in Event,
-          where:
-            e.event_type in [@deployment_request, @undeployment_request] and
-              e.domain_id == ^domain.id,
-          limit: 1,
-          order_by: [desc: :id]
-        )
-      )
-
-    case last_request do
-      %Event{event_type: @deployment_request} ->
-        :deploying
-
-      _ ->
-        :undeployed
-    end
+  def get_domain!(%Site{} = site, id) do
+    Repo.get_by!(Domain, id: id, site_id: site.id)
   end
 
-  def deploy(user, domain_id, k8s) do
-    domain = get_domain!(user, domain_id)
-
-    record_event(domain_id, @deployment_request, "Deploying site")
-    |> Repo.insert!()
-
-    k8s.deploy(domain.name)
-  end
-
-  def undeploy(user, domain_id, k8s) do
-    domain = get_domain!(user, domain_id)
-
-    if state(domain) == :deploying do
-      record_event(domain_id, @undeployment_request, "Undeploying site")
-      |> Repo.insert!()
-
-      k8s.undeploy(domain.name)
-      {:ok, ""}
-    else
-      {:error, "Not yet deployed"}
-    end
-  end
-
-  def list_domains(user) do
-    Domain
-    |> where(user_id: ^user.id)
-    |> order_by(desc: :id)
-    |> Repo.all()
-    |> preload_events
-  end
-
-  def get_domain!(user, id) do
-    Repo.get_by!(Domain, id: id, user_id: user.id)
-    |> preload_events
-  end
-
-  def create_domain(user, attrs \\ %{}) do
-    Ecto.build_assoc(user, :domains, %{events: []})
+  def create_domain(%Site{} = site, attrs \\ %{}) do
+    Ecto.build_assoc(site, :domains)
     |> Domain.changeset(attrs)
     |> Repo.insert()
   end
@@ -120,17 +64,5 @@ defmodule Affable.Domains do
   """
   def change_domain(%Domain{} = domain, attrs \\ %{}) do
     Domain.changeset(domain, attrs)
-  end
-
-  defp record_event(domain_id, type, description) do
-    Event.changeset(%Event{}, %{
-      event_type: type,
-      domain_id: domain_id,
-      description: description
-    })
-  end
-
-  defp preload_events(query) do
-    Repo.preload(query, events: from(e in Event, order_by: [desc: e.id]))
   end
 end

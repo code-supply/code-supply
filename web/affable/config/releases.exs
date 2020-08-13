@@ -23,6 +23,13 @@ secret_key_base =
     You can generate one by calling: mix phx.gen.secret
     """
 
+config :affable,
+  id_salt:
+    System.get_env("ID_SALT") ||
+      raise("""
+      environment variable ID_SALT is missing.
+      """)
+
 config :affable, AffableWeb.Endpoint,
   url: [scheme: "https", port: 443],
   http: [

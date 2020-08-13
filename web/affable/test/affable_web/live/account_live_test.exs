@@ -1,7 +1,6 @@
 defmodule AffableWeb.AccountLiveTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
-  import Hammox
 
   alias Affable.Accounts
 
@@ -36,93 +35,6 @@ defmodule AffableWeb.AccountLiveTest do
       {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn))
 
       assert actual_path == expected_path
-    end
-
-    test "entering a valid domain adds it to the list", %{conn: conn} do
-      conn = get(conn, path(conn))
-
-      {:ok, view, html} = live(conn, path(conn))
-
-      refute html =~ "foo.com"
-
-      assert view
-             |> form("#create-domain", %{"domain" => %{"name" => "foo.com"}})
-             |> render_submit() =~ "foo.com</td>"
-    end
-
-    test "entering an invalid domain shows an error and clears the change", %{conn: conn} do
-      conn = get(conn, path(conn))
-
-      {:ok, view, _html} = live(conn, path(conn))
-
-      assert view
-             |> form("#create-domain", %{"domain" => %{"name" => "foo"}})
-             |> render_submit() =~ "must be a valid domain"
-
-      refute view
-             |> form("#create-domain", %{"domain" => %{"name" => "foo.com"}})
-             |> render_submit() =~ "must be a valid domain"
-    end
-
-    test "hitting deploy shows the deploying state", %{conn: conn} do
-      conn = get(conn, path(conn))
-
-      {:ok, view, _html} = live(conn, path(conn))
-
-      view
-      |> form("#create-domain", %{"domain" => %{"name" => "example.com"}})
-      |> render_submit()
-
-      refute view
-             |> has_element?(".deploying")
-
-      expect(Affable.MockK8s, :deploy, fn _ -> {:ok, ""} end)
-
-      view
-      |> element("table td.action button", "Deploy")
-      |> render_click()
-
-      assert view
-             |> has_element?(".deploying")
-    end
-
-    test "hitting undeploy returns to the undeployed state", %{conn: conn} do
-      conn = get(conn, path(conn))
-
-      {:ok, view, _html} = live(conn, path(conn))
-
-      view
-      |> form("#create-domain", %{"domain" => %{"name" => "example.com"}})
-      |> render_submit()
-
-      stub(Affable.MockK8s, :deploy, fn _ -> {:ok, ""} end)
-
-      view
-      |> element("table td.action button", "Deploy")
-      |> render_click()
-
-      expect(Affable.MockK8s, :undeploy, fn _ -> {:ok, ""} end)
-
-      view
-      |> element("table td.action button", "Undeploy")
-      |> render_click()
-
-      refute view
-             |> has_element?(".deploying")
-
-      # again!
-      view
-      |> element("table td.action button", "Deploy")
-      |> render_click()
-
-      expect(Affable.MockK8s, :undeploy, fn _ -> {:ok, ""} end)
-
-      view
-      |> element("table td.action button", "Undeploy")
-      |> render_click()
-
-      refute view
-             |> has_element?(".deploying")
     end
   end
 end

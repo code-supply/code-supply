@@ -2,8 +2,7 @@ defmodule Affable.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Affable.Domains.Domain
-  alias Affable.Events.Event
+  alias Affable.Sites.SiteMember
 
   @derive {Inspect, except: [:password]}
   schema "users" do
@@ -11,8 +10,8 @@ defmodule Affable.Accounts.User do
     field :password, :string, virtual: true
     field :hashed_password, :string
     field :confirmed_at, :naive_datetime
-    has_many :domains, Domain
-    has_many :events, Event
+    has_many :site_members, SiteMember
+    has_many :sites, through: [:site_members, :site]
 
     timestamps()
   end

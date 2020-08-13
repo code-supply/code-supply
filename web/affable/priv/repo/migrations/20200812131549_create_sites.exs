@@ -3,10 +3,9 @@ defmodule Affable.Repo.Migrations.CreateSites do
 
   def change do
     create table(:sites) do
-      add :name, :string
+      add(:name, :string)
 
       timestamps()
     end
-
   end
 end

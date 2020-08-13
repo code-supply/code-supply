@@ -2,9 +2,12 @@ defmodule Affable.Sites.SiteMember do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Affable.Accounts.User
+  alias Affable.Sites.Site
+
   schema "site_members" do
-    field :user_id, :id
-    field :site_id, :id
+    belongs_to :user, User
+    belongs_to :site, Site
 
     timestamps()
   end
@@ -12,7 +15,8 @@ defmodule Affable.Sites.SiteMember do
   @doc false
   def changeset(site_member, attrs) do
     site_member
-    |> cast(attrs, [:user_id, :site_id])
-    |> validate_required([:user_id, :site_id])
+    |> cast(attrs, [])
+    |> assoc_constraint(:user)
+    |> assoc_constraint(:site)
   end
 end

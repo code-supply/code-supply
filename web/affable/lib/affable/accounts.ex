@@ -4,8 +4,12 @@ defmodule Affable.Accounts do
   """
 
   import Ecto.Query, warn: false
-  alias Affable.{Email, Mailer, Repo}
+
+  alias Ecto.Multi
+  alias Affable.{Email, Mailer, Repo, Sites}
   alias Affable.Accounts.{User, UserToken, UserNotifier}
+
+  @default_site_name "Top 10 Apples"
 
   ## Database getters
 
@@ -74,9 +78,22 @@ defmodule Affable.Accounts do
 
   """
   def register_user(attrs) do
-    %User{}
-    |> User.registration_changeset(attrs)
-    |> Repo.insert()
+    case Multi.new()
+         |> Multi.insert(
+           :user,
+           %User{}
+           |> User.registration_changeset(attrs)
+         )
+         |> Multi.run(:site, fn _repo, %{user: user} ->
+           Sites.create_site(user, %{name: @default_site_name})
+         end)
+         |> Repo.transaction() do
+      {:ok, %{user: user}} ->
+        {:ok, user |> Repo.preload(sites: :domains)}
+
+      {:error, :user, changeset, %{} = _site} ->
+        {:error, changeset}
+    end
   end
 
   @doc """

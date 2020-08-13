@@ -51,7 +51,8 @@ defmodule Affable.MixProject do
       {:phx_gen_auth, "~> 0.4.0", only: [:dev], runtime: false},
       {:hammox, "~> 0.2", only: [:test]},
       {:k8s, "~> 0.5", only: [:dev, :prod]},
-      {:bamboo, "~> 1.5"}
+      {:bamboo, "~> 1.5"},
+      {:hashids, "~> 2.0"}
     ]
   end
 
