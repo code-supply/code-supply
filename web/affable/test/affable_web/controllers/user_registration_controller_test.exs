@@ -1,7 +1,12 @@
 defmodule AffableWeb.UserRegistrationControllerTest do
   use AffableWeb.ConnCase, async: true
 
+  import Hammox
   import Affable.AccountsFixtures
+
+  alias Affable.MockK8s
+
+  setup :verify_on_exit!
 
   describe "GET /users/register" do
     test "renders registration page", %{conn: conn} do
@@ -20,8 +25,13 @@ defmodule AffableWeb.UserRegistrationControllerTest do
 
   describe "POST /users/register" do
     @tag :capture_log
-    test "creates account and logs the user in", %{conn: conn} do
+    test "creates account with a new site and logs the user in", %{conn: conn} do
       email = unique_user_email()
+
+      expect(MockK8s, :deploy, fn domain_name ->
+        assert domain_name =~ ~r/.+\.affable\.app/
+        {:ok, ""}
+      end)
 
       conn =
         post(conn, Routes.user_registration_path(conn, :create), %{
