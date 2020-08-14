@@ -8,4 +8,5 @@ spec:
     name: letsencrypt-production
     kind: ClusterIssuer
   dnsNames:
+  - affable.app
   - www.affable.app

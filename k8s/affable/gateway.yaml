@@ -11,12 +11,14 @@ spec:
       name: http
       protocol: HTTP
     hosts:
+    - affable.app
     - www.affable.app
   - port:
       number: 443
       name: https
       protocol: HTTPS
     hosts:
+    - affable.app
     - www.affable.app
     tls:
       mode: SIMPLE

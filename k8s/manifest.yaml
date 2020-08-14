@@ -11610,6 +11610,7 @@ metadata:
   namespace: istio-system
 spec:
   dnsNames:
+  - affable.app
   - www.affable.app
   issuerRef:
     kind: ClusterIssuer
@@ -11658,12 +11659,14 @@ spec:
     istio: ingressgateway
   servers:
   - hosts:
+    - affable.app
     - www.affable.app
     port:
       name: http
       number: 80
       protocol: HTTP
   - hosts:
+    - affable.app
     - www.affable.app
     port:
       name: https
@@ -11740,8 +11743,14 @@ spec:
   gateways:
   - affable
   hosts:
+  - affable.app
   - www.affable.app
   http:
+  - match:
+    - authority:
+        exact: affable.app
+    redirect:
+      authority: www.affable.app
   - match:
     - uri:
         prefix: /
