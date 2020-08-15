@@ -13,9 +13,19 @@ defmodule Affable.SitesTest do
     @update_attrs %{name: "some updated name"}
     @invalid_attrs %{name: nil}
 
-    test "get_site!/1 returns the site with given id" do
+    test "get_site!/2 returns the site with given user id and id" do
+      user = user_fixture()
+      site = site_fixture(user)
+      assert Sites.get_site!(user, site.id) == site
+    end
+
+    test "get_site!/2 fails if user is incorrect" do
+      user = user_fixture()
       site = site_fixture()
-      assert Sites.get_site!(site.id) == site
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Sites.get_site!(user, site.id)
+      end
     end
 
     test "new sites have a name, member and default domain" do
@@ -41,15 +51,17 @@ defmodule Affable.SitesTest do
     end
 
     test "update_site/2 with invalid data returns error changeset" do
-      site = site_fixture()
+      user = user_fixture()
+      site = site_fixture(user)
       assert {:error, %Ecto.Changeset{}} = Sites.update_site(site, @invalid_attrs)
-      assert site == Sites.get_site!(site.id)
+      assert site == Sites.get_site!(user, site.id)
     end
 
     test "delete_site/1 deletes the site" do
-      site = site_fixture()
+      user = user_fixture()
+      site = site_fixture(user)
       assert {:ok, %Site{}} = Sites.delete_site(site)
-      assert_raise Ecto.NoResultsError, fn -> Sites.get_site!(site.id) end
+      assert_raise Ecto.NoResultsError, fn -> Sites.get_site!(user, site.id) end
     end
 
     test "change_site/1 returns a site changeset" do
@@ -61,9 +73,30 @@ defmodule Affable.SitesTest do
   describe "items" do
     alias Affable.Sites.Item
 
-    @valid_attrs %{description: "some description", image_url: "some image_url", name: "some name", position: 42, price: "120.5", url: "some url"}
-    @update_attrs %{description: "some updated description", image_url: "some updated image_url", name: "some updated name", position: 43, price: "456.7", url: "some updated url"}
-    @invalid_attrs %{description: nil, image_url: nil, name: nil, position: nil, price: nil, url: nil}
+    @valid_attrs %{
+      description: "some description",
+      image_url: "some image_url",
+      name: "some name",
+      position: 42,
+      price: "120.5",
+      url: "some url"
+    }
+    @update_attrs %{
+      description: "some updated description",
+      image_url: "some updated image_url",
+      name: "some updated name",
+      position: 43,
+      price: "456.7",
+      url: "some updated url"
+    }
+    @invalid_attrs %{
+      description: nil,
+      image_url: nil,
+      name: nil,
+      position: nil,
+      price: nil,
+      url: nil
+    }
 
     def item_fixture(attrs \\ %{}) do
       {:ok, item} =

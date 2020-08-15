@@ -21,7 +21,6 @@ defmodule AffableWeb.Router do
     pipe_through :browser
 
     get "/", HomeController, :show
-    live "/account", AccountLive
   end
 
   # Other scopes may use custom stacks.
@@ -68,6 +67,7 @@ defmodule AffableWeb.Router do
     pipe_through [:browser, :require_authenticated_user]
 
     get "/dashboard", DashboardController, :show
+    live "/affiliate_sites/:id/edit", AffiliateSitesLive, :edit
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings/update_password", UserSettingsController, :update_password
     put "/users/settings/update_email", UserSettingsController, :update_email

@@ -5,7 +5,7 @@
 <ol>
   <%= for site <- @user.sites do %>
     <li>
-      <%= site.name %> at these domains:
+      <a href="<%= Routes.affiliate_sites_path(@conn, :edit, site.id) %>"><%= site.name %></a> at these domains:
       <ul>
         <%= for domain <- site.domains do %>
           <li><a href="https://<%= domain.name %>/"><%= domain.name %></a></li>

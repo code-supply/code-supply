@@ -2,13 +2,20 @@ defmodule Affable.Sites do
   import Ecto.Query, warn: false
   alias Affable.Repo
   alias Affable.Accounts.User
-  alias Affable.Sites.Site
+  alias Affable.Sites.{Site, SiteMember}
 
   alias Ecto.Multi
 
-  def get_site!(id) do
-    Repo.get!(Site, id)
-    |> Repo.preload([:domains, :members])
+  def get_site!(user, id) do
+    from(s in Site,
+      join: m in SiteMember,
+      on: s.id == m.site_id,
+      where:
+        s.id == ^id and
+          m.user_id == ^user.id,
+      preload: [:domains, :members]
+    )
+    |> Repo.one!()
   end
 
   def create_site(%User{} = user, attrs \\ %{}) do
