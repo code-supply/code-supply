@@ -4,7 +4,7 @@ defmodule Affable.SitesTest do
   import Affable.{AccountsFixtures, SitesFixtures}
 
   alias Affable.Sites
-  alias Affable.Sites.{Site, SiteMember}
+  alias Affable.Sites.{Site, SiteMember, Item}
   alias Affable.Domains.Domain
 
   describe "sites" do
@@ -28,7 +28,7 @@ defmodule Affable.SitesTest do
       end
     end
 
-    test "new sites have a name, member and default domain" do
+    test "new sites have a name, member, default domain and items" do
       user = user_fixture()
       site = site_fixture(user, %{name: "some name !@#!@#$@#%#$"})
 
@@ -38,6 +38,9 @@ defmodule Affable.SitesTest do
       assert site.name == "some name !@#!@#$@#%#$"
       assert received_user_id == user.id
       assert domain_name == "site#{Affable.ID.encode(site.id)}.affable.app"
+
+      assert [%Item{name: "Golden Delicious"} | rest] = site.items
+      assert length(rest) == 9
     end
 
     test "create_site/1 with invalid data returns error changeset" do

@@ -1,1 +1,9 @@
 <h1><%= @site.name %></h1>
+
+<ol>
+  <%= for item <- @site.items do %>
+    <li>
+      <%= item.name %>
+    </li>
+  <% end %>
+</ol>

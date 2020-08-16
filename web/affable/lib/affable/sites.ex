@@ -2,7 +2,7 @@ defmodule Affable.Sites do
   import Ecto.Query, warn: false
   alias Affable.Repo
   alias Affable.Accounts.User
-  alias Affable.Sites.{Site, SiteMember}
+  alias Affable.Sites.{Site, SiteMember, Item}
 
   alias Ecto.Multi
 
@@ -13,7 +13,7 @@ defmodule Affable.Sites do
       where:
         s.id == ^id and
           m.user_id == ^user.id,
-      preload: [:domains, :members]
+      preload: [:domains, :members, :items]
     )
     |> Repo.one!()
   end
@@ -25,6 +25,18 @@ defmodule Affable.Sites do
            %Site{}
            |> Site.changeset(attrs)
            |> Ecto.Changeset.put_assoc(:members, [Ecto.build_assoc(user, :site_members)])
+           |> Ecto.Changeset.put_assoc(:items, [
+             %Item{name: "Golden Delicious"},
+             %Item{name: "Gala"},
+             %Item{name: "Bramley"},
+             %Item{name: "Red Prince"},
+             %Item{name: "Greensleeves"},
+             %Item{name: "Red Delicious"},
+             %Item{name: "Pink Lady"},
+             %Item{name: "Discovery"},
+             %Item{name: "Crispin"},
+             %Item{name: "Gavin"}
+           ])
          )
          |> Multi.insert(
            :domain,
@@ -34,7 +46,7 @@ defmodule Affable.Sites do
          )
          |> Repo.transaction() do
       {:ok, %{site: site}} ->
-        {:ok, site |> Repo.preload(:domains)}
+        {:ok, site |> Repo.preload(:domains) |> Repo.preload(:items)}
 
       {:error, :site, site, %{} = _domain} ->
         {:error, site}

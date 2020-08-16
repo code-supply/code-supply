@@ -4,6 +4,7 @@ defmodule AffableWeb.AffiliateSitesLive do
   alias Affable.Accounts
   alias Affable.Accounts.User
   alias Affable.Sites
+  alias Affable.Repo
 
   def mount(%{"id" => id}, %{"user_token" => token}, socket) do
     case Accounts.get_user_by_session_token(token) do
@@ -61,7 +62,7 @@ defmodule AffableWeb.AffiliateSitesLive do
   defp retrieve_state(user, socket, id) do
     assign(socket,
       user: user,
-      site: Sites.get_site!(user, id)
+      site: Sites.get_site!(user, id) |> Repo.preload(:items)
     )
   end
 
