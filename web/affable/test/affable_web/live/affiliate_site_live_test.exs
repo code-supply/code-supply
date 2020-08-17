@@ -57,7 +57,10 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
 
       {:ok, _view, html} = live(conn, path(conn, site))
 
+      [first_item | _items] = site.items
+
       assert html =~ "<h1>#{site.name}</h1>"
+      assert html =~ first_item.name
     end
   end
 end

@@ -3,7 +3,13 @@
 <ol>
   <%= for item <- @site.items do %>
     <li>
-      <%= item.name %>
+      <h2>
+        <%= item.name %>
+      </h2>
+
+      <p>
+        <%= item.description %>
+      </p>
     </li>
   <% end %>
 </ol>

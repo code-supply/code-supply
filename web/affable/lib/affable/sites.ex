@@ -25,18 +25,7 @@ defmodule Affable.Sites do
            %Site{}
            |> Site.changeset(attrs)
            |> Ecto.Changeset.put_assoc(:members, [Ecto.build_assoc(user, :site_members)])
-           |> Ecto.Changeset.put_assoc(:items, [
-             %Item{name: "Golden Delicious"},
-             %Item{name: "Gala"},
-             %Item{name: "Bramley"},
-             %Item{name: "Red Prince"},
-             %Item{name: "Greensleeves"},
-             %Item{name: "Red Delicious"},
-             %Item{name: "Pink Lady"},
-             %Item{name: "Discovery"},
-             %Item{name: "Crispin"},
-             %Item{name: "Gavin"}
-           ])
+           |> Ecto.Changeset.put_assoc(:items, default_items())
          )
          |> Multi.insert(
            :domain,
@@ -51,6 +40,62 @@ defmodule Affable.Sites do
       {:error, :site, site, %{} = _domain} ->
         {:error, site}
     end
+  end
+
+  defp default_items do
+    [
+      %Item{
+        position: 1,
+        name: "Golden Delicious",
+        description: "Yellow. Nothing like Red Delicious."
+      },
+      %Item{
+        position: 2,
+        name: "Gala",
+        description: "Red. Offspring of Red D and Kidd's Orange."
+      },
+      %Item{
+        position: 3,
+        name: "Bramley",
+        description: "Nice in a pie."
+      },
+      %Item{
+        position: 4,
+        name: "Red Prince",
+        description: "Holland made an apple. It's kinda red."
+      },
+      %Item{
+        position: 5,
+        name: "Greensleeves",
+        description: "Parents are Golden D and James Grieve. That naughty James."
+      },
+      %Item{
+        position: 6,
+        name: "Red Delicious",
+        description: "Dark Red. Popular in the states. Don't cook with it."
+      },
+      %Item{
+        position: 7,
+        name: "Pink Lady",
+        description: "From the 70's. Light red / pink. Tasty."
+      },
+      %Item{
+        position: 8,
+        name: "Discovery",
+        description: "Sweet flavour. English."
+      },
+      %Item{
+        position: 9,
+        name: "Crispin",
+        description: "Japanese, offshoot of Golden D and Indo."
+      },
+      %Item{
+        position: 10,
+        name: "Gavin",
+        description: "Is this one a joke or what?"
+      }
+    ]
+    |> Enum.map(&Item.changeset(&1, %{}))
   end
 
   def update_site(%Site{} = site, attrs) do
