@@ -20,8 +20,8 @@
           <%= error_tag f, :description %>
         </div>
 
-        <a href="#" class="btn" phx-click="demote" phx-value="<%= f.data.id %>">Down</a>
-        <a href="#" class="btn" phx-click="promote" phx-value="<%= f.data.id %>">Up</a>
+        <a href="#" class="btn clear-left float-left" phx-click="demote" phx-value="<%= f.data.id %>">Down</a>
+        <a href="#" class="btn float-left" phx-click="promote" phx-value="<%= f.data.id %>">Up</a>
       </li>
     <% end %>
   </ol>

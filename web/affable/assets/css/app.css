@@ -7,7 +7,7 @@ h1 {
 }
 
 h2 {
-    @apply text-2xl text-black mt-4 mb-4;
+    @apply text-2xl text-black mt-4 mb-4 clear-left;
 }
 
 th {
@@ -27,7 +27,7 @@ tbody tr:hover {
 }
 
 .btn {
-    @apply block w-16 text-center float-left bg-gray-600 text-white p-2 mt-4 mb-4 mr-4;
+    @apply block w-32 text-center bg-gray-600 text-white p-2 mt-4 mb-4 mr-4;
 }
 
 .chk {
@@ -39,10 +39,10 @@ tbody tr:hover {
 }
 
 .field {
-    @apply mb-2;
+    @apply mb-2 clear-left;
 }
 .field label {
-    @apply block p-2 font-bold text-right w-32 float-left;
+    @apply block p-2 font-bold text-right w-64 float-left;
 }
 .invalid-feedback {
     @apply block text-red-800 font-bold ml-32;
