@@ -47,6 +47,39 @@ defmodule Affable.SitesTest do
       assert {:error, %Ecto.Changeset{}} = Sites.create_site(user_fixture(), @invalid_attrs)
     end
 
+    test "can demote an item" do
+      site = site_fixture()
+      [first_before | rest] = site.items
+      [second_before | _] = rest
+
+      assert first_before.position == 1
+      assert second_before.position == 2
+
+      {:ok, site} = Sites.demote_item(site, "#{first_before.id}")
+
+      [first_after | rest] = site.items
+      [second_after | _] = rest
+
+      assert first_after.position == 1
+      assert second_after.position == 2
+
+      assert first_after.name == second_before.name
+      assert second_after.name == first_before.name
+    end
+
+    test "demoting at the last position doesn't increase position number" do
+      site = site_fixture()
+      item = site.items |> List.last()
+
+      assert item.position == 10
+
+      {:ok, site} = Sites.demote_item(site, "#{item.id}")
+
+      item_after = site.items |> List.last()
+
+      assert item_after.position == 10
+    end
+
     test "update_site/2 with valid data updates the site" do
       site = site_fixture()
       assert {:ok, %Site{} = site} = Sites.update_site(site, @update_attrs)

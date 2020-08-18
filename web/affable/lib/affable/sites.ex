@@ -6,8 +6,49 @@ defmodule Affable.Sites do
 
   alias Ecto.Multi
 
+  def demote_item(site, item_id) do
+    {item_id, ""} = Integer.parse(item_id)
+
+    demotee =
+      site.items
+      |> Enum.find(fn item -> item.id == item_id end)
+
+    promotee =
+      site.items
+      |> Enum.find(fn item -> item.position == demotee.position + 1 end)
+
+    case promotee do
+      nil ->
+        {:ok, site}
+
+      _ ->
+        Multi.new()
+        |> Multi.update(
+          :move,
+          Item.changeset(demotee, %{position: -demotee.position})
+        )
+        |> Multi.update(
+          :promote,
+          Item.changeset(promotee, %{position: promotee.position - 1})
+        )
+        |> Multi.update(
+          :demote,
+          Item.changeset(demotee, %{position: promotee.position})
+        )
+        |> Repo.transaction()
+
+        {
+          :ok,
+          Repo.get!(Site, site.id)
+          |> Repo.preload(:domains)
+          |> Repo.preload(:members)
+          |> Repo.preload(items: items_query())
+        }
+    end
+  end
+
   def get_site!(user, id) do
-    items_query = from i in Item, order_by: i.position
+    items_q = items_query()
 
     from(s in Site,
       join: m in SiteMember,
@@ -15,9 +56,13 @@ defmodule Affable.Sites do
       where:
         s.id == ^id and
           m.user_id == ^user.id,
-      preload: [:domains, :members, items: ^items_query]
+      preload: [:domains, :members, items: ^items_q]
     )
     |> Repo.one!()
+  end
+
+  defp items_query do
+    from i in Item, order_by: i.position
   end
 
   def create_site(%User{} = user, attrs \\ %{}) do

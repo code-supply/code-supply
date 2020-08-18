@@ -4,7 +4,7 @@
   <ol>
     <%= for f <- inputs_for(outer_form, :items) do %>
       <li>
-        <p class="position">
+        <p id="position-<%= f.data.id %>" class="position">
         <%= f.data.position %>
         </p>
         <%= hidden_inputs_for f %>
@@ -20,8 +20,8 @@
           <%= error_tag f, :description %>
         </div>
 
-        <a href="#" class="btn clear-left float-left" phx-click="demote" phx-value="<%= f.data.id %>">Down</a>
-        <a href="#" class="btn float-left" phx-click="promote" phx-value="<%= f.data.id %>">Up</a>
+        <a id="demote-<%= f.data.id %>" href="#" class="btn clear-left float-left" phx-click="demote" phx-value-id="<%= f.data.id %>">Down</a>
+        <a id="promote-<%= f.data.id %>" href="#" class="btn float-left" phx-click="promote" phx-value-id="<%= f.data.id %>">Up</a>
       </li>
     <% end %>
   </ol>

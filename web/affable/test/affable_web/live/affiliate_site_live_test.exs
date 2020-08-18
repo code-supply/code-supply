@@ -13,42 +13,10 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
     Routes.affiliate_sites_path(conn, :edit, site.id)
   end
 
-  describe "not authenticated" do
-    test "redirects to login page when not logged in", %{conn: conn, site: site} do
-      conn = get(conn, path(conn, site))
-      assert html_response(conn, 302)
-
-      expected_path = Routes.user_session_path(conn, :new)
-
-      {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn, site))
-
-      assert actual_path == expected_path
-    end
-  end
-
   describe "authenticated user" do
     setup context do
       %{conn: conn, user: user} = register_and_log_in_user(context)
       %{conn: conn, user: user, site: site_fixture(user)}
-    end
-
-    test "redirects to login page when token is bogus", %{conn: conn, user: user, site: site} do
-      Accounts.delete_user(user)
-
-      conn = get(conn, path(conn, site))
-      assert html_response(conn, 302)
-
-      expected_path = Routes.user_session_path(conn, :new)
-
-      {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn, site))
-
-      assert actual_path == expected_path
-    end
-
-    test "raises exception when site doesn't belong to user", %{conn: conn} do
-      site = site_fixture()
-
-      assert_raise Ecto.NoResultsError, fn -> get(conn, path(conn, site)) end
     end
 
     test "can edit an item", %{conn: conn, site: site} do
@@ -72,6 +40,42 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       assert render_first_item_change(view, site.items, %{
                "name" => ""
              }) =~ "phx-feedback-for=\"site_items_0_name"
+    end
+
+    test "can reorder an item", %{conn: conn, site: site} do
+      conn = get(conn, path(conn, site))
+      assert html_response(conn, 200)
+
+      {:ok, view, _html} = live(conn, path(conn, site))
+
+      [first_item | _] = site.items
+
+      assert view |> has_element?("#position-#{first_item.id}", "1")
+
+      view
+      |> element("#demote-#{first_item.id}")
+      |> render_click()
+
+      assert view |> has_element?("#position-#{first_item.id}", "2")
+    end
+
+    test "raises exception when site doesn't belong to user", %{conn: conn} do
+      site = site_fixture()
+
+      assert_raise Ecto.NoResultsError, fn -> get(conn, path(conn, site)) end
+    end
+
+    test "redirects to login page when token is bogus", %{conn: conn, user: user, site: site} do
+      Accounts.delete_user(user)
+
+      conn = get(conn, path(conn, site))
+      assert html_response(conn, 302)
+
+      expected_path = Routes.user_session_path(conn, :new)
+
+      {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn, site))
+
+      assert actual_path == expected_path
     end
 
     defp render_first_item_change(view, items, attrs) do
@@ -115,6 +119,19 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
         },
         item_params(items, from: n + 1)
       )
+    end
+  end
+
+  describe "not authenticated" do
+    test "redirects to login page when not logged in", %{conn: conn, site: site} do
+      conn = get(conn, path(conn, site))
+      assert html_response(conn, 302)
+
+      expected_path = Routes.user_session_path(conn, :new)
+
+      {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn, site))
+
+      assert actual_path == expected_path
     end
   end
 end
