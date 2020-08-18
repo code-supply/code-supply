@@ -3,9 +3,25 @@
 <%= outer_form = form_for @changeset, '#', csrf_token: false, phx_change: :save, phx_submit: :save %>
   <ol>
     <%= for f <- inputs_for(outer_form, :items) do %>
-      <li>
+      <li class="item">
         <p id="position-<%= f.data.id %>" class="position">
-        <%= f.data.position %>
+          <span class="number"><%= f.data.position %></span>
+          <a id="demote-<%= f.data.id %>"
+             href="#"
+             class="demote clear-left float-left"
+             phx-click="demote"
+             phx-value-id="<%= f.data.id %>"
+             >
+             <%= arrow_down() %>
+          </a>
+          <a id="promote-<%= f.data.id %>"
+             href="#"
+             class="promote float-left"
+             phx-click="promote"
+             phx-value-id="<%= f.data.id %>"
+             >
+             <%= arrow_up() %>
+          </a>
         </p>
         <%= hidden_inputs_for f %>
         <div class="field">
@@ -37,19 +53,6 @@
           <%= textarea f, :description, phx_debounce: 1000 %>
           <%= error_tag f, :description %>
         </div>
-
-        <a id="demote-<%= f.data.id %>"
-           href="#"
-           class="demote btn clear-left float-left"
-           phx-click="demote"
-           phx-value-id="<%= f.data.id %>"
-           >Down</a>
-        <a id="promote-<%= f.data.id %>"
-           href="#"
-           class="promote btn float-left"
-           phx-click="promote"
-           phx-value-id="<%= f.data.id %>"
-           >Up</a>
       </li>
     <% end %>
   </ol>

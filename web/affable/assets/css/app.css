@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+.feather {
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    @apply stroke-current text-gray-600 w-12 h-12;
+}
+
+.feather:hover {
+    @apply text-gray-900;
+}
+
 body {
     @apply p-4;
 }
@@ -42,8 +54,28 @@ tbody tr:hover {
     @apply mr-1;
 }
 
+.item {
+    @apply relative;
+}
+
 .position {
-    @apply clear-left font-bold text-xl text-center text-white rounded-r-md bg-gray-800 w-16;
+    @apply clear-left w-full;
+}
+
+.position .number {
+    @apply font-bold text-xl text-center text-white rounded-r-md bg-gray-800 block w-16 float-left;
+}
+
+.position a {
+    @apply block absolute top-0 right-0;
+}
+
+.position a.demote {
+    @apply mr-12;
+}
+
+li:first-child .promote, li:last-child .demote {
+    display: none
 }
 
 .field {
@@ -60,8 +92,4 @@ tbody tr:hover {
 }
 .field textarea {
     @apply h-32;
-}
-
-ol li:first-child .promote, ol li:last-child .demote {
-    display: none
 }
