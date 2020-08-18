@@ -27,7 +27,7 @@ tbody tr:hover {
 }
 
 .btn {
-    @apply bg-gray-600 text-white p-2 mt-4 mb-4;
+    @apply block w-16 text-center float-left bg-gray-600 text-white p-2 mt-4 mb-4 mr-4;
 }
 
 .chk {
@@ -35,7 +35,7 @@ tbody tr:hover {
 }
 
 .position {
-    @apply font-bold text-xl text-center text-white rounded-r-md bg-gray-800 w-16;
+    @apply clear-left font-bold text-xl text-center text-white rounded-r-md bg-gray-800 w-16;
 }
 
 .field {

@@ -1,6 +1,6 @@
 <h1><%= @changeset.data.name %></h1>
 
-<%= outer_form = form_for @changeset, '#', csrf_token: false, phx_change: :save %>
+<%= outer_form = form_for @changeset, '#', csrf_token: false, phx_change: :save, phx_submit: :save %>
   <ol>
     <%= for f <- inputs_for(outer_form, :items) do %>
       <li>
@@ -20,8 +20,8 @@
           <%= error_tag f, :description %>
         </div>
 
-        <button class="btn" phx-click="demote" phx-value="<%= f.data.id %>">Down</button>
-        <button class="btn" phx-click="promote" phx-value="<%= f.data.id %>">Up</button>
+        <a href="#" class="btn" phx-click="demote" phx-value="<%= f.data.id %>">Down</a>
+        <a href="#" class="btn" phx-click="promote" phx-value="<%= f.data.id %>">Up</a>
       </li>
     <% end %>
   </ol>
