@@ -7,13 +7,15 @@ defmodule Affable.Sites do
   alias Ecto.Multi
 
   def get_site!(user, id) do
+    items_query = from i in Item, order_by: i.position
+
     from(s in Site,
       join: m in SiteMember,
       on: s.id == m.site_id,
       where:
         s.id == ^id and
           m.user_id == ^user.id,
-      preload: [:domains, :members, :items]
+      preload: [:domains, :members, items: ^items_query]
     )
     |> Repo.one!()
   end

@@ -34,17 +34,22 @@ tbody tr:hover {
     @apply mr-1;
 }
 
-.field label {
-    @apply w-32 p-2 bg-gray-400;
-}
-.field input {
-    @apply p-2;
-}
-.field input:focus {
-    @apply bg-yellow-200 outline-none;
+.position {
+    @apply font-bold text-xl text-center text-white rounded-r-md bg-gray-800 w-16;
 }
 
+.field {
+    @apply mb-2;
+}
+.field label {
+    @apply block p-2 font-bold text-right w-32 float-left;
+}
 .invalid-feedback {
-    display: block;
-    @apply text-red-800 font-bold;
+    @apply block text-red-800 font-bold ml-32;
+}
+.field input, .field textarea {
+    @apply p-2;
+}
+.field textarea {
+    @apply h-32;
 }

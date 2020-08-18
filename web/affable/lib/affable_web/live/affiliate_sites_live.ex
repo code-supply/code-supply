@@ -4,7 +4,7 @@ defmodule AffableWeb.AffiliateSitesLive do
   alias Affable.Accounts
   alias Affable.Accounts.User
   alias Affable.Sites
-  alias Affable.Repo
+  alias Affable.Sites.Site
 
   def mount(%{"id" => id}, %{"user_token" => token}, socket) do
     case Accounts.get_user_by_session_token(token) do
@@ -20,53 +20,29 @@ defmodule AffableWeb.AffiliateSitesLive do
     redirect_to_login(socket)
   end
 
-  # def handle_event(
-  #       "create-domain",
-  #       %{"domain" => params},
-  #       %{assigns: %{user: user}} = socket
-  #     ) do
-  #   case Domains.create_domain(user, params) do
-  #     {:ok, domain} ->
-  #       {:noreply,
-  #        assign(update(socket, :domains, fn domains -> [domain | domains] end),
-  #          domain_changeset: Domains.change_domain(%Domain{})
-  #        )}
+  def handle_event("save", %{"site" => attrs}, %{assigns: %{site_id: id, user: user}} = socket) do
+    site = Sites.get_site!(user, id)
 
-  #     {:error, %Ecto.Changeset{} = changeset} ->
-  #       {:noreply, assign(socket, domain_changeset: changeset)}
-  #   end
-  # end
+    case Sites.update_site(site, attrs) do
+      {:ok, site} ->
+        {:noreply, assign(socket, changeset: Site.changeset(site, %{}))}
 
-  # def handle_event(
-  #       "deploy",
-  #       %{"domain_id" => domain_id},
-  #       %{assigns: %{user: user}} = socket
-  #     ) do
-  #   {:ok, _} = Domains.deploy(user, domain_id, k8s())
-  #   {:noreply, retrieve_state(user, socket)}
-  # end
-
-  # def handle_event(
-  #       "undeploy",
-  #       %{"domain_id" => domain_id},
-  #       %{assigns: %{user: user}} = socket
-  #     ) do
-  #   {:ok, _} = Domains.undeploy(user, domain_id, k8s())
-  #   {:noreply, retrieve_state(user, socket)}
-  # end
+      {:error, changeset} ->
+        {:noreply, assign(socket, changeset: changeset)}
+    end
+  end
 
   defp redirect_to_login(socket) do
     {:ok, redirect(socket, to: "/users/log_in")}
   end
 
   defp retrieve_state(user, socket, id) do
+    site = Sites.get_site!(user, id)
+
     assign(socket,
       user: user,
-      site: Sites.get_site!(user, id) |> Repo.preload(:items)
+      site_id: id,
+      changeset: Site.changeset(site, %{})
     )
   end
-
-  # defp k8s() do
-  #   Application.get_env(:affable, :k8s)
-  # end
 end

@@ -1,15 +1,28 @@
-<h1><%= @site.name %></h1>
+<h1><%= @changeset.data.name %></h1>
 
-<ol>
-  <%= for item <- @site.items do %>
-    <li>
-      <h2>
-        <%= item.name %>
-      </h2>
+<%= outer_form = form_for @changeset, '#', csrf_token: false, phx_change: :save %>
+  <ol>
+    <%= for f <- inputs_for(outer_form, :items) do %>
+      <li>
+        <p class="position">
+        <%= f.data.position %>
+        </p>
+        <%= hidden_inputs_for f %>
+        <div class="field">
+          <%= label f, :name %>
+          <%= text_input f, :name, required: true, phx_debounce: 1000 %>
+          <%= error_tag f, :name %>
+        </div>
 
-      <p>
-        <%= item.description %>
-      </p>
-    </li>
-  <% end %>
-</ol>
+        <div class="field">
+          <%= label f, :description %>
+          <%= textarea f, :description, phx_debounce: 1000 %>
+          <%= error_tag f, :description %>
+        </div>
+
+        <button class="btn" phx-click="demote" phx-value="<%= f.data.id %>">Down</button>
+        <button class="btn" phx-click="promote" phx-value="<%= f.data.id %>">Up</button>
+      </li>
+    <% end %>
+  </ol>
+</form>

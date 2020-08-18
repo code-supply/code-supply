@@ -19,6 +19,7 @@ defmodule Affable.Sites.Site do
   def changeset(site, attrs) do
     site
     |> cast(attrs, [:name])
+    |> cast_assoc(:items, with: &Item.changeset/2)
     |> validate_required([:name])
   end
 end
