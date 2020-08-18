@@ -6,47 +6,6 @@ defmodule Affable.Sites do
 
   alias Ecto.Multi
 
-  def demote_item(site, item_id) do
-    {item_id, ""} = Integer.parse(item_id)
-
-    demotee =
-      site.items
-      |> Enum.find(fn item -> item.id == item_id end)
-
-    promotee =
-      site.items
-      |> Enum.find(fn item -> item.position == demotee.position + 1 end)
-
-    case promotee do
-      nil ->
-        {:ok, site}
-
-      _ ->
-        Multi.new()
-        |> Multi.update(
-          :move,
-          Item.changeset(demotee, %{position: -demotee.position})
-        )
-        |> Multi.update(
-          :promote,
-          Item.changeset(promotee, %{position: promotee.position - 1})
-        )
-        |> Multi.update(
-          :demote,
-          Item.changeset(demotee, %{position: promotee.position})
-        )
-        |> Repo.transaction()
-
-        {
-          :ok,
-          Repo.get!(Site, site.id)
-          |> Repo.preload(:domains)
-          |> Repo.preload(:members)
-          |> Repo.preload(items: items_query())
-        }
-    end
-  end
-
   def get_site!(user, id) do
     items_q = items_query()
 
@@ -161,6 +120,55 @@ defmodule Affable.Sites do
 
   def generate_domain_name(number) do
     "site#{Affable.ID.encode(number)}.affable.app"
+  end
+
+  def promote_item(site, item_id) do
+    move_item(site, item_id, fn pos -> pos - 1 end)
+  end
+
+  def demote_item(site, item_id) do
+    move_item(site, item_id, fn pos -> pos + 1 end)
+  end
+
+  defp move_item(site, item_id, f) do
+    {item_id, ""} = Integer.parse(item_id)
+
+    demotee =
+      site.items
+      |> Enum.find(fn item -> item.id == item_id end)
+
+    promotee =
+      site.items
+      |> Enum.find(fn item -> item.position == f.(demotee.position) end)
+
+    case promotee do
+      nil ->
+        {:ok, site}
+
+      _ ->
+        Multi.new()
+        |> Multi.update(
+          :move,
+          Item.changeset(demotee, %{position: -demotee.position})
+        )
+        |> Multi.update(
+          :promote,
+          Item.changeset(promotee, %{position: promotee.position - f.(0)})
+        )
+        |> Multi.update(
+          :demote,
+          Item.changeset(demotee, %{position: promotee.position})
+        )
+        |> Repo.transaction()
+
+        {
+          :ok,
+          Repo.get!(Site, site.id)
+          |> Repo.preload(:domains)
+          |> Repo.preload(:members)
+          |> Repo.preload(items: items_query())
+        }
+    end
   end
 
   alias Affable.Sites.Item

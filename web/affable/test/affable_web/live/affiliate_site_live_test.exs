@@ -57,6 +57,12 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       |> render_click()
 
       assert view |> has_element?("#position-#{first_item.id}", "2")
+
+      view
+      |> element("#promote-#{first_item.id}")
+      |> render_click()
+
+      assert view |> has_element?("#position-#{first_item.id}", "1")
     end
 
     test "raises exception when site doesn't belong to user", %{conn: conn} do

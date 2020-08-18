@@ -80,6 +80,39 @@ defmodule Affable.SitesTest do
       assert item_after.position == 10
     end
 
+    test "can promote an item" do
+      site = site_fixture()
+      [first_before | rest] = site.items
+      [second_before | _] = rest
+
+      assert first_before.position == 1
+      assert second_before.position == 2
+
+      {:ok, site} = Sites.promote_item(site, "#{second_before.id}")
+
+      [first_after | rest] = site.items
+      [second_after | _] = rest
+
+      assert first_after.position == 1
+      assert second_after.position == 2
+
+      assert first_after.name == second_before.name
+      assert second_after.name == first_before.name
+    end
+
+    test "promoting at the first position doesn't decrease position number" do
+      site = site_fixture()
+      [item | _] = site.items
+
+      assert item.position == 1
+
+      {:ok, site} = Sites.promote_item(site, "#{item.id}")
+
+      [item_after | _] = site.items
+
+      assert item_after.position == 1
+    end
+
     test "update_site/2 with valid data updates the site" do
       site = site_fixture()
       assert {:ok, %Site{} = site} = Sites.update_site(site, @update_attrs)
