@@ -11561,13 +11561,13 @@ spec:
     metadata:
       labels:
         app: affable
-        version: fbdb40b
+        version: "7187464"
     spec:
       containers:
       - envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:fbdb40b
+        image: eu.gcr.io/code-supply/affable:7187464
         name: affable
         ports:
         - containerPort: 4000
