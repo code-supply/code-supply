@@ -53,3 +53,7 @@ tbody tr:hover {
 .field textarea {
     @apply h-32;
 }
+
+ol li:first-child .promote, ol li:last-child .demote {
+    display: none
+}
