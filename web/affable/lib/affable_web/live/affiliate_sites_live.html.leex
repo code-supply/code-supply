@@ -8,19 +8,17 @@
           <span class="number"><%= f.data.position %></span>
           <a id="demote-<%= f.data.id %>"
              href="#"
-             class="demote clear-left float-left"
+             class="demote feather"
              phx-click="demote"
              phx-value-id="<%= f.data.id %>"
              >
-             <%= arrow_down() %>
           </a>
           <a id="promote-<%= f.data.id %>"
              href="#"
-             class="promote float-left"
+             class="promote feather"
              phx-click="promote"
              phx-value-id="<%= f.data.id %>"
              >
-             <%= arrow_up() %>
           </a>
         </p>
         <%= hidden_inputs_for f %>

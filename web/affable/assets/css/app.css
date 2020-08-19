@@ -67,10 +67,15 @@ tbody tr:hover {
 }
 
 .position a {
-    @apply block absolute top-0 right-0;
+    @apply bg-contain bg-no-repeat block absolute top-0 right-0;
+}
+
+.position a.promote {
+    background-image: url("/images/arrow-up-circle.svg");
 }
 
 .position a.demote {
+    background-image: url("/images/arrow-down-circle.svg");
     @apply mr-12;
 }
 
