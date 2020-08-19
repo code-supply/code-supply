@@ -1,6 +1,9 @@
-<h1><%= @changeset.data.name %></h1>
+<%= outer_form = form_for @changeset, '#', id: "item-edit", csrf_token: false, phx_change: :save, phx_submit: :save %>
+  <h1>
+    <%= text_input outer_form, :name, phx_debounce: 1000 %>
+  </h1>
+  <%= error_tag outer_form, :name %>
 
-<%= outer_form = form_for @changeset, '#', csrf_token: false, phx_change: :save, phx_submit: :save %>
   <ol>
     <%= for f <- inputs_for(outer_form, :items) do %>
       <li class="item">
