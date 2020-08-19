@@ -37,15 +37,16 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
     test "editing an item to be invalid marks the item as invalid", %{conn: conn, site: site} do
       {:ok, view, _html} = live(conn, path(conn, site))
 
-      assert render_first_item_change(view, site.items, %{
-               "name" => ""
-             }) =~ "phx-feedback-for=\"site_items_0_name"
+      result =
+        render_first_item_change(view, site.items, %{
+          "name" => ""
+        })
+
+      assert result =~ "phx-feedback-for=\"site_items_0_name"
+      assert result =~ "Whoops!"
     end
 
     test "can reorder an item", %{conn: conn, site: site} do
-      conn = get(conn, path(conn, site))
-      assert html_response(conn, 200)
-
       {:ok, view, _html} = live(conn, path(conn, site))
 
       [first_item | _] = site.items
@@ -63,6 +64,15 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       |> render_click()
 
       assert view |> has_element?("#position-#{first_item.id}", "1")
+      assert view |> has_element?(".saved-state.saved")
+    end
+
+    test "can show saving state", %{conn: conn, site: site} do
+      {:ok, view, _html} = live(conn, path(conn, site))
+
+      view
+      |> element(".saved-state")
+      |> render_keyup() =~ "Saving…"
     end
 
     test "raises exception when site doesn't belong to user", %{conn: conn} do

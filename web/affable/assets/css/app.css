@@ -64,6 +64,17 @@ tbody tr:hover {
     @apply mr-1;
 }
 
+.live-save .saved-state {
+    @apply fixed p-4 top-0 right-0 z-50 bg-white opacity-0 shadow-lg transition-opacity duration-1000 ease-out;
+}
+.live-save .saved-state.saving, .live-save .saved-state.saved {
+    @apply opacity-100;
+}
+.live-save .saved .message, .live-save .neutral .message {
+    @apply bg-contain bg-no-repeat pl-6;
+    background-image: url("/images/check-circle.svg");
+}
+
 .position {
     @apply clear-left w-full pb-12;
 }

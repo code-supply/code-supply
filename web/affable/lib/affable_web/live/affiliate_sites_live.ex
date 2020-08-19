@@ -25,10 +25,10 @@ defmodule AffableWeb.AffiliateSitesLive do
 
     case Sites.update_site(site, attrs) do
       {:ok, site} ->
-        {:noreply, assign(socket, changeset: Site.changeset(site, %{}))}
+        reset_changeset(socket, site)
 
       {:error, changeset} ->
-        {:noreply, assign(socket, changeset: changeset)}
+        {:noreply, assign(socket, changeset: changeset, saved_state: :error)}
     end
   end
 
@@ -36,14 +36,27 @@ defmodule AffableWeb.AffiliateSitesLive do
     site = Sites.get_site!(user, id)
 
     {:ok, site} = Sites.promote_item(site, item_id)
-    {:noreply, assign(socket, changeset: Site.changeset(site, %{}))}
+    reset_changeset(socket, site)
   end
 
   def handle_event("demote", %{"id" => item_id}, %{assigns: %{site_id: id, user: user}} = socket) do
     site = Sites.get_site!(user, id)
 
     {:ok, site} = Sites.demote_item(site, item_id)
-    {:noreply, assign(socket, changeset: Site.changeset(site, %{}))}
+    reset_changeset(socket, site)
+  end
+
+  def handle_event("show-saving", %{}, socket) do
+    {:noreply, assign(socket, saved_state: :saving)}
+  end
+
+  def handle_info(:clear_save, socket) do
+    {:noreply, assign(socket, saved_state: :neutral)}
+  end
+
+  defp reset_changeset(socket, site) do
+    Process.send_after(self(), :clear_save, 2000)
+    {:noreply, assign(socket, changeset: Site.changeset(site, %{}), saved_state: :saved)}
   end
 
   defp redirect_to_login(socket) do
@@ -56,7 +69,8 @@ defmodule AffableWeb.AffiliateSitesLive do
     assign(socket,
       user: user,
       site_id: id,
-      changeset: Site.changeset(site, %{})
+      changeset: Site.changeset(site, %{}),
+      saved_state: :neutral
     )
   end
 end
