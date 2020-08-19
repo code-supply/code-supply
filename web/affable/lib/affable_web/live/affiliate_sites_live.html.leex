@@ -45,7 +45,7 @@
 
         <div class="field">
           <%= label f, :price %>
-          <%= text_input f, :price, phx_debounce: 1000 %>
+          <%= text_input f, :price, type: "number", step: "0.01", inputmode: "decimal", min: 0, phx_debounce: 1000 %>
           <%= error_tag f, :price %>
         </div>
 
