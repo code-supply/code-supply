@@ -26,7 +26,7 @@ a {
     @apply underline;
 }
 a.phx-click-loading {
-    @apply animate-pulse;
+    @apply animate-ping;
 }
 
 h1 {
@@ -63,14 +63,20 @@ tbody tr:hover {
 .chk {
     @apply mr-1;
 }
-
 .live-save .saved-state {
-    @apply fixed p-4 top-0 right-0 z-50 bg-white opacity-0 shadow-lg transition-opacity duration-1000 ease-out;
+    @apply fixed w-32 text-center p-4 top-0 right-0 z-50 bg-white opacity-0 shadow-lg transition-opacity duration-1000 ease-out;
 }
-.live-save .saved-state.saving, .live-save .saved-state.saved {
+.live-save .saved-state .progress,
+.live-save.phx-change-loading .saved-state .message {
+    @apply hidden;
+}
+.live-save.phx-change-loading .saved-state .progress {
+    @apply block;
+}
+.live-save.phx-change-loading .saved-state, .live-save .saved-state.saved {
     @apply opacity-100;
 }
-.live-save .saved .message, .live-save .neutral .message {
+.live-save .saved .message, .live-save .clear .message {
     @apply bg-contain bg-no-repeat pl-6;
     background-image: url("/images/check-circle.svg");
 }
@@ -89,6 +95,7 @@ tbody tr:hover {
 
 .position a {
     @apply bg-contain bg-no-repeat block absolute top-0 right-0;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 .position a.promote {

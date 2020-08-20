@@ -46,12 +46,12 @@ defmodule AffableWeb.AffiliateSitesLive do
     reset_changeset(socket, site)
   end
 
-  def handle_event("show-saving", %{}, socket) do
+  def handle_event("show-saving", stuff, socket) do
     {:noreply, assign(socket, saved_state: :saving)}
   end
 
   def handle_info(:clear_save, socket) do
-    {:noreply, assign(socket, saved_state: :neutral)}
+    {:noreply, assign(socket, saved_state: :clear)}
   end
 
   defp reset_changeset(socket, site) do

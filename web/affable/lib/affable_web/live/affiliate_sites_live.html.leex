@@ -4,15 +4,19 @@
   </h1>
   <%= error_tag outer_form, :name %>
 
-  <p class="saved-state <%= @saved_state %>" phx-window-keyup="show-saving">
+  <p class="saved-state <%= @saved_state %>">
+    <span class="progress">
+      Saving…
+    </span>
     <span class="message">
       <%= case @saved_state do %>
-        <% :saving -> %>
-          Saving…
         <% :error -> %>
           Whoops!
-        <% _ -> %>
+        <% :saved -> %>
           Saved.
+        <% :clear -> %>
+          Saved.
+        <% :neutral -> %>
       <% end %>
     </span>
   </p>
