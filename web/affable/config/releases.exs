@@ -34,7 +34,8 @@ config :affable, AffableWeb.Endpoint,
   url: [scheme: "https", port: 443],
   http: [
     port: String.to_integer(System.get_env("PORT") || "4000"),
-    transport_options: [socket_opts: [:inet6]]
+    transport_options: [socket_opts: [:inet6]],
+    compress: true
   ],
   secret_key_base: secret_key_base,
   server: true
