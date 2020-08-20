@@ -67,14 +67,6 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       assert view |> has_element?(".saved-state.saved")
     end
 
-    test "can show saving state", %{conn: conn, site: site} do
-      {:ok, view, _html} = live(conn, path(conn, site))
-
-      view
-      |> element(".saved-state")
-      |> render_keyup() =~ "Saving…"
-    end
-
     test "raises exception when site doesn't belong to user", %{conn: conn} do
       site = site_fixture()
 
