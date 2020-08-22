@@ -1,4 +1,4 @@
-defmodule SiteOperator.K8sFactories do
+defmodule SiteOperator.K8sConversions do
   alias SiteOperator.K8s.{
     Certificate,
     Deployment,

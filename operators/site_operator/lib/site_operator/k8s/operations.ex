@@ -1,5 +1,5 @@
 defmodule SiteOperator.K8s.Operations do
-  import SiteOperator.K8sFactories, only: [to_k8s: 1]
+  import SiteOperator.K8sConversions, only: [to_k8s: 1]
 
   alias SiteOperator.K8s.{
     Certificate,

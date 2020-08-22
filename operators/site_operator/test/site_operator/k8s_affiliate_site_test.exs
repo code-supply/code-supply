@@ -4,7 +4,7 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
   alias SiteOperator.{K8sAffiliateSite, AffiliateSite, MockK8s}
   alias SiteOperator.K8s.{Certificate, Namespace, Operation, Operations}
 
-  import SiteOperator.K8sFactories, only: [to_k8s: 1]
+  import SiteOperator.K8sConversions, only: [to_k8s: 1]
   import Hammox
 
   @namespace "site-operator-test"

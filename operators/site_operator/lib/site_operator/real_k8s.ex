@@ -54,7 +54,7 @@ defmodule SiteOperator.RealK8s do
     errors
     |> Enum.filter(&match?({%SiteOperator.K8s.Operation{}, {:error, :not_found}}, &1))
     |> Enum.map(fn {%SiteOperator.K8s.Operation{resource: resource}, _result} ->
-      SiteOperator.K8sFactories.from_k8s(resource)
+      SiteOperator.K8sConversions.from_k8s(resource)
     end)
   end
 
@@ -67,7 +67,7 @@ defmodule SiteOperator.RealK8s do
   end
 
   defp handle_body(%{"metadata" => _} = body) do
-    SiteOperator.K8sFactories.from_k8s(body)
+    SiteOperator.K8sConversions.from_k8s(body)
   end
 
   defp cluster_name do
