@@ -66,7 +66,7 @@
                 }
               }
             ],
-            "image": "eu.gcr.io/code-supply/site-operator:c46ea9d",
+            "image": "eu.gcr.io/code-supply/site-operator:a51f0cf",
             "name": "site-operator",
             "resources": {
               "limits": {
@@ -105,9 +105,9 @@
   "spec": {
     "additionalPrinterColumns": [
       {
-        "JSONPath": ".spec.domain",
-        "description": "Domain name of the website",
-        "name": "domain",
+        "JSONPath": ".spec.domains",
+        "description": "Domain names of the website",
+        "name": "domains",
         "type": "string"
       },
       {

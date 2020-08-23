@@ -27,9 +27,9 @@ metadata:
   name: affiliatesites.site-operator.code.supply
 spec:
   additionalPrinterColumns:
-  - JSONPath: .spec.domain
-    description: Domain name of the website
-    name: domain
+  - JSONPath: .spec.domains
+    description: Domain names of the website
+    name: domains
     type: string
   - JSONPath: .metadata.creationTimestamp
     description: |-
@@ -11528,7 +11528,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.serviceAccountName
-        image: eu.gcr.io/code-supply/site-operator:c46ea9d
+        image: eu.gcr.io/code-supply/site-operator:a51f0cf
         name: site-operator
         resources:
           limits:
@@ -11561,13 +11561,13 @@ spec:
     metadata:
       labels:
         app: affable
-        version: 100aacb
+        version: a51f0cf
     spec:
       containers:
       - envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:100aacb
+        image: eu.gcr.io/code-supply/affable:a51f0cf
         name: affable
         ports:
         - containerPort: 4000
