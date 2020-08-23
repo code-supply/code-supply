@@ -28,7 +28,7 @@ defmodule Affable.SitesTest do
       end
     end
 
-    test "new sites have a name, member, default domain and items" do
+    test "new sites have a name, internal name, member, default domain and items" do
       user = user_fixture()
       site = site_fixture(user, %{name: "some name !@#!@#$@#%#$"})
 
@@ -36,8 +36,9 @@ defmodule Affable.SitesTest do
       [%Domain{name: domain_name}] = site.domains
 
       assert site.name == "some name !@#!@#$@#%#$"
-      assert received_user_id == user.id
+      assert site.internal_name == "site#{Affable.ID.encode(site.id)}"
       assert domain_name == "site#{Affable.ID.encode(site.id)}.affable.app"
+      assert received_user_id == user.id
 
       assert [%Item{name: "Golden Delicious"} | rest] = site.items
       assert length(rest) == 9

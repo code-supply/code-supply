@@ -77,10 +77,10 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
 
   @additional_printer_columns [
     %{
-      name: "domain",
+      name: "domains",
       type: "string",
-      description: "Domain name of the website",
-      JSONPath: ".spec.domain"
+      description: "Domain names of the website",
+      JSONPath: ".spec.domains"
     }
   ]
 
@@ -94,11 +94,11 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   @impl Bonny.Controller
   def add(%{
         "metadata" => %{"name" => name},
-        "spec" => %{"domain" => domain}
+        "spec" => %{"domains" => domains}
       }) do
-    log_metadata = [action: "add", name: name, domain_name: domain]
+    log_metadata = [action: "add", name: name, domains: domains]
 
-    case affiliate_site().create(name, domain) do
+    case affiliate_site().create(name, domains) do
       {:ok, _} ->
         Logger.info("created", log_metadata)
         :ok
@@ -138,11 +138,11 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   @impl Bonny.Controller
   def reconcile(%{
         "metadata" => %{"name" => name},
-        "spec" => %{"domain" => domain}
+        "spec" => %{"domains" => domains}
       }) do
-    log_metadata = [action: "reconcile", name: name, domain_name: domain]
+    log_metadata = [action: "reconcile", name: name, domains: domains]
 
-    case affiliate_site().reconcile(name, domain) do
+    case affiliate_site().reconcile(name, domains) do
       {:ok, :nothing_to_do} ->
         Logger.info("nothing to do", log_metadata)
         :ok

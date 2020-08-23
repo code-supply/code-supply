@@ -28,7 +28,13 @@ defmodule AffableWeb.UserRegistrationControllerTest do
     test "creates account with a new site and logs the user in", %{conn: conn} do
       email = unique_user_email()
 
-      expect(MockK8s, :deploy, fn domain_name ->
+      expect(MockK8s, :deploy, fn %{
+                                    "apiVersion" => "site-operator.code.supply/v1",
+                                    "kind" => "AffiliateSite",
+                                    "metadata" => %{"name" => name},
+                                    "spec" => %{"domains" => [domain_name]}
+                                  } ->
+        assert name =~ ~r/[a-z0-9]+/
         assert domain_name =~ ~r/.+\.affable\.app/
         {:ok, ""}
       end)

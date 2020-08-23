@@ -33,15 +33,19 @@ defmodule Affable.Sites do
            |> Ecto.Changeset.put_assoc(:members, [Ecto.build_assoc(user, :site_members)])
            |> Ecto.Changeset.put_assoc(:items, default_items())
          )
+         |> Multi.update(:site_with_internal_name, fn %{site: site} ->
+           site
+           |> Site.change_internal_name(generate_internal_name(site.id))
+         end)
          |> Multi.insert(
            :domain,
-           fn %{site: site} ->
-             Ecto.build_assoc(site, :domains, %{name: generate_domain_name(site.id)})
+           fn %{site_with_internal_name: site} ->
+             Ecto.build_assoc(site, :domains, %{name: "#{site.internal_name}.affable.app"})
            end
          )
          |> Repo.transaction() do
-      {:ok, %{site: site}} ->
-        {:ok, site |> Repo.preload(:domains) |> Repo.preload(:items)}
+      {:ok, %{site_with_internal_name: site}} ->
+        {:ok, site |> Repo.preload([:domains, :items])}
 
       {:error, :site, site, %{} = _domain} ->
         {:error, site}
@@ -144,8 +148,8 @@ defmodule Affable.Sites do
     Site.changeset(site, attrs)
   end
 
-  def generate_domain_name(number) do
-    "site#{Affable.ID.encode(number)}.affable.app"
+  def generate_internal_name(number) do
+    "site#{Affable.ID.encode(number)}"
   end
 
   def promote_item(site, item_id) do

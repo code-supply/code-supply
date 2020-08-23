@@ -3,12 +3,12 @@ defmodule Affable.K8sFactoriesTest do
 
   import Affable.K8sFactories
 
-  test "affiliate site has correct name and domain name" do
-    assert affiliate_site("example.com") == %{
+  test "affiliate site has correct name and domain names" do
+    assert affiliate_site("some-name", ["example.com"]) == %{
              "apiVersion" => "site-operator.code.supply/v1",
              "kind" => "AffiliateSite",
-             "metadata" => %{"name" => "example-com"},
-             "spec" => %{"domain" => "example.com"}
+             "metadata" => %{"name" => "some-name"},
+             "spec" => %{"domains" => ["example.com"]}
            }
   end
 end

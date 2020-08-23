@@ -51,8 +51,9 @@ defmodule Affable.AccountsTest do
   describe "register_user/1" do
     test "sets up default site" do
       user = user_fixture()
-      [%Site{domains: [domain]}] = user.sites
+      [%Site{internal_name: internal_name, domains: [domain]}] = user.sites
 
+      assert internal_name =~ ~r/site[a-z0-9]+/
       assert domain.name =~ ~r/site[a-z0-9]+\.affable\.app/
     end
 

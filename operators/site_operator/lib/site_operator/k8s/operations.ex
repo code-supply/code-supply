@@ -11,23 +11,23 @@ defmodule SiteOperator.K8s.Operations do
     VirtualService
   }
 
-  def initial_creations(name, domain) do
-    initial_resources(name, [domain])
+  def initial_creations(name, domains) do
+    initial_resources(name, domains)
     |> Enum.map(&create/1)
   end
 
-  def inner_ns_creations(name, domain) do
+  def inner_ns_creations(name, domains) do
     [
       %Deployment{name: name},
       %Service{name: name},
-      %Gateway{name: name, domains: [domain]},
-      %VirtualService{name: name, domains: [domain]}
+      %Gateway{name: name, domains: domains},
+      %VirtualService{name: name, domains: domains}
     ]
     |> Enum.map(&create/1)
   end
 
-  def checks(name, domain) do
-    initial_resources(name, [domain])
+  def checks(name, domains) do
+    initial_resources(name, domains)
     |> Enum.map(&get/1)
   end
 

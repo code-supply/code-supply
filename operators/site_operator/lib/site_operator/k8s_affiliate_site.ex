@@ -11,21 +11,25 @@ defmodule SiteOperator.K8sAffiliateSite do
   end
 
   @impl SiteOperator.AffiliateSite
-  def create(_, "") do
-    {:error, "Empty domain"}
+  def create(_, []) do
+    {:error, "No domains"}
   end
 
   @impl SiteOperator.AffiliateSite
-  def create(name, domain) do
-    case execute(initial_creations(name, domain)) do
-      {:ok, _} ->
-        case execute(inner_ns_creations(name, domain)) do
-          {:ok, _} ->
-            {:ok, "Site created"}
-        end
+  def create(name, domains) do
+    if domains |> Enum.member?("") do
+      {:error, "Empty domain"}
+    else
+      case execute(initial_creations(name, domains)) do
+        {:ok, _} ->
+          case execute(inner_ns_creations(name, domains)) do
+            {:ok, _} ->
+              {:ok, "Site created"}
+          end
 
-      {:error, _} = res ->
-        res
+        {:error, _} = res ->
+          res
+      end
     end
   end
 
@@ -35,24 +39,24 @@ defmodule SiteOperator.K8sAffiliateSite do
   end
 
   @impl SiteOperator.AffiliateSite
-  def reconcile(name, domain) do
-    case execute(checks(name, domain)) do
+  def reconcile(name, domains) do
+    case execute(checks(name, domains)) do
       {:ok, _} ->
         {:ok, :nothing_to_do}
 
       {:error, some_resources_missing: missing_resources} ->
         Enum.each(missing_resources, fn resource ->
-          {:ok, _} = recreate(resource, name, domain)
+          {:ok, _} = recreate(resource, name, domains)
         end)
 
         {:ok, recreated: missing_resources}
     end
   end
 
-  defp recreate(%Namespace{} = ns, name, domain) do
+  defp recreate(%Namespace{} = ns, name, domains) do
     case execute([create(ns)]) do
       {:ok, _} ->
-        case execute(inner_ns_creations(name, domain)) do
+        case execute(inner_ns_creations(name, domains)) do
           {:ok, _} ->
             {:ok, "Site created"}
         end
@@ -62,7 +66,7 @@ defmodule SiteOperator.K8sAffiliateSite do
     end
   end
 
-  defp recreate(%Certificate{} = cert, _name, _domain) do
+  defp recreate(%Certificate{} = cert, _name, _domains) do
     execute([create(cert)])
   end
 

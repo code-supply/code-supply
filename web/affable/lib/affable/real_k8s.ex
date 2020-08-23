@@ -1,13 +1,14 @@
 defmodule Affable.RealK8s do
-  def deploy(domain_name) do
-    {:ok, conn} = K8s.Conn.lookup(:default)
-    operation = K8s.Client.create(Affable.K8sFactories.affiliate_site(domain_name))
-    K8s.Client.run(operation, conn)
+  def deploy(resource) do
+    run(K8s.Client.create(resource))
   end
 
-  def undeploy(domain_name) do
+  def undeploy(resource) do
+    run(K8s.Client.delete(resource))
+  end
+
+  defp run(operation) do
     {:ok, conn} = K8s.Conn.lookup(:default)
-    operation = K8s.Client.delete(Affable.K8sFactories.affiliate_site(domain_name))
     K8s.Client.run(operation, conn)
   end
 end

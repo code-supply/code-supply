@@ -20,7 +20,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
             "kind" => "AffiliateSite",
             "metadata" => %{"name" => "justatest"},
             "spec" => %{
-              "domain" => "www.example.com"
+              "domains" => ["www.example.com"]
             }
           })
         end
@@ -38,7 +38,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     end
 
     test "creates the site", %{add: add} do
-      expect(MockAffiliateSite, :create, fn "justatest", "www.example.com" ->
+      expect(MockAffiliateSite, :create, fn "justatest", ["www.example.com"] ->
         {:ok, "some message"}
       end)
 
@@ -102,22 +102,22 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
           AffiliateSite.reconcile(%{
             "metadata" => %{"name" => "mysite"},
             "spec" => %{
-              "domain" => "www.example.com"
+              "domains" => ["www.example.com"]
             }
           })
         end,
         stub_error: fn ->
-          stub(MockAffiliateSite, :reconcile, fn "mysite", "www.example.com" ->
+          stub(MockAffiliateSite, :reconcile, fn "mysite", ["www.example.com"] ->
             {:error, "upstream error"}
           end)
         end,
         stub_nothing_to_do: fn ->
-          stub(MockAffiliateSite, :reconcile, fn "mysite", "www.example.com" ->
+          stub(MockAffiliateSite, :reconcile, fn "mysite", ["www.example.com"] ->
             {:ok, :nothing_to_do}
           end)
         end,
         stub_success: fn ->
-          stub(MockAffiliateSite, :reconcile, fn "mysite", "www.example.com" ->
+          stub(MockAffiliateSite, :reconcile, fn "mysite", ["www.example.com"] ->
             {:ok, recreated: [%SiteOperator.K8s.Namespace{name: "mysite"}]}
           end)
         end
@@ -136,7 +136,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     end
 
     test "reconciles", %{reconcile: reconcile} do
-      expect(MockAffiliateSite, :reconcile, fn "mysite", "www.example.com" ->
+      expect(MockAffiliateSite, :reconcile, fn "mysite", ["www.example.com"] ->
         {:ok, recreated: [%SiteOperator.K8s.Namespace{name: "therightone"}]}
       end)
 

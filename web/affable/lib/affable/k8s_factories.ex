@@ -1,10 +1,10 @@
 defmodule Affable.K8sFactories do
-  def affiliate_site(domain_name) do
+  def affiliate_site(name, domains) do
     %{
       "apiVersion" => "site-operator.code.supply/v1",
       "kind" => "AffiliateSite",
-      "metadata" => %{"name" => String.replace(domain_name, ".", "-")},
-      "spec" => %{"domain" => domain_name}
+      "metadata" => %{"name" => name},
+      "spec" => %{"domains" => domains}
     }
   end
 end
