@@ -71,22 +71,30 @@ affable_rotate_sql_credentials:
 		key.json \
 		sql-shared-affable@code-supply.iam.gserviceaccount.com
 
-.PHONY: list_triggers
-list_triggers:
-	gcloud beta builds triggers list
-
 .PHONY: triggers
 triggers:
+	for id in $$(gcloud --format=json beta builds triggers list | jq -r .[].id); \
+	do \
+		gcloud beta builds triggers delete --quiet "$$id"; \
+	done
 	gcloud beta builds triggers create cloud-source-repositories \
+		--quiet \
 		--description=affable \
 		--repo=mono \
 		--branch-pattern="^master$$" \
 		--build-config=web/affable/cloudbuild.yaml
 	gcloud beta builds triggers create cloud-source-repositories \
+		--quiet \
 		--description=site_operator \
 		--repo=mono \
 		--branch-pattern="^master$$" \
 		--build-config=operators/site_operator/cloudbuild.yaml
+	gcloud beta builds triggers create cloud-source-repositories \
+		--quiet \
+		--description=affiliate \
+		--repo=mono \
+		--branch-pattern="^master$$" \
+		--build-config=web/affiliate/cloudbuild.yaml
 
 .PHONY: install_istio
 install_istio:
