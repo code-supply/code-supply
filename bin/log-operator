@@ -1,0 +1,6 @@
+kubectl \
+    --namespace operators \
+    logs \
+    --selector app=site-operator \
+    --container site-operator \
+    --follow
