@@ -9,12 +9,16 @@ defmodule SiteOperator.K8sConversions do
   }
 
   @prefix "customer-"
+  @affiliate_image_sha "a3fd9bf69c19da78530d74ae179bc29520fcc5e1e91570a66d31d1b9865f9eff"
 
   def to_k8s(%Certificate{name: name, domains: domains}) do
     %{
       "apiVersion" => "cert-manager.io/v1alpha2",
       "kind" => "Certificate",
-      "metadata" => standard_metadata(name) |> Map.put("namespace", "istio-system"),
+      "metadata" => %{
+        "name" => name,
+        "namespace" => "istio-system"
+      },
       "spec" => %{
         "secretName" => certificate_secret_name(name),
         "issuerRef" => %{
@@ -22,6 +26,19 @@ defmodule SiteOperator.K8sConversions do
           "kind" => "ClusterIssuer"
         },
         "dnsNames" => domains
+      }
+    }
+  end
+
+  def to_k8s(%Namespace{name: name}) do
+    %{
+      "apiVersion" => "v1",
+      "kind" => "Namespace",
+      "metadata" => %{
+        "name" => prefixed(name),
+        "labels" => %{
+          "istio-injection" => "enabled"
+        }
       }
     }
   end
@@ -34,24 +51,45 @@ defmodule SiteOperator.K8sConversions do
       "spec" => %{
         "selector" => %{
           "matchLabels" => %{
-            "so-app" => name
+            "app" => "affiliate"
           }
         },
         "template" => %{
           "metadata" => %{
             "labels" => %{
-              "so-app" => name
+              "app" => "affiliate",
+              "version" => "1"
             }
           },
           "spec" => %{
             "containers" => [
               %{
                 "name" => "app",
-                "image" => "nginx"
+                "image" => "eu.gcr.io/code-supply/affiliate@sha256:#{@affiliate_image_sha}",
+                "envFrom" => [%{"secretRef" => %{"name" => "affiliate"}}]
               }
             ]
           }
         }
+      }
+    }
+  end
+
+  def to_k8s(%Service{name: name}) do
+    %{
+      "apiVersion" => "v1",
+      "kind" => "Service",
+      "metadata" => standard_metadata(name),
+      "spec" => %{
+        "selector" => %{
+          "app" => "affiliate"
+        },
+        "ports" => [
+          %{
+            "name" => "http",
+            "port" => 80
+          }
+        ]
       }
     }
   end
@@ -94,62 +132,22 @@ defmodule SiteOperator.K8sConversions do
     }
   end
 
-  def to_k8s(%Service{name: name}) do
-    %{
-      "apiVersion" => "v1",
-      "kind" => "Service",
-      "metadata" => standard_metadata(name),
-      "spec" => %{
-        "selector" => %{
-          "so-app" => name
-        },
-        "ports" => [
-          %{
-            "name" => "http",
-            "port" => 80
-          }
-        ]
-      }
-    }
-  end
-
-  def to_k8s(%Namespace{name: name}) do
-    %{
-      "apiVersion" => "v1",
-      "kind" => "Namespace",
-      "metadata" => %{
-        "name" => prefixed(name),
-        "labels" => %{
-          "istio-injection" => "enabled"
-        }
-      }
-    }
-  end
-
   def to_k8s(%VirtualService{name: name, domains: domains}) do
     %{
       "apiVersion" => "networking.istio.io/v1beta1",
       "kind" => "VirtualService",
       "metadata" => standard_metadata(name),
       "spec" => %{
-        "gateways" => [name],
+        "gateways" => ["affiliate"],
         "hosts" => domains,
         "http" => [
           %{
             "match" => [%{"uri" => %{"prefix" => "/"}}],
-            "route" => [%{"destination" => %{"host" => name}}]
+            "route" => [%{"destination" => %{"host" => "affiliate"}}]
           }
         ]
       }
     }
-  end
-
-  def from_k8s(%{"kind" => "Deployment", "metadata" => %{"name" => name}}) do
-    %Deployment{name: unprefixed(name)}
-  end
-
-  def from_k8s(%{"kind" => "Namespace", "metadata" => %{"name" => name}}) do
-    %Namespace{name: unprefixed(name)}
   end
 
   def from_k8s(%{
@@ -158,6 +156,18 @@ defmodule SiteOperator.K8sConversions do
         "spec" => %{"dnsNames" => domains}
       }) do
     %Certificate{name: unprefixed(name), domains: domains}
+  end
+
+  def from_k8s(%{"kind" => "Namespace", "metadata" => %{"name" => name}}) do
+    %Namespace{name: unprefixed(name)}
+  end
+
+  def from_k8s(%{"kind" => "Deployment", "metadata" => %{"name" => name}}) do
+    %Deployment{name: unprefixed(name)}
+  end
+
+  def from_k8s(%{"kind" => "Service", "metadata" => %{"name" => name}}) do
+    %Service{name: unprefixed(name)}
   end
 
   def from_k8s(%{
@@ -176,10 +186,6 @@ defmodule SiteOperator.K8sConversions do
     %VirtualService{name: unprefixed(name), domains: domains}
   end
 
-  def from_k8s(%{"kind" => "Service", "metadata" => %{"name" => name}}) do
-    %Service{name: unprefixed(name)}
-  end
-
   def prefixed(name) do
     "#{@prefix}#{name}"
   end
@@ -194,6 +200,6 @@ defmodule SiteOperator.K8sConversions do
   end
 
   defp standard_metadata(name) do
-    %{"name" => name, "namespace" => prefixed(name)}
+    %{"name" => "affiliate", "namespace" => prefixed(name)}
   end
 end

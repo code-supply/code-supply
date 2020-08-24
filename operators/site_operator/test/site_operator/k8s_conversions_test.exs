@@ -49,13 +49,12 @@ defmodule SiteOperator.K8sConversionsTest do
              ]) == "customer-#{@name}"
     end
 
-    test "selects correct pods", %{service: service} do
+    test "selects correct pods", %{service: service, deployment: deployment} do
       assert get_in(service, [
                "spec",
-               "selector",
-               "so-app"
+               "selector"
              ]) ==
-               @name
+               get_in(deployment, ["spec", "selector", "matchLabels"])
     end
 
     test "sets up a port", %{service: service} do
@@ -66,60 +65,73 @@ defmodule SiteOperator.K8sConversionsTest do
     end
 
     test "can be turned back into a struct", %{service: service} do
-      assert service |> from_k8s() == %Service{name: @name}
+      assert service |> from_k8s() == %Service{name: "affiliate"}
     end
   end
 
   describe "deployment" do
     test "named and namespaced correctly", %{deployment: deployment} do
-      assert name_and_namespace(deployment) == {@name, "customer-#{@name}"}
+      assert name_and_namespace(deployment) == {"affiliate", "customer-#{@name}"}
     end
 
-    test "matches on correct labels", %{deployment: deployment} do
+    test "matches on app label, has version", %{deployment: deployment} do
       assert get_in(deployment, [
                "spec",
                "selector",
                "matchLabels",
-               "so-app"
+               "app"
              ]) ==
-               @name
+               "affiliate"
 
       assert get_in(deployment, [
                "spec",
                "template",
                "metadata",
                "labels",
-               "so-app"
-             ]) == @name
+               "app"
+             ]) == "affiliate"
+
+      assert get_in(deployment, [
+               "spec",
+               "template",
+               "metadata",
+               "labels",
+               "version"
+             ]) == "1"
     end
 
-    test "has a container", %{deployment: deployment} do
+    test "has a container with secret as env vars", %{deployment: deployment} do
       assert get_in(deployment, [
                "spec",
                "template",
                "spec",
                "containers",
-               at(0),
-               "name"
-             ]) ==
-               "app"
+               all()
+             ]) == [
+               %{
+                 "name" => "app",
+                 "image" =>
+                   "eu.gcr.io/code-supply/affiliate@sha256:a3fd9bf69c19da78530d74ae179bc29520fcc5e1e91570a66d31d1b9865f9eff",
+                 "envFrom" => [%{"secretRef" => %{"name" => "affiliate"}}]
+               }
+             ]
     end
 
     test "can be turned back into a struct", %{deployment: deployment} do
-      assert deployment |> from_k8s() == %Deployment{name: @name}
+      assert deployment |> from_k8s() == %Deployment{name: "affiliate"}
     end
   end
 
   describe "virtual service" do
     test "named and namespaced correctly", %{virtual_service: virtual_service} do
-      assert name_and_namespace(virtual_service) == {@name, "customer-#{@name}"}
+      assert name_and_namespace(virtual_service) == {"affiliate", "customer-#{@name}"}
     end
 
     test "external host is set", %{virtual_service: virtual_service} do
       assert get_in(virtual_service, ["spec", "hosts"]) == @domains
     end
 
-    test "internal host is set", %{virtual_service: virtual_service} do
+    test "internal host is set", %{virtual_service: virtual_service, service: service} do
       assert get_in(virtual_service, [
                "spec",
                "http",
@@ -128,7 +140,7 @@ defmodule SiteOperator.K8sConversionsTest do
                at(0),
                "destination",
                "host"
-             ]) == @name
+             ]) == get_in(service, ["metadata", "name"])
     end
 
     test "gateway is tied", %{virtual_service: virtual_service, gateway: gateway} do
@@ -152,13 +164,16 @@ defmodule SiteOperator.K8sConversionsTest do
     end
 
     test "can be turned back into a struct", %{virtual_service: virtual_service} do
-      assert virtual_service |> from_k8s() == %VirtualService{name: @name, domains: @domains}
+      assert virtual_service |> from_k8s() == %VirtualService{
+               name: "affiliate",
+               domains: @domains
+             }
     end
   end
 
   describe "gateway" do
     test "named and namespaced correctly", %{gateway: gateway} do
-      assert name_and_namespace(gateway) == {@name, "customer-#{@name}"}
+      assert name_and_namespace(gateway) == {"affiliate", "customer-#{@name}"}
     end
 
     test "configures servers with insecure and TLS endpoints", %{
@@ -194,7 +209,7 @@ defmodule SiteOperator.K8sConversionsTest do
     end
 
     test "can be turned back into a struct", %{gateway: gateway} do
-      assert gateway |> from_k8s() == %Gateway{name: @name, domains: @domains}
+      assert gateway |> from_k8s() == %Gateway{name: "affiliate", domains: @domains}
     end
   end
 
