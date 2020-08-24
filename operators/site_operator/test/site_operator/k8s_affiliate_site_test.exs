@@ -7,7 +7,7 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
   import SiteOperator.K8sConversions, only: [to_k8s: 1]
   import Hammox
 
-  @namespace "site-operator-test"
+  @namespace "generatedname"
   @domains ["testdomain.example.com"]
 
   setup :verify_on_exit!
@@ -77,7 +77,7 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
     test "deletes namespace and certificate in parallel", %{delete_1: delete} do
       MockK8s
       |> expect(:execute, fn operations ->
-        assert operations == Operations.deletions(@namespace)
+        assert operations == Operations.deletions("customer-#{@namespace}")
         {:ok, "pass message through"}
       end)
 
@@ -95,7 +95,7 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
     end
 
     test "creates missing certificate", %{reconcile_3: reconcile} do
-      cert = %Certificate{name: @namespace, domains: @domains}
+      cert = %Certificate{name: "customer-#{@namespace}", domains: @domains}
       cert_k8s = cert |> to_k8s
 
       stub(MockK8s, :execute, fn [_, %Operation{action: :get, resource: ^cert_k8s}] ->
@@ -110,7 +110,7 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
     end
 
     test "creates missing namespace and its resources", %{reconcile_3: reconcile} do
-      ns = %Namespace{name: @namespace}
+      ns = %Namespace{name: "customer-#{@namespace}"}
       ns_k8s = ns |> to_k8s
 
       stub(MockK8s, :execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _] ->
@@ -119,7 +119,7 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
             assert operations ==
                      Operations.inner_ns_creations(
                        "affiliate",
-                       @namespace,
+                       "customer-#{@namespace}",
                        @domains,
                        "a-new-secret"
                      )

@@ -22,14 +22,7 @@ defmodule SiteOperator.K8sAffiliateSite do
     else
       case execute(initial_creations(prefixed(site_name), domains)) do
         {:ok, _} ->
-          case execute(
-                 inner_ns_creations(
-                   "affiliate",
-                   prefixed(site_name),
-                   domains,
-                   secret_key_base
-                 )
-               ) do
+          case execute_inner_ns_creations(site_name, domains, secret_key_base) do
             {:ok, _} ->
               {:ok, "Site created"}
           end
@@ -40,18 +33,14 @@ defmodule SiteOperator.K8sAffiliateSite do
     end
   end
 
-  defp prefixed(name) do
-    "customer-#{name}"
-  end
-
   @impl SiteOperator.AffiliateSite
   def delete(name) do
-    execute(deletions(name))
+    execute(deletions(prefixed(name)))
   end
 
   @impl SiteOperator.AffiliateSite
   def reconcile(name, domains, secret_key_base) do
-    case execute(checks(name, domains)) do
+    case execute(checks(prefixed(name), domains)) do
       {:ok, _} ->
         {:ok, :nothing_to_do}
 
@@ -64,10 +53,10 @@ defmodule SiteOperator.K8sAffiliateSite do
     end
   end
 
-  defp recreate(%Namespace{} = ns, namespace_name, domains, secret_key_base) do
+  defp recreate(%Namespace{} = ns, site_name, domains, secret_key_base) do
     case execute([create(ns)]) do
       {:ok, _} ->
-        case execute(inner_ns_creations("affiliate", namespace_name, domains, secret_key_base)) do
+        case execute_inner_ns_creations(site_name, domains, secret_key_base) do
           {:ok, _} ->
             {:ok, "Site created"}
         end
@@ -81,8 +70,22 @@ defmodule SiteOperator.K8sAffiliateSite do
     execute([create(cert)])
   end
 
+  defp execute_inner_ns_creations(site_name, domains, secret_key_base) do
+    inner_ns_creations(
+      "affiliate",
+      prefixed(site_name),
+      domains,
+      secret_key_base
+    )
+    |> execute
+  end
+
   defp execute(ops) do
     k8s().execute(ops)
+  end
+
+  defp prefixed(name) do
+    "customer-#{name}"
   end
 
   defp k8s do
