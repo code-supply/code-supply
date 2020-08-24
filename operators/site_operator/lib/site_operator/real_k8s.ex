@@ -23,25 +23,17 @@ defmodule SiteOperator.RealK8s do
     if Enum.all?(results, &match?({:ok, _}, &1)) do
       {:ok, results |> Enum.map(fn {:ok, body} -> handle_body(body) end)}
     else
-      handle_errors(results, error_pairs(operations, results))
+      handle_errors(error_pairs(operations, results))
     end
   end
 
-  defp handle_errors(results, errors) do
+  defp handle_errors(errors) do
     case missing_resources(errors) do
       [] ->
-        simplified_string_error(joined_bodies(results))
+        {:error, errors}
 
       missing ->
         {:error, some_resources_missing: missing}
-    end
-  end
-
-  defp simplified_string_error(error) do
-    if String.match?(error, ~r/DNS-1123 label/) do
-      {:error, "Invalid name"}
-    else
-      {:error, error}
     end
   end
 
@@ -56,10 +48,6 @@ defmodule SiteOperator.RealK8s do
     |> Enum.map(fn {%SiteOperator.K8s.Operation{resource: resource}, _result} ->
       SiteOperator.K8sConversions.from_k8s(resource)
     end)
-  end
-
-  defp joined_bodies(results) do
-    results |> Enum.map(fn {_, %{body: body}} -> body end) |> Enum.join("\n")
   end
 
   defp handle_body(%{"details" => _}) do

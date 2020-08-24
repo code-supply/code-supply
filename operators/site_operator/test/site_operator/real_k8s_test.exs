@@ -91,7 +91,7 @@ defmodule SiteOperator.RealK8sTest do
         Operations.create(namespace)
       ])
 
-    {:error, "Invalid name"} =
+    {:error, _errors} =
       execute.([
         Operations.create(%Namespace{name: "<>!@#!@bad"})
       ])
