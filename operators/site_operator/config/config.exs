@@ -1,7 +1,7 @@
 import Config
 
 config :site_operator,
-  affiliate_site: SiteOperator.K8sAffiliateSite,
+  site_maker: SiteOperator.K8sSiteMaker,
   k8s: SiteOperator.RealK8s
 
 config :k8s,

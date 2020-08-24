@@ -7,7 +7,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
   import Hammox
 
   alias SiteOperator.Controller.V1.AffiliateSite
-  alias SiteOperator.MockAffiliateSite
+  alias SiteOperator.MockSiteMaker
 
   setup :verify_on_exit!
 
@@ -28,17 +28,17 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     end
 
     test "returns :ok on success", %{add: add} do
-      stub(MockAffiliateSite, :create, fn _, _, _ -> {:ok, ""} end)
+      stub(MockSiteMaker, :create, fn _, _, _ -> {:ok, ""} end)
       assert add.() == :ok
     end
 
     test "logs success", %{add: add} do
-      stub(MockAffiliateSite, :create, fn _, _, _ -> {:ok, ""} end)
+      stub(MockSiteMaker, :create, fn _, _, _ -> {:ok, ""} end)
       assert capture_log(add) =~ "created"
     end
 
     test "creates the site", %{add: add} do
-      expect(MockAffiliateSite, :create, fn "justatest", ["www.example.com"], _secret_key_base ->
+      expect(MockSiteMaker, :create, fn "justatest", ["www.example.com"], _secret_key_base ->
         {:ok, "some message"}
       end)
 
@@ -46,12 +46,12 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     end
 
     test "returns :error on error", %{add: add} do
-      stub(MockAffiliateSite, :create, fn _, _, _ -> {:error, ""} end)
+      stub(MockSiteMaker, :create, fn _, _, _ -> {:error, ""} end)
       assert add.() == :error
     end
 
     test "logs failure", %{add: add} do
-      stub(MockAffiliateSite, :create, fn _, _, _ -> {:error, "upstream error"} end)
+      stub(MockSiteMaker, :create, fn _, _, _ -> {:error, "upstream error"} end)
       assert capture_log(add) =~ "upstream error"
     end
   end
@@ -70,27 +70,27 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     end
 
     test "returns :ok on success", %{delete: delete} do
-      stub(MockAffiliateSite, :delete, fn _ -> {:ok, ""} end)
+      stub(MockSiteMaker, :delete, fn _ -> {:ok, ""} end)
       assert delete.() == :ok
     end
 
     test "logs success", %{delete: delete} do
-      stub(MockAffiliateSite, :delete, fn _ -> {:ok, ""} end)
+      stub(MockSiteMaker, :delete, fn _ -> {:ok, ""} end)
       assert capture_log(delete) =~ "deleted"
     end
 
     test "deletes the site", %{delete: delete} do
-      expect(MockAffiliateSite, :delete, fn "deleteme" -> {:ok, ""} end)
+      expect(MockSiteMaker, :delete, fn "deleteme" -> {:ok, ""} end)
       delete.()
     end
 
     test "returns :error on error", %{delete: delete} do
-      stub(MockAffiliateSite, :delete, fn _ -> {:error, ""} end)
+      stub(MockSiteMaker, :delete, fn _ -> {:error, ""} end)
       assert delete.() == :error
     end
 
     test "logs failure", %{delete: delete} do
-      stub(MockAffiliateSite, :delete, fn _ -> {:error, "upstream error"} end)
+      stub(MockSiteMaker, :delete, fn _ -> {:error, "upstream error"} end)
       assert capture_log(delete) =~ "upstream error"
     end
   end
@@ -107,23 +107,17 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
           })
         end,
         stub_error: fn ->
-          stub(MockAffiliateSite, :reconcile, fn "mysite",
-                                                 ["www.example.com"],
-                                                 _secret_key_base ->
+          stub(MockSiteMaker, :reconcile, fn "mysite", ["www.example.com"], _secret_key_base ->
             {:error, "upstream error"}
           end)
         end,
         stub_nothing_to_do: fn ->
-          stub(MockAffiliateSite, :reconcile, fn "mysite",
-                                                 ["www.example.com"],
-                                                 _secret_key_base ->
+          stub(MockSiteMaker, :reconcile, fn "mysite", ["www.example.com"], _secret_key_base ->
             {:ok, :nothing_to_do}
           end)
         end,
         stub_success: fn ->
-          stub(MockAffiliateSite, :reconcile, fn "mysite",
-                                                 ["www.example.com"],
-                                                 _secret_key_base ->
+          stub(MockSiteMaker, :reconcile, fn "mysite", ["www.example.com"], _secret_key_base ->
             {:ok, recreated: [%SiteOperator.K8s.Namespace{name: "mysite"}]}
           end)
         end
@@ -142,7 +136,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     end
 
     test "reconciles", %{reconcile: reconcile} do
-      expect(MockAffiliateSite, :reconcile, fn "mysite", ["www.example.com"], _secret_key_base ->
+      expect(MockSiteMaker, :reconcile, fn "mysite", ["www.example.com"], _secret_key_base ->
         {:ok, recreated: [%SiteOperator.K8s.Namespace{name: "therightone"}]}
       end)
 

@@ -1,7 +1,7 @@
-defmodule SiteOperator.K8sAffiliateSiteTest do
+defmodule SiteOperator.K8sSiteMakerTest do
   use ExUnit.Case, async: true
 
-  alias SiteOperator.{K8sAffiliateSite, AffiliateSite, MockK8s}
+  alias SiteOperator.{K8sSiteMaker, SiteMaker, MockK8s}
   alias SiteOperator.K8s.{Certificate, Namespace, Operation, Operations}
 
   import SiteOperator.K8sConversions, only: [to_k8s: 1]
@@ -14,8 +14,8 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
 
   setup do
     Hammox.protect(
-      K8sAffiliateSite,
-      AffiliateSite,
+      K8sSiteMaker,
+      SiteMaker,
       create: 3,
       delete: 1,
       reconcile: 3

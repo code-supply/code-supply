@@ -98,7 +98,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
       }) do
     log_metadata = [action: "add", name: name, domains: domains]
 
-    case affiliate_site().create(name, domains, generate_secret_key_base()) do
+    case site_maker().create(name, domains, generate_secret_key_base()) do
       {:ok, _} ->
         Logger.info("created", log_metadata)
         :ok
@@ -123,7 +123,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
       }) do
     log_metadata = [action: "delete", name: name]
 
-    case affiliate_site().delete(name) do
+    case site_maker().delete(name) do
       {:ok, _} ->
         Logger.info("deleted", log_metadata)
         :ok
@@ -142,7 +142,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
       }) do
     log_metadata = [action: "reconcile", name: name, domains: domains]
 
-    case affiliate_site().reconcile(name, domains, generate_secret_key_base()) do
+    case site_maker().reconcile(name, domains, generate_secret_key_base()) do
       {:ok, :nothing_to_do} ->
         Logger.info("nothing to do", log_metadata)
         :ok
@@ -162,7 +162,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
     :crypto.strong_rand_bytes(length) |> Base.encode64() |> binary_part(0, length)
   end
 
-  defp affiliate_site do
-    Application.get_env(:site_operator, :affiliate_site)
+  defp site_maker do
+    Application.get_env(:site_operator, :site_maker)
   end
 end

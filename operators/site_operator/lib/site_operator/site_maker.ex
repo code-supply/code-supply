@@ -1,4 +1,4 @@
-defmodule SiteOperator.AffiliateSite do
+defmodule SiteOperator.SiteMaker do
   @type namespace :: String.t()
   @type domain :: String.t()
   @type secret_key_base :: String.t()

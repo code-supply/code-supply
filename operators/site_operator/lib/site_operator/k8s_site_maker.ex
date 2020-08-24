@@ -1,21 +1,21 @@
-defmodule SiteOperator.K8sAffiliateSite do
-  @behaviour SiteOperator.AffiliateSite
+defmodule SiteOperator.K8sSiteMaker do
+  @behaviour SiteOperator.SiteMaker
 
   alias SiteOperator.K8s.{Certificate, Namespace}
 
   import SiteOperator.K8s.Operations
 
-  @impl SiteOperator.AffiliateSite
+  @impl SiteOperator.SiteMaker
   def create("", _, _) do
     {:error, "Empty name"}
   end
 
-  @impl SiteOperator.AffiliateSite
+  @impl SiteOperator.SiteMaker
   def create(_, [], _) do
     {:error, "No domains"}
   end
 
-  @impl SiteOperator.AffiliateSite
+  @impl SiteOperator.SiteMaker
   def create(site_name, domains, secret_key_base) do
     if domains |> Enum.member?("") do
       {:error, "Empty domain"}
@@ -33,12 +33,12 @@ defmodule SiteOperator.K8sAffiliateSite do
     end
   end
 
-  @impl SiteOperator.AffiliateSite
+  @impl SiteOperator.SiteMaker
   def delete(name) do
     execute(deletions(prefixed(name)))
   end
 
-  @impl SiteOperator.AffiliateSite
+  @impl SiteOperator.SiteMaker
   def reconcile(name, domains, secret_key_base) do
     case execute(checks(prefixed(name), domains)) do
       {:ok, _} ->
