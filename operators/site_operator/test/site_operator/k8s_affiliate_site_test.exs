@@ -37,7 +37,12 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
                                    ] ->
         expect(MockK8s, :execute, fn operations ->
           assert operations ==
-                   Operations.inner_ns_creations(@namespace, @domains, "my-awesome-secret")
+                   Operations.inner_ns_creations(
+                     "affiliate",
+                     @namespace,
+                     @domains,
+                     "my-awesome-secret"
+                   )
 
           {:ok, "don't match on this"}
         end)
@@ -112,7 +117,12 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
         expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^ns_k8s}] ->
           expect(MockK8s, :execute, fn operations ->
             assert operations ==
-                     Operations.inner_ns_creations(@namespace, @domains, "a-new-secret")
+                     Operations.inner_ns_creations(
+                       "affiliate",
+                       @namespace,
+                       @domains,
+                       "a-new-secret"
+                     )
 
             {:ok, "don't match on this"}
           end)

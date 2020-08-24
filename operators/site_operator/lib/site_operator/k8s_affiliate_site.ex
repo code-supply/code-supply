@@ -16,13 +16,13 @@ defmodule SiteOperator.K8sAffiliateSite do
   end
 
   @impl SiteOperator.AffiliateSite
-  def create(name, domains, secret_key_base) do
+  def create(namespace, domains, secret_key_base) do
     if domains |> Enum.member?("") do
       {:error, "Empty domain"}
     else
-      case execute(initial_creations(name, domains)) do
+      case execute(initial_creations(namespace, domains)) do
         {:ok, _} ->
-          case execute(inner_ns_creations(name, domains, secret_key_base)) do
+          case execute(inner_ns_creations("affiliate", namespace, domains, secret_key_base)) do
             {:ok, _} ->
               {:ok, "Site created"}
           end
@@ -53,10 +53,10 @@ defmodule SiteOperator.K8sAffiliateSite do
     end
   end
 
-  defp recreate(%Namespace{} = ns, name, domains, secret_key_base) do
+  defp recreate(%Namespace{} = ns, namespace_name, domains, secret_key_base) do
     case execute([create(ns)]) do
       {:ok, _} ->
-        case execute(inner_ns_creations(name, domains, secret_key_base)) do
+        case execute(inner_ns_creations("affiliate", namespace_name, domains, secret_key_base)) do
           {:ok, _} ->
             {:ok, "Site created"}
         end

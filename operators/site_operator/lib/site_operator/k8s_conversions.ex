@@ -52,13 +52,13 @@ defmodule SiteOperator.K8sConversions do
       "spec" => %{
         "selector" => %{
           "matchLabels" => %{
-            "app" => "affiliate"
+            "app" => name
           }
         },
         "template" => %{
           "metadata" => %{
             "labels" => %{
-              "app" => "affiliate",
+              "app" => name,
               "version" => "1"
             }
           },
@@ -67,7 +67,7 @@ defmodule SiteOperator.K8sConversions do
               %{
                 "name" => "app",
                 "image" => "eu.gcr.io/code-supply/affiliate@sha256:#{@affiliate_image_sha}",
-                "envFrom" => [%{"secretRef" => %{"name" => "affiliate"}}]
+                "envFrom" => [%{"secretRef" => %{"name" => name}}]
               }
             ]
           }
@@ -96,7 +96,7 @@ defmodule SiteOperator.K8sConversions do
       "metadata" => standard_metadata(name),
       "spec" => %{
         "selector" => %{
-          "app" => "affiliate"
+          "app" => name
         },
         "ports" => [
           %{
@@ -152,12 +152,12 @@ defmodule SiteOperator.K8sConversions do
       "kind" => "VirtualService",
       "metadata" => standard_metadata(name),
       "spec" => %{
-        "gateways" => ["affiliate"],
+        "gateways" => [name],
         "hosts" => domains,
         "http" => [
           %{
             "match" => [%{"uri" => %{"prefix" => "/"}}],
-            "route" => [%{"destination" => %{"host" => "affiliate"}}]
+            "route" => [%{"destination" => %{"host" => name}}]
           }
         ]
       }
@@ -214,6 +214,6 @@ defmodule SiteOperator.K8sConversions do
   end
 
   defp standard_metadata(name) do
-    %{"name" => "affiliate", "namespace" => prefixed(name)}
+    %{"name" => name, "namespace" => prefixed(name)}
   end
 end

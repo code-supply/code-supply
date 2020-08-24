@@ -17,7 +17,7 @@ defmodule SiteOperator.K8s.Operations do
     |> Enum.map(&create/1)
   end
 
-  def inner_ns_creations(name, domains, secret_key_base) do
+  def inner_ns_creations(name, namespace, domains, secret_key_base) do
     [
       %Deployment{name: name},
       %Service{name: name},

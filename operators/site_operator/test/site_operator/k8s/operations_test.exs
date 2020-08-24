@@ -3,24 +3,36 @@ defmodule SiteOperator.K8s.OperationsTest do
 
   import SiteOperator.K8s.Operations
 
-  test "inner namespace creations include a secret for the Phoenix app" do
-    %{
-      "apiVersion" => "v1",
-      "kind" => "Secret",
-      "metadata" => %{
-        "name" => "affiliate"
-      },
-      "type" => "Opaque",
-      "data" => %{
-        "SECRET_KEY_BASE" => secret_key_encoded
-      }
-    } =
-      inner_ns_creations("my-app", "my-app.example.com", "my-secret")
-      |> Enum.find(fn op ->
-        op.resource["kind"] == "Secret"
-      end)
-      |> Map.get(:resource)
+  describe "inner namespace creations" do
+    test "all use the provided app-type name, because they're namespaced" do
+      names =
+        for op <-
+              inner_ns_creations("my-app", "my-namespace", ["my-app.example.com"], "some-secret") do
+          op.resource |> get_in(["metadata", "name"])
+        end
 
-    assert {:ok, "my-secret"} = Base.decode64(secret_key_encoded)
+      assert names |> Enum.uniq() == ["my-app"]
+    end
+
+    test "include a secret for the Phoenix app" do
+      %{
+        "apiVersion" => "v1",
+        "kind" => "Secret",
+        "metadata" => %{
+          "name" => "my-app"
+        },
+        "type" => "Opaque",
+        "data" => %{
+          "SECRET_KEY_BASE" => secret_key_encoded
+        }
+      } =
+        inner_ns_creations("my-app", "my-namespace", ["my-app.example.com"], "my-secret")
+        |> Enum.find(fn op ->
+          op.resource["kind"] == "Secret"
+        end)
+        |> Map.get(:resource)
+
+      assert {:ok, "my-secret"} = Base.decode64(secret_key_encoded)
+    end
   end
 end
