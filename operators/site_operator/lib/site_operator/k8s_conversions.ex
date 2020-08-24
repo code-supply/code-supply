@@ -182,6 +182,21 @@ defmodule SiteOperator.K8sConversions do
     %Deployment{name: name, namespace: namespace}
   end
 
+  def from_k8s(%{
+        "kind" => "Secret",
+        "metadata" => %{"name" => name, "namespace" => namespace},
+        "data" => data
+      }) do
+    %Secret{
+      name: name,
+      namespace: namespace,
+      data:
+        for {k, v} <- data, into: %{} do
+          {k, Base.decode64!(v)}
+        end
+    }
+  end
+
   def from_k8s(%{"kind" => "Service", "metadata" => %{"name" => name, "namespace" => namespace}}) do
     %Service{name: name, namespace: namespace}
   end

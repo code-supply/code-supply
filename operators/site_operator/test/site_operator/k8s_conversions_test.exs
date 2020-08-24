@@ -9,6 +9,7 @@ defmodule SiteOperator.K8sConversionsTest do
     Deployment,
     Gateway,
     Namespace,
+    Secret,
     Service,
     VirtualService
   }
@@ -16,6 +17,7 @@ defmodule SiteOperator.K8sConversionsTest do
   @name "my-name"
   @namespace "my-namespace"
   @domains ["some-domain.example.com", "another-domain.biz"]
+  @secret_data %{"my-secret" => "stuff"}
 
   setup do
     %{
@@ -23,6 +25,7 @@ defmodule SiteOperator.K8sConversionsTest do
       deployment: %Deployment{name: @name, namespace: @namespace} |> to_k8s(),
       gateway: %Gateway{name: @name, namespace: @namespace, domains: @domains} |> to_k8s(),
       namespace: %Namespace{name: @name} |> to_k8s(),
+      secret: %Secret{name: @name, namespace: @namespace, data: @secret_data} |> to_k8s(),
       service: %Service{name: @name, namespace: @namespace} |> to_k8s(),
       virtual_service:
         %VirtualService{name: @name, namespace: @namespace, domains: @domains} |> to_k8s()
@@ -118,6 +121,20 @@ defmodule SiteOperator.K8sConversionsTest do
 
     test "can be turned back into a struct", %{deployment: deployment} do
       assert deployment |> from_k8s() == %Deployment{name: @name, namespace: @namespace}
+    end
+  end
+
+  describe "secret" do
+    test "named and namespaced correctly", %{secret: secret} do
+      assert name_and_namespace(secret) == {@name, @namespace}
+    end
+
+    test "can be turned back into a struct", %{secret: secret} do
+      assert secret |> from_k8s() == %Secret{
+               name: @name,
+               namespace: @namespace,
+               data: @secret_data
+             }
     end
   end
 
