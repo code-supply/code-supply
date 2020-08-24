@@ -10552,6 +10552,7 @@ rules:
   - ""
   resources:
   - namespaces
+  - secrets
   - services
   verbs:
   - create
@@ -11528,7 +11529,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.serviceAccountName
-        image: eu.gcr.io/code-supply/site-operator:dbedfcf
+        image: eu.gcr.io/code-supply/site-operator:3a6963a
         name: site-operator
         resources:
           limits:
