@@ -23,11 +23,13 @@ defmodule SiteOperator.RealK8sTest do
     }
 
     deployment = %Deployment{
-      name: "test-name"
+      name: "test-name",
+      namespace: "test-name"
     }
 
     gateway = %Gateway{
       name: "test-name",
+      namespace: "test-name",
       domains: ["testgateway.example.com"]
     }
 
@@ -36,11 +38,13 @@ defmodule SiteOperator.RealK8sTest do
     }
 
     service = %Service{
-      name: "test-name"
+      name: "test-name",
+      namespace: "test-name"
     }
 
     virtual_service = %VirtualService{
       name: "test-name",
+      namespace: "test-name",
       domains: ["testvirtualservice.example.com"]
     }
 

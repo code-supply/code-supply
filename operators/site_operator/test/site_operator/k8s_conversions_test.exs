@@ -14,22 +14,24 @@ defmodule SiteOperator.K8sConversionsTest do
   }
 
   @name "my-name"
+  @namespace "my-namespace"
   @domains ["some-domain.example.com", "another-domain.biz"]
 
   setup do
     %{
       certificate: %Certificate{name: @name, domains: @domains} |> to_k8s(),
-      deployment: %Deployment{name: @name} |> to_k8s(),
-      gateway: %Gateway{name: @name, domains: @domains} |> to_k8s(),
+      deployment: %Deployment{name: @name, namespace: @namespace} |> to_k8s(),
+      gateway: %Gateway{name: @name, namespace: @namespace, domains: @domains} |> to_k8s(),
       namespace: %Namespace{name: @name} |> to_k8s(),
-      service: %Service{name: @name} |> to_k8s(),
-      virtual_service: %VirtualService{name: @name, domains: @domains} |> to_k8s()
+      service: %Service{name: @name, namespace: @namespace} |> to_k8s(),
+      virtual_service:
+        %VirtualService{name: @name, namespace: @namespace, domains: @domains} |> to_k8s()
     }
   end
 
   describe "namespace" do
-    test "has prefixed name", %{namespace: namespace} do
-      assert get_in(namespace, ["metadata", "name"]) == "customer-#{@name}"
+    test "has name", %{namespace: namespace} do
+      assert get_in(namespace, ["metadata", "name"]) == @name
     end
 
     test "enables Istio sidecar injection", %{namespace: namespace} do
@@ -42,11 +44,8 @@ defmodule SiteOperator.K8sConversionsTest do
   end
 
   describe "service" do
-    test "in correct namespace", %{service: service} do
-      assert get_in(service, [
-               "metadata",
-               "namespace"
-             ]) == "customer-#{@name}"
+    test "named and namespaced correctly", %{service: service} do
+      assert name_and_namespace(service) == {@name, @namespace}
     end
 
     test "selects correct pods", %{service: service, deployment: deployment} do
@@ -65,13 +64,13 @@ defmodule SiteOperator.K8sConversionsTest do
     end
 
     test "can be turned back into a struct", %{service: service} do
-      assert service |> from_k8s() == %Service{name: @name}
+      assert service |> from_k8s() == %Service{name: @name, namespace: @namespace}
     end
   end
 
   describe "deployment" do
     test "named and namespaced correctly", %{deployment: deployment} do
-      assert name_and_namespace(deployment) == {@name, "customer-#{@name}"}
+      assert name_and_namespace(deployment) == {@name, @namespace}
     end
 
     test "matches on app label, has version", %{deployment: deployment} do
@@ -118,13 +117,13 @@ defmodule SiteOperator.K8sConversionsTest do
     end
 
     test "can be turned back into a struct", %{deployment: deployment} do
-      assert deployment |> from_k8s() == %Deployment{name: @name}
+      assert deployment |> from_k8s() == %Deployment{name: @name, namespace: @namespace}
     end
   end
 
   describe "virtual service" do
     test "named and namespaced correctly", %{virtual_service: virtual_service} do
-      assert name_and_namespace(virtual_service) == {@name, "customer-#{@name}"}
+      assert name_and_namespace(virtual_service) == {@name, @namespace}
     end
 
     test "external host is set", %{virtual_service: virtual_service} do
@@ -166,6 +165,7 @@ defmodule SiteOperator.K8sConversionsTest do
     test "can be turned back into a struct", %{virtual_service: virtual_service} do
       assert virtual_service |> from_k8s() == %VirtualService{
                name: @name,
+               namespace: @namespace,
                domains: @domains
              }
     end
@@ -173,7 +173,7 @@ defmodule SiteOperator.K8sConversionsTest do
 
   describe "gateway" do
     test "named and namespaced correctly", %{gateway: gateway} do
-      assert name_and_namespace(gateway) == {@name, "customer-#{@name}"}
+      assert name_and_namespace(gateway) == {@name, @namespace}
     end
 
     test "configures servers with insecure and TLS endpoints", %{
@@ -209,7 +209,11 @@ defmodule SiteOperator.K8sConversionsTest do
     end
 
     test "can be turned back into a struct", %{gateway: gateway} do
-      assert gateway |> from_k8s() == %Gateway{name: @name, domains: @domains}
+      assert gateway |> from_k8s() == %Gateway{
+               name: @name,
+               namespace: @namespace,
+               domains: @domains
+             }
     end
   end
 

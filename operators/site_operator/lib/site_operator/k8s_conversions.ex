@@ -9,7 +9,6 @@ defmodule SiteOperator.K8sConversions do
     VirtualService
   }
 
-  @prefix "customer-"
   @affiliate_image_sha "a3fd9bf69c19da78530d74ae179bc29520fcc5e1e91570a66d31d1b9865f9eff"
 
   def to_k8s(%Certificate{name: name, domains: domains}) do
@@ -36,7 +35,7 @@ defmodule SiteOperator.K8sConversions do
       "apiVersion" => "v1",
       "kind" => "Namespace",
       "metadata" => %{
-        "name" => prefixed(name),
+        "name" => name,
         "labels" => %{
           "istio-injection" => "enabled"
         }
@@ -44,11 +43,11 @@ defmodule SiteOperator.K8sConversions do
     }
   end
 
-  def to_k8s(%Deployment{name: name}) do
+  def to_k8s(%Deployment{name: name, namespace: namespace}) do
     %{
       "apiVersion" => "apps/v1",
       "kind" => "Deployment",
-      "metadata" => standard_metadata(name),
+      "metadata" => %{"name" => name, "namespace" => namespace},
       "spec" => %{
         "selector" => %{
           "matchLabels" => %{
@@ -76,11 +75,11 @@ defmodule SiteOperator.K8sConversions do
     }
   end
 
-  def to_k8s(%Secret{name: name, data: data}) do
+  def to_k8s(%Secret{name: name, namespace: namespace, data: data}) do
     %{
       "apiVersion" => "v1",
       "kind" => "Secret",
-      "metadata" => standard_metadata(name),
+      "metadata" => %{"name" => name, "namespace" => namespace},
       "type" => "Opaque",
       "data" =>
         for {k, v} <- data, into: %{} do
@@ -89,11 +88,11 @@ defmodule SiteOperator.K8sConversions do
     }
   end
 
-  def to_k8s(%Service{name: name}) do
+  def to_k8s(%Service{name: name, namespace: namespace}) do
     %{
       "apiVersion" => "v1",
       "kind" => "Service",
-      "metadata" => standard_metadata(name),
+      "metadata" => %{"name" => name, "namespace" => namespace},
       "spec" => %{
         "selector" => %{
           "app" => name
@@ -108,11 +107,11 @@ defmodule SiteOperator.K8sConversions do
     }
   end
 
-  def to_k8s(%Gateway{name: name, domains: domains}) do
+  def to_k8s(%Gateway{name: name, namespace: namespace, domains: domains}) do
     %{
       "apiVersion" => "networking.istio.io/v1beta1",
       "kind" => "Gateway",
-      "metadata" => standard_metadata(name),
+      "metadata" => %{"name" => name, "namespace" => namespace},
       "spec" => %{
         "selector" => %{
           "istio" => "ingressgateway"
@@ -146,11 +145,11 @@ defmodule SiteOperator.K8sConversions do
     }
   end
 
-  def to_k8s(%VirtualService{name: name, domains: domains}) do
+  def to_k8s(%VirtualService{name: name, namespace: namespace, domains: domains}) do
     %{
       "apiVersion" => "networking.istio.io/v1beta1",
       "kind" => "VirtualService",
-      "metadata" => standard_metadata(name),
+      "metadata" => %{"name" => name, "namespace" => namespace},
       "spec" => %{
         "gateways" => [name],
         "hosts" => domains,
@@ -169,51 +168,41 @@ defmodule SiteOperator.K8sConversions do
         "metadata" => %{"name" => name},
         "spec" => %{"dnsNames" => domains}
       }) do
-    %Certificate{name: unprefixed(name), domains: domains}
+    %Certificate{name: name, domains: domains}
   end
 
   def from_k8s(%{"kind" => "Namespace", "metadata" => %{"name" => name}}) do
-    %Namespace{name: unprefixed(name)}
+    %Namespace{name: name}
   end
 
-  def from_k8s(%{"kind" => "Deployment", "metadata" => %{"name" => name}}) do
-    %Deployment{name: unprefixed(name)}
+  def from_k8s(%{
+        "kind" => "Deployment",
+        "metadata" => %{"name" => name, "namespace" => namespace}
+      }) do
+    %Deployment{name: name, namespace: namespace}
   end
 
-  def from_k8s(%{"kind" => "Service", "metadata" => %{"name" => name}}) do
-    %Service{name: unprefixed(name)}
+  def from_k8s(%{"kind" => "Service", "metadata" => %{"name" => name, "namespace" => namespace}}) do
+    %Service{name: name, namespace: namespace}
   end
 
   def from_k8s(%{
         "kind" => "Gateway",
-        "metadata" => %{"name" => name},
+        "metadata" => %{"name" => name, "namespace" => namespace},
         "spec" => %{"servers" => [%{"hosts" => domains} | _]}
       }) do
-    %Gateway{name: unprefixed(name), domains: domains}
+    %Gateway{name: name, namespace: namespace, domains: domains}
   end
 
   def from_k8s(%{
         "kind" => "VirtualService",
-        "metadata" => %{"name" => name},
+        "metadata" => %{"name" => name, "namespace" => namespace},
         "spec" => %{"hosts" => domains}
       }) do
-    %VirtualService{name: unprefixed(name), domains: domains}
-  end
-
-  def prefixed(name) do
-    "#{@prefix}#{name}"
-  end
-
-  def unprefixed(name) do
-    name
-    |> String.replace_prefix(@prefix, "")
+    %VirtualService{name: name, namespace: namespace, domains: domains}
   end
 
   defp certificate_secret_name(name) do
     "tls-#{name}"
-  end
-
-  defp standard_metadata(name) do
-    %{"name" => name, "namespace" => prefixed(name)}
   end
 end

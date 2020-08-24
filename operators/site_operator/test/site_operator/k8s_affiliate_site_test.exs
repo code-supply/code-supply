@@ -25,10 +25,10 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
   describe "creation" do
     test "creates namespace with deployment, service, gateway, virtual service, certificate in istio-system",
          %{create_3: create} do
-      ns = %Namespace{name: @namespace}
+      ns = %Namespace{name: "customer-#{@namespace}"}
       ns_k8s = ns |> to_k8s
 
-      cert = %Certificate{name: @namespace, domains: @domains}
+      cert = %Certificate{name: "customer-#{@namespace}", domains: @domains}
       cert_k8s = cert |> to_k8s
 
       expect(MockK8s, :execute, fn [
@@ -39,7 +39,7 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
           assert operations ==
                    Operations.inner_ns_creations(
                      "affiliate",
-                     @namespace,
+                     "customer-#{@namespace}",
                      @domains,
                      "my-awesome-secret"
                    )

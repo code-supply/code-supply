@@ -4,6 +4,16 @@ defmodule SiteOperator.K8s.OperationsTest do
   import SiteOperator.K8s.Operations
 
   describe "inner namespace creations" do
+    test "all use the provided namespace" do
+      namespaces =
+        for op <-
+              inner_ns_creations("my-app", "my-namespace", ["my-app.example.com"], "some-secret") do
+          op.resource |> get_in(["metadata", "namespace"])
+        end
+
+      assert namespaces |> Enum.uniq() == ["my-namespace"]
+    end
+
     test "all use the provided app-type name, because they're namespaced" do
       names =
         for op <-
