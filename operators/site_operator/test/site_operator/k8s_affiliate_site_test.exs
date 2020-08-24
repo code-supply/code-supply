@@ -16,15 +16,15 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
     Hammox.protect(
       K8sAffiliateSite,
       AffiliateSite,
-      create: 2,
+      create: 3,
       delete: 1,
-      reconcile: 2
+      reconcile: 3
     )
   end
 
   describe "creation" do
     test "creates namespace with deployment, service, gateway, virtual service, certificate in istio-system",
-         %{create_2: create} do
+         %{create_3: create} do
       ns = %Namespace{name: @namespace}
       ns_k8s = ns |> to_k8s
 
@@ -36,31 +36,33 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
                                      %Operation{action: :create, resource: ^cert_k8s}
                                    ] ->
         expect(MockK8s, :execute, fn operations ->
-          assert operations == Operations.inner_ns_creations(@namespace, @domains)
+          assert operations ==
+                   Operations.inner_ns_creations(@namespace, @domains, "my-awesome-secret")
+
           {:ok, "don't match on this"}
         end)
 
         {:ok, ""}
       end)
 
-      {:ok, _} = create.(@namespace, @domains)
+      {:ok, _} = create.(@namespace, @domains, "my-awesome-secret")
     end
 
     test "returns error when we ask for an empty name, empty domain, or no domains", %{
-      create_2: create
+      create_3: create
     } do
-      assert create.("", ["yo.com"]) == {:error, "Empty name"}
-      assert create.("hi", ["foo.com", ""]) == {:error, "Empty domain"}
-      assert create.("hi", []) == {:error, "No domains"}
+      assert create.("", ["yo.com"], "") == {:error, "Empty name"}
+      assert create.("hi", ["foo.com", ""], "") == {:error, "Empty domain"}
+      assert create.("hi", [], "") == {:error, "No domains"}
     end
 
-    test "returns error when we get a k8s error", %{create_2: create} do
+    test "returns error when we get a k8s error", %{create_3: create} do
       MockK8s
       |> stub(:execute, fn _ ->
         {:error, "Bad news"}
       end)
 
-      result = create.("<>@", ["!!"])
+      result = create.("<>@", ["!!"], "")
       assert elem(result, 0) == :error
       assert elem(result, 1) == "Bad news"
     end
@@ -79,15 +81,15 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
   end
 
   describe "reconciliation" do
-    test "does nothing when namespace and cert are available", %{reconcile_2: reconcile} do
+    test "does nothing when namespace and cert are available", %{reconcile_3: reconcile} do
       stub(MockK8s, :execute, fn [%Operation{action: :get}, %Operation{action: :get}] ->
         {:ok, "Some message"}
       end)
 
-      assert reconcile.(@namespace, @domains) == {:ok, :nothing_to_do}
+      assert reconcile.(@namespace, @domains, "a-secret") == {:ok, :nothing_to_do}
     end
 
-    test "creates missing certificate", %{reconcile_2: reconcile} do
+    test "creates missing certificate", %{reconcile_3: reconcile} do
       cert = %Certificate{name: @namespace, domains: @domains}
       cert_k8s = cert |> to_k8s
 
@@ -99,17 +101,19 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
         {:error, some_resources_missing: [cert]}
       end)
 
-      {:ok, recreated: [^cert]} = reconcile.(@namespace, @domains)
+      {:ok, recreated: [^cert]} = reconcile.(@namespace, @domains, "a-secret")
     end
 
-    test "creates missing namespace and its resources", %{reconcile_2: reconcile} do
+    test "creates missing namespace and its resources", %{reconcile_3: reconcile} do
       ns = %Namespace{name: @namespace}
       ns_k8s = ns |> to_k8s
 
       stub(MockK8s, :execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _] ->
         expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^ns_k8s}] ->
           expect(MockK8s, :execute, fn operations ->
-            assert operations == Operations.inner_ns_creations(@namespace, @domains)
+            assert operations ==
+                     Operations.inner_ns_creations(@namespace, @domains, "a-new-secret")
+
             {:ok, "don't match on this"}
           end)
 
@@ -119,7 +123,7 @@ defmodule SiteOperator.K8sAffiliateSiteTest do
         {:error, some_resources_missing: [ns]}
       end)
 
-      {:ok, recreated: [^ns]} = reconcile.(@namespace, @domains)
+      {:ok, recreated: [^ns]} = reconcile.(@namespace, @domains, "a-new-secret")
     end
   end
 end

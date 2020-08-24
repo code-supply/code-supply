@@ -7,6 +7,7 @@ defmodule SiteOperator.K8s.Operations do
     Gateway,
     Namespace,
     Operation,
+    Secret,
     Service,
     VirtualService
   }
@@ -16,12 +17,18 @@ defmodule SiteOperator.K8s.Operations do
     |> Enum.map(&create/1)
   end
 
-  def inner_ns_creations(name, domains) do
+  def inner_ns_creations(name, domains, secret_key_base) do
     [
       %Deployment{name: name},
       %Service{name: name},
       %Gateway{name: name, domains: domains},
-      %VirtualService{name: name, domains: domains}
+      %VirtualService{name: name, domains: domains},
+      %Secret{
+        name: name,
+        data: %{
+          "SECRET_KEY_BASE" => secret_key_base
+        }
+      }
     ]
     |> Enum.map(&create/1)
   end

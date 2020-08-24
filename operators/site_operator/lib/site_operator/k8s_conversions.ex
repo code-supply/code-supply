@@ -4,6 +4,7 @@ defmodule SiteOperator.K8sConversions do
     Deployment,
     Gateway,
     Namespace,
+    Secret,
     Service,
     VirtualService
   }
@@ -72,6 +73,19 @@ defmodule SiteOperator.K8sConversions do
           }
         }
       }
+    }
+  end
+
+  def to_k8s(%Secret{name: name, data: data}) do
+    %{
+      "apiVersion" => "v1",
+      "kind" => "Secret",
+      "metadata" => standard_metadata(name),
+      "type" => "Opaque",
+      "data" =>
+        for {k, v} <- data, into: %{} do
+          {k, Base.encode64(v)}
+        end
     }
   end
 

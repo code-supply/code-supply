@@ -6,23 +6,23 @@ defmodule SiteOperator.K8sAffiliateSite do
   import SiteOperator.K8s.Operations
 
   @impl SiteOperator.AffiliateSite
-  def create("", _) do
+  def create("", _, _) do
     {:error, "Empty name"}
   end
 
   @impl SiteOperator.AffiliateSite
-  def create(_, []) do
+  def create(_, [], _) do
     {:error, "No domains"}
   end
 
   @impl SiteOperator.AffiliateSite
-  def create(name, domains) do
+  def create(name, domains, secret_key_base) do
     if domains |> Enum.member?("") do
       {:error, "Empty domain"}
     else
       case execute(initial_creations(name, domains)) do
         {:ok, _} ->
-          case execute(inner_ns_creations(name, domains)) do
+          case execute(inner_ns_creations(name, domains, secret_key_base)) do
             {:ok, _} ->
               {:ok, "Site created"}
           end
@@ -39,24 +39,24 @@ defmodule SiteOperator.K8sAffiliateSite do
   end
 
   @impl SiteOperator.AffiliateSite
-  def reconcile(name, domains) do
+  def reconcile(name, domains, secret_key_base) do
     case execute(checks(name, domains)) do
       {:ok, _} ->
         {:ok, :nothing_to_do}
 
       {:error, some_resources_missing: missing_resources} ->
         Enum.each(missing_resources, fn resource ->
-          {:ok, _} = recreate(resource, name, domains)
+          {:ok, _} = recreate(resource, name, domains, secret_key_base)
         end)
 
         {:ok, recreated: missing_resources}
     end
   end
 
-  defp recreate(%Namespace{} = ns, name, domains) do
+  defp recreate(%Namespace{} = ns, name, domains, secret_key_base) do
     case execute([create(ns)]) do
       {:ok, _} ->
-        case execute(inner_ns_creations(name, domains)) do
+        case execute(inner_ns_creations(name, domains, secret_key_base)) do
           {:ok, _} ->
             {:ok, "Site created"}
         end
@@ -66,7 +66,7 @@ defmodule SiteOperator.K8sAffiliateSite do
     end
   end
 
-  defp recreate(%Certificate{} = cert, _name, _domains) do
+  defp recreate(%Certificate{} = cert, _name, _domains, _secret_key_base) do
     execute([create(cert)])
   end
 
