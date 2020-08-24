@@ -64,6 +64,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   use Bonny.Controller
   require Logger
 
+  alias SiteOperator.K8s.AffiliateSite
+
   # @group "your-operator.your-domain.com"
   # @version "v1"
 
@@ -98,7 +100,11 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
       }) do
     log_metadata = [action: "add", name: name, domains: domains]
 
-    case site_maker().create(name, domains, generate_secret_key_base()) do
+    case site_maker().create(%AffiliateSite{
+           name: name,
+           domains: domains,
+           secret_key_base: generate_secret_key_base()
+         }) do
       {:ok, _} ->
         Logger.info("created", log_metadata)
         :ok
@@ -142,7 +148,11 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
       }) do
     log_metadata = [action: "reconcile", name: name, domains: domains]
 
-    case site_maker().reconcile(name, domains, generate_secret_key_base()) do
+    case site_maker().reconcile(%AffiliateSite{
+           name: name,
+           domains: domains,
+           secret_key_base: generate_secret_key_base()
+         }) do
       {:ok, :nothing_to_do} ->
         Logger.info("nothing to do", log_metadata)
         :ok
