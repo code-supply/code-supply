@@ -19,7 +19,11 @@ defmodule SiteOperator.K8s.Operations do
 
   def inner_ns_creations(name, namespace, domains, secret_key_base) do
     [
-      %Deployment{name: name, namespace: namespace},
+      %Deployment{
+        name: name,
+        namespace: namespace,
+        env_vars: %{"CHECK_ORIGINS" => domains |> Enum.join(" ")}
+      },
       %Service{name: name, namespace: namespace},
       %Gateway{name: name, domains: domains, namespace: namespace},
       %VirtualService{name: name, domains: domains, namespace: namespace},

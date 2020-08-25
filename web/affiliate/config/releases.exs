@@ -12,6 +12,7 @@ secret_key_base =
     """
 
 config :affiliate, AffiliateWeb.Endpoint,
+  check_origin: System.get_env("CHECK_ORIGINS") |> String.split(' '),
   http: [
     port: String.to_integer(System.get_env("PORT") || "4000"),
     transport_options: [socket_opts: [:inet6]]

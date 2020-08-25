@@ -37,12 +37,43 @@ defmodule SiteOperator.K8s.OperationsTest do
         }
       } =
         inner_ns_creations("my-app", "my-namespace", ["my-app.example.com"], "my-secret")
-        |> Enum.find(fn op ->
-          op.resource["kind"] == "Secret"
-        end)
-        |> Map.get(:resource)
+        |> find_kind("Secret")
 
       assert {:ok, "my-secret"} = Base.decode64(secret_key_encoded)
+    end
+
+    test "set the checked origins in the deployment, so that new hosts trigger new rollout" do
+      %{
+        "kind" => "Deployment",
+        "spec" => %{
+          "template" => %{
+            "spec" => %{
+              "containers" => [
+                %{
+                  "env" => [
+                    %{
+                      "name" => "CHECK_ORIGINS",
+                      "value" => origins
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      } =
+        inner_ns_creations("app", "ns", ["host1.affable.app", "www.custom-domain.com"], "secret")
+        |> find_kind("Deployment")
+
+      assert origins == "host1.affable.app www.custom-domain.com"
+    end
+
+    defp find_kind(creations, kind) do
+      creations
+      |> Enum.find(fn op ->
+        op.resource["kind"] == kind
+      end)
+      |> Map.get(:resource)
     end
   end
 end

@@ -43,7 +43,7 @@ defmodule SiteOperator.K8sConversions do
     }
   end
 
-  def to_k8s(%Deployment{name: name, namespace: namespace}) do
+  def to_k8s(%Deployment{name: name, namespace: namespace, env_vars: env_vars}) do
     %{
       "apiVersion" => "apps/v1",
       "kind" => "Deployment",
@@ -66,7 +66,11 @@ defmodule SiteOperator.K8sConversions do
               %{
                 "name" => "app",
                 "image" => "eu.gcr.io/code-supply/affiliate@sha256:#{@affiliate_image_sha}",
-                "envFrom" => [%{"secretRef" => %{"name" => name}}]
+                "envFrom" => [%{"secretRef" => %{"name" => name}}],
+                "env" =>
+                  for {k, v} <- env_vars do
+                    %{"name" => k, "value" => v}
+                  end
               }
             ]
           }
@@ -178,9 +182,28 @@ defmodule SiteOperator.K8sConversions do
 
   def from_k8s(%{
         "kind" => "Deployment",
+        "metadata" => %{"name" => name, "namespace" => namespace},
+        "spec" => %{"template" => %{"spec" => %{"containers" => [%{"env" => k8s_env_vars}]}}}
+      }) do
+    %Deployment{
+      name: name,
+      namespace: namespace,
+      env_vars:
+        for %{"name" => k, "value" => v} <- k8s_env_vars, into: %{} do
+          {k, v}
+        end
+    }
+  end
+
+  def from_k8s(%{
+        "kind" => "Deployment",
         "metadata" => %{"name" => name, "namespace" => namespace}
       }) do
-    %Deployment{name: name, namespace: namespace}
+    %Deployment{
+      name: name,
+      namespace: namespace,
+      env_vars: %{}
+    }
   end
 
   def from_k8s(%{

@@ -22,7 +22,13 @@ defmodule SiteOperator.K8sConversionsTest do
   setup do
     %{
       certificate: %Certificate{name: @namespace, domains: @domains} |> to_k8s(),
-      deployment: %Deployment{name: @name, namespace: @namespace} |> to_k8s(),
+      deployment:
+        %Deployment{
+          name: @name,
+          namespace: @namespace,
+          env_vars: %{"NON_SECRET_CONFIG" => "asdf"}
+        }
+        |> to_k8s(),
       gateway: %Gateway{name: @name, namespace: @namespace, domains: @domains} |> to_k8s(),
       namespace: %Namespace{name: @name} |> to_k8s(),
       secret: %Secret{name: @name, namespace: @namespace, data: @secret_data} |> to_k8s(),
@@ -122,7 +128,20 @@ defmodule SiteOperator.K8sConversionsTest do
     end
 
     test "can be turned back into a struct", %{deployment: deployment} do
-      assert deployment |> from_k8s() == %Deployment{name: @name, namespace: @namespace}
+      assert deployment |> from_k8s() == %Deployment{
+               name: @name,
+               namespace: @namespace,
+               env_vars: %{"NON_SECRET_CONFIG" => "asdf"}
+             }
+
+      {_, without_env_vars} =
+        deployment |> pop_in(["spec", "template", "spec", "containers", at(0), "env"])
+
+      assert without_env_vars |> from_k8s() == %Deployment{
+               name: @name,
+               namespace: @namespace,
+               env_vars: %{}
+             }
     end
   end
 

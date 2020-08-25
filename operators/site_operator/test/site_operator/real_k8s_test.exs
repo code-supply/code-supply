@@ -24,7 +24,8 @@ defmodule SiteOperator.RealK8sTest do
 
     deployment = %Deployment{
       name: "test-name",
-      namespace: "test-name"
+      namespace: "test-name",
+      env_vars: %{}
     }
 
     gateway = %Gateway{
