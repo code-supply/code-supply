@@ -9,7 +9,7 @@ defmodule SiteOperator.K8sConversions do
     VirtualService
   }
 
-  @affiliate_image_sha "66df9696f8c5511ab4fa183ba154b13249f00c9d7b4f875d920ae3c6534b942c"
+  @affiliate_image_sha "734be1eb353e8c1db52583c12d4034aba3245c8c1f20c446685e8e0d3454ff7f"
 
   def to_k8s(%Certificate{name: site_name, domains: domains}) do
     %{
