@@ -11,16 +11,16 @@ defmodule SiteOperator.K8sConversions do
 
   @affiliate_image_sha "b662c4ef31a7946b66667c204e3b2a0722d0ddde53397ca2b980e46871c23c28"
 
-  def to_k8s(%Certificate{name: name, domains: domains}) do
+  def to_k8s(%Certificate{name: site_name, domains: domains}) do
     %{
       "apiVersion" => "cert-manager.io/v1alpha2",
       "kind" => "Certificate",
       "metadata" => %{
-        "name" => name,
+        "name" => site_name,
         "namespace" => "istio-system"
       },
       "spec" => %{
-        "secretName" => certificate_secret_name(name),
+        "secretName" => certificate_secret_name(site_name),
         "issuerRef" => %{
           "name" => "letsencrypt-production",
           "kind" => "ClusterIssuer"
@@ -136,7 +136,7 @@ defmodule SiteOperator.K8sConversions do
               "protocol" => "HTTPS"
             },
             "tls" => %{
-              "credentialName" => certificate_secret_name(name),
+              "credentialName" => certificate_secret_name(namespace),
               "mode" => "SIMPLE"
             }
           }

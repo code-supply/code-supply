@@ -21,7 +21,7 @@ defmodule SiteOperator.K8sConversionsTest do
 
   setup do
     %{
-      certificate: %Certificate{name: @name, domains: @domains} |> to_k8s(),
+      certificate: %Certificate{name: @namespace, domains: @domains} |> to_k8s(),
       deployment: %Deployment{name: @name, namespace: @namespace} |> to_k8s(),
       gateway: %Gateway{name: @name, namespace: @namespace, domains: @domains} |> to_k8s(),
       namespace: %Namespace{name: @name} |> to_k8s(),
@@ -103,20 +103,22 @@ defmodule SiteOperator.K8sConversionsTest do
     end
 
     test "has a container with secret as env vars", %{deployment: deployment} do
-      assert get_in(deployment, [
-               "spec",
-               "template",
-               "spec",
-               "containers",
-               all()
-             ]) == [
+      assert [
                %{
                  "name" => "app",
-                 "image" =>
-                   "eu.gcr.io/code-supply/affiliate@sha256:a3fd9bf69c19da78530d74ae179bc29520fcc5e1e91570a66d31d1b9865f9eff",
+                 "image" => image,
                  "envFrom" => [%{"secretRef" => %{"name" => @name}}]
                }
-             ]
+             ] =
+               get_in(deployment, [
+                 "spec",
+                 "template",
+                 "spec",
+                 "containers",
+                 all()
+               ])
+
+      assert image =~ ~r/eu\.gcr\.io\/code-supply\/affiliate@sha256:[a-z0-9]+/
     end
 
     test "can be turned back into a struct", %{deployment: deployment} do
@@ -243,11 +245,11 @@ defmodule SiteOperator.K8sConversionsTest do
     end
 
     test "named correctly, in istio-system namespace", %{certificate: certificate} do
-      assert name_and_namespace(certificate) == {@name, "istio-system"}
+      assert name_and_namespace(certificate) == {@namespace, "istio-system"}
     end
 
     test "sets appropriate secret name", %{certificate: certificate} do
-      assert get_in(certificate, ["spec", "secretName"]) == "tls-my-name"
+      assert get_in(certificate, ["spec", "secretName"]) == "tls-my-namespace"
     end
 
     test "domain names are set", %{certificate: certificate} do
@@ -255,7 +257,7 @@ defmodule SiteOperator.K8sConversionsTest do
     end
 
     test "can be turned back into a struct", %{certificate: certificate} do
-      assert certificate |> from_k8s() == %Certificate{name: @name, domains: @domains}
+      assert certificate |> from_k8s() == %Certificate{name: @namespace, domains: @domains}
     end
   end
 
