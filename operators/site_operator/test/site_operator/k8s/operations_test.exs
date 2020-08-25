@@ -65,7 +65,7 @@ defmodule SiteOperator.K8s.OperationsTest do
         inner_ns_creations("app", "ns", ["host1.affable.app", "www.custom-domain.com"], "secret")
         |> find_kind("Deployment")
 
-      assert origins == "host1.affable.app www.custom-domain.com"
+      assert origins == "https://host1.affable.app https://www.custom-domain.com"
     end
 
     defp find_kind(creations, kind) do

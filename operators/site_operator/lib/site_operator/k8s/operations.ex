@@ -22,7 +22,12 @@ defmodule SiteOperator.K8s.Operations do
       %Deployment{
         name: name,
         namespace: namespace,
-        env_vars: %{"CHECK_ORIGINS" => domains |> Enum.join(" ")}
+        env_vars: %{
+          "CHECK_ORIGINS" =>
+            domains
+            |> Enum.map(fn domain -> "https://#{domain}" end)
+            |> Enum.join(" ")
+        }
       },
       %Service{name: name, namespace: namespace},
       %Gateway{name: name, domains: domains, namespace: namespace},
