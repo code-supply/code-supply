@@ -100,7 +100,8 @@ defmodule SiteOperator.K8sConversions do
         "ports" => [
           %{
             "name" => "http",
-            "port" => 80
+            "port" => 80,
+            "targetPort" => 4000
           }
         ]
       }

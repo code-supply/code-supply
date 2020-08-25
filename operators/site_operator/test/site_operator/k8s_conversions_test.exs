@@ -63,7 +63,7 @@ defmodule SiteOperator.K8sConversionsTest do
       assert get_in(service, [
                "spec",
                "ports"
-             ]) == [%{"name" => "http", "port" => 80}]
+             ]) == [%{"name" => "http", "port" => 80, "targetPort" => 4000}]
     end
 
     test "can be turned back into a struct", %{service: service} do
