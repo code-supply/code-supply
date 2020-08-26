@@ -11052,6 +11052,20 @@ rules:
   - create
   - patch
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: operator-can-list-endpoints-so-it-can-grant
+  namespace: affable
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: endpoint-lister
+subjects:
+- kind: ServiceAccount
+  name: site-operator
+  namespace: operators
+---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
 metadata:
