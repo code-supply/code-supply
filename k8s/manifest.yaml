@@ -11552,7 +11552,7 @@ spec:
         envFrom:
         - secretRef:
             name: site-operator
-        image: eu.gcr.io/code-supply/site-operator:d033298
+        image: eu.gcr.io/code-supply/site-operator:db6db2a
         name: site-operator
         resources:
           limits:
