@@ -10566,6 +10566,7 @@ rules:
   - ""
   resources:
   - namespaces
+  - rolebindings
   - secrets
   - services
   verbs:
