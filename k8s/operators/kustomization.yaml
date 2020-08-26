@@ -6,3 +6,5 @@ resources:
 - site-operator.yaml
 patchesStrategicMerge:
 - site-operator-version.yaml
+- read-write-filesystem.yaml
+- env-vars-from-secret.yaml

@@ -11549,7 +11549,10 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.serviceAccountName
-        image: eu.gcr.io/code-supply/site-operator:1f75e97
+        envFrom:
+        - secretRef:
+            name: site-operator
+        image: eu.gcr.io/code-supply/site-operator:d033298
         name: site-operator
         resources:
           limits:
@@ -11560,7 +11563,7 @@ spec:
             memory: 200Mi
         securityContext:
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
+          readOnlyRootFilesystem: false
           runAsNonRoot: true
           runAsUser: 65534
       serviceAccountName: site-operator
