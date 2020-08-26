@@ -75,6 +75,24 @@ defmodule SiteOperator.K8s.OperationsTest do
              } in (deployment |> env_vars())
     end
 
+    test "sets the distribution mode to 'name' and includes the pod IP", %{
+      creations: creations
+    } do
+      deployment = creations |> find_kind("Deployment")
+
+      assert %{
+               "name" => "POD_IP",
+               "valueFrom" => %{
+                 "fieldRef" => %{"fieldPath" => "status.podIP"}
+               }
+             } in (deployment |> env_vars())
+
+      assert %{
+               "name" => "RELEASE_NODE",
+               "value" => "affable@$(POD_IP)"
+             } in (deployment |> env_vars())
+    end
+
     defp env_vars(k8s_deployment) do
       %{
         "kind" => "Deployment",
