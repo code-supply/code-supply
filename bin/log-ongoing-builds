@@ -20,4 +20,6 @@ then
     exit 1
 fi
 
+args+="; select-layout even-horizontal"
+
 eval "tmux new-session $args"
