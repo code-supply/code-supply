@@ -94,6 +94,11 @@ defmodule SiteOperator.K8s.OperationsTest do
                "name" => "RELEASE_NODE",
                "value" => "affable@$(POD_IP)"
              } in (deployment |> env_vars())
+
+      assert %{
+               "name" => "RELEASE_DISTRIBUTION",
+               "value" => "name"
+             } in (deployment |> env_vars())
     end
 
     defp env_vars(k8s_deployment) do

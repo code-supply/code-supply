@@ -38,6 +38,7 @@ defmodule SiteOperator.K8s.Operations do
             |> Enum.map(fn domain -> "https://#{domain}" end)
             |> Enum.join(" "),
           "ELIXIR_ERL_OPTIONS" => "-kernel inet_dist_listen_min 5555 inet_dist_listen_max 5555",
+          "RELEASE_DISTRIBUTION" => "name",
           "RELEASE_NODE" => "affable@$(POD_IP)"
         }
       },
