@@ -11,6 +11,8 @@ do
         args+="\; split-window -h "
     fi
     args+="\"echo 'Streaming $id'; gcloud builds log --stream $id; bash\" "
+    args+="\; select-layout even-horizontal "
+
     open=true
 done
 
@@ -20,6 +22,5 @@ then
     exit 1
 fi
 
-args+="; select-layout even-horizontal"
 
 eval "tmux new-session $args"
