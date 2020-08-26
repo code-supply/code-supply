@@ -24,6 +24,7 @@ defmodule SiteOperator.RealK8sTest do
 
     deployment = %Deployment{
       name: "test-name",
+      image: "nginx",
       namespace: "test-name",
       env_vars: %{}
     }

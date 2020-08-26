@@ -20,6 +20,7 @@ defmodule SiteOperator.K8s.Operations do
 
   def inner_ns_creations(%AffiliateSite{
         name: namespace,
+        image: image,
         domains: domains,
         secret_key_base: secret_key_base,
         distribution_cookie: distribution_cookie
@@ -30,6 +31,7 @@ defmodule SiteOperator.K8s.Operations do
       %Deployment{
         name: name,
         namespace: namespace,
+        image: image,
         env_vars: %{
           "CHECK_ORIGINS" =>
             domains

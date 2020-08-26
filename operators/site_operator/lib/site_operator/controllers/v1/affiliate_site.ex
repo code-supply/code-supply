@@ -102,6 +102,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
 
     case site_maker().create(%AffiliateSite{
            name: name,
+           image: affiliate_site_image(),
            domains: domains,
            secret_key_base: generate_secret_key_base(),
            distribution_cookie: distribution_cookie()
@@ -151,6 +152,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
 
     case site_maker().reconcile(%AffiliateSite{
            name: name,
+           image: affiliate_site_image(),
            domains: domains,
            secret_key_base: generate_secret_key_base(),
            distribution_cookie: distribution_cookie()
@@ -172,6 +174,10 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   defp generate_secret_key_base do
     length = 64
     :crypto.strong_rand_bytes(length) |> Base.encode64() |> binary_part(0, length)
+  end
+
+  defp affiliate_site_image do
+    Application.get_env(:site_operator, :affiliate_site_image)
   end
 
   defp distribution_cookie do

@@ -34,6 +34,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       site = %AffiliateSite{
         name: @namespace,
+        image: "my-image",
         domains: @domains,
         secret_key_base: "my-awesome-secret",
         distribution_cookie: "some-cookie"
@@ -59,6 +60,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
     } do
       assert create.(%AffiliateSite{
                name: "",
+               image: "irrelevant",
                domains: ["yo.com"],
                secret_key_base: @irrelevant,
                distribution_cookie: @irrelevant
@@ -66,6 +68,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       assert create.(%AffiliateSite{
                name: "hi",
+               image: "irrelevant",
                domains: ["yo.com", ""],
                secret_key_base: @irrelevant,
                distribution_cookie: @irrelevant
@@ -73,6 +76,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       assert create.(%AffiliateSite{
                name: "hi",
+               image: "irrelevant",
                domains: [],
                secret_key_base: @irrelevant,
                distribution_cookie: @irrelevant
@@ -88,6 +92,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
       result =
         create.(%AffiliateSite{
           name: "<>@",
+          image: "irrelevant",
           domains: ["!!"],
           secret_key_base: "",
           distribution_cookie: ""
@@ -118,6 +123,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       assert reconcile.(%AffiliateSite{
                name: @namespace,
+               image: "irrelevant",
                domains: @domains,
                secret_key_base: "a-secret",
                distribution_cookie: ""
@@ -139,6 +145,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
       {:ok, recreated: [^cert]} =
         reconcile.(%AffiliateSite{
           name: @namespace,
+          image: "irrelevant",
           domains: @domains,
           secret_key_base: "a-secret",
           distribution_cookie: @irrelevant
@@ -151,6 +158,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       site = %AffiliateSite{
         name: @namespace,
+        image: "some-image",
         domains: @domains,
         secret_key_base: "a-new-secret",
         distribution_cookie: "new-cookie"

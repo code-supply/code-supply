@@ -11,6 +11,7 @@ defmodule SiteOperator.K8s.OperationsTest do
         for op <-
               inner_ns_creations(%AffiliateSite{
                 name: "my-namespace",
+                image: "my-image",
                 domains: ["my-app.example.com"],
                 secret_key_base: "some-secret",
                 distribution_cookie: "some-cookie"
@@ -26,6 +27,7 @@ defmodule SiteOperator.K8s.OperationsTest do
         for op <-
               inner_ns_creations(%AffiliateSite{
                 name: "my-namespace",
+                image: "my-image",
                 domains: ["my-app.example.com"],
                 secret_key_base: "some-secret",
                 distribution_cookie: "cookie"
@@ -51,6 +53,7 @@ defmodule SiteOperator.K8s.OperationsTest do
       } =
         inner_ns_creations(%AffiliateSite{
           name: "my-namespace",
+          image: "my-image",
           domains: ["my-app.example.com"],
           secret_key_base: "my-secret",
           distribution_cookie: "cookie"
@@ -83,6 +86,7 @@ defmodule SiteOperator.K8s.OperationsTest do
       } =
         inner_ns_creations(%AffiliateSite{
           name: "ns",
+          image: "some-image",
           domains: ["host1.affable.app", "www.custom-domain.com"],
           secret_key_base: "secret",
           distribution_cookie: "cookie"

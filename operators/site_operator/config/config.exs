@@ -3,7 +3,8 @@ import Config
 config :site_operator,
   site_maker: SiteOperator.K8sSiteMaker,
   k8s: SiteOperator.RealK8s,
-  distribution_cookie: "atestcookie"
+  distribution_cookie: "atestcookie",
+  affiliate_site_image: "nginx"
 
 config :k8s,
   clusters: %{

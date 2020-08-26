@@ -40,9 +40,11 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
 
     test "creates the site", %{add: add} do
       expected_cookie = Application.get_env(:site_operator, :distribution_cookie)
+      expected_image = Application.get_env(:site_operator, :affiliate_site_image)
 
       expect(MockSiteMaker, :create, fn %AffiliateSite{
                                           name: "justatest",
+                                          image: ^expected_image,
                                           domains: ["www.example.com"],
                                           secret_key_base: _,
                                           distribution_cookie: ^expected_cookie

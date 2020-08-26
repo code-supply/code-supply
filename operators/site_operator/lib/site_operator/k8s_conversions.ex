@@ -9,8 +9,6 @@ defmodule SiteOperator.K8sConversions do
     VirtualService
   }
 
-  @affiliate_image_sha "734be1eb353e8c1db52583c12d4034aba3245c8c1f20c446685e8e0d3454ff7f"
-
   def to_k8s(%Certificate{name: site_name, domains: domains}) do
     %{
       "apiVersion" => "cert-manager.io/v1alpha2",
@@ -43,7 +41,7 @@ defmodule SiteOperator.K8sConversions do
     }
   end
 
-  def to_k8s(%Deployment{name: name, namespace: namespace, env_vars: env_vars}) do
+  def to_k8s(%Deployment{name: name, image: image, namespace: namespace, env_vars: env_vars}) do
     %{
       "apiVersion" => "apps/v1",
       "kind" => "Deployment",
@@ -65,7 +63,7 @@ defmodule SiteOperator.K8sConversions do
             "containers" => [
               %{
                 "name" => "app",
-                "image" => "eu.gcr.io/code-supply/affiliate@sha256:#{@affiliate_image_sha}",
+                "image" => image,
                 "envFrom" => [%{"secretRef" => %{"name" => name}}],
                 "env" =>
                   for {k, v} <- env_vars do
@@ -183,10 +181,15 @@ defmodule SiteOperator.K8sConversions do
   def from_k8s(%{
         "kind" => "Deployment",
         "metadata" => %{"name" => name, "namespace" => namespace},
-        "spec" => %{"template" => %{"spec" => %{"containers" => [%{"env" => k8s_env_vars}]}}}
+        "spec" => %{
+          "template" => %{
+            "spec" => %{"containers" => [%{"image" => image, "env" => k8s_env_vars}]}
+          }
+        }
       }) do
     %Deployment{
       name: name,
+      image: image,
       namespace: namespace,
       env_vars:
         for %{"name" => k, "value" => v} <- k8s_env_vars, into: %{} do
@@ -197,10 +200,16 @@ defmodule SiteOperator.K8sConversions do
 
   def from_k8s(%{
         "kind" => "Deployment",
-        "metadata" => %{"name" => name, "namespace" => namespace}
+        "metadata" => %{"name" => name, "namespace" => namespace},
+        "spec" => %{
+          "template" => %{
+            "spec" => %{"containers" => [%{"image" => image}]}
+          }
+        }
       }) do
     %Deployment{
       name: name,
+      image: image,
       namespace: namespace,
       env_vars: %{}
     }

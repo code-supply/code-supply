@@ -18,6 +18,7 @@ defmodule SiteOperator.K8sConversionsTest do
   @namespace "my-namespace"
   @domains ["some-domain.example.com", "another-domain.biz"]
   @secret_data %{"my-secret" => "stuff"}
+  @image "nginx:1.2.3"
 
   setup do
     %{
@@ -26,6 +27,7 @@ defmodule SiteOperator.K8sConversionsTest do
         %Deployment{
           name: @name,
           namespace: @namespace,
+          image: @image,
           env_vars: %{"NON_SECRET_CONFIG" => "asdf"}
         }
         |> to_k8s(),
@@ -124,12 +126,13 @@ defmodule SiteOperator.K8sConversionsTest do
                  all()
                ])
 
-      assert image =~ ~r/eu\.gcr\.io\/code-supply\/affiliate@sha256:[a-z0-9]+/
+      assert image == @image
     end
 
     test "can be turned back into a struct", %{deployment: deployment} do
       assert deployment |> from_k8s() == %Deployment{
                name: @name,
+               image: @image,
                namespace: @namespace,
                env_vars: %{"NON_SECRET_CONFIG" => "asdf"}
              }
@@ -139,6 +142,7 @@ defmodule SiteOperator.K8sConversionsTest do
 
       assert without_env_vars |> from_k8s() == %Deployment{
                name: @name,
+               image: @image,
                namespace: @namespace,
                env_vars: %{}
              }
