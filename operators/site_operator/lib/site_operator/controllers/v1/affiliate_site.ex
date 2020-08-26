@@ -177,7 +177,16 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   end
 
   defp secret_key_generator do
-    Application.get_env(:site_operator, :secret_key_generator)
+    case Application.get_env(:site_operator, :secret_key_generator) do
+      :generate ->
+        fn ->
+          length = 64
+          :crypto.strong_rand_bytes(length) |> Base.encode64() |> binary_part(0, length)
+        end
+
+      value ->
+        fn -> value end
+    end
   end
 
   defp affiliate_site_image do

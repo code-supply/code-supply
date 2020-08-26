@@ -46,7 +46,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
         name: "justatest",
         image: expected_image,
         domains: ["www.example.com"],
-        secret_key_base: Application.get_env(:site_operator, :secret_key_generator).(),
+        secret_key_base: Application.get_env(:site_operator, :secret_key_generator),
         distribution_cookie: expected_cookie
       }
 

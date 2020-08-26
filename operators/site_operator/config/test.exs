@@ -3,7 +3,7 @@ import Config
 config :site_operator,
   site_maker: SiteOperator.MockSiteMaker,
   k8s: SiteOperator.MockK8s,
-  secret_key_generator: fn -> "testsecret" end
+  secret_key_generator: "testsecret"
 
 config :k8s,
   clusters: %{}
