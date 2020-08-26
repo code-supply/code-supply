@@ -103,7 +103,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
     case site_maker().create(%AffiliateSite{
            name: name,
            domains: domains,
-           secret_key_base: generate_secret_key_base()
+           secret_key_base: generate_secret_key_base(),
+           distribution_cookie: distribution_cookie()
          }) do
       {:ok, _} ->
         Logger.info("created", log_metadata)
@@ -151,7 +152,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
     case site_maker().reconcile(%AffiliateSite{
            name: name,
            domains: domains,
-           secret_key_base: generate_secret_key_base()
+           secret_key_base: generate_secret_key_base(),
+           distribution_cookie: distribution_cookie()
          }) do
       {:ok, :nothing_to_do} ->
         Logger.info("nothing to do", log_metadata)
@@ -170,6 +172,10 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   defp generate_secret_key_base do
     length = 64
     :crypto.strong_rand_bytes(length) |> Base.encode64() |> binary_part(0, length)
+  end
+
+  defp distribution_cookie do
+    Application.get_env(:site_operator, :distribution_cookie)
   end
 
   defp site_maker do

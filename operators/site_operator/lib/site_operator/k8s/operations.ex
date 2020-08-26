@@ -2,6 +2,7 @@ defmodule SiteOperator.K8s.Operations do
   import SiteOperator.K8sConversions, only: [to_k8s: 1]
 
   alias SiteOperator.K8s.{
+    AffiliateSite,
     Certificate,
     Deployment,
     Gateway,
@@ -17,7 +18,14 @@ defmodule SiteOperator.K8s.Operations do
     |> Enum.map(&create/1)
   end
 
-  def inner_ns_creations(name, namespace, domains, secret_key_base) do
+  def inner_ns_creations(%AffiliateSite{
+        name: namespace,
+        domains: domains,
+        secret_key_base: secret_key_base,
+        distribution_cookie: distribution_cookie
+      }) do
+    name = "affiliate"
+
     [
       %Deployment{
         name: name,
@@ -32,7 +40,14 @@ defmodule SiteOperator.K8s.Operations do
       %Service{name: name, namespace: namespace},
       %Gateway{name: name, domains: domains, namespace: namespace},
       %VirtualService{name: name, domains: domains, namespace: namespace},
-      %Secret{name: name, namespace: namespace, data: %{"SECRET_KEY_BASE" => secret_key_base}}
+      %Secret{
+        name: name,
+        namespace: namespace,
+        data: %{
+          "SECRET_KEY_BASE" => secret_key_base,
+          "RELEASE_COOKIE" => distribution_cookie
+        }
+      }
     ]
     |> Enum.map(&create/1)
   end

@@ -20,9 +20,9 @@ defmodule SiteOperator.K8sSiteMaker do
     if "" in domains do
       {:error, "Empty domain"}
     else
-      case execute(Operations.initial_creations(prefixed(site_name), domains)) do
+      case execute(Operations.initial_creations(site_name, domains)) do
         {:ok, _} ->
-          case execute_inner_ns_creations(site) do
+          case site |> Operations.inner_ns_creations() |> execute() do
             {:ok, _} ->
               {:ok, "Site created"}
           end
@@ -35,12 +35,12 @@ defmodule SiteOperator.K8sSiteMaker do
 
   @impl SiteOperator.SiteMaker
   def delete(name) do
-    execute(Operations.deletions(prefixed(name)))
+    execute(Operations.deletions(name))
   end
 
   @impl SiteOperator.SiteMaker
   def reconcile(%AffiliateSite{name: name, domains: domains} = site) do
-    case execute(Operations.checks(prefixed(name), domains)) do
+    case execute(Operations.checks(name, domains)) do
       {:ok, _} ->
         {:ok, :nothing_to_do}
 
@@ -56,7 +56,7 @@ defmodule SiteOperator.K8sSiteMaker do
   defp recreate(%Namespace{} = ns, %AffiliateSite{} = site) do
     case execute([Operations.create(ns)]) do
       {:ok, _} ->
-        case execute_inner_ns_creations(site) do
+        case site |> Operations.inner_ns_creations() |> execute() do
           {:ok, _} ->
             {:ok, "Site created"}
         end
@@ -70,26 +70,8 @@ defmodule SiteOperator.K8sSiteMaker do
     execute([Operations.create(cert)])
   end
 
-  defp execute_inner_ns_creations(%AffiliateSite{
-         name: site_name,
-         domains: domains,
-         secret_key_base: secret_key_base
-       }) do
-    Operations.inner_ns_creations(
-      "affiliate",
-      prefixed(site_name),
-      domains,
-      secret_key_base
-    )
-    |> execute
-  end
-
   defp execute(ops) do
     k8s().execute(ops)
-  end
-
-  defp prefixed(name) do
-    "customer-#{name}"
   end
 
   defp k8s do

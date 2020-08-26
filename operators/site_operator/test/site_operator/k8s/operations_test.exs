@@ -3,25 +3,37 @@ defmodule SiteOperator.K8s.OperationsTest do
 
   import SiteOperator.K8s.Operations
 
+  alias SiteOperator.K8s.AffiliateSite
+
   describe "inner namespace creations" do
     test "all use the provided namespace" do
       namespaces =
         for op <-
-              inner_ns_creations("my-app", "my-namespace", ["my-app.example.com"], "some-secret") do
+              inner_ns_creations(%AffiliateSite{
+                name: "my-namespace",
+                domains: ["my-app.example.com"],
+                secret_key_base: "some-secret",
+                distribution_cookie: "some-cookie"
+              }) do
           op.resource |> get_in(["metadata", "namespace"])
         end
 
       assert namespaces |> Enum.uniq() == ["my-namespace"]
     end
 
-    test "all use the provided app-type name, because they're namespaced" do
+    test "all use a static name, because they're namespaced" do
       names =
         for op <-
-              inner_ns_creations("my-app", "my-namespace", ["my-app.example.com"], "some-secret") do
+              inner_ns_creations(%AffiliateSite{
+                name: "my-namespace",
+                domains: ["my-app.example.com"],
+                secret_key_base: "some-secret",
+                distribution_cookie: "cookie"
+              }) do
           op.resource |> get_in(["metadata", "name"])
         end
 
-      assert names |> Enum.uniq() == ["my-app"]
+      assert names |> Enum.uniq() == ["affiliate"]
     end
 
     test "include a secret for the Phoenix app" do
@@ -29,17 +41,24 @@ defmodule SiteOperator.K8s.OperationsTest do
         "apiVersion" => "v1",
         "kind" => "Secret",
         "metadata" => %{
-          "name" => "my-app"
+          "name" => "affiliate"
         },
         "type" => "Opaque",
         "data" => %{
-          "SECRET_KEY_BASE" => secret_key_encoded
+          "SECRET_KEY_BASE" => secret_key_encoded,
+          "RELEASE_COOKIE" => cookie_encoded
         }
       } =
-        inner_ns_creations("my-app", "my-namespace", ["my-app.example.com"], "my-secret")
+        inner_ns_creations(%AffiliateSite{
+          name: "my-namespace",
+          domains: ["my-app.example.com"],
+          secret_key_base: "my-secret",
+          distribution_cookie: "cookie"
+        })
         |> find_kind("Secret")
 
       assert {:ok, "my-secret"} = Base.decode64(secret_key_encoded)
+      assert {:ok, "cookie"} = Base.decode64(cookie_encoded)
     end
 
     test "set the checked origins in the deployment, so that new hosts trigger new rollout" do
@@ -62,7 +81,12 @@ defmodule SiteOperator.K8s.OperationsTest do
           }
         }
       } =
-        inner_ns_creations("app", "ns", ["host1.affable.app", "www.custom-domain.com"], "secret")
+        inner_ns_creations(%AffiliateSite{
+          name: "ns",
+          domains: ["host1.affable.app", "www.custom-domain.com"],
+          secret_key_base: "secret",
+          distribution_cookie: "cookie"
+        })
         |> find_kind("Deployment")
 
       assert origins == "https://host1.affable.app https://www.custom-domain.com"

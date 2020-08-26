@@ -2,7 +2,8 @@ import Config
 
 config :site_operator,
   site_maker: SiteOperator.K8sSiteMaker,
-  k8s: SiteOperator.RealK8s
+  k8s: SiteOperator.RealK8s,
+  distribution_cookie: "atestcookie"
 
 config :k8s,
   clusters: %{

@@ -9,6 +9,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
   @namespace "generatedname"
   @domains ["testdomain.example.com"]
+  @irrelevant ""
 
   setup :verify_on_exit!
 
@@ -25,37 +26,32 @@ defmodule SiteOperator.K8sSiteMakerTest do
   describe "creation" do
     test "creates namespace with deployment, service, gateway, virtual service, certificate in istio-system",
          %{create_1: create} do
-      ns = %Namespace{name: "customer-#{@namespace}"}
+      ns = %Namespace{name: @namespace}
       ns_k8s = ns |> to_k8s
 
-      cert = %Certificate{name: "customer-#{@namespace}", domains: @domains}
+      cert = %Certificate{name: @namespace, domains: @domains}
       cert_k8s = cert |> to_k8s
+
+      site = %AffiliateSite{
+        name: @namespace,
+        domains: @domains,
+        secret_key_base: "my-awesome-secret",
+        distribution_cookie: "some-cookie"
+      }
 
       expect(MockK8s, :execute, fn [
                                      %Operation{action: :create, resource: ^ns_k8s},
                                      %Operation{action: :create, resource: ^cert_k8s}
                                    ] ->
         expect(MockK8s, :execute, fn operations ->
-          assert operations ==
-                   Operations.inner_ns_creations(
-                     "affiliate",
-                     "customer-#{@namespace}",
-                     @domains,
-                     "my-awesome-secret"
-                   )
-
+          assert operations == Operations.inner_ns_creations(site)
           {:ok, "don't match on this"}
         end)
 
         {:ok, ""}
       end)
 
-      {:ok, _} =
-        create.(%AffiliateSite{
-          name: @namespace,
-          domains: @domains,
-          secret_key_base: "my-awesome-secret"
-        })
+      {:ok, _} = create.(site)
     end
 
     test "returns error when we ask for an empty name, empty domain, or no domains", %{
@@ -64,19 +60,22 @@ defmodule SiteOperator.K8sSiteMakerTest do
       assert create.(%AffiliateSite{
                name: "",
                domains: ["yo.com"],
-               secret_key_base: ""
+               secret_key_base: @irrelevant,
+               distribution_cookie: @irrelevant
              }) == {:error, "Empty name"}
 
       assert create.(%AffiliateSite{
                name: "hi",
                domains: ["yo.com", ""],
-               secret_key_base: ""
+               secret_key_base: @irrelevant,
+               distribution_cookie: @irrelevant
              }) == {:error, "Empty domain"}
 
       assert create.(%AffiliateSite{
                name: "hi",
                domains: [],
-               secret_key_base: ""
+               secret_key_base: @irrelevant,
+               distribution_cookie: @irrelevant
              }) == {:error, "No domains"}
     end
 
@@ -86,7 +85,14 @@ defmodule SiteOperator.K8sSiteMakerTest do
         {:error, "Bad news"}
       end)
 
-      result = create.(%AffiliateSite{name: "<>@", domains: ["!!"], secret_key_base: ""})
+      result =
+        create.(%AffiliateSite{
+          name: "<>@",
+          domains: ["!!"],
+          secret_key_base: "",
+          distribution_cookie: ""
+        })
+
       assert elem(result, 0) == :error
       assert elem(result, 1) == "Bad news"
     end
@@ -96,7 +102,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
     test "deletes namespace and certificate in parallel", %{delete_1: delete} do
       MockK8s
       |> expect(:execute, fn operations ->
-        assert operations == Operations.deletions("customer-#{@namespace}")
+        assert operations == Operations.deletions(@namespace)
         {:ok, "pass message through"}
       end)
 
@@ -113,12 +119,13 @@ defmodule SiteOperator.K8sSiteMakerTest do
       assert reconcile.(%AffiliateSite{
                name: @namespace,
                domains: @domains,
-               secret_key_base: "a-secret"
+               secret_key_base: "a-secret",
+               distribution_cookie: ""
              }) == {:ok, :nothing_to_do}
     end
 
     test "creates missing certificate", %{reconcile_1: reconcile} do
-      cert = %Certificate{name: "customer-#{@namespace}", domains: @domains}
+      cert = %Certificate{name: @namespace, domains: @domains}
       cert_k8s = cert |> to_k8s
 
       stub(MockK8s, :execute, fn [_, %Operation{action: :get, resource: ^cert_k8s}] ->
@@ -133,25 +140,26 @@ defmodule SiteOperator.K8sSiteMakerTest do
         reconcile.(%AffiliateSite{
           name: @namespace,
           domains: @domains,
-          secret_key_base: "a-secret"
+          secret_key_base: "a-secret",
+          distribution_cookie: @irrelevant
         })
     end
 
     test "creates missing namespace and its resources", %{reconcile_1: reconcile} do
-      ns = %Namespace{name: "customer-#{@namespace}"}
+      ns = %Namespace{name: @namespace}
       ns_k8s = ns |> to_k8s
+
+      site = %AffiliateSite{
+        name: @namespace,
+        domains: @domains,
+        secret_key_base: "a-new-secret",
+        distribution_cookie: "new-cookie"
+      }
 
       stub(MockK8s, :execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _] ->
         expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^ns_k8s}] ->
           expect(MockK8s, :execute, fn operations ->
-            assert operations ==
-                     Operations.inner_ns_creations(
-                       "affiliate",
-                       "customer-#{@namespace}",
-                       @domains,
-                       "a-new-secret"
-                     )
-
+            assert operations == Operations.inner_ns_creations(site)
             {:ok, "don't match on this"}
           end)
 
@@ -161,12 +169,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
         {:error, some_resources_missing: [ns]}
       end)
 
-      {:ok, recreated: [^ns]} =
-        reconcile.(%AffiliateSite{
-          name: @namespace,
-          domains: @domains,
-          secret_key_base: "a-new-secret"
-        })
+      {:ok, recreated: [^ns]} = reconcile.(site)
     end
   end
 end

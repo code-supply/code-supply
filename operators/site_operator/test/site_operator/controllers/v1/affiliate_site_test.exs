@@ -39,10 +39,13 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     end
 
     test "creates the site", %{add: add} do
+      expected_cookie = Application.get_env(:site_operator, :distribution_cookie)
+
       expect(MockSiteMaker, :create, fn %AffiliateSite{
                                           name: "justatest",
                                           domains: ["www.example.com"],
-                                          secret_key_base: _
+                                          secret_key_base: _,
+                                          distribution_cookie: ^expected_cookie
                                         } ->
         {:ok, "some message"}
       end)
@@ -106,6 +109,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
 
   describe "reconcile/1" do
     setup do
+      expected_cookie = Application.get_env(:site_operator, :distribution_cookie)
+
       %{
         reconcile: fn ->
           Controller.V1.AffiliateSite.reconcile(%{
@@ -119,7 +124,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
           stub(MockSiteMaker, :reconcile, fn %AffiliateSite{
                                                name: "mysite",
                                                domains: ["www.example.com"],
-                                               secret_key_base: _secret_key_base
+                                               secret_key_base: _secret_key_base,
+                                               distribution_cookie: ^expected_cookie
                                              } ->
             {:error, "upstream error"}
           end)
@@ -128,7 +134,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
           stub(MockSiteMaker, :reconcile, fn %AffiliateSite{
                                                name: "mysite",
                                                domains: ["www.example.com"],
-                                               secret_key_base: _secret_key_base
+                                               secret_key_base: _secret_key_base,
+                                               distribution_cookie: ^expected_cookie
                                              } ->
             {:ok, :nothing_to_do}
           end)
@@ -137,7 +144,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
           stub(MockSiteMaker, :reconcile, fn %AffiliateSite{
                                                name: "mysite",
                                                domains: ["www.example.com"],
-                                               secret_key_base: _secret_key_base
+                                               secret_key_base: _secret_key_base,
+                                               distribution_cookie: ^expected_cookie
                                              } ->
             {:ok, recreated: [%SiteOperator.K8s.Namespace{name: "mysite"}]}
           end)
