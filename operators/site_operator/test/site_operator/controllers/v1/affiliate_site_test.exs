@@ -7,7 +7,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
   import Hammox
 
   alias SiteOperator.Controller
-  alias SiteOperator.K8s.AffiliateSite
+  alias SiteOperator.K8s.{AffiliateSite, Operations}
   alias SiteOperator.MockSiteMaker
 
   setup :verify_on_exit!
@@ -42,13 +42,23 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
       expected_cookie = Application.get_env(:site_operator, :distribution_cookie)
       expected_image = Application.get_env(:site_operator, :affiliate_site_image)
 
-      expect(MockSiteMaker, :create, fn %AffiliateSite{
-                                          name: "justatest",
-                                          image: ^expected_image,
-                                          domains: ["www.example.com"],
-                                          secret_key_base: _,
-                                          distribution_cookie: ^expected_cookie
-                                        } ->
+      site = %AffiliateSite{
+        name: "justatest",
+        image: expected_image,
+        domains: ["www.example.com"],
+        secret_key_base: Application.get_env(:site_operator, :secret_key_generator).(),
+        distribution_cookie: expected_cookie
+      }
+
+      expected_batches = [
+        Operations.initial_creations("justatest", [
+          "www.example.com"
+        ]),
+        Operations.inner_ns_creations(site)
+      ]
+
+      expect(MockSiteMaker, :create, fn batches ->
+        assert batches == expected_batches
         {:ok, "some message"}
       end)
 

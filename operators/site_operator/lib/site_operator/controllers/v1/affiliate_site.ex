@@ -64,7 +64,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   use Bonny.Controller
   require Logger
 
-  alias SiteOperator.K8s.AffiliateSite
+  alias SiteOperator.K8s.{AffiliateSite, Operations}
 
   # @group "your-operator.your-domain.com"
   # @version "v1"
@@ -100,13 +100,18 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
       }) do
     log_metadata = [action: "add", name: name, domains: domains]
 
-    case site_maker().create(%AffiliateSite{
-           name: name,
-           image: affiliate_site_image(),
-           domains: domains,
-           secret_key_base: generate_secret_key_base(),
-           distribution_cookie: distribution_cookie()
-         }) do
+    site = %AffiliateSite{
+      name: name,
+      image: affiliate_site_image(),
+      domains: domains,
+      secret_key_base: secret_key_generator().(),
+      distribution_cookie: distribution_cookie()
+    }
+
+    case site_maker().create([
+           Operations.initial_creations(name, domains),
+           Operations.inner_ns_creations(site)
+         ]) do
       {:ok, _} ->
         Logger.info("created", log_metadata)
         :ok
@@ -154,7 +159,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
            name: name,
            image: affiliate_site_image(),
            domains: domains,
-           secret_key_base: generate_secret_key_base(),
+           secret_key_base: secret_key_generator().(),
            distribution_cookie: distribution_cookie()
          }) do
       {:ok, :nothing_to_do} ->
@@ -171,9 +176,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
     end
   end
 
-  defp generate_secret_key_base do
-    length = 64
-    :crypto.strong_rand_bytes(length) |> Base.encode64() |> binary_part(0, length)
+  defp secret_key_generator do
+    Application.get_env(:site_operator, :secret_key_generator)
   end
 
   defp affiliate_site_image do

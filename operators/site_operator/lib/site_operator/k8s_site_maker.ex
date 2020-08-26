@@ -6,31 +6,19 @@ defmodule SiteOperator.K8sSiteMaker do
   alias SiteOperator.K8s.Operations
 
   @impl SiteOperator.SiteMaker
-  def create(%AffiliateSite{name: ""}) do
-    {:error, "Empty name"}
-  end
+  def create([batch | batches]) do
+    case execute(batch) do
+      {:ok, _} ->
+        create(batches)
 
-  @impl SiteOperator.SiteMaker
-  def create(%AffiliateSite{domains: []}) do
-    {:error, "No domains"}
-  end
-
-  @impl SiteOperator.SiteMaker
-  def create(%AffiliateSite{name: site_name, domains: domains} = site) do
-    if "" in domains do
-      {:error, "Empty domain"}
-    else
-      case execute(Operations.initial_creations(site_name, domains)) do
-        {:ok, _} ->
-          case site |> Operations.inner_ns_creations() |> execute() do
-            {:ok, _} ->
-              {:ok, "Site created"}
-          end
-
-        {:error, _} = res ->
-          res
-      end
+      {:error, _} = res ->
+        res
     end
+  end
+
+  @impl SiteOperator.SiteMaker
+  def create([]) do
+    {:ok, "Site created"}
   end
 
   @impl SiteOperator.SiteMaker

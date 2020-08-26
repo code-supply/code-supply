@@ -2,7 +2,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
   use ExUnit.Case, async: true
 
   alias SiteOperator.{K8sSiteMaker, SiteMaker, MockK8s}
-  alias SiteOperator.K8s.{AffiliateSite, Certificate, Namespace, Operation, Operations}
+  alias SiteOperator.K8s.{AffiliateSite, Certificate, Namespace, Service, Operation, Operations}
 
   import SiteOperator.K8sConversions, only: [to_k8s: 1]
   import Hammox
@@ -24,63 +24,25 @@ defmodule SiteOperator.K8sSiteMakerTest do
   end
 
   describe "creation" do
-    test "creates site namespace with its resources and puts certificate in istio-system",
+    test "executes operation batches in order",
          %{create_1: create} do
-      ns = %Namespace{name: @namespace}
-      ns_k8s = ns |> to_k8s
+      ns = Operations.create(%Namespace{name: @namespace})
+      cert = Operations.create(%Certificate{name: @namespace, domains: @domains})
 
-      cert = %Certificate{name: @namespace, domains: @domains}
-      cert_k8s = cert |> to_k8s
+      service = Operations.create(%Service{name: "please", namespace: @namespace})
 
-      site = %AffiliateSite{
-        name: @namespace,
-        image: "my-image",
-        domains: @domains,
-        secret_key_base: "my-awesome-secret",
-        distribution_cookie: "some-cookie"
-      }
+      batch_1 = [ns, cert]
+      batch_2 = [service]
 
-      expect(MockK8s, :execute, fn [
-                                     %Operation{action: :create, resource: ^ns_k8s},
-                                     %Operation{action: :create, resource: ^cert_k8s} | _
-                                   ] ->
-        expect(MockK8s, :execute, fn operations ->
-          assert operations == Operations.inner_ns_creations(site)
+      expect(MockK8s, :execute, fn [^ns, ^cert] ->
+        expect(MockK8s, :execute, fn [^service] ->
           {:ok, "don't match on this"}
         end)
 
         {:ok, ""}
       end)
 
-      {:ok, _} = create.(site)
-    end
-
-    test "returns error when we ask for an empty name, empty domain, or no domains", %{
-      create_1: create
-    } do
-      assert create.(%AffiliateSite{
-               name: "",
-               image: "irrelevant",
-               domains: ["yo.com"],
-               secret_key_base: @irrelevant,
-               distribution_cookie: @irrelevant
-             }) == {:error, "Empty name"}
-
-      assert create.(%AffiliateSite{
-               name: "hi",
-               image: "irrelevant",
-               domains: ["yo.com", ""],
-               secret_key_base: @irrelevant,
-               distribution_cookie: @irrelevant
-             }) == {:error, "Empty domain"}
-
-      assert create.(%AffiliateSite{
-               name: "hi",
-               image: "irrelevant",
-               domains: [],
-               secret_key_base: @irrelevant,
-               distribution_cookie: @irrelevant
-             }) == {:error, "No domains"}
+      {:ok, _} = create.([batch_1, batch_2])
     end
 
     test "returns error when we get a k8s error", %{create_1: create} do
@@ -89,14 +51,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
         {:error, "Bad news"}
       end)
 
-      result =
-        create.(%AffiliateSite{
-          name: "<>@",
-          image: "irrelevant",
-          domains: ["!!"],
-          secret_key_base: "",
-          distribution_cookie: ""
-        })
+      result = create.([[Operations.create(%Namespace{name: @namespace})]])
 
       assert elem(result, 0) == :error
       assert elem(result, 1) == "Bad news"

@@ -4,7 +4,11 @@ config :site_operator,
   site_maker: SiteOperator.K8sSiteMaker,
   k8s: SiteOperator.RealK8s,
   distribution_cookie: "atestcookie",
-  affiliate_site_image: "nginx"
+  affiliate_site_image: "nginx",
+  secret_key_generator: fn ->
+    length = 64
+    :crypto.strong_rand_bytes(length) |> Base.encode64() |> binary_part(0, length)
+  end
 
 config :k8s,
   clusters: %{
