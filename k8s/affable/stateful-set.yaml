@@ -22,6 +22,14 @@ spec:
         ports:
         - name: http
           containerPort: 4000
+        - name: erlang
+          containerPort: 5555
+        - name: epmd
+          containerPort: 4369
+
+        env:
+        - name: ELIXIR_ERL_OPTIONS
+          value: -kernel inet_dist_listen_min 5555 inet_dist_listen_max 5555
 
         readinessProbe:
           httpGet:

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: affable-headless
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - port: 5555
+    name: erlang
+    targetPort: erlang
+  - port: 4369
+    name: epmd
+    targetPort: epmd

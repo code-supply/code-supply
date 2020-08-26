@@ -4,6 +4,7 @@ namespace: affable
 resources:
 - namespace.yaml
 - service.yaml
+- headless-service.yaml
 - stateful-set.yaml
 - gateway.yaml
 - virtual-service.yaml
