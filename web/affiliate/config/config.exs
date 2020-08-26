@@ -18,11 +18,10 @@ config :affiliate, AffiliateWeb.Endpoint,
 config :libcluster,
   topologies: [
     default: [
-      strategy: Cluster.Strategy.Kubernetes,
+      strategy: Cluster.Strategy.Kubernetes.DNSSRV,
       config: [
-        kubernetes_node_basename: "site",
-        kubernetes_selector: "app=affable",
-        kubernetes_namespace: "affable"
+        service: "affable-headless.affable.svc.cluster.local",
+        application_name: "affable"
       ]
     ]
   ]
