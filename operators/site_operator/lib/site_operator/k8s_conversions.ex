@@ -71,17 +71,17 @@ defmodule SiteOperator.K8sConversions do
                 ],
                 "envFrom" => [%{"secretRef" => %{"name" => name}}],
                 "env" =>
-                  for {k, v} <- env_vars do
-                    %{"name" => k, "value" => v}
-                  end ++
-                    [
-                      %{
-                        "name" => "POD_IP",
-                        "valueFrom" => %{
-                          "fieldRef" => %{"fieldPath" => "status.podIP"}
-                        }
+                  [
+                    %{
+                      "name" => "POD_IP",
+                      "valueFrom" => %{
+                        "fieldRef" => %{"fieldPath" => "status.podIP"}
                       }
-                    ]
+                    }
+                  ] ++
+                    for {k, v} <- env_vars do
+                      %{"name" => k, "value" => v}
+                    end
               }
             ]
           }

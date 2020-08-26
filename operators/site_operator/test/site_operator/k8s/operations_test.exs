@@ -80,12 +80,15 @@ defmodule SiteOperator.K8s.OperationsTest do
     } do
       deployment = creations |> find_kind("Deployment")
 
-      assert %{
-               "name" => "POD_IP",
-               "valueFrom" => %{
-                 "fieldRef" => %{"fieldPath" => "status.podIP"}
+      assert [
+               %{
+                 "name" => "POD_IP",
+                 "valueFrom" => %{
+                   "fieldRef" => %{"fieldPath" => "status.podIP"}
+                 }
                }
-             } in (deployment |> env_vars())
+               | _
+             ] = deployment |> env_vars()
 
       assert %{
                "name" => "RELEASE_NODE",
