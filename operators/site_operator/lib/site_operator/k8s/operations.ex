@@ -8,6 +8,7 @@ defmodule SiteOperator.K8s.Operations do
     Gateway,
     Namespace,
     Operation,
+    RoleBinding,
     Secret,
     Service,
     VirtualService
@@ -82,7 +83,14 @@ defmodule SiteOperator.K8s.Operations do
   defp initial_resources(name, domains) do
     [
       %Namespace{name: name},
-      %Certificate{name: name, domains: domains}
+      %Certificate{name: name, domains: domains},
+      %RoleBinding{
+        name: "endpoint-listing-for-#{name}",
+        namespace: "affable",
+        role_kind: "ClusterRole",
+        role_name: "endpoint-lister",
+        subjects: [%{kind: "ServiceAccount", name: "default", namespace: name}]
+      }
     ]
   end
 end

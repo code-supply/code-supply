@@ -24,7 +24,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
   end
 
   describe "creation" do
-    test "creates namespace with deployment, service, gateway, virtual service, certificate in istio-system",
+    test "creates site namespace with its resources and puts certificate in istio-system",
          %{create_1: create} do
       ns = %Namespace{name: @namespace}
       ns_k8s = ns |> to_k8s
@@ -42,7 +42,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       expect(MockK8s, :execute, fn [
                                      %Operation{action: :create, resource: ^ns_k8s},
-                                     %Operation{action: :create, resource: ^cert_k8s}
+                                     %Operation{action: :create, resource: ^cert_k8s} | _
                                    ] ->
         expect(MockK8s, :execute, fn operations ->
           assert operations == Operations.inner_ns_creations(site)
@@ -116,8 +116,14 @@ defmodule SiteOperator.K8sSiteMakerTest do
   end
 
   describe "reconciliation" do
-    test "does nothing when namespace and cert are available", %{reconcile_1: reconcile} do
-      stub(MockK8s, :execute, fn [%Operation{action: :get}, %Operation{action: :get}] ->
+    test "does nothing when namespace, rolebinding and cert are available", %{
+      reconcile_1: reconcile
+    } do
+      stub(MockK8s, :execute, fn [
+                                   %Operation{action: :get},
+                                   %Operation{action: :get},
+                                   %Operation{action: :get}
+                                 ] ->
         {:ok, "Some message"}
       end)
 
@@ -134,7 +140,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
       cert = %Certificate{name: @namespace, domains: @domains}
       cert_k8s = cert |> to_k8s
 
-      stub(MockK8s, :execute, fn [_, %Operation{action: :get, resource: ^cert_k8s}] ->
+      stub(MockK8s, :execute, fn [_, %Operation{action: :get, resource: ^cert_k8s}, _] ->
         expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^cert_k8s}] ->
           {:ok, ""}
         end)
@@ -164,7 +170,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
         distribution_cookie: "new-cookie"
       }
 
-      stub(MockK8s, :execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _] ->
+      stub(MockK8s, :execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _, _] ->
         expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^ns_k8s}] ->
           expect(MockK8s, :execute, fn operations ->
             assert operations == Operations.inner_ns_creations(site)

@@ -7,7 +7,9 @@ defmodule SiteOperator.K8s.OperationsTest do
 
   setup do
     %{
-      creations:
+      initial_creations:
+        initial_creations("my-namespace", ["host1.affable.app", "www.custom-domain.com"]),
+      inner_creations:
         inner_ns_creations(%AffiliateSite{
           name: "my-namespace",
           image: "my-image",
@@ -19,7 +21,7 @@ defmodule SiteOperator.K8s.OperationsTest do
   end
 
   describe "inner namespace creations" do
-    test "all use the provided namespace", %{creations: creations} do
+    test "all use the provided namespace", %{inner_creations: creations} do
       namespaces =
         for op <- creations do
           op.resource |> get_in(["metadata", "namespace"])
@@ -28,7 +30,7 @@ defmodule SiteOperator.K8s.OperationsTest do
       assert namespaces |> Enum.uniq() == ["my-namespace"]
     end
 
-    test "all use a static name, because they're namespaced", %{creations: creations} do
+    test "all use a static name, because they're namespaced", %{inner_creations: creations} do
       names =
         for op <- creations do
           op.resource |> get_in(["metadata", "name"])
@@ -37,7 +39,7 @@ defmodule SiteOperator.K8s.OperationsTest do
       assert names |> Enum.uniq() == ["affiliate"]
     end
 
-    test "include a secret for the Phoenix app", %{creations: creations} do
+    test "include a secret for the Phoenix app", %{inner_creations: creations} do
       %{
         "apiVersion" => "v1",
         "kind" => "Secret",
@@ -56,7 +58,7 @@ defmodule SiteOperator.K8s.OperationsTest do
     end
 
     test "sets the checked origins in the deployment, so that new hosts trigger new rollout", %{
-      creations: creations
+      inner_creations: creations
     } do
       assert %{
                "name" => "CHECK_ORIGINS",
@@ -65,7 +67,7 @@ defmodule SiteOperator.K8s.OperationsTest do
     end
 
     test "sets the elixir erl options, so that we have a predictable distribution port", %{
-      creations: creations
+      inner_creations: creations
     } do
       deployment = creations |> find_kind("Deployment")
 
@@ -76,7 +78,7 @@ defmodule SiteOperator.K8s.OperationsTest do
     end
 
     test "sets the distribution mode to 'name' and includes the pod IP", %{
-      creations: creations
+      inner_creations: creations
     } do
       deployment = creations |> find_kind("Deployment")
 
@@ -99,6 +101,28 @@ defmodule SiteOperator.K8s.OperationsTest do
                "name" => "RELEASE_DISTRIBUTION",
                "value" => "name"
              } in (deployment |> env_vars())
+    end
+
+    test "permits the default service account to list endpoints in the control plane namespace",
+         %{initial_creations: creations} do
+      binding = creations |> find_kind("RoleBinding")
+
+      assert binding == %{
+               "kind" => "RoleBinding",
+               "apiVersion" => "rbac.authorization.k8s.io/v1",
+               "metadata" => %{
+                 "name" => "endpoint-listing-for-my-namespace",
+                 "namespace" => "affable"
+               },
+               "roleRef" => %{
+                 "apiGroup" => "rbac.authorization.k8s.io",
+                 "kind" => "ClusterRole",
+                 "name" => "endpoint-lister"
+               },
+               "subjects" => [
+                 %{"kind" => "ServiceAccount", "name" => "default", "namespace" => "my-namespace"}
+               ]
+             }
     end
 
     defp env_vars(k8s_deployment) do

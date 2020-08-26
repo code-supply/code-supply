@@ -9,6 +9,7 @@ defmodule SiteOperator.K8sConversionsTest do
     Deployment,
     Gateway,
     Namespace,
+    RoleBinding,
     Secret,
     Service,
     VirtualService
@@ -23,6 +24,15 @@ defmodule SiteOperator.K8sConversionsTest do
   setup do
     %{
       certificate: %Certificate{name: @namespace, domains: @domains} |> to_k8s(),
+      role_binding:
+        %RoleBinding{
+          name: "some-binding",
+          namespace: "place-where-applies",
+          role_kind: "ClusterRole",
+          role_name: "pants-lister",
+          subjects: [%{kind: "ServiceAccount", name: "default", namespace: "where-i-make-calls"}]
+        }
+        |> to_k8s(),
       deployment:
         %Deployment{
           name: @name,
@@ -51,6 +61,20 @@ defmodule SiteOperator.K8sConversionsTest do
 
     test "can be turned back into a struct", %{namespace: namespace} do
       assert namespace |> from_k8s() == %Namespace{name: @name}
+    end
+  end
+
+  describe "role binding" do
+    test "can be turned back into a struct", %{role_binding: role_binding} do
+      assert role_binding |> from_k8s() == %RoleBinding{
+               name: "some-binding",
+               namespace: "place-where-applies",
+               role_kind: "ClusterRole",
+               role_name: "pants-lister",
+               subjects: [
+                 %{kind: "ServiceAccount", name: "default", namespace: "where-i-make-calls"}
+               ]
+             }
     end
   end
 
