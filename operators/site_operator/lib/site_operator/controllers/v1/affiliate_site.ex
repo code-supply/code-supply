@@ -104,7 +104,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
       name: name,
       image: affiliate_site_image(),
       domains: domains,
-      secret_key_base: secret_key_generator().(),
+      secret_key_base: generate_secret_key(),
       distribution_cookie: distribution_cookie()
     }
 
@@ -159,7 +159,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
            name: name,
            image: affiliate_site_image(),
            domains: domains,
-           secret_key_base: secret_key_generator().(),
+           secret_key_base: generate_secret_key(),
            distribution_cookie: distribution_cookie()
          }) do
       {:ok, :nothing_to_do} ->
@@ -176,16 +176,14 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
     end
   end
 
-  defp secret_key_generator do
+  defp generate_secret_key do
     case Application.get_env(:site_operator, :secret_key_generator) do
       :generate ->
-        fn ->
-          length = 64
-          :crypto.strong_rand_bytes(length) |> Base.encode64() |> binary_part(0, length)
-        end
+        length = 64
+        :crypto.strong_rand_bytes(length) |> Base.encode64() |> binary_part(0, length)
 
       value ->
-        fn -> value end
+        value
     end
   end
 
