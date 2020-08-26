@@ -11591,6 +11591,14 @@ spec:
       - env:
         - name: ELIXIR_ERL_OPTIONS
           value: -kernel inet_dist_listen_min 5555 inet_dist_listen_max 5555
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: RELEASE_NODE
+          value: affable@$(POD_IP)
+        - name: RELEASE_DISTRIBUTION
+          value: name
         envFrom:
         - secretRef:
             name: affable
