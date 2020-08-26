@@ -15,6 +15,18 @@ config :affiliate, AffiliateWeb.Endpoint,
   pubsub_server: Affiliate.PubSub,
   live_view: [signing_salt: "4i29Hv3I"]
 
+config :libcluster,
+  topologies: [
+    default: [
+      strategy: Cluster.Strategy.Kubernetes,
+      config: [
+        kubernetes_node_basename: "site",
+        kubernetes_selector: "app=affable",
+        kubernetes_namespace: "affable"
+      ]
+    ]
+  ]
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
