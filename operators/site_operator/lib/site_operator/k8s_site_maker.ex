@@ -1,7 +1,7 @@
 defmodule SiteOperator.K8sSiteMaker do
   @behaviour SiteOperator.SiteMaker
 
-  alias SiteOperator.K8s.{AffiliateSite, Certificate, Namespace}
+  alias SiteOperator.K8s.{AffiliateSite, Certificate, RoleBinding, Namespace}
 
   alias SiteOperator.K8s.Operations
 
@@ -52,6 +52,10 @@ defmodule SiteOperator.K8sSiteMaker do
       {:error, _} = res ->
         res
     end
+  end
+
+  defp recreate(%RoleBinding{} = binding, _) do
+    execute([Operations.create(binding)])
   end
 
   defp recreate(%Certificate{} = cert, _) do

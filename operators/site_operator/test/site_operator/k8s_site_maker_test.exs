@@ -2,7 +2,16 @@ defmodule SiteOperator.K8sSiteMakerTest do
   use ExUnit.Case, async: true
 
   alias SiteOperator.{K8sSiteMaker, SiteMaker, MockK8s}
-  alias SiteOperator.K8s.{AffiliateSite, Certificate, Namespace, Service, Operation, Operations}
+
+  alias SiteOperator.K8s.{
+    AffiliateSite,
+    Certificate,
+    Namespace,
+    RoleBinding,
+    Service,
+    Operation,
+    Operations
+  }
 
   import SiteOperator.K8sConversions, only: [to_k8s: 1]
   import Hammox
@@ -89,6 +98,35 @@ defmodule SiteOperator.K8sSiteMakerTest do
                secret_key_base: "a-secret",
                distribution_cookie: ""
              }) == {:ok, :nothing_to_do}
+    end
+
+    test "creates missing rolebinding", %{reconcile_1: reconcile} do
+      binding = %RoleBinding{
+        name: "endpoint-listing-for-#{@namespace}",
+        namespace: "affable",
+        role_kind: "ClusterRole",
+        role_name: "endpoint-lister",
+        subjects: [%{kind: "ServiceAccount", name: "default", namespace: @namespace}]
+      }
+
+      binding_k8s = binding |> to_k8s
+
+      stub(MockK8s, :execute, fn [_, _, %Operation{action: :get, resource: ^binding_k8s}] ->
+        expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^binding_k8s}] ->
+          {:ok, ""}
+        end)
+
+        {:error, some_resources_missing: [binding]}
+      end)
+
+      {:ok, recreated: [^binding]} =
+        reconcile.(%AffiliateSite{
+          name: @namespace,
+          image: "irrelevant",
+          domains: @domains,
+          secret_key_base: "a-secret",
+          distribution_cookie: @irrelevant
+        })
     end
 
     test "creates missing certificate", %{reconcile_1: reconcile} do
