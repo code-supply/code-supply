@@ -10566,7 +10566,6 @@ rules:
   - ""
   resources:
   - namespaces
-  - rolebindings
   - secrets
   - services
   verbs:
@@ -10591,6 +10590,14 @@ rules:
   - cert-manager.io
   resources:
   - certificates
+  verbs:
+  - get
+  - create
+  - delete
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - rolebindings
   verbs:
   - get
   - create
@@ -11542,7 +11549,7 @@ spec:
       labels:
         app: site-operator
         k8s-app: site-operator
-        version: 92d964b
+        version: 199a586
     spec:
       containers:
       - env:
@@ -11567,7 +11574,7 @@ spec:
         envFrom:
         - secretRef:
             name: site-operator
-        image: eu.gcr.io/code-supply/site-operator:d617375
+        image: eu.gcr.io/code-supply/site-operator:b185881
         name: site-operator
         resources:
           limits:
