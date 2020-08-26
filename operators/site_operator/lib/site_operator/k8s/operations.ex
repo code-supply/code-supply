@@ -36,7 +36,8 @@ defmodule SiteOperator.K8s.Operations do
           "CHECK_ORIGINS" =>
             domains
             |> Enum.map(fn domain -> "https://#{domain}" end)
-            |> Enum.join(" ")
+            |> Enum.join(" "),
+          "ELIXIR_ERL_OPTIONS" => "-kernel inet_dist_listen_min 5555 inet_dist_listen_max 5555"
         }
       },
       %Service{name: name, namespace: namespace},

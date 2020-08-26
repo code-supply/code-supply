@@ -64,6 +64,11 @@ defmodule SiteOperator.K8sConversions do
               %{
                 "name" => "app",
                 "image" => image,
+                "ports" => [
+                  %{"name" => "http", "containerPort" => 4000},
+                  %{"name" => "erlang", "containerPort" => 5555},
+                  %{"name" => "epmd", "containerPort" => 4369}
+                ],
                 "envFrom" => [%{"secretRef" => %{"name" => name}}],
                 "env" =>
                   for {k, v} <- env_vars do
