@@ -15,6 +15,16 @@ config :affiliate, AffiliateWeb.Endpoint,
   pubsub_server: Affiliate.PubSub,
   live_view: [signing_salt: "4i29Hv3I"]
 
+config :libcluster,
+  topologies: [
+    default: [
+      strategy: Cluster.Strategy.Epmd,
+      config: [
+        hosts: [:affable@pickle]
+      ]
+    ]
+  ]
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

@@ -6,17 +6,6 @@ defmodule Affiliate.Application do
   use Application
 
   def start(_type, _args) do
-    topologies = [
-      default: [
-        strategy: Cluster.Strategy.Kubernetes,
-        config: [
-          kubernetes_node_basename: "affable",
-          kubernetes_selector: "app=affable",
-          kubernetes_namespace: "affable"
-        ]
-      ]
-    ]
-
     children = [
       # Start the Telemetry supervisor
       AffiliateWeb.Telemetry,
@@ -24,7 +13,11 @@ defmodule Affiliate.Application do
       {Phoenix.PubSub, name: Affiliate.PubSub},
       # Start the Endpoint (http/https)
       AffiliateWeb.Endpoint,
-      {Cluster.Supervisor, [topologies, [name: Affiliate.ClusterSupervisor]]}
+      {Cluster.Supervisor,
+       [
+         Application.get_env(:libcluster, :topologies),
+         [name: Affiliate.ClusterSupervisor]
+       ]}
 
       # Start a worker by calling: Affiliate.Worker.start_link(arg)
       # {Affiliate.Worker, arg}

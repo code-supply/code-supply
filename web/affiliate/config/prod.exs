@@ -13,6 +13,18 @@ config :affiliate, AffiliateWeb.Endpoint,
   url: [host: "example.com", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
+config :libcluster,
+  topologies: [
+    default: [
+      strategy: Cluster.Strategy.Kubernetes,
+      config: [
+        kubernetes_node_basename: "affable",
+        kubernetes_selector: "app=affable",
+        kubernetes_namespace: "affable"
+      ]
+    ]
+  ]
+
 # Do not print debug messages in production
 config :logger, level: :info
 
