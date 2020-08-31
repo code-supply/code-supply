@@ -12,7 +12,7 @@ defmodule Affable.Application do
       # Start the Telemetry supervisor
       AffableWeb.Telemetry,
       # Start the PubSub system
-      {Phoenix.PubSub, name: Affable.PubSub},
+      {Phoenix.PubSub, name: :affable},
       # Start the Endpoint (http/https)
       AffableWeb.Endpoint
       # Start a worker by calling: Affable.Worker.start_link(arg)

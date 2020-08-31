@@ -12,7 +12,7 @@ config :affiliate, AffiliateWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "hidIpGHqKhPK7ZLkoPVi1gmtII6ziy7hhYCrvlwb5ahrYwAl3q9/M9eAT4l4nYsN",
   render_errors: [view: AffiliateWeb.ErrorView, accepts: ~w(html json), layout: false],
-  pubsub_server: Affiliate.PubSub,
+  pubsub_server: :affable,
   live_view: [signing_salt: "4i29Hv3I"]
 
 config :libcluster,

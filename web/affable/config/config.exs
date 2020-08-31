@@ -17,7 +17,7 @@ config :affable, AffableWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "xmJOBP9bmljDpmDuE5AUTOt1ryhJ4Tqteqfoz7BEZQozBIQUU2a1ggTI9+nuAQ8u",
   render_errors: [view: AffableWeb.ErrorView, accepts: ~w(html json), layout: false],
-  pubsub_server: Affable.PubSub,
+  pubsub_server: :affable,
   live_view: [signing_salt: "SOJjYeds"]
 
 # Configures Elixir's Logger

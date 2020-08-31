@@ -10,7 +10,7 @@ defmodule Affiliate.Application do
       # Start the Telemetry supervisor
       AffiliateWeb.Telemetry,
       # Start the PubSub system
-      {Phoenix.PubSub, name: Affiliate.PubSub},
+      {Phoenix.PubSub, name: :affable},
       # Start the Endpoint (http/https)
       AffiliateWeb.Endpoint,
       {Cluster.Supervisor,
