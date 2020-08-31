@@ -1,5 +1,7 @@
 defmodule SiteOperator.RealK8sTest do
   use ExUnit.Case, async: false
+  @moduletag :external
+  @cluster :test
 
   alias SiteOperator.K8s.{
     Certificate,
@@ -10,8 +12,6 @@ defmodule SiteOperator.RealK8sTest do
     Service,
     VirtualService
   }
-
-  @cluster :test
 
   setup_all do
     conn = K8s.Conn.from_file("~/.kube/config", context: "site-operator-test")
@@ -78,7 +78,6 @@ defmodule SiteOperator.RealK8sTest do
     )
   end
 
-  @tag :external
   test "all the things", %{
     execute_1: execute,
     certificate: certificate,
