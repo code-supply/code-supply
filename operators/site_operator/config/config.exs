@@ -5,6 +5,7 @@ config :site_operator,
   k8s: SiteOperator.RealK8s,
   distribution_cookie: "atestcookie",
   affiliate_site_image: "nginx",
+  pubsub_topic_requests: "sitestate",
   secret_key_generator: :generate
 
 config :k8s,

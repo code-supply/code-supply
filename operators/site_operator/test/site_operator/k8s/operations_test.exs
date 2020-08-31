@@ -105,6 +105,18 @@ defmodule SiteOperator.K8s.OperationsTest do
       assert {:ok, "some-cookie"} = Base.decode64(cookie_encoded)
     end
 
+    test "sets the pubsub config in the deployment", %{inner_creations: creations} do
+      assert %{
+               "name" => "PUBSUB_TOPIC_REQUESTS",
+               "value" => Application.get_env(:site_operator, :pubsub_topic_requests)
+             } in (creations |> find_kind("Deployment") |> env_vars())
+
+      assert %{
+               "name" => "PUBSUB_TOPIC_INCOMING",
+               "value" => "my-namespace"
+             } in (creations |> find_kind("Deployment") |> env_vars())
+    end
+
     test "sets the checked origins in the deployment, so that new hosts trigger new rollout", %{
       inner_creations: creations
     } do
