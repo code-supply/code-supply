@@ -17,7 +17,10 @@ defmodule Affiliate.Application do
        [
          Application.get_env(:libcluster, :topologies),
          [name: Affiliate.ClusterSupervisor]
-       ]}
+       ]},
+      {Affiliate.SiteState,
+       {:affable, System.get_env("PUBSUB_TOPIC_INCOMING"),
+        System.get_env("PUBSUB_TOPIC_REQUESTS")}}
 
       # Start a worker by calling: Affiliate.Worker.start_link(arg)
       # {Affiliate.Worker, arg}
