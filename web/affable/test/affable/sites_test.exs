@@ -28,6 +28,33 @@ defmodule Affable.SitesTest do
       end
     end
 
+    test "can return an untyped representation of the site, for distribution" do
+      site = site_fixture()
+
+      {:ok,
+       %{
+         name: "Top 10 Apples",
+         items: [item | _rest] = items
+       }} = Sites.get_raw_site(site.id)
+
+      assert length(items) == 10
+
+      assert item.name == "Golden Delicious"
+
+      assert Map.keys(item) == [
+               :description,
+               :image_url,
+               :name,
+               :position,
+               :price,
+               :url
+             ]
+    end
+
+    test "returns error when untyped representation isn't available" do
+      {:error, :not_found} = Sites.get_raw_site(8_675_309)
+    end
+
     test "new sites have a name, internal name, member, default domain and items" do
       user = user_fixture()
       site = site_fixture(user, %{name: "some name !@#!@#$@#%#$"})
