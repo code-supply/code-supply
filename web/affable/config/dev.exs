@@ -1,5 +1,15 @@
 use Mix.Config
 
+config :affable,
+  children: [
+    {Affable.SiteUpdater,
+     {
+       Affable.Sites,
+       :affable,
+       "devsiterequests"
+     }}
+  ]
+
 # Configure your database
 config :affable, Affable.Repo,
   username: "postgres",

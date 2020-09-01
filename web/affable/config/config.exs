@@ -11,7 +11,7 @@ config :affable,
   ecto_repos: [Affable.Repo],
   k8s: Affable.RealK8s,
   id_salt: "replacedinrelease",
-  pubsub_topic_requests: "devsiterequests"
+  children: []
 
 # Configures the endpoint
 config :affable, AffableWeb.Endpoint,
