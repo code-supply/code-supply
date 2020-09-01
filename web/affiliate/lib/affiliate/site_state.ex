@@ -4,7 +4,7 @@ defmodule Affiliate.SiteState do
   alias Phoenix.PubSub
 
   def start_link(subscribe_args) do
-    GenServer.start_link(__MODULE__, subscribe_args)
+    GenServer.start_link(__MODULE__, subscribe_args, name: __MODULE__)
   end
 
   def init({pubsub, incoming_topic, outgoing_topic}) do
