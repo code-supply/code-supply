@@ -36,7 +36,7 @@ defmodule Affable.SitesTest do
       end
     end
 
-    test "can return an untyped representation of the site, for distribution", %{
+    test "can fetch an untyped representation of the site, for distribution", %{
       get_raw_site_1: get_raw_site
     } do
       site = site_fixture()

@@ -16,26 +16,30 @@ defmodule Affable.Sites do
     |> Repo.one!()
   end
 
+  def raw(%Site{} = site) do
+    %{
+      id: site.id,
+      name: site.name,
+      items:
+        site.items
+        |> Enum.map(fn i ->
+          %{
+            description: i.description,
+            image_url: i.image_url,
+            name: i.name,
+            position: i.position,
+            price: i.price,
+            url: i.url
+          }
+        end)
+    }
+  end
+
   @impl true
   def get_raw_site(id) do
     case get_site_query(id) |> Repo.one() do
-      %Site{name: name, items: items} ->
-        {:ok,
-         %{
-           name: name,
-           items:
-             items
-             |> Enum.map(fn i ->
-               %{
-                 description: i.description,
-                 image_url: i.image_url,
-                 name: i.name,
-                 position: i.position,
-                 price: i.price,
-                 url: i.url
-               }
-             end)
-         }}
+      %Site{} = site ->
+        {:ok, raw(site)}
 
       nil ->
         {:error, :not_found}

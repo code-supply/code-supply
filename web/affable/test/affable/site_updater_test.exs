@@ -4,7 +4,7 @@ defmodule Affable.SiteUpdaterTest do
 
   alias Phoenix.PubSub
   alias Affable.MockRawSiteRetriever
-  alias Affable.SiteUpdater
+  alias Affable.{Broadcaster, SiteUpdater}
 
   setup :set_mox_from_context
   setup :verify_on_exit!
@@ -21,7 +21,12 @@ defmodule Affable.SiteUpdaterTest do
         {MockRawSiteRetriever, :affable, "testsiteupdater"}
       })
 
-    %{server: server, site_id: site_id, site_name: site_name}
+    Hammox.protect(
+      SiteUpdater,
+      Broadcaster,
+      broadcast: 1
+    )
+    |> Map.merge(%{server: server, site_id: site_id, site_name: site_name})
   end
 
   test "responds to requests for content with a broadcast back for the site", %{
@@ -37,8 +42,8 @@ defmodule Affable.SiteUpdaterTest do
     assert_receive %{name: "Some Site"}
   end
 
-  test "can broadcast on demand", %{site_id: site_id} do
-    SiteUpdater.broadcast(%{name: "Some Site", id: site_id})
+  test "can broadcast on demand", %{site_id: site_id, broadcast_1: broadcast} do
+    broadcast.(%{name: "Some Site", id: site_id})
 
     assert_receive %{name: "Some Site"}
   end

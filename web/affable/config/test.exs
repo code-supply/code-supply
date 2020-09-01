@@ -4,7 +4,8 @@ use Mix.Config
 config :bcrypt_elixir, :log_rounds, 1
 
 config :affable,
-  k8s: Affable.MockK8s
+  k8s: Affable.MockK8s,
+  broadcaster: Affable.MockBroadcaster
 
 # Configure your database
 #

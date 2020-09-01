@@ -2,8 +2,11 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
   import Affable.SitesFixtures
+  import Hammox
 
-  alias Affable.Accounts
+  alias Affable.{Accounts, Sites}
+
+  setup :verify_on_exit!
 
   setup do
     %{site: site_fixture()}
@@ -29,9 +32,27 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
 
       assert html =~ first_item.description
 
+      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+
       assert render_first_item_change(view, site.items, %{
                "description" => "My new description!"
              }) =~ "My new description!"
+    end
+
+    test "editing an item broadcasts the change to the site", %{conn: conn, site: site} do
+      conn = get(conn, path(conn, site))
+
+      {:ok, view, _html} = live(conn, path(conn, site))
+
+      expected_message = Sites.raw(%{site | name: "new name"})
+
+      expect(Affable.MockBroadcaster, :broadcast, fn ^expected_message -> :ok end)
+
+      render_change(view, :save, %{
+        "site" => %{
+          "name" => "new name"
+        }
+      })
     end
 
     test "editing an item to be invalid marks the item as invalid", %{conn: conn, site: site} do
@@ -53,6 +74,8 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
 
       assert view |> has_element?("#position-#{first_item.id}", "1")
 
+      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+
       view
       |> element("#demote-#{first_item.id}")
       |> render_click()
@@ -65,6 +88,30 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
 
       assert view |> has_element?("#position-#{first_item.id}", "1")
       assert view |> has_element?(".saved-state.saved")
+    end
+
+    test "reordering broadcasts the change to the site", %{conn: conn, site: site} do
+      {:ok, view, _html} = live(conn, path(conn, site))
+
+      [first_item | _] = site.items
+
+      expect(Affable.MockBroadcaster, :broadcast, fn %{items: [_, new_second_item | _]} ->
+        assert first_item.name == new_second_item.name
+        :ok
+      end)
+
+      view
+      |> element("#demote-#{first_item.id}")
+      |> render_click()
+
+      expect(Affable.MockBroadcaster, :broadcast, fn %{items: [new_first_item | _]} ->
+        assert first_item.name == new_first_item.name
+        :ok
+      end)
+
+      view
+      |> element("#promote-#{first_item.id}")
+      |> render_click()
     end
 
     test "raises exception when site doesn't belong to user", %{conn: conn} do

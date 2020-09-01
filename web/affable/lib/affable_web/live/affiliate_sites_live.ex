@@ -25,7 +25,7 @@ defmodule AffableWeb.AffiliateSitesLive do
 
     case Sites.update_site(site, attrs) do
       {:ok, site} ->
-        reset_changeset(socket, site)
+        complete_update(socket, site)
 
       {:error, changeset} ->
         {:noreply, assign(socket, changeset: changeset, saved_state: :error)}
@@ -36,14 +36,14 @@ defmodule AffableWeb.AffiliateSitesLive do
     site = Sites.get_site!(user, id)
 
     {:ok, site} = Sites.promote_item(site, item_id)
-    reset_changeset(socket, site)
+    complete_update(socket, site)
   end
 
   def handle_event("demote", %{"id" => item_id}, %{assigns: %{site_id: id, user: user}} = socket) do
     site = Sites.get_site!(user, id)
 
     {:ok, site} = Sites.demote_item(site, item_id)
-    reset_changeset(socket, site)
+    complete_update(socket, site)
   end
 
   def handle_event("show-saving", _, socket) do
@@ -52,11 +52,6 @@ defmodule AffableWeb.AffiliateSitesLive do
 
   def handle_info(:clear_save, socket) do
     {:noreply, assign(socket, saved_state: :clear)}
-  end
-
-  defp reset_changeset(socket, site) do
-    Process.send_after(self(), :clear_save, 2000)
-    {:noreply, assign(socket, changeset: Site.changeset(site, %{}), saved_state: :saved)}
   end
 
   defp redirect_to_login(socket) do
@@ -72,5 +67,25 @@ defmodule AffableWeb.AffiliateSitesLive do
       changeset: Site.changeset(site, %{}),
       saved_state: :neutral
     )
+  end
+
+  defp complete_update(socket, site) do
+    site
+    |> broadcast()
+    |> reset_changeset(socket)
+  end
+
+  defp broadcast(site) do
+    :ok = broadcaster().broadcast(Sites.raw(site))
+    site
+  end
+
+  defp reset_changeset(site, socket) do
+    Process.send_after(self(), :clear_save, 2000)
+    {:noreply, assign(socket, changeset: Site.changeset(site, %{}), saved_state: :saved)}
+  end
+
+  defp broadcaster() do
+    Application.get_env(:affable, :broadcaster)
   end
 end

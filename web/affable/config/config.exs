@@ -11,6 +11,7 @@ config :affable,
   ecto_repos: [Affable.Repo],
   k8s: Affable.RealK8s,
   id_salt: "replacedinrelease",
+  broadcaster: Affable.SiteUpdater,
   children: []
 
 # Configures the endpoint
