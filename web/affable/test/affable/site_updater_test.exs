@@ -4,6 +4,7 @@ defmodule Affable.SiteUpdaterTest do
 
   alias Phoenix.PubSub
   alias Affable.MockRawSiteRetriever
+  alias Affable.SiteUpdater
 
   setup :set_mox_from_context
   setup :verify_on_exit!
@@ -16,7 +17,7 @@ defmodule Affable.SiteUpdaterTest do
 
     server =
       start_supervised!({
-        Affable.SiteUpdater,
+        SiteUpdater,
         {MockRawSiteRetriever, :affable, "testsiteupdater"}
       })
 
@@ -36,8 +37,8 @@ defmodule Affable.SiteUpdaterTest do
     assert_receive %{name: "Some Site"}
   end
 
-  test "can broadcast on demand", %{site_name: site_name, server: server} do
-    GenServer.cast(server, %{topic: site_name, site: %{name: "Some Site"}})
+  test "can broadcast on demand", %{site_id: site_id} do
+    SiteUpdater.broadcast(%{name: "Some Site", id: site_id})
 
     assert_receive %{name: "Some Site"}
   end

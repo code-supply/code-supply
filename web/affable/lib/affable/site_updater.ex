@@ -12,6 +12,13 @@ defmodule Affable.SiteUpdater do
     {:ok, %{pubsub: pubsub, retriever: retriever}}
   end
 
+  def broadcast(site) do
+    GenServer.cast(__MODULE__, %{
+      topic: Affable.ID.site_name_from_id(site.id),
+      site: site
+    })
+  end
+
   def handle_info(site_topic, %{pubsub: pubsub, retriever: retriever} = state) do
     id = Affable.ID.id_from_site_name(site_topic)
     {:ok, site} = retriever.get_raw_site(id)
