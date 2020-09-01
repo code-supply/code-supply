@@ -13,6 +13,14 @@ defmodule Affable.SitesTest do
     @update_attrs %{name: "some updated name"}
     @invalid_attrs %{name: nil}
 
+    setup do
+      Hammox.protect(
+        Sites,
+        Affable.RawSiteRetriever,
+        get_raw_site: 1
+      )
+    end
+
     test "get_site!/2 returns the site with given user id and id" do
       user = user_fixture()
       site = site_fixture(user)
@@ -28,14 +36,16 @@ defmodule Affable.SitesTest do
       end
     end
 
-    test "can return an untyped representation of the site, for distribution" do
+    test "can return an untyped representation of the site, for distribution", %{
+      get_raw_site_1: get_raw_site
+    } do
       site = site_fixture()
 
       {:ok,
        %{
          name: "Top 10 Apples",
          items: [item | _rest] = items
-       }} = Sites.get_raw_site(site.id)
+       }} = get_raw_site.(site.id)
 
       assert length(items) == 10
 
@@ -51,8 +61,10 @@ defmodule Affable.SitesTest do
              ]
     end
 
-    test "returns error when untyped representation isn't available" do
-      {:error, :not_found} = Sites.get_raw_site(8_675_309)
+    test "returns error when untyped representation isn't available", %{
+      get_raw_site_1: get_raw_site
+    } do
+      {:error, :not_found} = get_raw_site.(8_675_309)
     end
 
     test "new sites have a name, internal name, member, default domain and items" do

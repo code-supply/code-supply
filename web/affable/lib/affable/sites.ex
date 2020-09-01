@@ -1,4 +1,6 @@
 defmodule Affable.Sites do
+  @behaviour Affable.RawSiteRetriever
+
   import Ecto.Query, warn: false
   alias Affable.Repo
   alias Affable.Accounts.User
@@ -14,6 +16,7 @@ defmodule Affable.Sites do
     |> Repo.one!()
   end
 
+  @impl true
   def get_raw_site(id) do
     case get_site_query(id) |> Repo.one() do
       %Site{name: name, items: items} ->
