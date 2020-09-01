@@ -8,10 +8,10 @@ defmodule Affiliate.SiteStateTest do
 
     start_supervised!({
       Affiliate.SiteState,
-      {:affable, "testsite:123", "testsitestate"}
+      {:affable, "testsite123", "testsitestate"}
     })
 
-    assert_received "testsite:123"
+    assert_received "testsite123"
   end
 
   describe "after startup" do

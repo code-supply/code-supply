@@ -15,6 +15,10 @@ config :affiliate, AffiliateWeb.Endpoint,
   pubsub_server: :affable,
   live_view: [signing_salt: "4i29Hv3I"]
 
+config :affiliate,
+  pubsub_topic_incoming: "devsite",
+  pubsub_topic_requests: "devsiterequests"
+
 config :libcluster,
   topologies: [
     default: [

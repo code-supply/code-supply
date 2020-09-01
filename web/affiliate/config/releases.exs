@@ -19,3 +19,9 @@ config :affiliate, AffiliateWeb.Endpoint,
   ],
   secret_key_base: secret_key_base,
   server: true
+
+config :affiliate,
+  pubsub_topic_incoming:
+    System.get_env("PUBSUB_TOPIC_INCOMING") || raise("Must set PUBSUB_TOPIC_INCOMING"),
+  pubsub_topic_requests:
+    System.get_env("PUBSUB_TOPIC_REQUESTS") || raise("Must set PUBSUB_TOPIC_REQUESTS")

@@ -63,7 +63,7 @@ defmodule Affable.Sites do
          )
          |> Multi.update(:site_with_internal_name, fn %{site: site} ->
            site
-           |> Site.change_internal_name(generate_internal_name(site.id))
+           |> Site.change_internal_name(Affable.ID.site_name_from_id(site.id))
          end)
          |> Multi.insert(
            :domain,
@@ -174,10 +174,6 @@ defmodule Affable.Sites do
 
   def change_site(%Site{} = site, attrs \\ %{}) do
     Site.changeset(site, attrs)
-  end
-
-  def generate_internal_name(number) do
-    "site#{Affable.ID.encode(number)}"
   end
 
   def promote_item(site, item_id) do

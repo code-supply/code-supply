@@ -21,6 +21,10 @@ config :affiliate, AffiliateWeb.Endpoint,
     ]
   ]
 
+config :affiliate,
+  pubsub_topic_incoming: "devsite",
+  pubsub_topic_requests: "devsiterequests"
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
