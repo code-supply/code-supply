@@ -21,7 +21,25 @@ config :affiliate, AffiliateWeb.Endpoint,
   server: true
 
 config :affiliate,
-  pubsub_topic_incoming:
-    System.get_env("PUBSUB_TOPIC_INCOMING") || raise("Must set PUBSUB_TOPIC_INCOMING"),
-  pubsub_topic_requests:
-    System.get_env("PUBSUB_TOPIC_REQUESTS") || raise("Must set PUBSUB_TOPIC_REQUESTS")
+  children: [
+    {Cluster.Supervisor,
+     [
+       [
+         default: [
+           strategy: Cluster.Strategy.Kubernetes,
+           config: [
+             kubernetes_node_basename: "affable",
+             kubernetes_selector: "app=affable",
+             kubernetes_namespace: "affable"
+           ]
+         ]
+       ],
+       [name: Affiliate.ClusterSupervisor]
+     ]},
+    {Affiliate.SiteState,
+     {
+       :affable,
+       System.get_env("PUBSUB_TOPIC_INCOMING") || raise("Must set PUBSUB_TOPIC_INCOMING"),
+       System.get_env("PUBSUB_TOPIC_REQUESTS") || raise("Must set PUBSUB_TOPIC_REQUESTS")
+     }}
+  ]

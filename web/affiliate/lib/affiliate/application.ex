@@ -6,28 +6,15 @@ defmodule Affiliate.Application do
   use Application
 
   def start(_type, _args) do
-    children = [
-      # Start the Telemetry supervisor
-      AffiliateWeb.Telemetry,
-      # Start the PubSub system
-      {Phoenix.PubSub, name: :affable},
-      # Start the Endpoint (http/https)
-      AffiliateWeb.Endpoint,
-      {Cluster.Supervisor,
-       [
-         Application.get_env(:libcluster, :topologies),
-         [name: Affiliate.ClusterSupervisor]
-       ]},
-      {Affiliate.SiteState,
-       {
-         :affable,
-         Application.get_env(:affiliate, :pubsub_topic_incoming),
-         Application.get_env(:affiliate, :pubsub_topic_requests)
-       }}
-
-      # Start a worker by calling: Affiliate.Worker.start_link(arg)
-      # {Affiliate.Worker, arg}
-    ]
+    children =
+      [
+        # Start the Telemetry supervisor
+        AffiliateWeb.Telemetry,
+        # Start the PubSub system
+        {Phoenix.PubSub, name: :affable},
+        # Start the Endpoint (http/https)
+        AffiliateWeb.Endpoint
+      ] ++ Application.get_env(:affiliate, :children)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

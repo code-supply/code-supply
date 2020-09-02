@@ -1,4 +1,4 @@
-<h1>Affiliate website</h1>
+<h1><%= @site.name %></h1>
 
 <h2>Nodes</h2>
 
@@ -6,3 +6,16 @@
 
 <h3>Self</h3>
 <p><%= @node %></p>
+
+<h3>Items</h3>
+<ol>
+<%= for item <- @site.items do %>
+  <li>
+  <a href="<%= item.url %>"><img width="100" src="<%= item.image_url %>"><%= item.name %></a>
+  <p>
+  <%= item.description %>
+  </p>
+  <p>Price: <%= format_price item.price %></p>
+  </li>
+<% end %>
+</ol>

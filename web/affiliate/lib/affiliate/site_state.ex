@@ -10,14 +10,26 @@ defmodule Affiliate.SiteState do
   def init({pubsub, incoming_topic, outgoing_topic}) do
     PubSub.subscribe(pubsub, incoming_topic)
     PubSub.broadcast(pubsub, outgoing_topic, incoming_topic)
-    {:ok, %{}}
+    {:ok, %{subscription: {pubsub, incoming_topic}, site: %{}}}
   end
 
-  def handle_call(:get, _from, existing_site) do
-    {:reply, existing_site, existing_site}
+  def site() do
+    GenServer.call(__MODULE__, :get)
   end
 
-  def handle_info(updated_site, _existing_site) do
-    {:noreply, updated_site}
+  def subscription_info() do
+    GenServer.call(__MODULE__, :get_subscription_info)
+  end
+
+  def handle_call(:get, _from, %{site: existing_site} = state) do
+    {:reply, existing_site, state}
+  end
+
+  def handle_call(:get_subscription_info, _from, %{subscription: subscription} = state) do
+    {:reply, subscription, state}
+  end
+
+  def handle_info(updated_site, state) do
+    {:noreply, %{state | site: updated_site}}
   end
 end

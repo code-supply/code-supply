@@ -22,8 +22,26 @@ config :affiliate, AffiliateWeb.Endpoint,
   ]
 
 config :affiliate,
-  pubsub_topic_incoming: "devsite",
-  pubsub_topic_requests: "devsiterequests"
+  children: [
+    {Cluster.Supervisor,
+     [
+       [
+         default: [
+           strategy: Cluster.Strategy.Epmd,
+           config: [
+             hosts: [:affable@pickle]
+           ]
+         ]
+       ],
+       [name: Affiliate.ClusterSupervisor]
+     ]},
+    {Affiliate.SiteState,
+     {
+       :affable,
+       "sitekjq0",
+       "devsiterequests"
+     }}
+  ]
 
 # ## SSL Support
 #
