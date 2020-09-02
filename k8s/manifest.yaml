@@ -11588,7 +11588,7 @@ spec:
         envFrom:
         - secretRef:
             name: site-operator
-        image: eu.gcr.io/code-supply/site-operator:b185881
+        image: eu.gcr.io/code-supply/site-operator:3641665
         name: site-operator
         resources:
           limits:
@@ -11621,7 +11621,7 @@ spec:
     metadata:
       labels:
         app: affable
-        version: 094b0a6
+        version: "3641665"
     spec:
       containers:
       - env:
@@ -11635,10 +11635,12 @@ spec:
           value: affable@$(POD_IP)
         - name: RELEASE_DISTRIBUTION
           value: name
+        - name: PUBSUB_TOPIC_REQUESTS
+          value: sitestate
         envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:094b0a6
+        image: eu.gcr.io/code-supply/affable:3641665
         name: affable
         ports:
         - containerPort: 4000

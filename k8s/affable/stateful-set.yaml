@@ -38,6 +38,8 @@ spec:
           value: "affable@$(POD_IP)"
         - name: RELEASE_DISTRIBUTION
           value: name
+        - name: PUBSUB_TOPIC_REQUESTS
+          value: sitestate
 
         readinessProbe:
           httpGet:
