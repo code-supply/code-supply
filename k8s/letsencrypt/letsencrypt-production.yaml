@@ -12,3 +12,9 @@ spec:
     - http01:
         ingress:
           class: istio
+    - dns01:
+        clouddns:
+          project: code-supply
+          serviceAccountSecretRef:
+            name: dns-key
+            key: key.json

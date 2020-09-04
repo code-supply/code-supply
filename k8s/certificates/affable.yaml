@@ -7,6 +7,7 @@ spec:
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
+  commonName: "*.affable.app"
   dnsNames:
+  - "*.affable.app"
   - affable.app
-  - www.affable.app
