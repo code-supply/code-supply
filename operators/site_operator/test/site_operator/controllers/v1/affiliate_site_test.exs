@@ -51,9 +51,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
       }
 
       expected_batches = [
-        Operations.initial_creations("justatest", [
-          "www.example.com"
-        ]),
+        Operations.initial_creations("justatest"),
         Operations.inner_ns_creations(site)
       ]
 

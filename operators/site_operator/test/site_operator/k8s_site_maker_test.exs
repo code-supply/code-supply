@@ -80,11 +80,10 @@ defmodule SiteOperator.K8sSiteMakerTest do
   end
 
   describe "reconciliation" do
-    test "does nothing when namespace, rolebinding and cert are available", %{
+    test "does nothing when namespace and rolebinding are available", %{
       reconcile_1: reconcile
     } do
       stub(MockK8s, :execute, fn [
-                                   %Operation{action: :get},
                                    %Operation{action: :get},
                                    %Operation{action: :get}
                                  ] ->
@@ -111,7 +110,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       binding_k8s = binding |> to_k8s
 
-      stub(MockK8s, :execute, fn [_, _, %Operation{action: :get, resource: ^binding_k8s}] ->
+      stub(MockK8s, :execute, fn [_, %Operation{action: :get, resource: ^binding_k8s}] ->
         expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^binding_k8s}] ->
           {:ok, ""}
         end)
@@ -120,28 +119,6 @@ defmodule SiteOperator.K8sSiteMakerTest do
       end)
 
       {:ok, recreated: [^binding]} =
-        reconcile.(%AffiliateSite{
-          name: @namespace,
-          image: "irrelevant",
-          domains: @domains,
-          secret_key_base: "a-secret",
-          distribution_cookie: @irrelevant
-        })
-    end
-
-    test "creates missing certificate", %{reconcile_1: reconcile} do
-      cert = %Certificate{name: @namespace, domains: @domains}
-      cert_k8s = cert |> to_k8s
-
-      stub(MockK8s, :execute, fn [_, %Operation{action: :get, resource: ^cert_k8s}, _] ->
-        expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^cert_k8s}] ->
-          {:ok, ""}
-        end)
-
-        {:error, some_resources_missing: [cert]}
-      end)
-
-      {:ok, recreated: [^cert]} =
         reconcile.(%AffiliateSite{
           name: @namespace,
           image: "irrelevant",
@@ -163,7 +140,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
         distribution_cookie: "new-cookie"
       }
 
-      stub(MockK8s, :execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _, _] ->
+      stub(MockK8s, :execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _] ->
         expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^ns_k8s}] ->
           expect(MockK8s, :execute, fn operations ->
             assert operations == Operations.inner_ns_creations(site)

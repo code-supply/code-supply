@@ -3,7 +3,6 @@ defmodule SiteOperator.K8s.Operations do
 
   alias SiteOperator.K8s.{
     AffiliateSite,
-    Certificate,
     Deployment,
     Gateway,
     Namespace,
@@ -14,8 +13,8 @@ defmodule SiteOperator.K8s.Operations do
     VirtualService
   }
 
-  def initial_creations(name, domains) do
-    initial_resources(name, domains)
+  def initial_creations(name) do
+    initial_resources(name)
     |> Enum.map(&create/1)
   end
 
@@ -60,13 +59,13 @@ defmodule SiteOperator.K8s.Operations do
     |> Enum.map(&create/1)
   end
 
-  def checks(name, domains) do
-    initial_resources(name, domains)
+  def checks(name) do
+    initial_resources(name)
     |> Enum.map(&get/1)
   end
 
   def deletions(name) do
-    initial_resources(name, [])
+    initial_resources(name)
     |> Enum.map(&delete/1)
   end
 
@@ -82,10 +81,9 @@ defmodule SiteOperator.K8s.Operations do
     %Operation{action: :delete, resource: resource |> to_k8s()}
   end
 
-  defp initial_resources(name, domains) do
+  defp initial_resources(name) do
     [
       %Namespace{name: name},
-      %Certificate{name: name, domains: domains},
       %RoleBinding{
         name: "endpoint-listing-for-#{name}",
         namespace: "affable",

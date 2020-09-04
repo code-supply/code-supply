@@ -178,7 +178,12 @@ defmodule SiteOperator.K8s.Conversions do
               "protocol" => "HTTPS"
             },
             "tls" => %{
-              "credentialName" => certificate_secret_name(namespace),
+              "credentialName" =>
+                if domains |> include_custom_domain? do
+                  "affable-www"
+                else
+                  certificate_secret_name(namespace)
+                end,
               "mode" => "SIMPLE"
             }
           }
@@ -311,6 +316,11 @@ defmodule SiteOperator.K8s.Conversions do
         "spec" => %{"hosts" => domains}
       }) do
     %VirtualService{name: name, namespace: namespace, domains: domains}
+  end
+
+  defp include_custom_domain?(domains) do
+    domains
+    |> Enum.all?(&String.ends_with?(&1, ".affable.app"))
   end
 
   defp certificate_secret_name(name) do

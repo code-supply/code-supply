@@ -249,6 +249,14 @@ defmodule SiteOperator.K8s.ConversionsTest do
       assert name_and_namespace(gateway) == {@name, @namespace}
     end
 
+    test "uses wildcard certificate when there's no custom domain" do
+      gateway =
+        %Gateway{name: @name, namespace: @namespace, domains: ["somesite.affable.app"]}
+        |> to_k8s()
+
+      assert get_in(gateway, ["spec", "servers", at(1), "tls", "credentialName"]) == "affable-www"
+    end
+
     test "configures servers with insecure and TLS endpoints", %{
       gateway: gateway,
       certificate: certificate

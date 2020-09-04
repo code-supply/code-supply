@@ -28,7 +28,7 @@ defmodule SiteOperator.K8sSiteMaker do
 
   @impl SiteOperator.SiteMaker
   def reconcile(%AffiliateSite{name: name, domains: domains} = site) do
-    case execute(Operations.checks(name, domains)) do
+    case execute(Operations.checks(name)) do
       {:ok, _} ->
         {:ok, :nothing_to_do}
 

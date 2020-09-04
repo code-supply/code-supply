@@ -7,8 +7,7 @@ defmodule SiteOperator.K8s.OperationsTest do
 
   setup do
     %{
-      initial_creations:
-        initial_creations("my-namespace", ["host1.affable.app", "www.custom-domain.com"]),
+      initial_creations: initial_creations("my-namespace"),
       inner_creations:
         inner_ns_creations(%AffiliateSite{
           name: "my-namespace",
@@ -32,17 +31,10 @@ defmodule SiteOperator.K8s.OperationsTest do
              }
     end
 
-    test "include certificate", %{initial_creations: creations} do
-      assert creations |> find_kind("Certificate") == %{
-               "apiVersion" => "cert-manager.io/v1alpha2",
-               "kind" => "Certificate",
-               "metadata" => %{"name" => "my-namespace", "namespace" => "istio-system"},
-               "spec" => %{
-                 "dnsNames" => ["host1.affable.app", "www.custom-domain.com"],
-                 "issuerRef" => %{"kind" => "ClusterIssuer", "name" => "letsencrypt-production"},
-                 "secretName" => "tls-my-namespace"
-               }
-             }
+    test "do not include certificate, because they can use the wildcard", %{
+      initial_creations: creations
+    } do
+      refute creations |> find_operation("Certificate")
     end
 
     test "permit the default service account to list endpoints in the control plane namespace",
@@ -182,11 +174,15 @@ defmodule SiteOperator.K8s.OperationsTest do
       env_vars
     end
 
-    defp find_kind(creations, kind) do
+    defp find_operation(creations, kind) do
       creations
       |> Enum.find(fn op ->
         op.resource["kind"] == kind
       end)
+    end
+
+    defp find_kind(creations, kind) do
+      find_operation(creations, kind)
       |> Map.get(:resource)
     end
   end

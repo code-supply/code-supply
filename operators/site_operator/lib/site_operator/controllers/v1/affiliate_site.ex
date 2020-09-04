@@ -110,7 +110,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
     }
 
     case site_maker().create([
-           Operations.initial_creations(name, domains),
+           Operations.initial_creations(name),
            Operations.inner_ns_creations(site)
          ]) do
       {:ok, _} ->
