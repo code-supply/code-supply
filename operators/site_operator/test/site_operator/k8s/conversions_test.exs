@@ -1,7 +1,7 @@
-defmodule SiteOperator.K8sConversionsTest do
+defmodule SiteOperator.K8s.ConversionsTest do
   use ExUnit.Case, async: true
 
-  import SiteOperator.K8sConversions
+  import SiteOperator.K8s.Conversions
   import Access
 
   alias SiteOperator.K8s.{

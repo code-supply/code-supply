@@ -13,7 +13,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
     Operations
   }
 
-  import SiteOperator.K8sConversions, only: [to_k8s: 1]
+  import SiteOperator.K8s.Conversions, only: [to_k8s: 1]
   import Hammox
 
   @namespace "generatedname"
