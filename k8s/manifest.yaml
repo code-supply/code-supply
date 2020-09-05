@@ -11755,6 +11755,8 @@ spec:
       name: http
       number: 80
       protocol: HTTP
+    tls:
+      httpsRedirect: true
   - hosts:
     - affable.app
     - www.affable.app
