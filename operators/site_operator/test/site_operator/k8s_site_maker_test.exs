@@ -10,7 +10,8 @@ defmodule SiteOperator.K8sSiteMakerTest do
     RoleBinding,
     Service,
     Operation,
-    Operations
+    Operations,
+    VirtualService
   }
 
   import SiteOperator.K8s.Conversions, only: [to_k8s: 1]
@@ -84,7 +85,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
   end
 
   describe "reconciliation" do
-    test "does nothing when namespace and rolebinding are available", %{
+    test "does nothing when the top-level resources are available", %{
       reconcile_1: reconcile
     } do
       stub(MockK8s, :execute, fn [
@@ -147,6 +148,29 @@ defmodule SiteOperator.K8sSiteMakerTest do
       end)
 
       {:ok, recreated: [^ns]} = reconcile.(site)
+    end
+
+    test "creates missing wildcard virtual service", %{reconcile_1: reconcile} do
+      vs = %VirtualService{
+        name: @namespace,
+        namespace: "affable",
+        gateways: ["affable"],
+        domains: @domains
+      }
+
+      vs_k8s = vs |> to_k8s
+
+      stub(MockK8s, :execute, fn outer_ops ->
+        assert %Operation{action: :get, resource: vs_k8s} in outer_ops
+
+        expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^vs_k8s}] ->
+          {:ok, ""}
+        end)
+
+        {:error, some_resources_missing: [vs]}
+      end)
+
+      {:ok, recreated: [^vs]} = reconcile.(%AffiliateSite{name: @namespace, domains: @domains})
     end
   end
 end

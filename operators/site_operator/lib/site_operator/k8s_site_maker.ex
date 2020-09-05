@@ -1,8 +1,15 @@
 defmodule SiteOperator.K8sSiteMaker do
   @behaviour SiteOperator.SiteMaker
 
-  alias SiteOperator.K8s.{AffiliateSite, Certificate, RoleBinding, Namespace, Operations}
-  alias SiteOperator.PhoenixSite
+  alias SiteOperator.K8s.{
+    AffiliateSite,
+    Certificate,
+    RoleBinding,
+    Namespace,
+    Operations,
+    VirtualService
+  }
+
   import SiteOperator.PhoenixSites
 
   @impl SiteOperator.SiteMaker
@@ -62,6 +69,10 @@ defmodule SiteOperator.K8sSiteMaker do
 
   defp recreate(%Certificate{} = cert, _) do
     execute([Operations.create(cert)])
+  end
+
+  defp recreate(%VirtualService{} = vs, _) do
+    execute([Operations.create(vs)])
   end
 
   defp execute(ops) do
