@@ -48,12 +48,14 @@ defmodule SiteOperator.K8s.OperationsTest do
                "kind" => "VirtualService",
                "metadata" => %{"name" => "my-namespace", "namespace" => "affable"},
                "spec" => %{
-                 "gateways" => ["my-namespace"],
+                 "gateways" => ["affable"],
                  "hosts" => ["host1.affable.app"],
                  "http" => [
                    %{
                      "match" => [%{"uri" => %{"prefix" => "/"}}],
-                     "route" => [%{"destination" => %{"host" => "my-namespace"}}]
+                     "route" => [
+                       %{"destination" => %{"host" => "affiliate.my-namespace.svc.cluster.local"}}
+                     ]
                    }
                  ]
                }

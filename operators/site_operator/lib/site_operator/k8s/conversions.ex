@@ -192,18 +192,23 @@ defmodule SiteOperator.K8s.Conversions do
     }
   end
 
-  def to_k8s(%VirtualService{name: name, namespace: namespace, domains: domains}) do
+  def to_k8s(%VirtualService{
+        name: name,
+        namespace: namespace,
+        gateways: gateways,
+        domains: domains
+      }) do
     %{
       "apiVersion" => "networking.istio.io/v1beta1",
       "kind" => "VirtualService",
       "metadata" => %{"name" => name, "namespace" => namespace},
       "spec" => %{
-        "gateways" => [name],
+        "gateways" => gateways,
         "hosts" => domains,
         "http" => [
           %{
             "match" => [%{"uri" => %{"prefix" => "/"}}],
-            "route" => [%{"destination" => %{"host" => name}}]
+            "route" => [%{"destination" => %{"host" => "affiliate.#{name}.svc.cluster.local"}}]
           }
         ]
       }

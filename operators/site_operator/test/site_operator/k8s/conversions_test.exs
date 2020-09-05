@@ -46,7 +46,12 @@ defmodule SiteOperator.K8s.ConversionsTest do
       secret: %Secret{name: @name, namespace: @namespace, data: @secret_data} |> to_k8s(),
       service: %Service{name: @name, namespace: @namespace} |> to_k8s(),
       virtual_service:
-        %VirtualService{name: @name, namespace: @namespace, gateways: [@name], domains: @domains}
+        %VirtualService{
+          name: @name,
+          namespace: @namespace,
+          gateways: ["virtual-service-gateway"],
+          domains: @domains
+        }
         |> to_k8s()
     }
   end
@@ -196,51 +201,37 @@ defmodule SiteOperator.K8s.ConversionsTest do
   end
 
   describe "virtual service" do
-    test "named and namespaced correctly", %{virtual_service: virtual_service} do
-      assert name_and_namespace(virtual_service) == {@name, @namespace}
-    end
-
-    test "external host is set", %{virtual_service: virtual_service} do
-      assert get_in(virtual_service, ["spec", "hosts"]) == @domains
-    end
-
-    test "internal host is set", %{virtual_service: virtual_service, service: service} do
-      assert get_in(virtual_service, [
-               "spec",
-               "http",
-               at(0),
-               "route",
-               at(0),
-               "destination",
-               "host"
-             ]) == get_in(service, ["metadata", "name"])
-    end
-
-    test "gateway is tied", %{virtual_service: virtual_service, gateway: gateway} do
-      assert get_in(virtual_service, [
-               "spec",
-               "gateways",
-               all()
-             ]) == [get_in(gateway, ["metadata", "name"])]
-    end
-
-    test "matches on /", %{virtual_service: virtual_service} do
-      assert get_in(virtual_service, [
-               "spec",
-               "http",
-               at(0),
-               "match",
-               at(0),
-               "uri",
-               "prefix"
-             ]) == "/"
+    test "is translated correctly in the all-affable domain case" do
+      assert %VirtualService{
+               name: "my-vs",
+               namespace: "my-vs-ns",
+               gateways: ["vs-gateway"],
+               domains: ["foo.affable.app"]
+             }
+             |> to_k8s() == %{
+               "apiVersion" => "networking.istio.io/v1beta1",
+               "kind" => "VirtualService",
+               "metadata" => %{"name" => "my-vs", "namespace" => "my-vs-ns"},
+               "spec" => %{
+                 "gateways" => ["vs-gateway"],
+                 "hosts" => ["foo.affable.app"],
+                 "http" => [
+                   %{
+                     "match" => [%{"uri" => %{"prefix" => "/"}}],
+                     "route" => [
+                       %{"destination" => %{"host" => "affiliate.my-vs.svc.cluster.local"}}
+                     ]
+                   }
+                 ]
+               }
+             }
     end
 
     test "can be turned back into a struct", %{virtual_service: virtual_service} do
       assert virtual_service |> from_k8s() == %VirtualService{
                name: @name,
                namespace: @namespace,
-               gateways: [@name],
+               gateways: ["virtual-service-gateway"],
                domains: @domains
              }
     end
