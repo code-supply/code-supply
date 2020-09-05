@@ -11621,7 +11621,7 @@ spec:
     metadata:
       labels:
         app: affable
-        version: "3641665"
+        version: f7ebfb0
     spec:
       containers:
       - env:
@@ -11640,7 +11640,7 @@ spec:
         envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:3641665
+        image: eu.gcr.io/code-supply/affable:f7ebfb0
         name: affable
         ports:
         - containerPort: 4000
