@@ -10584,6 +10584,7 @@ rules:
   - gateways
   - virtualservices
   verbs:
+  - get
   - create
   - delete
 - apiGroups:
@@ -11588,7 +11589,7 @@ spec:
         envFrom:
         - secretRef:
             name: site-operator
-        image: eu.gcr.io/code-supply/site-operator:47afcfd
+        image: eu.gcr.io/code-supply/site-operator:d31497b
         name: site-operator
         resources:
           limits:
