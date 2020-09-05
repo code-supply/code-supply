@@ -24,7 +24,7 @@ operator_use_head:
 	git rev-parse --short HEAD > operators/site_operator/VERSION
 
 k8s/operators/site-operator.yaml: \
-	operators/site_operator/lib/**/* \
+	operators/site_operator/lib/site_operator/controllers/v1/* \
 	operators/site_operator/config/* \
 	operators/site_operator/VERSION
 	cd operators/site_operator && \
