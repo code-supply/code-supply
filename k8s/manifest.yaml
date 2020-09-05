@@ -11750,7 +11750,7 @@ spec:
   servers:
   - hosts:
     - affable.app
-    - www.affable.app
+    - '*.affable.app'
     port:
       name: http
       number: 80
@@ -11759,7 +11759,7 @@ spec:
       httpsRedirect: true
   - hosts:
     - affable.app
-    - www.affable.app
+    - '*.affable.app'
     port:
       name: https
       number: 443

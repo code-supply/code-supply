@@ -12,7 +12,7 @@ spec:
       protocol: HTTP
     hosts:
     - affable.app
-    - www.affable.app
+    - "*.affable.app"
     tls:
       httpsRedirect: true
   - port:
@@ -21,7 +21,7 @@ spec:
       protocol: HTTPS
     hosts:
     - affable.app
-    - www.affable.app
+    - "*.affable.app"
     tls:
       mode: SIMPLE
       credentialName: affable-www
