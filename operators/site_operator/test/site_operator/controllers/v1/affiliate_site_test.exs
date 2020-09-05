@@ -8,6 +8,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
 
   alias SiteOperator.Controller
   alias SiteOperator.K8s.{AffiliateSite, Operations}
+  alias SiteOperator.PhoenixSites.PhoenixSite
   alias SiteOperator.MockSiteMaker
 
   setup :verify_on_exit!
@@ -42,7 +43,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
       expected_cookie = Application.get_env(:site_operator, :distribution_cookie)
       expected_image = Application.get_env(:site_operator, :affiliate_site_image)
 
-      site = %AffiliateSite{
+      site = %PhoenixSite{
         name: "justatest",
         image: expected_image,
         domains: ["www.example.com"],
@@ -51,7 +52,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
       }
 
       expected_batches = [
-        Operations.initial_creations("justatest"),
+        Operations.initial_creations(site),
         Operations.inner_ns_creations(site)
       ]
 
@@ -86,7 +87,10 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     setup do
       %{
         delete: fn ->
-          Controller.V1.AffiliateSite.delete(%{"metadata" => %{"name" => "deleteme"}})
+          Controller.V1.AffiliateSite.delete(%{
+            "metadata" => %{"name" => "deleteme"},
+            "spec" => %{"domains" => ["asdf.affable.app"]}
+          })
         end
       }
     end
@@ -102,7 +106,13 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     end
 
     test "deletes the site", %{delete: delete} do
-      expect(MockSiteMaker, :delete, fn "deleteme" -> {:ok, ""} end)
+      expect(MockSiteMaker, :delete, fn %AffiliateSite{
+                                          name: "deleteme",
+                                          domains: ["asdf.affable.app"]
+                                        } ->
+        {:ok, ""}
+      end)
+
       delete.()
     end
 
@@ -119,8 +129,6 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
 
   describe "reconcile/1" do
     setup do
-      expected_cookie = Application.get_env(:site_operator, :distribution_cookie)
-
       %{
         reconcile: fn ->
           Controller.V1.AffiliateSite.reconcile(%{
@@ -133,9 +141,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
         stub_error: fn ->
           stub(MockSiteMaker, :reconcile, fn %AffiliateSite{
                                                name: "mysite",
-                                               domains: ["www.example.com"],
-                                               secret_key_base: _secret_key_base,
-                                               distribution_cookie: ^expected_cookie
+                                               domains: ["www.example.com"]
                                              } ->
             {:error, "upstream error"}
           end)
@@ -143,9 +149,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
         stub_nothing_to_do: fn ->
           stub(MockSiteMaker, :reconcile, fn %AffiliateSite{
                                                name: "mysite",
-                                               domains: ["www.example.com"],
-                                               secret_key_base: _secret_key_base,
-                                               distribution_cookie: ^expected_cookie
+                                               domains: ["www.example.com"]
                                              } ->
             {:ok, :nothing_to_do}
           end)
@@ -153,9 +157,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
         stub_success: fn ->
           stub(MockSiteMaker, :reconcile, fn %AffiliateSite{
                                                name: "mysite",
-                                               domains: ["www.example.com"],
-                                               secret_key_base: _secret_key_base,
-                                               distribution_cookie: ^expected_cookie
+                                               domains: ["www.example.com"]
                                              } ->
             {:ok, recreated: [%SiteOperator.K8s.Namespace{name: "mysite"}]}
           end)
@@ -177,8 +179,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     test "reconciles", %{reconcile: reconcile} do
       expect(MockSiteMaker, :reconcile, fn %AffiliateSite{
                                              name: "mysite",
-                                             domains: ["www.example.com"],
-                                             secret_key_base: _secret_key_base
+                                             domains: ["www.example.com"]
                                            } ->
         {:ok, recreated: [%SiteOperator.K8s.Namespace{name: "therightone"}]}
       end)

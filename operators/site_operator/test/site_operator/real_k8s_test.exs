@@ -47,6 +47,7 @@ defmodule SiteOperator.RealK8sTest do
     virtual_service = %VirtualService{
       name: "test-name",
       namespace: "test-name",
+      gateways: ["test-name"],
       domains: ["testvirtualservice.example.com"]
     }
 

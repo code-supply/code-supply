@@ -1,9 +1,9 @@
 defmodule SiteOperator.K8sSiteMaker do
   @behaviour SiteOperator.SiteMaker
 
-  alias SiteOperator.K8s.{AffiliateSite, Certificate, RoleBinding, Namespace}
-
-  alias SiteOperator.K8s.Operations
+  alias SiteOperator.K8s.{AffiliateSite, Certificate, RoleBinding, Namespace, Operations}
+  alias SiteOperator.PhoenixSite
+  import SiteOperator.PhoenixSites
 
   @impl SiteOperator.SiteMaker
   def create([batch | batches]) do
@@ -22,13 +22,13 @@ defmodule SiteOperator.K8sSiteMaker do
   end
 
   @impl SiteOperator.SiteMaker
-  def delete(name) do
-    execute(Operations.deletions(name))
+  def delete(%AffiliateSite{} = site) do
+    execute(Operations.deletions(site))
   end
 
   @impl SiteOperator.SiteMaker
-  def reconcile(%AffiliateSite{name: name} = site) do
-    case execute(Operations.checks(name)) do
+  def reconcile(%AffiliateSite{} = site) do
+    case execute(Operations.checks(site)) do
       {:ok, _} ->
         {:ok, :nothing_to_do}
 
@@ -42,9 +42,11 @@ defmodule SiteOperator.K8sSiteMaker do
   end
 
   defp recreate(%Namespace{} = ns, %AffiliateSite{} = site) do
+    phoenix_site = site |> from_k8s()
+
     case execute([Operations.create(ns)]) do
       {:ok, _} ->
-        case site |> Operations.inner_ns_creations() |> execute() do
+        case phoenix_site |> Operations.inner_ns_creations() |> execute() do
           {:ok, _} ->
             {:ok, "Site created"}
         end

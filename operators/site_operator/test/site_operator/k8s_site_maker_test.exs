@@ -14,11 +14,13 @@ defmodule SiteOperator.K8sSiteMakerTest do
   }
 
   import SiteOperator.K8s.Conversions, only: [to_k8s: 1]
+  import SiteOperator.AffiliateSiteFixtures
+  import SiteOperator.PhoenixSites
+
   import Hammox
 
   @namespace "generatedname"
   @domains ["testdomain.example.com"]
-  @irrelevant ""
 
   setup :verify_on_exit!
 
@@ -68,14 +70,16 @@ defmodule SiteOperator.K8sSiteMakerTest do
   end
 
   describe "deletion" do
-    test "deletes namespace and certificate in parallel", %{delete_1: delete} do
+    test "deletes initial resources in parallel", %{delete_1: delete} do
       MockK8s
       |> expect(:execute, fn operations ->
-        assert operations == Operations.deletions(@namespace)
+        assert operations ==
+                 Operations.deletions(affiliate_site_no_custom_domain(name: @namespace))
+
         {:ok, "pass message through"}
       end)
 
-      {:ok, "pass message through"} = delete.(@namespace)
+      {:ok, "pass message through"} = delete.(affiliate_site_no_custom_domain(name: @namespace))
     end
   end
 
@@ -85,18 +89,14 @@ defmodule SiteOperator.K8sSiteMakerTest do
     } do
       stub(MockK8s, :execute, fn [
                                    %Operation{action: :get},
+                                   %Operation{action: :get},
                                    %Operation{action: :get}
                                  ] ->
         {:ok, "Some message"}
       end)
 
-      assert reconcile.(%AffiliateSite{
-               name: @namespace,
-               image: "irrelevant",
-               domains: @domains,
-               secret_key_base: "a-secret",
-               distribution_cookie: ""
-             }) == {:ok, :nothing_to_do}
+      assert reconcile.(%AffiliateSite{name: @namespace, domains: @domains}) ==
+               {:ok, :nothing_to_do}
     end
 
     test "creates missing rolebinding", %{reconcile_1: reconcile} do
@@ -110,7 +110,9 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       binding_k8s = binding |> to_k8s
 
-      stub(MockK8s, :execute, fn [_, %Operation{action: :get, resource: ^binding_k8s}] ->
+      stub(MockK8s, :execute, fn outer_ops ->
+        assert %Operation{action: :get, resource: binding_k8s} in outer_ops
+
         expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^binding_k8s}] ->
           {:ok, ""}
         end)
@@ -119,13 +121,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
       end)
 
       {:ok, recreated: [^binding]} =
-        reconcile.(%AffiliateSite{
-          name: @namespace,
-          image: "irrelevant",
-          domains: @domains,
-          secret_key_base: "a-secret",
-          distribution_cookie: @irrelevant
-        })
+        reconcile.(%AffiliateSite{name: @namespace, domains: @domains})
     end
 
     test "creates missing namespace and its resources", %{reconcile_1: reconcile} do
@@ -134,16 +130,13 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       site = %AffiliateSite{
         name: @namespace,
-        image: "some-image",
-        domains: @domains,
-        secret_key_base: "a-new-secret",
-        distribution_cookie: "new-cookie"
+        domains: @domains
       }
 
-      stub(MockK8s, :execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _] ->
+      stub(MockK8s, :execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _, _] ->
         expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^ns_k8s}] ->
           expect(MockK8s, :execute, fn operations ->
-            assert operations == Operations.inner_ns_creations(site)
+            assert operations == Operations.inner_ns_creations(site |> from_k8s())
             {:ok, "don't match on this"}
           end)
 

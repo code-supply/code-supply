@@ -66,6 +66,8 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
 
   alias SiteOperator.K8s.{AffiliateSite, Operations}
 
+  import SiteOperator.PhoenixSites
+
   # @group "your-operator.your-domain.com"
   # @version "v1"
 
@@ -101,17 +103,16 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
       }) do
     log_metadata = [action: "add", name: name, domains: domains]
 
-    site = %AffiliateSite{
-      name: name,
-      image: affiliate_site_image(),
-      domains: domains,
-      secret_key_base: generate_secret_key(),
-      distribution_cookie: distribution_cookie()
-    }
+    phoenix_site =
+      %AffiliateSite{
+        name: name,
+        domains: domains
+      }
+      |> from_k8s()
 
     case site_maker().create([
-           Operations.initial_creations(name),
-           Operations.inner_ns_creations(site)
+           Operations.initial_creations(phoenix_site),
+           Operations.inner_ns_creations(phoenix_site)
          ]) do
       {:ok, _} ->
         Logger.info("created", log_metadata)
@@ -133,11 +134,17 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   @spec delete(map()) :: :ok | :error
   @impl Bonny.Controller
   def delete(%{
-        "metadata" => %{"name" => name}
+        "metadata" => %{"name" => name},
+        "spec" => %{"domains" => domains}
       }) do
     log_metadata = [action: "delete", name: name]
 
-    case site_maker().delete(name) do
+    site = %AffiliateSite{
+      name: name,
+      domains: domains
+    }
+
+    case site_maker().delete(site) do
       {:ok, _} ->
         Logger.info("deleted", log_metadata)
         :ok
@@ -156,13 +163,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
       }) do
     log_metadata = [action: "reconcile", name: name, domains: domains]
 
-    case site_maker().reconcile(%AffiliateSite{
-           name: name,
-           image: affiliate_site_image(),
-           domains: domains,
-           secret_key_base: generate_secret_key(),
-           distribution_cookie: distribution_cookie()
-         }) do
+    case site_maker().reconcile(%AffiliateSite{name: name, domains: domains}) do
       {:ok, :nothing_to_do} ->
         Logger.info("nothing to do", log_metadata)
         :ok
@@ -175,25 +176,6 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
         Logger.error(message, log_metadata)
         :error
     end
-  end
-
-  defp generate_secret_key do
-    case Application.get_env(:site_operator, :secret_key_generator) do
-      :generate ->
-        length = 64
-        :crypto.strong_rand_bytes(length) |> Base.encode64() |> binary_part(0, length)
-
-      value ->
-        value
-    end
-  end
-
-  defp affiliate_site_image do
-    Application.get_env(:site_operator, :affiliate_site_image)
-  end
-
-  defp distribution_cookie do
-    Application.get_env(:site_operator, :distribution_cookie)
   end
 
   defp site_maker do

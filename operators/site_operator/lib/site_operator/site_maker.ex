@@ -6,7 +6,7 @@ defmodule SiteOperator.SiteMaker do
   @type secret_key_base :: String.t()
   @type batch :: list(%Operation{})
   @callback create(list(batch)) :: {:ok, term} | {:error, String.t()}
-  @callback delete(namespace) :: {:ok, term} | {:error, String.t()}
+  @callback delete(%AffiliateSite{}) :: {:ok, term} | {:error, String.t()}
   @callback reconcile(%AffiliateSite{}) ::
               {:ok, recreated: list(map())}
               | {:ok, :nothing_to_do}

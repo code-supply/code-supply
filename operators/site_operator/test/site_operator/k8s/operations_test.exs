@@ -3,19 +3,21 @@ defmodule SiteOperator.K8s.OperationsTest do
 
   import SiteOperator.K8s.Operations
 
-  alias SiteOperator.K8s.AffiliateSite
+  alias SiteOperator.PhoenixSites.PhoenixSite
 
   setup do
+    site = %PhoenixSite{
+      name: "my-namespace",
+      image: "my-image",
+      domains: ["host1.affable.app"],
+      secret_key_base: "some-secret",
+      distribution_cookie: "some-cookie"
+    }
+
     %{
-      initial_creations: initial_creations("my-namespace"),
-      inner_creations:
-        inner_ns_creations(%AffiliateSite{
-          name: "my-namespace",
-          image: "my-image",
-          domains: ["host1.affable.app", "www.custom-domain.com"],
-          secret_key_base: "some-secret",
-          distribution_cookie: "some-cookie"
-        })
+      site: site,
+      initial_creations: initial_creations(site),
+      inner_creations: inner_ns_creations(site)
     }
   end
 
@@ -35,6 +37,27 @@ defmodule SiteOperator.K8s.OperationsTest do
       initial_creations: creations
     } do
       refute creations |> find_operation("Certificate")
+    end
+
+    test "include a virtual service in affable namespace, to make use of affable's wildcard cert",
+         %{
+           initial_creations: creations
+         } do
+      assert creations |> find_kind("VirtualService") == %{
+               "apiVersion" => "networking.istio.io/v1beta1",
+               "kind" => "VirtualService",
+               "metadata" => %{"name" => "my-namespace", "namespace" => "affable"},
+               "spec" => %{
+                 "gateways" => ["my-namespace"],
+                 "hosts" => ["host1.affable.app"],
+                 "http" => [
+                   %{
+                     "match" => [%{"uri" => %{"prefix" => "/"}}],
+                     "route" => [%{"destination" => %{"host" => "my-namespace"}}]
+                   }
+                 ]
+               }
+             }
     end
 
     test "permit the default service account to list endpoints in the control plane namespace",
@@ -110,8 +133,11 @@ defmodule SiteOperator.K8s.OperationsTest do
     end
 
     test "sets the checked origins in the deployment, so that new hosts trigger new rollout", %{
-      inner_creations: creations
+      site: site
     } do
+      creations =
+        inner_ns_creations(%{site | domains: ["host1.affable.app", "www.custom-domain.com"]})
+
       assert %{
                "name" => "CHECK_ORIGINS",
                "value" => "https://host1.affable.app https://www.custom-domain.com"

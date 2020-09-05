@@ -46,7 +46,8 @@ defmodule SiteOperator.K8s.ConversionsTest do
       secret: %Secret{name: @name, namespace: @namespace, data: @secret_data} |> to_k8s(),
       service: %Service{name: @name, namespace: @namespace} |> to_k8s(),
       virtual_service:
-        %VirtualService{name: @name, namespace: @namespace, domains: @domains} |> to_k8s()
+        %VirtualService{name: @name, namespace: @namespace, gateways: [@name], domains: @domains}
+        |> to_k8s()
     }
   end
 
@@ -239,6 +240,7 @@ defmodule SiteOperator.K8s.ConversionsTest do
       assert virtual_service |> from_k8s() == %VirtualService{
                name: @name,
                namespace: @namespace,
+               gateways: [@name],
                domains: @domains
              }
     end

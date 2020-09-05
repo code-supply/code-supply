@@ -313,9 +313,9 @@ defmodule SiteOperator.K8s.Conversions do
   def from_k8s(%{
         "kind" => "VirtualService",
         "metadata" => %{"name" => name, "namespace" => namespace},
-        "spec" => %{"hosts" => domains}
+        "spec" => %{"gateways" => gateways, "hosts" => domains}
       }) do
-    %VirtualService{name: name, namespace: namespace, domains: domains}
+    %VirtualService{name: name, namespace: namespace, gateways: gateways, domains: domains}
   end
 
   defp include_custom_domain?(domains) do

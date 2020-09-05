@@ -1,10 +1,11 @@
 defmodule SiteOperator.K8s.Operations do
   import SiteOperator.K8s.Conversions, only: [to_k8s: 1]
 
+  alias SiteOperator.PhoenixSites.PhoenixSite
+
   alias SiteOperator.K8s.{
     AffiliateSite,
     Deployment,
-    Gateway,
     Namespace,
     Operation,
     RoleBinding,
@@ -13,12 +14,12 @@ defmodule SiteOperator.K8s.Operations do
     VirtualService
   }
 
-  def initial_creations(name) do
-    initial_resources(name)
+  def initial_creations(%PhoenixSite{name: name, domains: domains}) do
+    initial_resources(name, domains)
     |> Enum.map(&create/1)
   end
 
-  def inner_ns_creations(%AffiliateSite{
+  def inner_ns_creations(%PhoenixSite{
         name: namespace,
         image: image,
         domains: domains,
@@ -45,8 +46,6 @@ defmodule SiteOperator.K8s.Operations do
         }
       },
       %Service{name: name, namespace: namespace},
-      %Gateway{name: name, domains: domains, namespace: namespace},
-      %VirtualService{name: name, domains: domains, namespace: namespace},
       %Secret{
         name: name,
         namespace: namespace,
@@ -59,13 +58,13 @@ defmodule SiteOperator.K8s.Operations do
     |> Enum.map(&create/1)
   end
 
-  def checks(name) do
-    initial_resources(name)
+  def checks(%AffiliateSite{name: name, domains: domains}) do
+    initial_resources(name, domains)
     |> Enum.map(&get/1)
   end
 
-  def deletions(name) do
-    initial_resources(name)
+  def deletions(%AffiliateSite{name: name, domains: domains}) do
+    initial_resources(name, domains)
     |> Enum.map(&delete/1)
   end
 
@@ -81,15 +80,23 @@ defmodule SiteOperator.K8s.Operations do
     %Operation{action: :delete, resource: resource |> to_k8s()}
   end
 
-  defp initial_resources(name) do
+  defp initial_resources(name, domains) do
     [
-      %Namespace{name: name},
+      %Namespace{
+        name: name
+      },
       %RoleBinding{
         name: "endpoint-listing-for-#{name}",
         namespace: "affable",
         role_kind: "ClusterRole",
         role_name: "endpoint-lister",
         subjects: [%{kind: "ServiceAccount", name: "default", namespace: name}]
+      },
+      %VirtualService{
+        name: name,
+        namespace: "affable",
+        gateways: ["affable"],
+        domains: domains
       }
     ]
   end
