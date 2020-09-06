@@ -18,7 +18,7 @@ defmodule Affable.SitesTest do
         Sites,
         Affable.SiteClusterIO,
         get_raw_site: 1,
-        set_available: 1
+        set_available: 2
       )
     end
 
@@ -27,16 +27,22 @@ defmodule Affable.SitesTest do
              |> Sites.status() == :pending
     end
 
-    test "status of site that's been available once is available", %{
-      set_available_1: set_available
-    } do
+    test "status of site that's been made available once is available, and doesn't update date subsequently",
+         %{
+           set_available_2: set_available
+         } do
       user = user_fixture()
       site = site_fixture(user)
 
-      {:ok, site} = set_available.(site.id)
+      first_made_available_at = DateTime.from_unix!(0)
+
+      {:ok, site} = set_available.(site.id, first_made_available_at)
 
       assert site
              |> Sites.status() == :available
+
+      {:ok, site} = set_available.(site.id, DateTime.from_unix!(1))
+      assert site.made_available_at == first_made_available_at
     end
 
     test "get_site!/2 returns the site with given user id and id" do

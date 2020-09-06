@@ -38,7 +38,7 @@ defmodule Affable.SiteUpdaterTest do
       {:ok, %{name: "Some Site"}}
     end)
 
-    stub(MockSiteClusterIO, :set_available, fn _ -> :ok end)
+    stub(MockSiteClusterIO, :set_available, fn _, _ -> {:ok, %Site{}} end)
 
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
@@ -46,17 +46,17 @@ defmodule Affable.SiteUpdaterTest do
   end
 
   test "records when the site was first made available", %{site_id: site_id, site_name: site_name} do
+    expect(MockSiteClusterIO, :set_available, fn ^site_id, _datetime ->
+      {:ok, %Site{}}
+    end)
+
     stub(MockSiteClusterIO, :get_raw_site, fn ^site_id ->
       {:ok, %{name: "must wait"}}
     end)
 
-    expect(MockSiteClusterIO, :set_available, fn ^site_id ->
-      {:ok, %Site{}}
-    end)
-
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
-    assert_receive %{name: "must wait"}
+    assert_receive %{name: "must wait"}, 1000, nil
   end
 
   test "can broadcast on demand", %{site_id: site_id, broadcast_1: broadcast} do

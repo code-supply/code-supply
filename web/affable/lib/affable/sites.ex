@@ -55,11 +55,18 @@ defmodule Affable.Sites do
   end
 
   @impl true
-  def set_available(id) do
-    from(s in Site, where: s.id == ^id)
-    |> Repo.one()
-    |> Site.change_made_available_at(DateTime.utc_now())
-    |> Repo.update()
+  def set_available(id, at) do
+    site =
+      from(s in Site, where: s.id == ^id)
+      |> Repo.one()
+
+    if site.made_available_at do
+      {:ok, site}
+    else
+      site
+      |> Site.change_made_available_at(at)
+      |> Repo.update()
+    end
   end
 
   defp get_site_query(id) do

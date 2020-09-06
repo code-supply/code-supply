@@ -26,8 +26,8 @@ defmodule Affable.SiteUpdater do
   def handle_info(site_topic, %{pubsub: pubsub, site_io: site_io} = state) do
     id = Affable.ID.id_from_site_name(site_topic)
     {:ok, site} = site_io.get_raw_site(id)
+    {:ok, _} = site_io.set_available(id, DateTime.utc_now())
     PubSub.broadcast(pubsub, site_topic, site)
-    {:ok, _} = site_io.set_available(id)
     {:noreply, state}
   end
 
