@@ -135,3 +135,19 @@ li:first-child .promote, li:last-child .demote {
 .field textarea {
     @apply h-32;
 }
+
+.resources {
+    @apply w-1/2;
+}
+.resources th, .resources td {
+    @apply p-4
+}
+
+.pending .domains {
+    @apply bg-center bg-no-repeat animate-spin;
+    animation-duration: 2s;
+    background-image: url("/images/loader.svg");
+}
+.pending .domains * {
+    @apply hidden;
+}
