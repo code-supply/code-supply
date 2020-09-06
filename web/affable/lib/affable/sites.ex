@@ -1,5 +1,5 @@
 defmodule Affable.Sites do
-  @behaviour Affable.RawSiteRetriever
+  @behaviour Affable.SiteClusterIO
 
   import Ecto.Query, warn: false
   alias Affable.Repo
@@ -7,6 +7,14 @@ defmodule Affable.Sites do
   alias Affable.Sites.{Site, SiteMember, Item}
 
   alias Ecto.Multi
+
+  def status(site) do
+    if site.made_available_at do
+      :available
+    else
+      :pending
+    end
+  end
 
   def get_site!(user, id) do
     get_site_query(id)
@@ -44,6 +52,14 @@ defmodule Affable.Sites do
       nil ->
         {:error, :not_found}
     end
+  end
+
+  @impl true
+  def set_available(id) do
+    from(s in Site, where: s.id == ^id)
+    |> Repo.one()
+    |> Site.change_made_available_at(DateTime.utc_now())
+    |> Repo.update()
   end
 
   defp get_site_query(id) do

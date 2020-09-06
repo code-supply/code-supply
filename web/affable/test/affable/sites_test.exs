@@ -16,9 +16,27 @@ defmodule Affable.SitesTest do
     setup do
       Hammox.protect(
         Sites,
-        Affable.RawSiteRetriever,
-        get_raw_site: 1
+        Affable.SiteClusterIO,
+        get_raw_site: 1,
+        set_available: 1
       )
+    end
+
+    test "status of new site is pending" do
+      assert %Site{}
+             |> Sites.status() == :pending
+    end
+
+    test "status of site that's been available once is available", %{
+      set_available_1: set_available
+    } do
+      user = user_fixture()
+      site = site_fixture(user)
+
+      {:ok, site} = set_available.(site.id)
+
+      assert site
+             |> Sites.status() == :available
     end
 
     test "get_site!/2 returns the site with given user id and id" do

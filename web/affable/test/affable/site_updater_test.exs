@@ -3,8 +3,9 @@ defmodule Affable.SiteUpdaterTest do
   import Hammox
 
   alias Phoenix.PubSub
-  alias Affable.MockRawSiteRetriever
+  alias Affable.MockSiteClusterIO
   alias Affable.{Broadcaster, SiteUpdater}
+  alias Affable.Sites.Site
 
   setup :set_mox_from_context
   setup :verify_on_exit!
@@ -18,7 +19,7 @@ defmodule Affable.SiteUpdaterTest do
     server =
       start_supervised!({
         SiteUpdater,
-        {MockRawSiteRetriever, :affable, "testsiteupdater"}
+        {MockSiteClusterIO, :affable, "testsiteupdater"}
       })
 
     Hammox.protect(
@@ -33,13 +34,29 @@ defmodule Affable.SiteUpdaterTest do
     site_id: site_id,
     site_name: site_name
   } do
-    stub(MockRawSiteRetriever, :get_raw_site, fn ^site_id ->
+    stub(MockSiteClusterIO, :get_raw_site, fn ^site_id ->
       {:ok, %{name: "Some Site"}}
     end)
+
+    stub(MockSiteClusterIO, :set_available, fn _ -> :ok end)
 
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
     assert_receive %{name: "Some Site"}
+  end
+
+  test "records when the site was first made available", %{site_id: site_id, site_name: site_name} do
+    stub(MockSiteClusterIO, :get_raw_site, fn ^site_id ->
+      {:ok, %{name: "must wait"}}
+    end)
+
+    expect(MockSiteClusterIO, :set_available, fn ^site_id ->
+      {:ok, %Site{}}
+    end)
+
+    :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
+
+    assert_receive %{name: "must wait"}
   end
 
   test "can broadcast on demand", %{site_id: site_id, broadcast_1: broadcast} do

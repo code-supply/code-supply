@@ -9,9 +9,9 @@ defmodule Affable.SiteUpdater do
   end
 
   @impl true
-  def init({retriever, pubsub, topic}) do
+  def init({site_io, pubsub, topic}) do
     PubSub.subscribe(pubsub, topic)
-    {:ok, %{pubsub: pubsub, retriever: retriever}}
+    {:ok, %{pubsub: pubsub, site_io: site_io}}
   end
 
   @impl true
@@ -23,10 +23,11 @@ defmodule Affable.SiteUpdater do
   end
 
   @impl true
-  def handle_info(site_topic, %{pubsub: pubsub, retriever: retriever} = state) do
+  def handle_info(site_topic, %{pubsub: pubsub, site_io: site_io} = state) do
     id = Affable.ID.id_from_site_name(site_topic)
-    {:ok, site} = retriever.get_raw_site(id)
+    {:ok, site} = site_io.get_raw_site(id)
     PubSub.broadcast(pubsub, site_topic, site)
+    {:ok, _} = site_io.set_available(id)
     {:noreply, state}
   end
 

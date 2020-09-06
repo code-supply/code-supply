@@ -66,7 +66,7 @@ defmodule AffableWeb.Router do
   scope "/", AffableWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    get "/dashboard", DashboardController, :show
+    live "/dashboard", DashboardLive, :show
     live "/affiliate_sites/:id/edit", AffiliateSitesLive, :edit
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings/update_password", UserSettingsController, :update_password

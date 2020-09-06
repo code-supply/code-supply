@@ -1,0 +1,28 @@
+<h1>Dashboard</h1>
+
+<h2>My sites</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Domains</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for site <- @user.sites do %>
+      <tr class="<%= site |> status() %>">
+        <td class="edit">
+          <a href="<%= Routes.affiliate_sites_path(@socket, :edit, site.id) %>"><%= site.name %></a>
+        </td>
+        <td class="domains">
+          <ul>
+            <%= for domain <- site.domains do %>
+              <li><a href="https://<%= domain.name %>/"><%= domain.name %></a></li>
+            <% end %>
+          </ul>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
