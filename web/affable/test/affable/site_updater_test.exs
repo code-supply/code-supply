@@ -35,14 +35,14 @@ defmodule Affable.SiteUpdaterTest do
     site_name: site_name
   } do
     stub(MockSiteClusterIO, :get_raw_site, fn ^site_id ->
-      {:ok, %{name: "Some Site"}}
+      {:ok, %{name: "Some Site", made_available_at: DateTime.utc_now()}}
     end)
 
     stub(MockSiteClusterIO, :set_available, fn _, _ -> {:ok, %Site{}} end)
 
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
-    assert_receive %{name: "Some Site"}
+    assert_receive %{name: "Some Site", made_available_at: _}
   end
 
   test "records when the site was first made available", %{site_id: site_id, site_name: site_name} do

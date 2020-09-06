@@ -23,20 +23,19 @@ secret_key_base =
     You can generate one by calling: mix phx.gen.secret
     """
 
+pubsub_topic_requests =
+  System.get_env("PUBSUB_TOPIC_REQUESTS") ||
+    raise("Must set PUBSUB_TOPIC_REQUESTS")
+
 config :affable,
   id_salt:
     System.get_env("ID_SALT") ||
       raise("""
       environment variable ID_SALT is missing.
       """),
+  pubsub_topic_requests: pubsub_topic_requests,
   children: [
-    {Affable.SiteUpdater,
-     {
-       Affable.Sites,
-       :affable,
-       System.get_env("PUBSUB_TOPIC_REQUESTS") ||
-         raise("Must set PUBSUB_TOPIC_REQUESTS")
-     }}
+    {Affable.SiteUpdater, {Affable.Sites, :affable, pubsub_topic_requests}}
   ]
 
 config :affable, AffableWeb.Endpoint,

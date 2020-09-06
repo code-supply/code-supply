@@ -1,24 +1,17 @@
 defmodule AffableWeb.DashboardLiveTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
-  import Affable.SitesFixtures
-  import Hammox
 
   alias Affable.Accounts
-
-  setup :verify_on_exit!
-
-  defp path(conn, site) do
-    Routes.affiliate_sites_path(conn, :edit, site.id)
-  end
+  alias Affable.Accounts.User
+  alias Affable.Sites
 
   describe "authenticated user" do
     setup context do
-      %{conn: conn, user: user} = register_and_log_in_user(context)
-      %{conn: conn, user: user, site: site_fixture(user)}
+      register_and_log_in_user(context)
     end
 
-    test "redirects to login page when token is bogus", %{conn: conn, user: user, site: site} do
+    test "redirects to login page when token is bogus", %{conn: conn, user: user} do
       Accounts.delete_user(user)
 
       conn = get(conn, "/dashboard")
@@ -26,12 +19,27 @@ defmodule AffableWeb.DashboardLiveTest do
 
       expected_path = Routes.user_session_path(conn, :new)
 
-      {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn, site))
+      {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn))
 
       assert actual_path == expected_path
     end
 
-    test "shows spinner until site is available", %{} do
+    test "shows spinner until site is available", %{conn: conn, user: %User{sites: [site]} = user} do
+      {:ok, view, html} = live(conn, path(conn))
+
+      assert html =~ "pending"
+
+      site_name = site.name
+
+      Phoenix.PubSub.broadcast(:affable, site.internal_name, %{
+        Sites.raw(site |> Affable.Repo.preload(:items))
+        | made_available_at: DateTime.utc_now()
+      })
+
+      html = render(view)
+
+      refute html =~ "pending"
+      assert html =~ "available"
     end
   end
 
@@ -42,9 +50,13 @@ defmodule AffableWeb.DashboardLiveTest do
 
       expected_path = Routes.user_session_path(conn, :new)
 
-      {:error, {:redirect, %{to: actual_path}}} = live(conn, "/dashboard")
+      {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn))
 
       assert actual_path == expected_path
     end
+  end
+
+  defp path(conn) do
+    AffableWeb.Router.Helpers.dashboard_path(conn, :show)
   end
 end

@@ -28,6 +28,7 @@ defmodule Affable.Sites do
     %{
       id: site.id,
       name: site.name,
+      made_available_at: site.made_available_at,
       items:
         site.items
         |> Enum.map(fn i ->

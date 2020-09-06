@@ -31,15 +31,13 @@ defmodule Affable.SitesTest do
          %{
            set_available_2: set_available
          } do
-      user = user_fixture()
-      site = site_fixture(user)
+      site = site_fixture()
 
       first_made_available_at = DateTime.from_unix!(0)
 
       {:ok, site} = set_available.(site.id, first_made_available_at)
 
-      assert site
-             |> Sites.status() == :available
+      assert site |> Sites.status() == :available
 
       {:ok, site} = set_available.(site.id, DateTime.from_unix!(1))
       assert site.made_available_at == first_made_available_at
@@ -68,6 +66,7 @@ defmodule Affable.SitesTest do
       {:ok,
        %{
          name: "Top 10 Apples",
+         made_available_at: nil,
          items: [item | _rest] = items
        }} = get_raw_site.(site.id)
 

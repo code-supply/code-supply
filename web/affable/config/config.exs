@@ -12,6 +12,7 @@ config :affable,
   k8s: Affable.RealK8s,
   id_salt: "replacedinrelease",
   broadcaster: Affable.SiteUpdater,
+  pubsub_topic_requests: "devsiterequests",
   children: []
 
 # Configures the endpoint

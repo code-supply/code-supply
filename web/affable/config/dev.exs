@@ -2,12 +2,7 @@ use Mix.Config
 
 config :affable,
   children: [
-    {Affable.SiteUpdater,
-     {
-       Affable.Sites,
-       :affable,
-       "devsiterequests"
-     }}
+    {Affable.SiteUpdater, {Affable.Sites, :affable, "devsiterequests"}}
   ]
 
 # Configure your database

@@ -9,7 +9,30 @@ defmodule AffableWeb.DashboardLive do
   def mount(_params, %{"user_token" => token}, socket) do
     case Accounts.get_user_by_session_token(token) do
       %User{} = user ->
-        {:ok, assign(socket, user: user |> Affable.Repo.preload(sites: :domains))}
+        user = user |> Affable.Repo.preload(sites: :domains)
+
+        if connected?(socket) do
+          for site <- user.sites do
+            Phoenix.PubSub.subscribe(:affable, site.internal_name)
+          end
+        end
+
+        {:ok, assign(socket, sites: user.sites)}
     end
+  end
+
+  @impl true
+  def handle_info(raw_site, %{assigns: %{sites: sites}} = socket) do
+    updated_sites =
+      sites
+      |> Enum.map(fn site ->
+        if site.id == raw_site.id do
+          %{site | made_available_at: raw_site.made_available_at}
+        else
+          site
+        end
+      end)
+
+    {:noreply, assign(socket, sites: updated_sites)}
   end
 end

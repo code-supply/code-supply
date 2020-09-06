@@ -5,12 +5,12 @@
 <table class="resources">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Domains</th>
+      <th class="w-1/2">Name</th>
+      <th class="w-1/2">Domains</th>
     </tr>
   </thead>
   <tbody>
-    <%= for site <- @user.sites do %>
+    <%= for site <- @sites do %>
       <tr class="<%= site |> status() %>">
         <td class="edit">
           <a href="<%= Routes.affiliate_sites_path(@socket, :edit, site.id) %>"><%= site.name %></a>
