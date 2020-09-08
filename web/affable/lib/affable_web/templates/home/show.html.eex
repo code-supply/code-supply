@@ -1,8 +1,1 @@
 <h1>Affable</h1>
-
-<h2>Nodes</h2>
-
-<p><%= @nodes %></p>
-
-<h3>Self</h3>
-<p><%= @node %></p>
