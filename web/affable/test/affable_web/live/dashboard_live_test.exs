@@ -24,12 +24,10 @@ defmodule AffableWeb.DashboardLiveTest do
       assert actual_path == expected_path
     end
 
-    test "shows spinner until site is available", %{conn: conn, user: %User{sites: [site]} = user} do
+    test "shows spinner until site is available", %{conn: conn, user: %User{sites: [site]}} do
       {:ok, view, html} = live(conn, path(conn))
 
       assert html =~ "pending"
-
-      site_name = site.name
 
       Phoenix.PubSub.broadcast(:affable, site.internal_name, %{
         Sites.raw(site |> Affable.Repo.preload(:items))
