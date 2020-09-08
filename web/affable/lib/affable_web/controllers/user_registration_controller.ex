@@ -33,7 +33,10 @@ defmodule AffableWeb.UserRegistrationController do
         k8s().deploy(K8sFactories.affiliate_site(internal_name, [domain_name]))
 
         conn
-        |> put_flash(:info, "User created successfully.")
+        |> put_flash(
+          :info,
+          "Welcome to Affable! We're busy building your first site. Should be ready in a few seconds."
+        )
         |> UserAuth.log_in_user(user)
 
       {:error, %Ecto.Changeset{} = changeset} ->

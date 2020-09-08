@@ -1,4 +1,4 @@
-defmodule AffableWeb.DashboardLive do
+defmodule AffableWeb.SitesLive do
   use AffableWeb, :live_view
 
   alias Affable.Accounts

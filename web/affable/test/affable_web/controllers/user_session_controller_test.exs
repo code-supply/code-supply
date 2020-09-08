@@ -18,7 +18,7 @@ defmodule AffableWeb.UserSessionControllerTest do
 
     test "redirects if already logged in", %{conn: conn, user: user} do
       conn = conn |> log_in_user(user) |> get(Routes.user_session_path(conn, :new))
-      assert redirected_to(conn) == "/dashboard"
+      assert redirected_to(conn) == "/sites"
     end
   end
 
@@ -30,10 +30,10 @@ defmodule AffableWeb.UserSessionControllerTest do
         })
 
       assert get_session(conn, :user_token)
-      assert redirected_to(conn) =~ "/dashboard"
+      assert redirected_to(conn) =~ "/sites"
 
       # Now do a logged in request and assert on the menu
-      conn = get(conn, "/dashboard")
+      conn = get(conn, "/sites")
       response = html_response(conn, 200)
       assert response =~ user.email
       assert response =~ "Settings</a>"

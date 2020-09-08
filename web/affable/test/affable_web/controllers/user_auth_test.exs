@@ -19,7 +19,7 @@ defmodule AffableWeb.UserAuthTest do
       conn = UserAuth.log_in_user(conn, user)
       assert token = get_session(conn, :user_token)
       assert get_session(conn, :live_socket_id) == "users_sessions:#{Base.url_encode64(token)}"
-      assert redirected_to(conn) == "/dashboard"
+      assert redirected_to(conn) == "/sites"
       assert Accounts.get_user_by_session_token(token)
     end
 
@@ -118,7 +118,7 @@ defmodule AffableWeb.UserAuthTest do
     test "redirects if user is authenticated", %{conn: conn, user: user} do
       conn = conn |> assign(:current_user, user) |> UserAuth.redirect_if_user_is_authenticated([])
       assert conn.halted
-      assert redirected_to(conn) == "/dashboard"
+      assert redirected_to(conn) == "/sites"
     end
 
     test "does not redirect if user is not authenticated", %{conn: conn} do
