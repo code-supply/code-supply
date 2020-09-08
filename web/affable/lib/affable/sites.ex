@@ -89,6 +89,7 @@ defmodule Affable.Sites do
            :site,
            %Site{}
            |> Site.changeset(attrs)
+           |> Site.change_internal_name("pending")
            |> Ecto.Changeset.put_assoc(:members, [Ecto.build_assoc(user, :site_members)])
            |> Ecto.Changeset.put_assoc(:items, default_items())
          )
