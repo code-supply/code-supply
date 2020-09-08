@@ -36,10 +36,6 @@ h1 input {
     @apply w-full;
 }
 
-h2 {
-    @apply text-2xl text-black mt-4 mb-4 clear-left;
-}
-
 th {
     @apply text-left;
 }
@@ -137,12 +133,14 @@ li:first-child .promote, li:last-child .demote {
 }
 
 .resources {
-    @apply w-1/2;
+    @apply w-1/3;
 }
-.resources th, .resources td {
-    @apply p-4
+.resources .resource {
+    @apply border-solid border-4 p-4;
 }
-
+.resources .resource .cta {
+    @apply text-right;
+}
 .pending .domains {
     @apply bg-center bg-no-repeat animate-spin;
     animation-duration: 2s;

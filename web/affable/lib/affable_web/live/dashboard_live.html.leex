@@ -1,28 +1,19 @@
-<h1>Dashboard</h1>
+<h1>My Sites</h1>
 
-<h2>My sites</h2>
-
-<table class="resources">
-  <thead>
-    <tr>
-      <th class="w-1/2">Name</th>
-      <th class="w-1/2">Domains</th>
-    </tr>
-  </thead>
-  <tbody>
-    <%= for site <- @sites do %>
-      <tr class="<%= site |> status() %>">
-        <td class="edit">
-          <a href="<%= Routes.affiliate_sites_path(@socket, :edit, site.id) %>"><%= site.name %></a>
-        </td>
-        <td class="domains">
-          <ul>
-            <%= for domain <- site.domains do %>
-              <li><a href="https://<%= domain.name %>/"><%= domain.name %></a></li>
-            <% end %>
-          </ul>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<ul class="resources">
+  <%= for site <- @sites do %>
+    <li class="resource <%= site |> status() %>">
+      <h2><%= site.name %></h2>
+      <p class="cta">
+      <a href="<%= Routes.affiliate_sites_path(@socket, :edit, site.id) %>">Edit</a>
+      </p>
+      <div class="domains">
+        <ul>
+          <%= for domain <- site.domains do %>
+            <li><a href="https://<%= domain.name %>/"><%= domain.name %></a></li>
+          <% end %>
+        </ul>
+      </div>
+    </li>
+  <% end %>
+</ul>
