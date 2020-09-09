@@ -150,13 +150,16 @@ li:first-child .promote, li:last-child .demote {
     @apply float-left w-1/3;
 }
 .resources .resource .inner {
-    @apply border-black border-solid border-2 p-4 mr-4 mb-4;
+    @apply overflow-hidden border-black border-solid border-2 p-4 mr-4 mb-4;
+}
+.resources .resource .name {
+    @apply mb-4;
 }
 .resources .resource .cta {
-    @apply text-right;
+    @apply float-right text-right;
 }
 .pending .domains {
-    @apply bg-center bg-no-repeat animate-spin;
+    @apply float-left bg-center bg-no-repeat animate-spin;
     animation-duration: 2s;
     background-image: url("/images/loader.svg");
 }
