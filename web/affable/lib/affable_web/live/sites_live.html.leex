@@ -6,9 +6,11 @@
       <div class="inner">
         <h2 class="name"><%= site.name %></h2>
         <div class="domains">
-          <%= for domain <- site.domains do %>
-            <li><a href="https://<%= domain.name %>/"><%= domain.name %></a></li>
-          <% end %>
+          <ul>
+            <%= for domain <- site.domains do %>
+              <li><a href="https://<%= domain.name %>/"><%= domain.name %></a></li>
+            <% end %>
+          </ul>
         </div>
         <p class="cta">
         <a href="<%= Routes.affiliate_sites_path(@socket, :edit, site.id) %>">Edit</a>
