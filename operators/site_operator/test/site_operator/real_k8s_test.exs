@@ -14,8 +14,8 @@ defmodule SiteOperator.RealK8sTest do
   }
 
   setup_all do
-    conn = K8s.Conn.from_file("~/.kube/config", context: "site-operator-test")
-    K8s.Cluster.Registry.add(@cluster, conn)
+    conn = K8s.Conn.from_file("/tmp/microk8s-config", context: "microk8s")
+    {:ok, _} = K8s.Cluster.Registry.add(@cluster, conn)
 
     certificate = %Certificate{
       name: "test-name",

@@ -11,8 +11,8 @@ config :site_operator,
 config :k8s,
   clusters: %{
     default: %{
-      conn: "~/.kube/config",
-      conn_opts: %{context: "site-operator-test"}
+      conn: "/tmp/microk8s-config",
+      conn_opts: %{context: "microk8s"}
     }
   }
 
