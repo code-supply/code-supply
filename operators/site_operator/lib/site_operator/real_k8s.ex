@@ -41,7 +41,9 @@ defmodule SiteOperator.RealK8s do
 
   defp error_pairs(operations, results) do
     List.zip([operations, results])
-    |> Enum.filter(&match?({%SiteOperator.K8s.Operation{}, {:error, _}}, &1))
+    |> Enum.filter(fn {_op, result} ->
+      elem(result, 0) == :error
+    end)
   end
 
   defp missing_resources(errors) do
