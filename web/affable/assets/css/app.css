@@ -34,8 +34,8 @@ body {
     @apply clear-both mx-auto p-2;
 }
 
-a {
-    @apply underline;
+a:hover {
+    @apply text-blue-600;
 }
 a.phx-click-loading {
     @apply animate-ping;

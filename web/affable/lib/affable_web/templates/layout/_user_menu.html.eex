@@ -1,15 +1,14 @@
 <div
-  class="inline-block align-baseline mr-3 text-2xl font-serif font-medium">Affable</div>
+  class="mr-5 text-2xl font-serif font-medium">Affable</div>
 
 <%= if @current_user do %>
   <nav role="navigation"
-  class="inline-block align-baseline">
+  class="flex-1 inline-block mt-2">
     <ul>
       <li><%= link "Sites", to: Routes.sites_path(@conn, :index) %></li>
     </ul>
   </nav>
   <div class="pop-out
-              float-right
               absolute right-0 top-0 mt-2 mr-2
               overflow-hidden
               bg-white
@@ -20,16 +19,25 @@
     px-4 py-2
     leading-loose">
       <ul>
-        <li><%= link "Settings", to: Routes.user_settings_path(@conn, :edit), tabindex: 1 %></li>
-        <li><%= link "Log out", to: Routes.user_session_path(@conn, :delete), tabindex: 2, method: :delete %></li>
+        <li><%= link to: Routes.user_settings_path(@conn, :edit),
+         tabindex: 1,
+         accesskey: "s" do %>
+         <u>S</u>ettings
+        <% end %></li>
+        <li><%= link to: Routes.user_session_path(@conn, :delete),
+        tabindex: 2,
+        accesskey: "l",
+        method: :delete do %>
+        <u>L</u>og out
+        <% end %></li>
       </ul>
     </nav>
   </div>
 <% else %>
-  <div class="inline-block align-baseline">
-    <nav role="navigation">
+  <div class="flex-auto text-right mt-2">
+    <nav role="navigation" class="ml-auto">
       <ul>
-        <li class="inline-block"><%= link "Register", to: Routes.user_registration_path(@conn, :new) %></li>
+        <li class="inline-block mr-3"><%= link "Register", to: Routes.user_registration_path(@conn, :new) %></li>
         <li class="inline-block"><%= link "Log in", to: Routes.user_session_path(@conn, :new) %></li>
       </ul>
     </nav>
