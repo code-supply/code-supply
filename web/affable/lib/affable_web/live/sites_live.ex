@@ -3,7 +3,7 @@ defmodule AffableWeb.SitesLive do
 
   alias Affable.Accounts
   alias Affable.Accounts.User
-  import Affable.Sites, only: [status: 1]
+  import Affable.Sites, only: [canonical_url: 1, status: 1]
 
   @impl true
   def mount(_params, %{"user_token" => token}, socket) do

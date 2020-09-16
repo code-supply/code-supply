@@ -25,19 +25,17 @@ defmodule AffableWeb.SitesLiveTest do
     end
 
     test "shows spinner until site is available", %{conn: conn, user: %User{sites: [site]}} do
-      {:ok, view, html} = live(conn, path(conn))
+      {:ok, view, _html} = live(conn, path(conn))
 
-      assert html =~ "pending"
+      assert view |> has_element?(".pending")
 
       Phoenix.PubSub.broadcast(:affable, site.internal_name, %{
         Sites.raw(site |> Affable.Repo.preload(:items))
         | made_available_at: DateTime.utc_now()
       })
 
-      html = render(view)
-
-      refute html =~ "pending"
-      assert html =~ "available"
+      refute view |> has_element?(".pending")
+      assert view |> has_element?(".available")
     end
   end
 

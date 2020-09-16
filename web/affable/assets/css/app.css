@@ -2,31 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-.nav {
-    @apply text-xl mb-4;
-}
-.nav .resources-menu {
-    @apply float-left;
-}
-.nav .user-menu {
-    @apply relative float-right;
-}
-
-.user-menu .menu {
-    @apply absolute overflow-hidden w-full right-0 top-0 p-4 mt-10 border-2 border-solid border-gray-600;
-}
-.pop-out {
-    @apply relative;
+.pop-out button {
+    @apply outline-none border-white border-t-2 border-r-2 border-l-2 rounded-t-lg;
 }
 .pop-out .menu {
-    @apply hidden;
+    @apply hidden rounded-b-lg;
 }
-.pop-out button {
-    @apply outline-none;
+.pop-out button:focus,
+.pop-out .menu {
+    @apply border-gray-200;
 }
 .pop-out button + .menu:active,
 .pop-out button:focus + .menu {
-    @apply block;
+    @apply block border-l-2 border-r-2 border-b-2;
+}
+.pop-out .menu li a {
+    @apply p-2 no-underline rounded;
+}
+.pop-out .menu li a:hover {
+    @apply bg-gray-200;
+}
+.pop-out .menu li a:active {
+    @apply outline-none;
+}
+
+body {
+    @apply text-gray-900 bg-gray-100;
 }
 
 .container {
@@ -41,7 +42,7 @@ a.phx-click-loading {
 }
 
 h1 {
-    @apply text-4xl text-black mb-4;
+    @apply text-4xl mb-4;
 }
 h1 input {
     @apply w-full;
@@ -146,25 +147,13 @@ li:first-child .promote, li:last-child .demote {
 .resources {
     @apply w-full;
 }
-.resources .resource {
-    @apply float-left w-1/3;
-}
-.resources .resource .inner {
-    @apply overflow-hidden border-black border-solid border-2 p-4 mr-4 mb-4;
-}
-.resources .resource .name {
-    @apply mb-4;
-}
-.resources .resource .cta {
-    @apply float-right text-right;
-}
-.pending .domains {
-    @apply float-left bg-center bg-no-repeat animate-spin;
-    animation-duration: 2s;
+.pending .pending-spinner {
+    @apply bg-center bg-no-repeat animate-spin;
+    animation-duration: 4s;
     background-image: url("/images/loader.svg");
 }
-.pending .domains * {
-    @apply hidden;
+.pending .pending-invisible {
+    @apply invisible;
 }
 
 .feather {

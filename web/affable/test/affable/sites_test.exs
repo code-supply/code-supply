@@ -27,6 +27,23 @@ defmodule Affable.SitesTest do
              |> Sites.status() == :pending
     end
 
+    test "canonical URL with a single domain uses that domain" do
+      assert %Site{domains: [%Domain{name: "something.affable.app"}]}
+             |> Sites.canonical_url() ==
+               "https://something.affable.app/"
+    end
+
+    test "canonical URL with a custom domain is the custom domain" do
+      assert %Site{
+               domains: [
+                 %Domain{name: "something.affable.app"},
+                 %Domain{name: "my.domain.example.com"}
+               ]
+             }
+             |> Sites.canonical_url() ==
+               "https://my.domain.example.com/"
+    end
+
     test "status of site that's been made available once is available, and doesn't update date subsequently",
          %{
            set_available_2: set_available

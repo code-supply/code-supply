@@ -5,6 +5,7 @@ defmodule Affable.Sites do
   alias Affable.Repo
   alias Affable.Accounts.User
   alias Affable.Sites.{Site, SiteMember, Item}
+  alias Affable.Domains.Domain
 
   alias Ecto.Multi
 
@@ -14,6 +15,20 @@ defmodule Affable.Sites do
     else
       :pending
     end
+  end
+
+  def canonical_url(%Site{domains: [%Domain{name: name}]}) do
+    "https://#{name}/"
+  end
+
+  def canonical_url(%Site{domains: domains}) do
+    domain =
+      domains
+      |> Enum.find(fn d ->
+        !(d.name |> String.ends_with?(".affable.app"))
+      end)
+
+    "https://#{domain.name}/"
   end
 
   def get_site!(user, id) do
