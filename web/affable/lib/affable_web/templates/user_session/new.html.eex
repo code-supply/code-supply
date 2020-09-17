@@ -17,7 +17,7 @@
     <%= password_input f, :password, required: true %>
   </div>
 
-  <div class="pt-4 pb-4">
+  <div class="pt-4">
     <%= checkbox f, :remember_me, class: "chk" %>
     <%= label f, :remember_me, "Keep me logged in for 60 days" %>
   </div>

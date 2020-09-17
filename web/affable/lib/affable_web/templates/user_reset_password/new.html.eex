@@ -7,7 +7,7 @@
   </div>
 
   <div>
-    <%= submit "Send instructions to reset password", class: "btn" %>
+    <%= submit "Reset password", class: "btn" %>
   </div>
 <% end %>
 
