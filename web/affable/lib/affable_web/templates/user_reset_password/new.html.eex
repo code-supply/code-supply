@@ -3,7 +3,7 @@
 <%= form_for :user, Routes.user_reset_password_path(@conn, :create), fn f -> %>
   <div class="field">
     <%= label f, :email %>
-    <%= email_input f, :email, required: true %>
+    <%= email_input f, :email, required: true, autofocus: true %>
   </div>
 
   <div>

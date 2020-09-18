@@ -9,7 +9,7 @@
 
   <div class="field">
     <%= label f, :password, "New password" %>
-    <%= password_input f, :password, required: true %>
+    <%= password_input f, :password, required: true, autofocus: true %>
     <%= error_tag f, :password %>
   </div>
 

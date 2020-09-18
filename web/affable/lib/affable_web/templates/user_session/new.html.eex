@@ -9,7 +9,7 @@
 
   <div class="field">
     <%= label f, :email %>
-    <%= email_input f, :email, required: true %>
+    <%= email_input f, :email, required: true, autofocus: true %>
   </div>
 
   <div class="field">
