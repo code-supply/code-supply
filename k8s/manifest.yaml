@@ -11589,7 +11589,7 @@ spec:
         envFrom:
         - secretRef:
             name: site-operator
-        image: eu.gcr.io/code-supply/site-operator:6013bbb
+        image: eu.gcr.io/code-supply/site-operator:7dd2aaf
         name: site-operator
         resources:
           limits:
@@ -11622,7 +11622,7 @@ spec:
     metadata:
       labels:
         app: affable
-        version: "4287890"
+        version: 7dd2aaf
     spec:
       containers:
       - env:
@@ -11641,7 +11641,7 @@ spec:
         envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:4287890
+        image: eu.gcr.io/code-supply/affable:7dd2aaf
         name: affable
         ports:
         - containerPort: 4000
