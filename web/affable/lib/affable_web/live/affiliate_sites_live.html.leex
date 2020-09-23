@@ -12,11 +12,9 @@
       <%= case @saved_state do %>
         <% :error -> %>
           Whoops!
-        <% :saved -> %>
-          Saved.
-        <% :clear -> %>
-          Saved.
         <% :neutral -> %>
+        <% _ -> %>
+          Saved.
       <% end %>
     </span>
   </p>

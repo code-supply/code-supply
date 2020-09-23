@@ -55,6 +55,33 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       })
     end
 
+    test "editing an item shows the user that the change was saved", %{conn: conn, site: site} do
+      conn = get(conn, path(conn, site))
+
+      {:ok, view, before_save} = live(conn, path(conn, site))
+
+      assert before_save =~ "saved-state neutral"
+      refute before_save =~ "Saved."
+
+      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+
+      after_save =
+        render_change(view, :save, %{
+          "site" => %{
+            "name" => "new name"
+          }
+        })
+
+      assert after_save =~ "saved-state saved"
+      assert after_save =~ "Saved."
+
+      send(view.pid, :clear_save)
+      after_timeout = view |> render()
+
+      assert after_timeout =~ "saved-state clear"
+      assert after_timeout =~ "Saved."
+    end
+
     test "editing an item to be invalid marks the item as invalid", %{conn: conn, site: site} do
       {:ok, view, _html} = live(conn, path(conn, site))
 

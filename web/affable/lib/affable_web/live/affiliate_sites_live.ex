@@ -46,10 +46,6 @@ defmodule AffableWeb.AffiliateSitesLive do
     complete_update(socket, site)
   end
 
-  def handle_event("show-saving", _, socket) do
-    {:noreply, assign(socket, saved_state: :saving)}
-  end
-
   def handle_info(:clear_save, socket) do
     {:noreply, assign(socket, saved_state: :clear)}
   end
