@@ -1,6 +1,6 @@
 <h1>Forgot your password?</h1>
 
-<%= form_for :user, Routes.user_reset_password_path(@conn, :create), fn f -> %>
+<%= form_for :user, Routes.user_reset_password_path(@conn, :create), [class: "standard-w"], fn f -> %>
   <div class="field">
     <%= label f, :email %>
     <%= email_input f, :email, required: true, autofocus: true %>

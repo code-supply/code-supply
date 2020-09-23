@@ -43,6 +43,10 @@ defmodule Affable.Sites do
     %{
       id: site.id,
       name: site.name,
+      site_logo_url: site.site_logo_url,
+      page_subtitle: site.page_subtitle,
+      header_image_url: site.header_image_url,
+      text: site.text,
       made_available_at: site.made_available_at,
       items:
         site.items

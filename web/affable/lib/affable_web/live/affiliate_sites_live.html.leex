@@ -16,35 +16,45 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= label outer_form, :name, "Site name" %>
-    <%= text_input outer_form, :name, phx_debounce: 1000 %>
-    <%= error_tag outer_form, :name %>
-  </div>
+  <div class="flex">
+    <div class="w-1/2 pr-3">
+      <div class="field">
+        <%= label outer_form, :name, "Site name" %>
+        <%= text_input outer_form, :name, phx_debounce: 1000, class: "w-full" %>
+        <%= error_tag outer_form, :name %>
+      </div>
 
-  <div class="field">
-    <%= label outer_form, :page_subtitle, "Page subtitle" %>
-    <%= text_input outer_form, :page_subtitle, phx_debounce: 1000 %>
-    <%= error_tag outer_form, :page_subtitle %>
-  </div>
+      <div class="field">
+        <%= label outer_form, :page_subtitle, "Page subtitle" %>
+        <%= text_input outer_form, :page_subtitle, phx_debounce: 1000, class: "w-full"%>
+        <%= error_tag outer_form, :page_subtitle %>
+      </div>
 
-  <div class="field">
-    <%= label outer_form, :site_logo_url, "Site logo URL" %>
-    <%= text_input outer_form, :site_logo_url, phx_debounce: 1000 %>
-    <%= error_tag outer_form, :site_logo_url %>
-  </div>
+      <div class="field">
+        <%= label outer_form, :site_logo_url, "Site logo URL" %>
+        <%= text_input outer_form, :site_logo_url, phx_debounce: 1000, class: "w-full" %>
+        <%= error_tag outer_form, :site_logo_url %>
+      </div>
 
-  <div class="field">
-    <%= label outer_form, :header_image_url, "Header image URL" %>
-    <%= text_input outer_form, :header_image_url, phx_debounce: 1000 %>
-    <%= error_tag outer_form, :header_image_url %>
+      <div class="field">
+        <%= label outer_form, :header_image_url, "Header image URL" %>
+        <%= text_input outer_form, :header_image_url, phx_debounce: 1000, class: "w-full" %>
+        <%= error_tag outer_form, :header_image_url %>
+      </div>
+    </div>
+
+    <div class="w-1/2 field pl-3">
+      <%= label outer_form, :text %>
+      <%= textarea outer_form, :text, phx_debounce: 1000, class: "w-full" %>
+      <%= error_tag outer_form, :text %>
+    </div>
   </div>
 
   <h2 class="h2">Items</h2>
 
   <ol>
     <%= for f <- inputs_for(outer_form, :items) do %>
-      <li class="item">
+      <li class="item standard-w">
         <p id="position-<%= f.data.id %>" class="position">
           <span class="number"><%= f.data.position %></span>
           <a id="demote-<%= f.data.id %>"

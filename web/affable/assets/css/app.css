@@ -127,13 +127,13 @@ li:first-child .promote, li:last-child .demote {
     @apply block text-red-800 font-bold;
 }
 .field input, .field textarea {
-    @apply p-2 border-gray-400 border-2 rounded max-w-md;
+    @apply p-2 border-gray-400 border-2 rounded;
 }
 .field input:focus, .field textarea:focus {
     @apply border-blue-600 shadow-outline outline-none border-transparent;
 }
-.field label, .field input, .field textarea {
-    @apply w-2/3;
+.standard-w .field label, .standard-w .field input, .standard-w .field textarea {
+    @apply w-2/3 max-w-md;
 }
 .chk {
     @apply mr-1;

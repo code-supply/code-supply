@@ -7,6 +7,10 @@ defmodule Affable.Sites.Site do
 
   schema "sites" do
     field :name, :string
+    field :site_logo_url, :string
+    field :header_image_url, :string
+    field :page_subtitle, :string
+    field :text, :string
     field :internal_name, :string
     field :made_available_at, :utc_datetime
     has_many :members, SiteMember
@@ -20,7 +24,7 @@ defmodule Affable.Sites.Site do
   @doc false
   def changeset(site, attrs) do
     site
-    |> cast(attrs, [:name])
+    |> cast(attrs, [:name, :site_logo_url, :header_image_url, :page_subtitle, :text])
     |> cast_assoc(:items, with: &Item.changeset/2)
     |> validate_required([:name])
   end
