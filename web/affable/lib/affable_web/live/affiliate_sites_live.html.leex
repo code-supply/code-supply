@@ -1,23 +1,23 @@
-<%= outer_form = form_for @changeset, '#', id: "item-edit", class: "live-save", csrf_token: false, phx_change: :save, phx_submit: :save %>
+<%= outer_form = form_for @changeset, '#', id: "item-edit", csrf_token: false, phx_change: :save, phx_submit: :save %>
   <h1>
     <%= text_input outer_form, :name, phx_debounce: 1000 %>
   </h1>
   <%= error_tag outer_form, :name %>
 
-  <p class="saved-state <%= @saved_state %>">
-    <span class="progress">
-      Saving…
-    </span>
-    <span class="message">
-      <%= case @saved_state do %>
-        <% :error -> %>
-          Whoops!
-        <% :neutral -> %>
-        <% _ -> %>
-          Saved.
-      <% end %>
-    </span>
-  </p>
+  <%= if @saved_state != :neutral do %>
+    <div class="save-indicator">
+      <p class="saved-state <%= @saved_state %>">
+        <span class="message">
+          <%= case @saved_state do %>
+            <% :error -> %>
+              Whoops!
+            <% _ -> %>
+              Saved.
+          <% end %>
+        </span>
+      </p>
+    </div>
+  <% end %>
 
   <ol>
     <%= for f <- inputs_for(outer_form, :items) do %>

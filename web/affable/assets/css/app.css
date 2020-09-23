@@ -67,20 +67,22 @@ tbody tr:hover {
     @apply bg-gray-100;
 }
 
-.live-save .saved-state {
-    @apply fixed w-32 text-center p-4 top-0 right-0 z-50 bg-white opacity-0 shadow-lg transition-opacity duration-1000 ease-out;
+.save-indicator {
+    @apply fixed top-0 left-0 mt-8 z-50 w-screen text-center;
 }
-.live-save .saved-state .progress,
-.live-save.phx-change-loading .saved-state .message {
-    @apply hidden;
+.save-indicator .saved-state {
+    @apply m-auto w-32 p-4
+    bg-white
+    border-2 border-gray-400 rounded shadow-lg
+    transition-opacity duration-1000 ease-out
+    opacity-0;
 }
-.live-save.phx-change-loading .saved-state .progress {
-    @apply block;
-}
-.live-save.phx-change-loading .saved-state, .live-save .saved-state.saved {
+.save-indicator .saved-state.saved {
     @apply opacity-100;
 }
-.live-save .saved .message, .live-save .clear .message {
+.save-indicator .saved .message,
+.save-indicator .clear .message,
+.save-indicator .neutral .message {
     @apply bg-contain bg-no-repeat pl-6;
     background-image: url("/images/check-circle.svg");
 }

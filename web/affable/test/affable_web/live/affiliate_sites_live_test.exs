@@ -60,7 +60,8 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
 
       {:ok, view, before_save} = live(conn, path(conn, site))
 
-      assert before_save =~ "saved-state neutral"
+      # glitches on load when the element present, so ensure it's not present
+      refute before_save =~ "saved-state"
       refute before_save =~ "Saved."
 
       stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
