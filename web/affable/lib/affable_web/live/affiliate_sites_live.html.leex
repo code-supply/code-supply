@@ -1,8 +1,5 @@
 <%= outer_form = form_for @changeset, '#', id: "item-edit", csrf_token: false, phx_change: :save, phx_submit: :save %>
-  <h1>
-    <%= text_input outer_form, :name, phx_debounce: 1000 %>
-  </h1>
-  <%= error_tag outer_form, :name %>
+  <h1>Editing <%= @changeset.data.name %></h1>
 
   <%= if @saved_state != :neutral do %>
     <div class="save-indicator">
@@ -18,6 +15,32 @@
       </p>
     </div>
   <% end %>
+
+  <div class="field">
+    <%= label outer_form, :name, "Site name" %>
+    <%= text_input outer_form, :name, phx_debounce: 1000 %>
+    <%= error_tag outer_form, :name %>
+  </div>
+
+  <div class="field">
+    <%= label outer_form, :page_subtitle, "Page subtitle" %>
+    <%= text_input outer_form, :page_subtitle, phx_debounce: 1000 %>
+    <%= error_tag outer_form, :page_subtitle %>
+  </div>
+
+  <div class="field">
+    <%= label outer_form, :site_logo_url, "Site logo URL" %>
+    <%= text_input outer_form, :site_logo_url, phx_debounce: 1000 %>
+    <%= error_tag outer_form, :site_logo_url %>
+  </div>
+
+  <div class="field">
+    <%= label outer_form, :header_image_url, "Header image URL" %>
+    <%= text_input outer_form, :header_image_url, phx_debounce: 1000 %>
+    <%= error_tag outer_form, :header_image_url %>
+  </div>
+
+  <h2 class="h2">Items</h2>
 
   <ol>
     <%= for f <- inputs_for(outer_form, :items) do %>

@@ -47,8 +47,8 @@ a.phx-click-loading {
 h1 {
     @apply text-5xl mb-6;
 }
-h1 input {
-    @apply w-full;
+.h2 {
+    @apply text-4xl my-6;
 }
 
 th {
