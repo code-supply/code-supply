@@ -11586,6 +11586,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.serviceAccountName
+        - name: AFFILIATE_SITE_IMAGE
+          value: eu.gcr.io/code-supply/affiliate@sha256:84cb56db789b90d70ccbc097656d42568910c94faf61323ba2c2283c4829505f
         envFrom:
         - secretRef:
             name: site-operator
