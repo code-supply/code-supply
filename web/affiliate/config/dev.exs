@@ -29,7 +29,7 @@ config :affiliate,
          default: [
            strategy: Cluster.Strategy.Epmd,
            config: [
-             hosts: [:affable@pickle]
+             hosts: [:affable@fatty]
            ]
          ]
        ],
@@ -38,7 +38,7 @@ config :affiliate,
     {Affiliate.SiteState,
      {
        :affable,
-       "sitekjq0",
+       "site5x20",
        "devsiterequests"
      }}
   ]
