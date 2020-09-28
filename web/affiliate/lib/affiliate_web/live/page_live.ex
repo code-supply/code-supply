@@ -10,12 +10,12 @@ defmodule AffiliateWeb.PageLive do
     {pubsub, topic} = SiteState.subscription_info()
     %{name: _} = site = SiteState.site()
     Phoenix.PubSub.subscribe(pubsub, topic)
-    {:ok, assign(socket, node: node, nodes: nodes, site: site)}
+    {:ok, assign(socket, node: node, nodes: nodes, site: site, page_title: site.name)}
   end
 
   @impl true
   def handle_info(site, socket) do
-    {:noreply, assign(socket, site: site)}
+    {:noreply, assign(socket, site: site, page_title: site.name)}
   end
 
   def format_price(nil) do
