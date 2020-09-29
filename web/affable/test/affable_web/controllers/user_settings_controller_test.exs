@@ -2,9 +2,14 @@ defmodule AffableWeb.UserSettingsControllerTest do
   use AffableWeb.ConnCase, async: true
 
   alias Affable.Accounts
+  alias Affable.MockK8s
+  alias Affable.Sites
+
   import Affable.AccountsFixtures
+  import Hammox
 
   setup :register_and_log_in_user
+  setup :verify_on_exit!
 
   describe "GET /users/settings" do
     test "renders settings page", %{conn: conn} do
@@ -120,6 +125,46 @@ defmodule AffableWeb.UserSettingsControllerTest do
       conn = build_conn()
       conn = get(conn, Routes.user_settings_path(conn, :confirm_email, token))
       assert redirected_to(conn) == Routes.user_session_path(conn, :new)
+    end
+  end
+
+  describe "DELETE /users/settings/delete_account" do
+    test "deletes the account and redirects to home page", %{
+      conn: conn,
+      user: %Accounts.User{sites: [site]} = user
+    } do
+      expect(MockK8s, :undeploy, fn %{"kind" => "AffiliateSite", "metadata" => %{"name" => name}} ->
+        assert name == site.internal_name
+        {:ok, ""}
+      end)
+
+      conn = delete(conn, Routes.user_settings_path(conn, :delete_account))
+
+      assert redirected_to(conn) == "/"
+
+      assert_raise(Ecto.NoResultsError, fn ->
+        Accounts.get_user!(user.id)
+      end)
+    end
+
+    test "doesn't delete shared sites", %{
+      conn: conn,
+      user: %Accounts.User{sites: [site]} = user
+    } do
+      colleague = user_fixture()
+
+      %Sites.SiteMember{user: colleague, site: site}
+      |> Affable.Repo.insert()
+
+      conn = delete(conn, Routes.user_settings_path(conn, :delete_account))
+
+      assert redirected_to(conn) == "/"
+
+      assert_raise(Ecto.NoResultsError, fn ->
+        Accounts.get_user!(user.id)
+      end)
+
+      assert Sites.get_site!(colleague, site.id)
     end
   end
 end

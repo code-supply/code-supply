@@ -229,6 +229,12 @@ defmodule Affable.Accounts do
   end
 
   def delete_user(user) do
+    user = user |> Affable.Repo.preload(:sites)
+
+    for site <- Sites.unshared(user) do
+      Sites.delete_site(site)
+    end
+
     Repo.delete(user)
   end
 

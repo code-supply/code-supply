@@ -102,6 +102,15 @@ defmodule Affable.Sites do
     from i in Item, order_by: i.position
   end
 
+  def unshared(user) do
+    user = user |> Repo.preload(sites: :users)
+    user_id = user.id
+
+    for %Site{users: [%User{id: ^user_id}]} = site <- user.sites do
+      site
+    end
+  end
+
   def create_site(%User{} = user, attrs \\ %{}) do
     case Multi.new()
          |> Multi.insert(

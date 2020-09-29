@@ -57,3 +57,7 @@
     <%= submit "Change password", class: "btn" %>
   </div>
 <% end %>
+
+<h2 class="h2">Delete account</h2>
+
+<%= button "Yes, delete my account", to: Routes.user_settings_path(@conn, :delete_account), method: :delete, class: "btn" %>

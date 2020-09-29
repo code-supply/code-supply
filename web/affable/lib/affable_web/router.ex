@@ -72,6 +72,7 @@ defmodule AffableWeb.Router do
     put("/users/settings/update_password", UserSettingsController, :update_password)
     put("/users/settings/update_email", UserSettingsController, :update_email)
     get("/users/settings/confirm_email/:token", UserSettingsController, :confirm_email)
+    delete("/users/settings/delete_account", UserSettingsController, :delete_account)
   end
 
   scope "/", AffableWeb do

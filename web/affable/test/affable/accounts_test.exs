@@ -2,9 +2,60 @@ defmodule Affable.AccountsTest do
   use Affable.DataCase
 
   alias Affable.Accounts
-  import Affable.AccountsFixtures
   alias Affable.Accounts.{User, UserToken}
+  alias Affable.Domains
+  alias Affable.Sites
   alias Affable.Sites.Site
+
+  import Affable.AccountsFixtures
+
+  describe "delete_user/1" do
+    test "deletes the user, its site, items and domains if it's not been shared" do
+      user = user_fixture() |> Affable.Repo.preload(sites: :items)
+
+      [%Sites.Site{items: [item1 | _]} = site] = user.sites
+      [domain] = site.domains
+
+      Accounts.delete_user(user)
+
+      assert_raise(Ecto.NoResultsError, fn ->
+        Accounts.get_user!(user.id)
+      end)
+
+      assert_raise(Ecto.NoResultsError, fn ->
+        Affable.Repo.get_by!(Sites.Site, id: site.id)
+      end)
+
+      assert_raise(Ecto.NoResultsError, fn ->
+        Sites.get_item!(item1.id)
+      end)
+
+      assert_raise(Ecto.NoResultsError, fn ->
+        Affable.Repo.get_by!(Domains.Domain, id: domain.id)
+      end)
+    end
+
+    test "doesn't delete shared sites" do
+      user = user_fixture() |> Affable.Repo.preload(sites: :items)
+      colleague = user_fixture()
+
+      [site] = user.sites
+
+      %Sites.SiteMember{user: colleague, site: site}
+      |> Repo.insert()
+
+      [domain] = site.domains
+
+      Accounts.delete_user(user)
+
+      assert_raise(Ecto.NoResultsError, fn ->
+        Accounts.get_user!(user.id)
+      end)
+
+      assert Affable.Repo.get_by!(Sites.Site, id: site.id)
+      assert Affable.Repo.get_by!(Domains.Domain, id: domain.id)
+    end
+  end
 
   describe "get_user_by_email/1" do
     test "does not return the user if the email does not exist" do
