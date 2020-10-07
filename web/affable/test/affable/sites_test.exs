@@ -83,10 +83,6 @@ defmodule Affable.SitesTest do
       {:ok,
        %{
          name: "Top 10 Apples",
-         site_logo_url: nil,
-         page_subtitle: nil,
-         header_image_url: nil,
-         text: nil,
          items: [item | _rest] = items
        }} = get_raw_site.(site.id)
 

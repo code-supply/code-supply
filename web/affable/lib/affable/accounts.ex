@@ -9,8 +9,6 @@ defmodule Affable.Accounts do
   alias Affable.{Email, Mailer, Repo, Sites}
   alias Affable.Accounts.{User, UserToken, UserNotifier}
 
-  @default_site_name "Top 10 Apples"
-
   ## Database getters
 
   @doc """
@@ -85,7 +83,16 @@ defmodule Affable.Accounts do
            |> User.registration_changeset(attrs)
          )
          |> Multi.run(:site, fn _repo, %{user: user} ->
-           Sites.create_site(user, %{name: @default_site_name})
+           Sites.create_site(user, %{
+             name: "Top 10 Apples",
+             site_logo_url:
+               "https://fontmeme.com/permalink/201007/1dc0c470f4a553f8c24eb121aff0b7b6.png",
+             page_subtitle: "An apple a day",
+             header_image_url:
+               "https://www.theblacktruffle.com.au/tbtwp/wp-content/uploads/2017/07/group-of-apples.jpg",
+             text:
+               "The apple is a deciduous tree, generally standing 2 to 4.5 m (6 to 15 ft) tall in cultivation and up to 9 m (30 ft) in the wild. When cultivated, the size, shape and branch density are determined by rootstock selection and trimming method. The leaves are alternately arranged dark green-colored simple ovals with serrated margins and slightly downy undersides."
+           })
          end)
          |> Repo.transaction() do
       {:ok, %{user: user}} ->
