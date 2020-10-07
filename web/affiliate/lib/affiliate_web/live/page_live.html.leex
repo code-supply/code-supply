@@ -1,29 +1,64 @@
-<header>
-  <section class="container">
-    <div>
-      <img src="<%= @site.site_logo_url %>">
-    </div>
-    <div>
-      <img src="<%= @site.header_image_url %>">
-    </div>
-  </section>
-</header>
+<div class="bg-gray-300">
+  <p class="alert alert-info" role="alert"
+                              phx-click="lv:clear-flash"
+                              phx-value-key="info"><%= live_flash(@flash, :info) %></p>
 
-<h1><%= @site.name %></h1>
+  <p class="alert alert-danger" role="alert"
+                                phx-click="lv:clear-flash"
+                                phx-value-key="error"><%= live_flash(@flash, :error) %></p>
 
-<h2><%= @site.page_subtitle %></h2>
+  <div class="container mx-auto bg-white">
+    <header
+      class="flex bg-red-500 block
+                   border-b-8 border-black
+                   bg-no-repeat"
+      style="background: url('<%= @site.header_image_url %>')"
+      >
+      <img alt="<%= @site.name %>" class="h-12 my-6 mx-8" src="<%= @site.site_logo_url %>">
+    </header>
 
-<%= text_to_html (@site.text || "") %>
+    <main role="main">
+      <header class="bg-blue-600 text-white
+                         p-8 pb-12">
+        <h1 class="text-3xl font-extrabold"><%= @site.page_subtitle %></h1>
 
-<h3>Items</h3>
-<ol>
-  <%= for item <- @site.items do %>
-    <li>
-      <a href="<%= item.url %>"><img width="100" src="<%= item.image_url %>"><%= item.name %></a>
-      <p>
-      <%= item.description %>
-      </p>
-      <p>Price: <%= format_price item.price %></p>
-    </li>
-  <% end %>
-</ol>
+        <div class="text-lg max-w-3xl mt-4">
+          <%= text_to_html (@site.text || "") %>
+        </div>
+      </header>
+
+      <section class="p-8">
+        <ol>
+          <%= for item <- @site.items do %>
+            <li class="rounded-md border-solid border-2 border-gray-300
+                       mb-6 px-8 py-4">
+              <h1 class="mb-4">
+                <span class="font-bold"><%= item.position %></span>
+                <span class="ml-4 text-gray-800"><%= item.name %></span>
+              </h1>
+              <div class="grid grid-cols-8 divide-x divide-gray-300
+                          font-black text-gray-800">
+                <div class="block h-16 mr-2">
+                  <img class="max-h-full" src="<%= item.image_url %>">
+                </div>
+                <p class="col-span-3 px-8">
+                <%= item.description %>
+                </p>
+                <p class="col-span-2 px-8 py-4 text-xl text-center
+                           font-extrabold
+                           "><%= format_price item.price %></p>
+                <p class="col-span-2 px-2">
+                <a class="block ml-4 min-w-full py-4 rounded-full
+                               text-center text-lg
+                               bg-green-600 hover:bg-green-700 text-white
+                               "
+                   href="<%= item.url %>">Go</a>
+                </p>
+              </div>
+            </li>
+          <% end %>
+        </ol>
+      </section>
+    </main>
+  </div>
+</div>

@@ -23,6 +23,6 @@ defmodule AffiliateWeb.PageLive do
   end
 
   def format_price(price) do
-    price |> Decimal.to_string()
+    "$" <> (price |> Decimal.to_string())
   end
 end
