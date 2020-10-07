@@ -9,10 +9,10 @@
 
   <div class="container mx-auto bg-white">
     <header
-      class="flex bg-red-500 block
+      class="flex bg-white block
                    border-b-8 border-black
-                   bg-no-repeat"
-      style="background: url('<%= @site.header_image_url %>')"
+                   bg-no-repeat bg-cover"
+      style="background-image: url('<%= @site.header_image_url %>')"
       >
       <img alt="<%= @site.name %>" class="h-12 my-6 mx-8" src="<%= @site.site_logo_url %>">
     </header>
