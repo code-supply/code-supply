@@ -10,8 +10,10 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-{:ok, _} =
-  Affable.Accounts.register_user(%{
-    email: "a@example.com",
-    password: "asdfasdfasdf"
-  })
+if Mix.env() == :dev do
+  {:ok, _} =
+    Affable.Accounts.register_user(%{
+      email: "a@example.com",
+      password: "asdfasdfasdf"
+    })
+end
