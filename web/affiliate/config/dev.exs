@@ -21,6 +21,8 @@ config :affiliate, AffiliateWeb.Endpoint,
     ]
   ]
 
+{:ok, hostname} = :inet.gethostname()
+
 config :affiliate,
   children: [
     {Cluster.Supervisor,
@@ -29,7 +31,7 @@ config :affiliate,
          default: [
            strategy: Cluster.Strategy.Epmd,
            config: [
-             hosts: [:affable@fatty]
+             hosts: [:"affable@#{hostname}"]
            ]
          ]
        ],
@@ -38,7 +40,7 @@ config :affiliate,
     {Affiliate.SiteState,
      {
        :affable,
-       "site5x20",
+       "sitekjq0",
        "devsiterequests"
      }}
   ]
