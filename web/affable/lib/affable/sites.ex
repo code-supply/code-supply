@@ -147,7 +147,8 @@ defmodule Affable.Sites do
         name: "Golden Delicious",
         description: "Yellow. Nothing like Red Delicious.",
         image_url: "https://upload.wikimedia.org/wikipedia/commons/0/09/Mele_golden.jpg",
-        url: "https://commons.wikimedia.org/wiki/File:Mele_golden.jpg"
+        url: "https://commons.wikimedia.org/wiki/File:Mele_golden.jpg",
+        price: Decimal.new("0.54")
       },
       %Item{
         position: 2,
@@ -155,7 +156,8 @@ defmodule Affable.Sites do
         description: "Red. Offspring of Red D and Kidd's Orange.",
         image_url:
           "https://upload.wikimedia.org/wikipedia/commons/a/ab/2015-02-xx_Gala_%28apple%29.jpg",
-        url: "https://commons.wikimedia.org/wiki/File:2015-02-xx_Gala_(apple).jpg"
+        url: "https://commons.wikimedia.org/wiki/File:2015-02-xx_Gala_(apple).jpg",
+        price: Decimal.new("0.42")
       },
       %Item{
         position: 3,
@@ -163,14 +165,16 @@ defmodule Affable.Sites do
         description: "Nice in a pie.",
         image_url:
           "https://upload.wikimedia.org/wikipedia/commons/5/52/Bramley%27s_Seedling_Apples.jpg",
-        url: "https://commons.wikimedia.org/wiki/File:Bramley%27s_Seedling_Apples.jpg"
+        url: "https://commons.wikimedia.org/wiki/File:Bramley%27s_Seedling_Apples.jpg",
+        price: Decimal.new("0.30")
       },
       %Item{
         position: 4,
         name: "Red Prince",
         description: "Holland made an apple. It's kinda red.",
         image_url: "https://upload.wikimedia.org/wikipedia/commons/e/e8/Red_Prince_Aepfel.jpg",
-        url: "https://commons.wikimedia.org/wiki/File:Red_Prince_Aepfel.jpg"
+        url: "https://commons.wikimedia.org/wiki/File:Red_Prince_Aepfel.jpg",
+        price: Decimal.new("0.68")
       },
       %Item{
         position: 5,
@@ -179,14 +183,16 @@ defmodule Affable.Sites do
         image_url:
           "https://upload.wikimedia.org/wikipedia/commons/d/d1/Greensleeves_on_tree%2C_National_Fruit_Collection_%28acc._1980-077%29.jpg",
         url:
-          "https://commons.wikimedia.org/wiki/File:Greensleeves_on_tree,_National_Fruit_Collection_(acc._1980-077).jpg"
+          "https://commons.wikimedia.org/wiki/File:Greensleeves_on_tree,_National_Fruit_Collection_(acc._1980-077).jpg",
+        price: Decimal.new("0.90")
       },
       %Item{
         position: 6,
         name: "Red Delicious",
         description: "Dark Red. Popular in the states. Don't cook with it.",
         image_url: "https://upload.wikimedia.org/wikipedia/commons/6/6d/Red_Delicious_apples.jpg",
-        url: "https://commons.wikimedia.org/wiki/File:Red_Delicious_apples.jpg"
+        url: "https://commons.wikimedia.org/wiki/File:Red_Delicious_apples.jpg",
+        price: Decimal.new("0.75")
       },
       %Item{
         position: 7,
@@ -195,28 +201,32 @@ defmodule Affable.Sites do
         image_url:
           "https://upload.wikimedia.org/wikipedia/commons/b/b8/Pink_lady_apples%2C_Thulimbah%2C_Granite_Belt%2C_Queensland%2C_2015_02.jpg",
         url:
-          "https://commons.wikimedia.org/wiki/File:Pink_lady_apples,_Thulimbah,_Granite_Belt,_Queensland,_2015_02.jpg"
+          "https://commons.wikimedia.org/wiki/File:Pink_lady_apples,_Thulimbah,_Granite_Belt,_Queensland,_2015_02.jpg",
+        price: Decimal.new("0.45")
       },
       %Item{
         position: 8,
         name: "Discovery",
         description: "Sweet flavour. English.",
         image_url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Discovery_apples.jpg",
-        url: "https://commons.wikimedia.org/wiki/File:Discovery_apples.jpg"
+        url: "https://commons.wikimedia.org/wiki/File:Discovery_apples.jpg",
+        price: Decimal.new("0.35")
       },
       %Item{
         position: 9,
         name: "Braeburn",
         description: "Common in the UK supermarkets. Pretty good!",
         image_url: "https://upload.wikimedia.org/wikipedia/commons/f/fc/Braeburn2008.jpg",
-        url: "https://commons.wikimedia.org/wiki/File:Braeburn2008.jpg"
+        url: "https://commons.wikimedia.org/wiki/File:Braeburn2008.jpg",
+        price: Decimal.new("0.65")
       },
       %Item{
         position: 10,
         name: "Cox's Orange Pippin",
         description: "Kind of a big deal in the UK.",
         image_url: "https://upload.wikimedia.org/wikipedia/commons/e/ed/Cox_orange_renette2.JPG",
-        url: "https://commons.wikimedia.org/wiki/File:Cox_orange_renette2.JPG"
+        url: "https://commons.wikimedia.org/wiki/File:Cox_orange_renette2.JPG",
+        price: Decimal.new("0.95")
       }
     ]
     |> Enum.map(&Item.changeset(&1, %{}))
