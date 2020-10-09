@@ -20,6 +20,16 @@ defmodule AffableWeb.AffiliateSitesLive do
     redirect_to_login(socket)
   end
 
+  def handle_event("new-item", %{}, %{assigns: %{changeset: %{data: site}}} = socket) do
+    {:ok, item} =
+      Sites.create_item(site, %{
+        name: "New item",
+        position: (site.items |> length()) + 1
+      })
+
+    complete_update(socket, %{site | items: site.items ++ [item]})
+  end
+
   def handle_event("save", %{"site" => attrs}, %{assigns: %{site_id: id, user: user}} = socket) do
     site = Sites.get_site!(user, id)
 

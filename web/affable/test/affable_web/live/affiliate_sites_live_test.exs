@@ -22,6 +22,40 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       %{conn: conn, user: user, site: site_fixture(user)}
     end
 
+    test "can create new item", %{conn: conn, user: user, site: site} do
+      {:ok, view, _html} = live(conn, path(conn, site))
+
+      num_items = site.items |> length()
+
+      refute view
+             |> has_element?(".item:nth-child(#{num_items + 1})")
+
+      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+
+      view
+      |> element("#new-item")
+      |> render_click()
+
+      assert Sites.get_site!(user, site.id).items
+             |> length() == num_items + 1
+
+      assert view
+             |> has_element?(".item:nth-child(#{num_items + 1})")
+    end
+
+    test "creating an item broadcasts the change", %{conn: conn, site: site} do
+      {:ok, view, _html} = live(conn, path(conn, site))
+
+      expect(Affable.MockBroadcaster, :broadcast, fn message ->
+        assert (message.items |> List.last()).name == "New item"
+        :ok
+      end)
+
+      view
+      |> element("#new-item")
+      |> render_click()
+    end
+
     test "can edit an item", %{conn: conn, site: site} do
       conn = get(conn, path(conn, site))
       assert html_response(conn, 200)

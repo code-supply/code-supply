@@ -52,6 +52,8 @@
 
   <h2 class="h2">Items</h2>
 
+  <button id="new-item" type="button" class="btn" phx-click="new-item">Create New Item</button>
+
   <ol>
     <%= for f <- inputs_for(outer_form, :items) do %>
       <li class="item standard-w">

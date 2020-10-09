@@ -226,7 +226,7 @@ defmodule Affable.SitesTest do
       image_url: "some image_url",
       name: "some name",
       position: 42,
-      price: "120.5",
+      price: Decimal.new("120.5"),
       url: "some url"
     }
     @update_attrs %{
@@ -234,7 +234,7 @@ defmodule Affable.SitesTest do
       image_url: "some updated image_url",
       name: "some updated name",
       position: 43,
-      price: "456.7",
+      price: Decimal.new("456.7"),
       url: "some updated url"
     }
     @invalid_attrs %{
@@ -248,16 +248,18 @@ defmodule Affable.SitesTest do
 
     def item_fixture(attrs \\ %{}) do
       {:ok, item} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Sites.create_item()
+        Sites.create_item(
+          site_fixture(),
+          attrs
+          |> Enum.into(@valid_attrs)
+        )
 
       item
     end
 
     test "list_items/0 returns all items" do
       item = item_fixture()
-      assert Sites.list_items() == [item]
+      assert Sites.list_items() |> Enum.member?(item)
     end
 
     test "get_item!/1 returns the item with given id" do
@@ -265,8 +267,8 @@ defmodule Affable.SitesTest do
       assert Sites.get_item!(item.id) == item
     end
 
-    test "create_item/1 with valid data creates a item" do
-      assert {:ok, %Item{} = item} = Sites.create_item(@valid_attrs)
+    test "create_item/2 with valid data creates a item" do
+      assert {:ok, %Item{} = item} = Sites.create_item(site_fixture(), @valid_attrs)
       assert item.description == "some description"
       assert item.image_url == "some image_url"
       assert item.name == "some name"
@@ -276,7 +278,7 @@ defmodule Affable.SitesTest do
     end
 
     test "create_item/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Sites.create_item(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Sites.create_item(site_fixture(), @invalid_attrs)
     end
 
     test "update_item/2 with valid data updates the item" do
