@@ -3,7 +3,8 @@ use Mix.Config
 config :affable,
   children: [
     {Affable.SiteUpdater, {Affable.Sites, :affable, "devsiterequests"}}
-  ]
+  ],
+  k8s: Affable.FakeK8s
 
 # Configure your database
 config :affable, Affable.Repo,
@@ -13,14 +14,6 @@ config :affable, Affable.Repo,
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
-
-config :k8s,
-  clusters: %{
-    default: %{
-      conn: "/tmp/microk8s-config",
-      conn_opts: %{context: "microk8s"}
-    }
-  }
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
