@@ -11654,9 +11654,9 @@ spec:
         - containerPort: 4000
           name: http
         - containerPort: 5555
-          name: erlang
+          name: tcp-erlang
         - containerPort: 4369
-          name: epmd
+          name: tcp-epmd
         readinessProbe:
           httpGet:
             path: /

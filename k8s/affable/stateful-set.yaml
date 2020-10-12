@@ -22,9 +22,9 @@ spec:
         ports:
         - name: http
           containerPort: 4000
-        - name: erlang
+        - name: tcp-erlang
           containerPort: 5555
-        - name: epmd
+        - name: tcp-epmd
           containerPort: 4369
 
         env:
