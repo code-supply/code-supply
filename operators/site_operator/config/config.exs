@@ -27,8 +27,8 @@ config :bonny,
     app: "site-operator"
   },
   resources: %{
-    limits: %{cpu: "100m", memory: "200Mi"},
-    requests: %{cpu: "100m", memory: "200Mi"}
+    limits: %{cpu: "50m", memory: "100Mi"},
+    requests: %{cpu: "10m", memory: "48Mi"}
   }
 
 config :logger_json,

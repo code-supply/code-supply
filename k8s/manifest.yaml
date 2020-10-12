@@ -11600,11 +11600,11 @@ spec:
         name: site-operator
         resources:
           limits:
-            cpu: 100m
-            memory: 200Mi
+            cpu: 50m
+            memory: 100Mi
           requests:
-            cpu: 100m
-            memory: 200Mi
+            cpu: 10m
+            memory: 48Mi
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
