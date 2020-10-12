@@ -14,6 +14,11 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: istio-system
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   labels:
     istio-injection: enabled
   name: operators
@@ -11739,6 +11744,32 @@ spec:
           serviceAccountSecretRef:
             key: key.json
             name: dns-key
+---
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: istio-control-plane
+  namespace: istio-system
+spec:
+  addonComponents:
+    grafana:
+      enabled: true
+    kiali:
+      enabled: true
+    prometheus:
+      enabled: true
+    tracing:
+      enabled: true
+  components:
+    egressGateways:
+    - enabled: true
+      name: istio-egressgateway
+  meshConfig:
+    accessLogEncoding: JSON
+    accessLogFile: /dev/stdout
+    outboundTrafficPolicy:
+      mode: REGISTRY_ONLY
+  profile: default
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway

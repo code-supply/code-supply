@@ -96,17 +96,9 @@ triggers:
 		--branch-pattern="^master$$" \
 		--build-config=web/affiliate/cloudbuild.yaml
 
-.PHONY: install_istio
-install_istio:
-	istioctl install \
-		--set values.kiali.enabled=true \
-		--set values.grafana.enabled=true \
-		--set values.tracing.enabled=true \
-		--set meshConfig.outboundTrafficPolicy.mode=REGISTRY_ONLY \
-		--set meshConfig.accessLogFile=/dev/stdout \
-		--set meshConfig.accessLogEncoding=JSON \
-		--set values.gateways.istio-egressgateway.enabled=true
-
+.PHONY: install_istio_operator
+install_istio_operator:
+	istioctl operator init
 
 .PHONY: kubectl_set_contexts
 kubectl_set_contexts:
