@@ -11661,6 +11661,13 @@ spec:
           httpGet:
             path: /
             port: http
+        resources:
+          limits:
+            cpu: 200m
+            memory: 250Mi
+          requests:
+            cpu: 100m
+            memory: 180Mi
       - command:
         - /cloud_sql_proxy
         env:
@@ -11672,10 +11679,10 @@ spec:
         name: cloudsql-proxy
         resources:
           limits:
-            cpu: 100m
+            cpu: 20m
             memory: 48Mi
           requests:
-            cpu: 100m
+            cpu: 20m
             memory: 48Mi
         securityContext:
           allowPrivilegeEscalation: false

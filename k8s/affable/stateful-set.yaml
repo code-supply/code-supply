@@ -46,6 +46,14 @@ spec:
             path: /
             port: http
 
+        resources:
+          requests:
+            cpu: 100m
+            memory: 180Mi
+          limits:
+            cpu: 200m
+            memory: 250Mi
+
       - name: cloudsql-proxy
         image: eu.gcr.io/cloudsql-docker/gce-proxy:1.17
         securityContext:
@@ -67,8 +75,8 @@ spec:
 
         resources:
           requests:
-            cpu: 100m
+            cpu: 20m
             memory: 48Mi
           limits:
-            cpu: 100m
+            cpu: 20m
             memory: 48Mi
