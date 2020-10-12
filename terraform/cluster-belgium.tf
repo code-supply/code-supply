@@ -53,7 +53,8 @@ resource "google_container_node_pool" "belgium_c" {
   node_count = 4
 
   node_config {
-    preemptible = true
+    preemptible  = true
+    disk_size_gb = 10
 
     machine_type = "e2-medium"
 
