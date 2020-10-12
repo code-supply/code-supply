@@ -11764,6 +11764,12 @@ spec:
     egressGateways:
     - enabled: true
       name: istio-egressgateway
+    pilot:
+      k8s:
+        resources:
+          requests:
+            cpu: 250m
+            memory: 1Gi
   meshConfig:
     accessLogEncoding: JSON
     accessLogFile: /dev/stdout
