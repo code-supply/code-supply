@@ -9,3 +9,4 @@ patchesStrategicMerge:
 - read-write-filesystem.yaml
 - env-vars-from-secret.yaml
 - affiliate-image.yaml
+- istio-proxy-resources.yaml

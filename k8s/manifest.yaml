@@ -11566,6 +11566,9 @@ spec:
       k8s-app: site-operator
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/proxyCPU: 50m
+        sidecar.istio.io/proxyCPULimit: 1000m
       labels:
         app: site-operator
         k8s-app: site-operator
@@ -11628,6 +11631,8 @@ spec:
   template:
     metadata:
       annotations:
+        sidecar.istio.io/proxyCPU: 50m
+        sidecar.istio.io/proxyCPULimit: 1000m
         traffic.sidecar.istio.io/excludeInboundPorts: 5555,4369
       labels:
         app: affable

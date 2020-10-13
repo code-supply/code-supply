@@ -8,6 +8,8 @@ spec:
     metadata:
       annotations:
         traffic.sidecar.istio.io/excludeInboundPorts: 5555,4369
+        sidecar.istio.io/proxyCPU: 50m
+        sidecar.istio.io/proxyCPULimit: 1000m
     spec:
       volumes:
       - name: google-credentials
