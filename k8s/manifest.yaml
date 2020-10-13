@@ -11569,7 +11569,7 @@ spec:
       labels:
         app: site-operator
         k8s-app: site-operator
-        version: 199a586
+        version: 293f764
     spec:
       containers:
       - env:
