@@ -11,4 +11,4 @@ spec:
       - name: site-operator
         env:
         - name: AFFILIATE_SITE_IMAGE
-          value: eu.gcr.io/code-supply/affiliate@sha256:4fc2049f5ef89c4273c42199e80fb08d9643f06bef99f33e756c7a9cd10fe7a9
+          value: eu.gcr.io/code-supply/affiliate@sha256:4ee7d4a0098adfb9708749c9c582ecf445af92d75d1a79a6413f7883b662a42f
