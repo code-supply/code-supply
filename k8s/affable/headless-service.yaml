@@ -7,8 +7,8 @@ spec:
   clusterIP: None
   ports:
   - port: 5555
-    name: erlang
-    targetPort: erlang
+    name: tcp-erlang
+    targetPort: tcp-erlang
   - port: 4369
-    name: epmd
-    targetPort: epmd
+    name: tcp-epmd
+    targetPort: tcp-epmd

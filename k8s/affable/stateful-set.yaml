@@ -5,6 +5,9 @@ metadata:
 spec:
   serviceName: affable
   template:
+    metadata:
+      annotations:
+        traffic.sidecar.istio.io/excludeInboundPorts: 5555,4369
     spec:
       volumes:
       - name: google-credentials

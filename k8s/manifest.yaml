@@ -11334,12 +11334,12 @@ metadata:
 spec:
   clusterIP: None
   ports:
-  - name: erlang
+  - name: tcp-erlang
     port: 5555
-    targetPort: erlang
-  - name: epmd
+    targetPort: tcp-erlang
+  - name: tcp-epmd
     port: 4369
-    targetPort: epmd
+    targetPort: tcp-epmd
   selector:
     app: affable
   type: ClusterIP
@@ -11627,6 +11627,8 @@ spec:
   serviceName: affable
   template:
     metadata:
+      annotations:
+        traffic.sidecar.istio.io/excludeInboundPorts: 5555,4369
       labels:
         app: affable
         version: b12353d
