@@ -56,7 +56,7 @@ resource "google_container_node_pool" "belgium_c" {
     preemptible  = true
     disk_size_gb = 10
 
-    machine_type = "e2-medium"
+    machine_type = "e2-small"
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/compute",
