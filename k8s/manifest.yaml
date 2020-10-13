@@ -11596,7 +11596,7 @@ spec:
         envFrom:
         - secretRef:
             name: site-operator
-        image: eu.gcr.io/code-supply/site-operator:7dd2aaf
+        image: eu.gcr.io/code-supply/site-operator:293f764
         name: site-operator
         resources:
           limits:
