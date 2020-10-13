@@ -11634,7 +11634,7 @@ spec:
       containers:
       - env:
         - name: ELIXIR_ERL_OPTIONS
-          value: -kernel inet_dist_listen_min 5555 inet_dist_listen_max 5555
+          value: -kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556
         - name: POD_IP
           valueFrom:
             fieldRef:
