@@ -153,7 +153,7 @@ defmodule SiteOperator.K8s.OperationsTest do
 
       assert %{
                "name" => "ELIXIR_ERL_OPTIONS",
-               "value" => "-kernel inet_dist_listen_min 5555 inet_dist_listen_max 5555"
+               "value" => "-kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556"
              } in (deployment |> env_vars())
     end
 
