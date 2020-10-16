@@ -46,8 +46,8 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
     test "creating an item broadcasts the change", %{conn: conn, site: site} do
       {:ok, view, _html} = live(conn, path(conn, site))
 
-      expect(Affable.MockBroadcaster, :broadcast, fn message ->
-        assert (message.items |> List.last()).name == "New item"
+      expect(Affable.MockBroadcaster, :broadcast, fn %{items: [item | _]} ->
+        assert item.name == "New item"
         :ok
       end)
 

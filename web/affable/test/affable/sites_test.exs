@@ -281,6 +281,16 @@ defmodule Affable.SitesTest do
       assert {:error, %Ecto.Changeset{}} = Sites.create_item(site_fixture(), @invalid_attrs)
     end
 
+    test "prepend_item/1 makes default item at position 1" do
+      user = user_fixture()
+      site = site_fixture(user)
+      {:ok, item} = Sites.prepend_item(site)
+      %Site{items: [first_item | _]} = Sites.get_site!(user, site.id)
+
+      assert item == first_item
+      assert first_item.name == "New item"
+    end
+
     test "update_item/2 with valid data updates the item" do
       item = item_fixture()
       assert {:ok, %Item{} = item} = Sites.update_item(item, @update_attrs)
