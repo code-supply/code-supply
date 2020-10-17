@@ -126,6 +126,27 @@ defmodule Affable.SitesTest do
       assert {:error, %Ecto.Changeset{}} = Sites.create_site(user_fixture(), @invalid_attrs)
     end
 
+    test "can delete an item" do
+      user = user_fixture()
+      site_before = site_fixture(user)
+      [first | _] = site_before.items
+
+      {:ok, site_after} = Sites.delete_item(site_before, "#{first.id}")
+
+      positions_after =
+        site_after.items
+        |> Enum.map(fn i -> i.position end)
+
+      assert length(site_after.items) ==
+               length(site_before.items) - 1
+
+      assert positions_after ==
+               1..length(site_after.items) |> Enum.into([])
+
+      assert Sites.get_site!(user, site_before.id).items ==
+               site_after.items
+    end
+
     test "can demote an item" do
       site = site_fixture()
       [first_before | rest] = site.items

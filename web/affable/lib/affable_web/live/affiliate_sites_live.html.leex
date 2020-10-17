@@ -59,6 +59,13 @@
       <li class="item standard-w">
         <p id="position-<%= f.data.id %>" class="position">
           <span class="number"><%= f.data.position %></span>
+          <a id="delete-<%= f.data.id %>"
+             href="#"
+             class="trash feather"
+             phx-click="delete-item"
+             phx-value-id="<%= f.data.id %>"
+             >
+          </a>
           <a id="demote-<%= f.data.id %>"
              href="#"
              class="demote feather"

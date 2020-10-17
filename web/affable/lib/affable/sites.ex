@@ -39,6 +39,14 @@ defmodule Affable.Sites do
     |> Repo.one!()
   end
 
+  defp get_site!(id) do
+    get_site_query(id)
+    |> join(:inner, [s], m in SiteMember, on: s.id == m.site_id)
+    |> where([s, m], s.id == ^id)
+    |> preload([], [:domains, :members])
+    |> Repo.one!()
+  end
+
   def raw(%Site{} = site) do
     %{
       id: site.id,
@@ -381,6 +389,39 @@ defmodule Affable.Sites do
   """
   def delete_item(%Item{} = item) do
     Repo.delete(item)
+  end
+
+  def delete_item(%Site{} = site, item_id) do
+    delete_position =
+      site.items
+      |> Enum.find_value(fn item ->
+        if "#{item.id}" == "#{item_id}" do
+          item.position
+        else
+          false
+        end
+      end)
+
+    site.items
+    |> Enum.reduce(Ecto.Multi.new(), fn item, multi ->
+      cond do
+        "#{item.id}" == "#{item_id}" ->
+          Multi.delete(multi, :delete, item)
+
+        item.position > delete_position ->
+          Multi.update(
+            multi,
+            "reposition-#{item.id}",
+            Item.changeset(item, %{position: item.position - 1})
+          )
+
+        true ->
+          multi
+      end
+    end)
+    |> Repo.transaction()
+
+    {:ok, get_site!(site.id)}
   end
 
   @doc """

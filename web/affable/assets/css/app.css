@@ -104,6 +104,11 @@ tbody tr:hover {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+.position a.trash {
+    background-image: url("/images/trash.svg");
+    @apply mr-24;
+}
+
 .position a.promote {
     background-image: url("/images/arrow-up-circle.svg");
 }

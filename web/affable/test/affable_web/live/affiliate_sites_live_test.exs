@@ -129,6 +129,20 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       assert result =~ "Whoops!"
     end
 
+    test "can delete an item", %{conn: conn, site: site} do
+      {:ok, view, _html} = live(conn, path(conn, site))
+
+      [first_item | _] = site.items
+
+      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+
+      view
+      |> element("#delete-#{first_item.id}")
+      |> render_click()
+
+      refute view |> has_element?("#delete-#{first_item.id}")
+    end
+
     test "can reorder an item", %{conn: conn, site: site} do
       {:ok, view, _html} = live(conn, path(conn, site))
 

@@ -38,6 +38,16 @@ defmodule AffableWeb.AffiliateSitesLive do
     end
   end
 
+  def handle_event(
+        "delete-item",
+        %{"id" => item_id},
+        %{assigns: %{site_id: id, user: user}} = socket
+      ) do
+    site = Sites.get_site!(user, id)
+    {:ok, site} = Sites.delete_item(site, item_id)
+    complete_update(socket, site)
+  end
+
   def handle_event("promote", %{"id" => item_id}, %{assigns: %{site_id: id, user: user}} = socket) do
     site = Sites.get_site!(user, id)
 
