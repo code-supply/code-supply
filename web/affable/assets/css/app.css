@@ -160,6 +160,7 @@ li:first-child .promote, li:last-child .demote {
 .btn:focus {
     @apply
     shadow-outline outline-none
+    text-gray-300;
 }
 .btn:hover {
     @apply
