@@ -21,9 +21,15 @@ defmodule AffableWeb.AffiliateSitesLive do
   end
 
   def handle_event("new-item", %{}, %{assigns: %{changeset: %{data: site}}} = socket) do
-    {:ok, item} = Sites.prepend_item(site)
+    {:ok, new_item} = Sites.prepend_item(site)
 
-    complete_update(socket, %{site | items: [item | site.items]})
+    repositioned =
+      site.items
+      |> Enum.map(fn item ->
+        %{item | position: item.position + 1}
+      end)
+
+    complete_update(socket, %{site | items: [new_item | repositioned]})
   end
 
   def handle_event("save", %{"site" => attrs}, %{assigns: %{site_id: id, user: user}} = socket) do

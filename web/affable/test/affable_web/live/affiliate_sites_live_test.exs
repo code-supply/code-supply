@@ -40,6 +40,9 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
              |> length() == num_items + 1
 
       assert view
+             |> has_element?(".item:nth-child(2) .number", "2")
+
+      assert view
              |> has_element?(".item:nth-child(#{num_items + 1})")
     end
 
