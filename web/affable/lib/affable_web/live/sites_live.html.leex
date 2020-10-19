@@ -20,7 +20,7 @@
         </div>
         <ul class="float-right cta">
           <li class="float-left mr-4 pending-spinner">
-            <a class="pending-invisible" href="<%= site |> canonical_url() %>">Visit</a>
+            <a target="_blank" class="pending-invisible" href="<%= site |> canonical_url() %>">Visit</a>
           </li>
           <li class="float-left">
             <a href="<%= Routes.affiliate_sites_path(@socket, :edit, site.id) %>">Edit</a>
