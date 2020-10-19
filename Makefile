@@ -11,7 +11,9 @@ k8s/manifest.yaml: \
 
 apply: \
 	k8s/manifest.yaml
-	kubectl apply \
+	kubectl \
+		--context=affable \
+		apply \
 		-f k8s/manifest.yaml
 
 diff: \
