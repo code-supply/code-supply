@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -e
+
+id="$(docker build --quiet .)"
+secret="$(mix phx.gen.secret)"
+
+docker run \
+    --network host \
+    --env SENDGRID_API_KEY=asdf \
+    --env ID_SALT=asdf \
+    --env PUBSUB_TOPIC_REQUESTS=asdf \
+    --env SECRET_KEY_BASE="$secret" \
+    --env DATABASE_URL=ecto://postgres:postgres@localhost/affable_dev \
+    "$id"
