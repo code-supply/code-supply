@@ -19,6 +19,8 @@ RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
 COPY priv priv
 COPY assets assets
 
+# must copy source code to give PurgeCSS the content to scan
+COPY lib ./lib
 ENV NODE_ENV=production
 RUN npm run --prefix ./assets deploy
 RUN mix phx.digest
