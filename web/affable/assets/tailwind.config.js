@@ -1,8 +1,13 @@
 module.exports = {
-  purge: [
-    '../lib/affable_web/**/*/*.html.*',
-    '../lib/affable_web/**/*.html.*',
-  ],
+  purge: {
+    content: [
+      "../lib/**/*.html.*",
+      "../lib/**/views/**/*.ex",
+      "../lib/**/live/**/*.ex",
+      "./js/**/*.js",
+      "./css/*.css",
+    ]
+  },
   theme: {
     extend: {},
   },
