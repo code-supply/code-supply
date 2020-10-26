@@ -1,5 +1,13 @@
 module.exports = {
-  purge: [],
+  purge: {
+    content: [
+      "../lib/**/*.html.*",
+      "../lib/**/views/**/*.ex",
+      "../lib/**/live/**/*.ex",
+      "./js/**/*.js",
+      "./css/*.css",
+    ]
+  },
   theme: {
     extend: {},
   },

@@ -18,10 +18,14 @@ RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
 
 COPY priv priv
 COPY assets assets
+
+# Must copy source code before asset build.
+# PurgeCSS needs to scan the source for e.g. Tailwind classes.
+COPY lib lib
+ENV NODE_ENV=production
 RUN npm run --prefix ./assets deploy
 RUN mix phx.digest
 
-COPY lib lib
 RUN mix do compile, release
 
 FROM alpine@sha256:a15790640a6690aa1730c38cf0a440e2aa44aaca9b0e8931a9f2b0d7cc90fd65 AS app
