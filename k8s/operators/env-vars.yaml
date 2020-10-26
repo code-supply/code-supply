@@ -11,3 +11,5 @@ spec:
         envFrom:
         - secretRef:
             name: site-operator
+        - configMapRef:
+            name: site-operator

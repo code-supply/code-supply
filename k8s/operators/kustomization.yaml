@@ -7,6 +7,10 @@ resources:
 patchesStrategicMerge:
 - site-operator-version.yaml
 - read-write-filesystem.yaml
-- env-vars-from-secret.yaml
-- affiliate-image.yaml
+- env-vars.yaml
 - istio-proxy-resources.yaml
+configMapGenerator:
+- name: site-operator
+  namespace: operators
+  files:
+  - env-vars/AFFILIATE_SITE_IMAGE

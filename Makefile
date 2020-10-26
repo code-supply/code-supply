@@ -51,6 +51,10 @@ k8s/operators/site-operator-version.yaml:
 	echo "        version: \"$$(cat operators/site_operator/VERSION)\"" >> $(operator_version)
 
 .PHONY:
+affiliate_use_latest:
+	echo "eu.gcr.io/code-supply/affiliate@$$(latest-affiliate-digest)" > k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
+
+.PHONY:
 affable_use_head:
 	cd k8s/affable && \
 		kustomize edit set image "affable=eu.gcr.io/code-supply/affable:$$(git rev-parse --short HEAD)"
