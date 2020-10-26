@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+gcloud \
+    --format=json \
+    container images list-tags \
+    --limit 1 \
+    eu.gcr.io/code-supply/affiliate \
+    | jq --raw-output .[].digest
