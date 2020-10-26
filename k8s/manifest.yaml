@@ -11309,6 +11309,15 @@ subjects:
   namespace: cert-manager
 ---
 apiVersion: v1
+data:
+  AFFILIATE_SITE_IMAGE: |
+    eu.gcr.io/code-supply/affiliate@sha256:462fb5fef6e7803ac366c7f99077c68193c325eba0e857ea717c6584267e6281
+kind: ConfigMap
+metadata:
+  name: site-operator-f5b4g256fg
+  namespace: operators
+---
+apiVersion: v1
 kind: Service
 metadata:
   labels:
@@ -11594,12 +11603,12 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.serviceAccountName
-        - name: AFFILIATE_SITE_IMAGE
-          value: eu.gcr.io/code-supply/affiliate@sha256:4ee7d4a0098adfb9708749c9c582ecf445af92d75d1a79a6413f7883b662a42f
         envFrom:
         - secretRef:
             name: site-operator
-        image: eu.gcr.io/code-supply/site-operator:293f764
+        - configMapRef:
+            name: site-operator-f5b4g256fg
+        image: eu.gcr.io/code-supply/site-operator:4e56bc3
         name: site-operator
         resources:
           limits:
