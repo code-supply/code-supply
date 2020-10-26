@@ -52,7 +52,9 @@ k8s/operators/site-operator-version.yaml:
 
 .PHONY:
 affiliate_use_latest:
-	echo "eu.gcr.io/code-supply/affiliate@$$(latest-affiliate-digest)" > k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
+	echo "eu.gcr.io/code-supply/affiliate@$$(latest-affiliate-digest)" \
+		| tr -d '\n' \
+		> k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
 
 .PHONY:
 affable_use_head:
