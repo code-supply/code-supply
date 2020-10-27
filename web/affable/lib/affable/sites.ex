@@ -4,7 +4,7 @@ defmodule Affable.Sites do
   import Ecto.Query, warn: false
   alias Affable.Repo
   alias Affable.Accounts.User
-  alias Affable.Sites.{Site, SiteMember, Item}
+  alias Affable.Sites.{Site, SiteMember, Item, AttributeDefinition}
   alias Affable.Domains.Domain
 
   alias Ecto.Multi
@@ -99,15 +99,20 @@ defmodule Affable.Sites do
 
   defp get_site_query(id) do
     items_q = items_query()
+    definitions_q = definitions_query()
 
     from(s in Site,
       where: s.id == ^id,
-      preload: [items: ^items_q]
+      preload: [items: ^items_q, attribute_definitions: ^definitions_q]
     )
   end
 
   defp items_query do
     from i in Item, order_by: i.position
+  end
+
+  defp definitions_query do
+    from i in AttributeDefinition, order_by: [desc: i.id]
   end
 
   def unshared(user) do
@@ -123,7 +128,7 @@ defmodule Affable.Sites do
     case Multi.new()
          |> Multi.insert(
            :site,
-           %Site{}
+           %Site{attribute_definitions: []}
            |> Site.changeset(attrs)
            |> Site.change_internal_name("pending")
            |> Ecto.Changeset.put_assoc(:members, [Ecto.build_assoc(user, :site_members)])
@@ -298,9 +303,19 @@ defmodule Affable.Sites do
           Repo.get!(Site, site.id)
           |> Repo.preload(:domains)
           |> Repo.preload(:members)
+          |> Repo.preload(attribute_definitions: definitions_query())
           |> Repo.preload(items: items_query())
         }
     end
+  end
+
+  alias Affable.Sites.AttributeDefinition
+
+  def append_attribute_definition(site) do
+    site
+    |> Ecto.build_assoc(:attribute_definitions)
+    |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
+    |> Repo.insert()
   end
 
   alias Affable.Sites.Item

@@ -20,6 +20,19 @@ defmodule AffableWeb.AffiliateSitesLive do
     redirect_to_login(socket)
   end
 
+  def handle_event(
+        "new-attribute-definition",
+        %{},
+        %{assigns: %{changeset: %{data: site}}} = socket
+      ) do
+    {:ok, new_definition} = Sites.append_attribute_definition(site)
+
+    complete_update(socket, %{
+      site
+      | attribute_definitions: [new_definition | site.attribute_definitions]
+    })
+  end
+
   def handle_event("new-item", %{}, %{assigns: %{changeset: %{data: site}}} = socket) do
     {:ok, new_item} = Sites.prepend_item(site)
 

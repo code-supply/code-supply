@@ -5,6 +5,7 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
   import Hammox
 
   alias Affable.{Accounts, Sites}
+  alias Affable.Sites.Site
 
   setup :verify_on_exit!
 
@@ -20,6 +21,37 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
     setup context do
       %{conn: conn, user: user} = register_and_log_in_user(context)
       %{conn: conn, user: user, site: site_fixture(user)}
+    end
+
+    test "can create / update an attribute definition", %{conn: conn, user: user, site: site} do
+      {:ok, view, _html} = live(conn, path(conn, site))
+
+      refute view
+             |> has_element?(".attribute-definition:nth-child(1)")
+
+      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+
+      view
+      |> element("#new-attribute-definition")
+      |> render_click()
+
+      %Site{attribute_definitions: [new_definition]} = Sites.get_site!(user, site.id)
+
+      assert view
+             |> has_element?(".attribute-definition:nth-child(1)")
+
+      view
+      |> render_change(:save, %{
+        "site" => %{
+          "attribute_definitions" => %{
+            "0" => %{
+              "id" => "#{new_definition.id}",
+              "name" => "Price",
+              "type" => "dollar"
+            }
+          }
+        }
+      })
     end
 
     test "can create new item", %{conn: conn, user: user, site: site} do

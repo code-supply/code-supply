@@ -3,7 +3,7 @@ defmodule Affable.Sites.Site do
   import Ecto.Changeset
 
   alias Affable.Domains.Domain
-  alias Affable.Sites.{Item, SiteMember}
+  alias Affable.Sites.{Item, SiteMember, AttributeDefinition}
 
   schema "sites" do
     field :name, :string
@@ -17,6 +17,7 @@ defmodule Affable.Sites.Site do
     has_many :users, through: [:members, :user]
     has_many :domains, Domain
     has_many :items, Item
+    has_many :attribute_definitions, AttributeDefinition
 
     timestamps()
   end
@@ -26,6 +27,7 @@ defmodule Affable.Sites.Site do
     site
     |> cast(attrs, [:name, :site_logo_url, :header_image_url, :page_subtitle, :text])
     |> cast_assoc(:items, with: &Item.changeset/2)
+    |> cast_assoc(:attribute_definitions, with: &AttributeDefinition.changeset/2)
     |> validate_required([:name])
   end
 
