@@ -23,7 +23,11 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       %{conn: conn, user: user, site: site_fixture(user)}
     end
 
-    test "can create / update an attribute definition", %{conn: conn, user: user, site: site} do
+    test "can create / update an attribute definition", %{
+      conn: conn,
+      user: user,
+      site: site
+    } do
       {:ok, view, _html} = live(conn, path(conn, site))
 
       refute view
@@ -38,7 +42,7 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       %Site{attribute_definitions: [new_definition]} = Sites.get_site!(user, site.id)
 
       assert view
-             |> has_element?(".attribute-definition:nth-child(1)")
+             |> has_element?("#site_attribute_definitions_0_name[value=Price]")
 
       view
       |> render_change(:save, %{
@@ -46,12 +50,15 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
           "attribute_definitions" => %{
             "0" => %{
               "id" => "#{new_definition.id}",
-              "name" => "Price",
-              "type" => "dollar"
+              "name" => "Mattress Size",
+              "type" => "text"
             }
           }
         }
       })
+
+      assert view
+             |> has_element?("#site_attribute_definitions_0_name[value='Mattress Size']")
     end
 
     test "can create new item", %{conn: conn, user: user, site: site} do
