@@ -5,7 +5,7 @@ defmodule Affable.SitesTest do
 
   alias Affable.Accounts.User
   alias Affable.Sites
-  alias Affable.Sites.{Site, SiteMember, Item}
+  alias Affable.Sites.{Site, SiteMember, Item, Attribute, AttributeDefinition}
   alias Affable.Domains.Domain
 
   describe "sites" do
@@ -25,7 +25,7 @@ defmodule Affable.SitesTest do
 
     defp user_and_site_with_items() do
       %User{sites: [site]} = user = user_fixture()
-      {user, site |> Repo.preload(:items)}
+      {user, site |> Repo.preload(items: :attributes)}
     end
 
     test "status of new site is pending" do
@@ -133,11 +133,22 @@ defmodule Affable.SitesTest do
     end
 
     test "site members can manage attribute definitions" do
-      %User{sites: [site]} = user = user_fixture()
+      {user, site} = user_and_site_with_items()
       wrong_user = user_fixture()
 
-      {:ok, definition} = Sites.add_attribute_definition(user, site)
+      {:ok, %AttributeDefinition{id: definition_id} = definition} =
+        Sites.add_attribute_definition(user, site)
+
       {:error, _} = Sites.add_attribute_definition(wrong_user, site)
+
+      [first_item | _] = Sites.get_site!(user, site.id).items
+
+      assert [
+               %Attribute{
+                 definition_id: ^definition_id,
+                 value: ""
+               }
+             ] = first_item.attributes
 
       {:error, _} = Sites.delete_attribute_definition(wrong_user, definition.id)
       assert Sites.get_site!(user, site.id).attribute_definitions == [definition]

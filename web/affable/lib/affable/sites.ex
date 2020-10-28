@@ -108,7 +108,7 @@ defmodule Affable.Sites do
   end
 
   defp items_query do
-    from i in Item, order_by: i.position
+    from i in Item, order_by: i.position, preload: :attributes
   end
 
   defp definitions_query do
@@ -146,7 +146,7 @@ defmodule Affable.Sites do
          )
          |> Repo.transaction() do
       {:ok, %{site_with_internal_name: site}} ->
-        {:ok, site |> Repo.preload([:domains, :items])}
+        {:ok, site |> Repo.preload([:domains, [items: :attributes]])}
 
       {:error, :site, site, %{} = _domain} ->
         {:error, site}
@@ -317,10 +317,26 @@ defmodule Affable.Sites do
 
   def add_attribute_definition(user, site) do
     if site |> has_user?(user) do
-      site
-      |> Ecto.build_assoc(:attribute_definitions)
-      |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
-      |> Repo.insert()
+      multi =
+        Multi.new()
+        |> Multi.insert(
+          :definition,
+          site
+          |> Ecto.build_assoc(:attribute_definitions)
+          |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
+        )
+
+      {:ok, %{definition: definition}} =
+        site.items
+        |> Enum.reduce(multi, fn item, multi ->
+          multi
+          |> Multi.insert("item#{item.id}", fn %{definition: definition} ->
+            Ecto.build_assoc(item, :attributes, %{definition_id: definition.id, value: ""})
+          end)
+        end)
+        |> Repo.transaction()
+
+      {:ok, definition}
     else
       {:error, :unauthorized}
     end
@@ -400,7 +416,7 @@ defmodule Affable.Sites do
           create_item(site, %{name: "New item", position: 1})
         end)
 
-      {:ok, item}
+      {:ok, item |> Repo.preload(:attributes)}
     else
       {:error, :unauthorized}
     end

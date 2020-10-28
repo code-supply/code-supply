@@ -2,6 +2,8 @@ defmodule Affable.Sites.Item do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Affable.Sites.Attribute
+
   schema "items" do
     field :description, :string
     field :image_url, :string
@@ -10,6 +12,7 @@ defmodule Affable.Sites.Item do
     field :price, :decimal
     field :url, :string
     field :site_id, :id
+    has_many :attributes, Attribute
 
     timestamps()
   end
