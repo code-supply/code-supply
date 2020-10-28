@@ -311,11 +311,29 @@ defmodule Affable.Sites do
 
   alias Affable.Sites.AttributeDefinition
 
-  def append_attribute_definition(site) do
+  def add_attribute_definition(site) do
     site
     |> Ecto.build_assoc(:attribute_definitions)
     |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
     |> Repo.insert()
+  end
+
+  def delete_attribute_definition(%User{} = user, definition_id) do
+    case from(ad in AttributeDefinition,
+           where: ad.id == ^definition_id,
+           join: s in Site,
+           on: s.id == ad.site_id,
+           join: sm in SiteMember,
+           on: sm.site_id == s.id,
+           where: sm.user_id == ^user.id
+         )
+         |> Repo.delete_all() do
+      {0, _} ->
+        {:error, "Couldn't delete"}
+
+      _ ->
+        {:ok, ""}
+    end
   end
 
   alias Affable.Sites.Item

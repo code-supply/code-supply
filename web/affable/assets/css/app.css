@@ -85,6 +85,10 @@ tbody tr:hover {
     background-image: url("/images/check-circle.svg");
 }
 
+.trash {
+    background-image: url("/images/trash.svg");
+}
+
 .position {
     @apply clear-left w-full pb-12;
 }
@@ -103,7 +107,6 @@ tbody tr:hover {
 }
 
 .position a.trash {
-    background-image: url("/images/trash.svg");
     @apply mr-24;
 }
 

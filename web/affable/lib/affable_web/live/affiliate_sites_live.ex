@@ -25,12 +25,21 @@ defmodule AffableWeb.AffiliateSitesLive do
         %{},
         %{assigns: %{changeset: %{data: site}}} = socket
       ) do
-    {:ok, new_definition} = Sites.append_attribute_definition(site)
+    {:ok, new_definition} = Sites.add_attribute_definition(site)
 
     complete_update(socket, %{
       site
       | attribute_definitions: [new_definition | site.attribute_definitions]
     })
+  end
+
+  def handle_event(
+        "delete-attribute-definition",
+        %{"id" => definition_id},
+        %{assigns: %{site_id: id, user: user}} = socket
+      ) do
+    {:ok, _} = Sites.delete_attribute_definition(user, definition_id)
+    complete_update(socket, Sites.get_site!(user, id))
   end
 
   def handle_event("new-item", %{}, %{assigns: %{changeset: %{data: site}}} = socket) do

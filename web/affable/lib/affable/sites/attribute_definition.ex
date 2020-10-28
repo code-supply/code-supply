@@ -2,10 +2,12 @@ defmodule Affable.Sites.AttributeDefinition do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Affable.Sites.Site
+
   schema "attribute_definitions" do
     field :name, :string
     field :type, :string
-    field :site_id, :id
+    belongs_to :site, Site
 
     timestamps()
   end

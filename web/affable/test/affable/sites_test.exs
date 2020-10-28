@@ -126,6 +126,19 @@ defmodule Affable.SitesTest do
       assert {:error, %Ecto.Changeset{}} = Sites.create_site(user_fixture(), @invalid_attrs)
     end
 
+    test "can only delete an attribute definition if it's mine" do
+      user = user_fixture()
+      site = site_fixture(user)
+
+      {:ok, definition} = Sites.add_attribute_definition(site)
+
+      {:error, _} = Sites.delete_attribute_definition(user_fixture(), definition.id)
+      assert Sites.get_site!(user, site.id).attribute_definitions == [definition]
+
+      {:ok, _} = Sites.delete_attribute_definition(user, definition.id)
+      assert Sites.get_site!(user, site.id).attribute_definitions == []
+    end
+
     test "can delete an item" do
       user = user_fixture()
       site_before = site_fixture(user)

@@ -23,7 +23,7 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       %{conn: conn, user: user, site: site_fixture(user)}
     end
 
-    test "can create / update an attribute definition", %{
+    test "can create / update / delete an attribute definition", %{
       conn: conn,
       user: user,
       site: site
@@ -59,6 +59,13 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
 
       assert view
              |> has_element?("#site_attribute_definitions_0_name[value='Mattress Size']")
+
+      view
+      |> element("#delete-attribute-definition-#{new_definition.id}")
+      |> render_click()
+
+      refute view
+             |> has_element?("#site_attribute_definitions_0_name")
     end
 
     test "can create new item", %{conn: conn, user: user, site: site} do
@@ -179,10 +186,10 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
 
       view
-      |> element("#delete-#{first_item.id}")
+      |> element("#delete-item-#{first_item.id}")
       |> render_click()
 
-      refute view |> has_element?("#delete-#{first_item.id}")
+      refute view |> has_element?("#delete-item-#{first_item.id}")
     end
 
     test "can reorder an item", %{conn: conn, site: site} do
