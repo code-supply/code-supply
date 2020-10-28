@@ -100,7 +100,6 @@ defmodule Affable.SitesTest do
                :image_url,
                :name,
                :position,
-               :price,
                :url
              ]
     end
@@ -302,7 +301,6 @@ defmodule Affable.SitesTest do
       image_url: "some image_url",
       name: "some name",
       position: 42,
-      price: Decimal.new("120.5"),
       url: "some url"
     }
     @update_attrs %{
@@ -310,7 +308,6 @@ defmodule Affable.SitesTest do
       image_url: "some updated image_url",
       name: "some updated name",
       position: 43,
-      price: Decimal.new("456.7"),
       url: "some updated url"
     }
     @invalid_attrs %{
@@ -349,7 +346,6 @@ defmodule Affable.SitesTest do
       assert item.image_url == "some image_url"
       assert item.name == "some name"
       assert item.position == 42
-      assert item.price == Decimal.new("120.5")
       assert item.url == "some url"
     end
 
@@ -376,7 +372,6 @@ defmodule Affable.SitesTest do
       assert item.image_url == "some updated image_url"
       assert item.name == "some updated name"
       assert item.position == 43
-      assert item.price == Decimal.new("456.7")
       assert item.url == "some updated url"
     end
 

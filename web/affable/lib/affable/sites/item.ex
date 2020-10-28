@@ -9,7 +9,6 @@ defmodule Affable.Sites.Item do
     field :image_url, :string
     field :name, :string
     field :position, :integer
-    field :price, :decimal
     field :url, :string
     field :site_id, :id
     has_many :attributes, Attribute
@@ -20,7 +19,7 @@ defmodule Affable.Sites.Item do
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:name, :description, :url, :image_url, :price, :position])
+    |> cast(attrs, [:name, :description, :url, :image_url, :position])
     |> cast_assoc(:attributes, with: &Attribute.changeset/2)
     |> validate_required([:name, :position])
   end
