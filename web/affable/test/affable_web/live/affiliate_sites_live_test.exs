@@ -5,7 +5,7 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
   import Hammox
 
   alias Affable.{Accounts, Sites}
-  alias Affable.Sites.Site
+  alias Affable.Sites.{Site, Item, Attribute}
 
   setup :verify_on_exit!
 
@@ -39,7 +39,10 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       |> element("#new-attribute-definition")
       |> render_click()
 
-      %Site{attribute_definitions: [new_definition]} = Sites.get_site!(user, site.id)
+      %Site{
+        attribute_definitions: [new_definition],
+        items: [%Item{attributes: [%Attribute{id: first_attribute_id}]} | _] = items
+      } = Sites.get_site!(user, site.id)
 
       assert view
              |> has_element?("#site_attribute_definitions_0_name[value=Price]")
@@ -59,6 +62,16 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
 
       assert view
              |> has_element?("#site_attribute_definitions_0_name[value='Mattress Size']")
+
+      view
+      |> render_first_item_change(items, %{
+        "attributes" => %{
+          "0" => %{"id" => "#{first_attribute_id}", "value" => "King"}
+        }
+      })
+
+      assert view
+             |> has_element?("#site_items_0_attributes_0_value[value=King]")
 
       view
       |> element("#delete-attribute-definition-#{new_definition.id}")

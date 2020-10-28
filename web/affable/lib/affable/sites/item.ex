@@ -21,6 +21,7 @@ defmodule Affable.Sites.Item do
   def changeset(item, attrs) do
     item
     |> cast(attrs, [:name, :description, :url, :image_url, :price, :position])
+    |> cast_assoc(:attributes, with: &Attribute.changeset/2)
     |> validate_required([:name, :position])
   end
 end

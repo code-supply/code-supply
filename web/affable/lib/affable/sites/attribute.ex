@@ -16,6 +16,5 @@ defmodule Affable.Sites.Attribute do
   def changeset(attribute, attrs) do
     attribute
     |> cast(attrs, [:value])
-    |> validate_required([:value])
   end
 end

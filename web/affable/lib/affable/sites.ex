@@ -108,7 +108,7 @@ defmodule Affable.Sites do
   end
 
   defp items_query do
-    from i in Item, order_by: i.position, preload: :attributes
+    from i in Item, order_by: i.position, preload: [attributes: :definition]
   end
 
   defp definitions_query do
@@ -246,9 +246,15 @@ defmodule Affable.Sites do
   end
 
   def update_site(%Site{} = site, attrs) do
-    site
-    |> Site.changeset(attrs)
-    |> Repo.update()
+    case site
+         |> Site.changeset(attrs)
+         |> Repo.update() do
+      {:ok, site} ->
+        {:ok, site |> Repo.preload([items: items_query()], force: true)}
+
+      otherwise ->
+        otherwise
+    end
   end
 
   def delete_site(%Site{} = site) do
@@ -326,17 +332,17 @@ defmodule Affable.Sites do
           |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
         )
 
-      {:ok, %{definition: definition}} =
+      {:ok, _} =
         site.items
         |> Enum.reduce(multi, fn item, multi ->
           multi
           |> Multi.insert("item#{item.id}", fn %{definition: definition} ->
-            Ecto.build_assoc(item, :attributes, %{definition_id: definition.id, value: ""})
+            Ecto.build_assoc(item, :attributes, %{definition_id: definition.id})
           end)
         end)
         |> Repo.transaction()
 
-      {:ok, definition}
+      {:ok, get_site!(site.id)}
     else
       {:error, :unauthorized}
     end

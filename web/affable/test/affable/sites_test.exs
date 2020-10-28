@@ -11,7 +11,6 @@ defmodule Affable.SitesTest do
   describe "sites" do
     alias Affable.Sites.Site
 
-    @update_attrs %{name: "some updated name"}
     @invalid_attrs %{name: nil}
 
     setup do
@@ -136,7 +135,7 @@ defmodule Affable.SitesTest do
       {user, site} = user_and_site_with_items()
       wrong_user = user_fixture()
 
-      {:ok, %AttributeDefinition{id: definition_id} = definition} =
+      {:ok, %Site{attribute_definitions: [%AttributeDefinition{id: definition_id} = definition]}} =
         Sites.add_attribute_definition(user, site)
 
       {:error, _} = Sites.add_attribute_definition(wrong_user, site)
@@ -146,7 +145,7 @@ defmodule Affable.SitesTest do
       assert [
                %Attribute{
                  definition_id: ^definition_id,
-                 value: ""
+                 value: nil
                }
              ] = first_item.attributes
 
@@ -250,9 +249,29 @@ defmodule Affable.SitesTest do
     end
 
     test "update_site/2 with valid data updates the site" do
-      site = site_fixture()
-      assert {:ok, %Site{} = site} = Sites.update_site(site, @update_attrs)
+      {user, site} = user_and_site_with_items()
+      {:ok, site} = Sites.add_attribute_definition(user, site)
+      [definition] = site.attribute_definitions
+
+      assert {:ok, %Site{} = site} =
+               Sites.update_site(site, %{
+                 name: "some updated name",
+                 attribute_definitions: %{
+                   "0" => %{
+                     "id" => "#{definition.id}",
+                     "name" => "some updated attribute name"
+                   }
+                 }
+               })
+
       assert site.name == "some updated name"
+
+      [definition] = site.attribute_definitions
+      assert definition.name == "some updated attribute name"
+
+      [item | _] = site.items
+      [attribute | _] = item.attributes
+      assert attribute.definition.name == "some updated attribute name"
     end
 
     test "update_site/2 with invalid data returns error changeset" do
