@@ -386,20 +386,24 @@ defmodule Affable.Sites do
     |> Repo.insert()
   end
 
-  def prepend_item(site) do
-    {:ok, {:ok, item}} =
-      Repo.transaction(fn ->
-        for item <- site.items |> Enum.reverse() do
-          update_item(
-            item,
-            %{position: item.position + 1}
-          )
-        end
+  def prepend_item(user, site) do
+    if site |> has_user?(user) do
+      {:ok, {:ok, item}} =
+        Repo.transaction(fn ->
+          for item <- site.items |> Enum.reverse() do
+            update_item(
+              item,
+              %{position: item.position + 1}
+            )
+          end
 
-        create_item(site, %{name: "New item", position: 1})
-      end)
+          create_item(site, %{name: "New item", position: 1})
+        end)
 
-    {:ok, item}
+      {:ok, item}
+    else
+      {:error, :unauthorized}
+    end
   end
 
   @doc """

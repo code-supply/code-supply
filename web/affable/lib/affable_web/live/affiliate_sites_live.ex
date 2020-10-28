@@ -42,8 +42,8 @@ defmodule AffableWeb.AffiliateSitesLive do
     complete_update(socket, Sites.get_site!(user, id))
   end
 
-  def handle_event("new-item", %{}, %{assigns: %{changeset: %{data: site}}} = socket) do
-    {:ok, new_item} = Sites.prepend_item(site)
+  def handle_event("new-item", %{}, %{assigns: %{user: user, changeset: %{data: site}}} = socket) do
+    {:ok, new_item} = Sites.prepend_item(user, site)
 
     repositioned =
       site.items
