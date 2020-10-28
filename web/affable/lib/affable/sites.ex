@@ -259,60 +259,64 @@ defmodule Affable.Sites do
     Site.changeset(site, attrs)
   end
 
-  def promote_item(site, item_id) do
-    move_item(site, item_id, fn pos -> pos - 1 end)
+  def promote_item(user, site, item_id) do
+    move_item(user, site, item_id, fn pos -> pos - 1 end)
   end
 
-  def demote_item(site, item_id) do
-    move_item(site, item_id, fn pos -> pos + 1 end)
+  def demote_item(user, site, item_id) do
+    move_item(user, site, item_id, fn pos -> pos + 1 end)
   end
 
-  defp move_item(site, item_id, f) do
-    {item_id, ""} = Integer.parse(item_id)
+  defp move_item(user, site, item_id, f) do
+    if site |> has_user?(user) do
+      {item_id, ""} = Integer.parse(item_id)
 
-    demotee =
-      site.items
-      |> Enum.find(fn item -> item.id == item_id end)
+      demotee =
+        site.items
+        |> Enum.find(fn item -> item.id == item_id end)
 
-    promotee =
-      site.items
-      |> Enum.find(fn item -> item.position == f.(demotee.position) end)
+      promotee =
+        site.items
+        |> Enum.find(fn item -> item.position == f.(demotee.position) end)
 
-    case promotee do
-      nil ->
-        {:ok, site}
+      case promotee do
+        nil ->
+          {:ok, site}
 
-      _ ->
-        Multi.new()
-        |> Multi.update(
-          :move,
-          Item.changeset(demotee, %{position: -demotee.position})
-        )
-        |> Multi.update(
-          :promote,
-          Item.changeset(promotee, %{position: promotee.position - f.(0)})
-        )
-        |> Multi.update(
-          :demote,
-          Item.changeset(demotee, %{position: promotee.position})
-        )
-        |> Repo.transaction()
+        _ ->
+          Multi.new()
+          |> Multi.update(
+            :move,
+            Item.changeset(demotee, %{position: -demotee.position})
+          )
+          |> Multi.update(
+            :promote,
+            Item.changeset(promotee, %{position: promotee.position - f.(0)})
+          )
+          |> Multi.update(
+            :demote,
+            Item.changeset(demotee, %{position: promotee.position})
+          )
+          |> Repo.transaction()
 
-        {
-          :ok,
-          Repo.get!(Site, site.id)
-          |> Repo.preload(:domains)
-          |> Repo.preload(:members)
-          |> Repo.preload(attribute_definitions: definitions_query())
-          |> Repo.preload(items: items_query())
-        }
+          {
+            :ok,
+            Repo.get!(Site, site.id)
+            |> Repo.preload(:domains)
+            |> Repo.preload(:members)
+            |> Repo.preload(attribute_definitions: definitions_query())
+            |> Repo.preload(items: items_query())
+          }
+      end
+    else
+      {:error, :unauthorized}
     end
   end
 
   alias Affable.Sites.AttributeDefinition
 
   def add_attribute_definition(user, site) do
-    if Repo.exists?(from SiteMember, where: [user_id: ^user.id, site_id: ^site.id]) do
+    if site |> has_user?(user) do
       site
       |> Ecto.build_assoc(:attribute_definitions)
       |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
@@ -320,6 +324,10 @@ defmodule Affable.Sites do
     else
       {:error, :unauthorized}
     end
+  end
+
+  defp has_user?(site, user) do
+    Repo.exists?(from SiteMember, where: [user_id: ^user.id, site_id: ^site.id])
   end
 
   def delete_attribute_definition(%User{} = user, definition_id) do

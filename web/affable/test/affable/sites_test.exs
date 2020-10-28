@@ -23,6 +23,11 @@ defmodule Affable.SitesTest do
       )
     end
 
+    defp user_and_site_with_items() do
+      %User{sites: [site]} = user = user_fixture()
+      {user, site |> Repo.preload(:items)}
+    end
+
     test "status of new site is pending" do
       assert %Site{}
              |> Sites.status() == :pending
@@ -163,14 +168,15 @@ defmodule Affable.SitesTest do
     end
 
     test "can demote an item" do
-      site = site_fixture()
+      {user, site} = user_and_site_with_items()
+
       [first_before | rest] = site.items
       [second_before | _] = rest
 
       assert first_before.position == 1
       assert second_before.position == 2
 
-      {:ok, site} = Sites.demote_item(site, "#{first_before.id}")
+      {:ok, site} = Sites.demote_item(user, site, "#{first_before.id}")
 
       [first_after | rest] = site.items
       [second_after | _] = rest
@@ -183,12 +189,13 @@ defmodule Affable.SitesTest do
     end
 
     test "demoting at the last position doesn't increase position number" do
-      site = site_fixture()
+      {user, site} = user_and_site_with_items()
+
       item = site.items |> List.last()
 
       assert item.position == 10
 
-      {:ok, site} = Sites.demote_item(site, "#{item.id}")
+      {:ok, site} = Sites.demote_item(user, site, "#{item.id}")
 
       item_after = site.items |> List.last()
 
@@ -196,14 +203,16 @@ defmodule Affable.SitesTest do
     end
 
     test "can promote an item" do
-      site = site_fixture()
+      {user, site} = user_and_site_with_items()
+
       [first_before | rest] = site.items
       [second_before | _] = rest
 
       assert first_before.position == 1
       assert second_before.position == 2
 
-      {:ok, site} = Sites.promote_item(site, "#{second_before.id}")
+      {:ok, site} = Sites.promote_item(user, site, "#{second_before.id}")
+      {:error, _} = Sites.promote_item(user_fixture(), site, "#{second_before.id}")
 
       [first_after | rest] = site.items
       [second_after | _] = rest
@@ -216,12 +225,13 @@ defmodule Affable.SitesTest do
     end
 
     test "promoting at the first position doesn't decrease position number" do
-      site = site_fixture()
+      {user, site} = user_and_site_with_items()
+
       [item | _] = site.items
 
       assert item.position == 1
 
-      {:ok, site} = Sites.promote_item(site, "#{item.id}")
+      {:ok, site} = Sites.promote_item(user, site, "#{item.id}")
 
       [item_after | _] = site.items
 
