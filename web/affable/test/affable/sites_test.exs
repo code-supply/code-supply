@@ -3,6 +3,7 @@ defmodule Affable.SitesTest do
 
   import Affable.{AccountsFixtures, SitesFixtures}
 
+  alias Affable.Accounts.User
   alias Affable.Sites
   alias Affable.Sites.{Site, SiteMember, Item}
   alias Affable.Domains.Domain
@@ -126,13 +127,14 @@ defmodule Affable.SitesTest do
       assert {:error, %Ecto.Changeset{}} = Sites.create_site(user_fixture(), @invalid_attrs)
     end
 
-    test "can only delete an attribute definition if it's mine" do
-      user = user_fixture()
-      site = site_fixture(user)
+    test "site members can manage attribute definitions" do
+      %User{sites: [site]} = user = user_fixture()
+      wrong_user = user_fixture()
 
-      {:ok, definition} = Sites.add_attribute_definition(site)
+      {:ok, definition} = Sites.add_attribute_definition(user, site)
+      {:error, _} = Sites.add_attribute_definition(wrong_user, site)
 
-      {:error, _} = Sites.delete_attribute_definition(user_fixture(), definition.id)
+      {:error, _} = Sites.delete_attribute_definition(wrong_user, definition.id)
       assert Sites.get_site!(user, site.id).attribute_definitions == [definition]
 
       {:ok, _} = Sites.delete_attribute_definition(user, definition.id)

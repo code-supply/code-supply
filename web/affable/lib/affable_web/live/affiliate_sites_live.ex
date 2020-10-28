@@ -23,9 +23,9 @@ defmodule AffableWeb.AffiliateSitesLive do
   def handle_event(
         "new-attribute-definition",
         %{},
-        %{assigns: %{changeset: %{data: site}}} = socket
+        %{assigns: %{changeset: %{data: site}, user: user}} = socket
       ) do
-    {:ok, new_definition} = Sites.add_attribute_definition(site)
+    {:ok, new_definition} = Sites.add_attribute_definition(user, site)
 
     complete_update(socket, %{
       site

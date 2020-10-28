@@ -311,11 +311,15 @@ defmodule Affable.Sites do
 
   alias Affable.Sites.AttributeDefinition
 
-  def add_attribute_definition(site) do
-    site
-    |> Ecto.build_assoc(:attribute_definitions)
-    |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
-    |> Repo.insert()
+  def add_attribute_definition(user, site) do
+    if Repo.exists?(from SiteMember, where: [user_id: ^user.id, site_id: ^site.id]) do
+      site
+      |> Ecto.build_assoc(:attribute_definitions)
+      |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
+      |> Repo.insert()
+    else
+      {:error, :unauthorized}
+    end
   end
 
   def delete_attribute_definition(%User{} = user, definition_id) do
