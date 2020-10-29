@@ -107,7 +107,8 @@ defmodule Affable.Sites do
   end
 
   defp items_query do
-    from i in Item, order_by: i.position, preload: [attributes: :definition]
+    attributes_q = from(a in Attribute, order_by: [desc: a.definition_id])
+    from(i in Item, order_by: i.position, preload: ^[attributes: {attributes_q, [:definition]}])
   end
 
   defp definitions_query do
