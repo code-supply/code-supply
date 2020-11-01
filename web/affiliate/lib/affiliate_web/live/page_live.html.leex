@@ -44,9 +44,11 @@
                 <p class="col-span-3 px-8">
                 <%= item.description %>
                 </p>
-                <p class="col-span-2 px-8 py-4 text-xl text-center
-                           font-extrabold
-                           "><%= format_price item.price %></p>
+                <%= for attribute <- item.attributes do %>
+                  <p class="col-span-2 px-8 py-4 text-xl text-center
+                            font-extrabold
+                            "><%= attribute.value %></p>
+                <% end %>
                 <p class="col-span-2 px-2">
                 <a class="block ml-4 min-w-full py-4 rounded-full
                                text-center text-lg

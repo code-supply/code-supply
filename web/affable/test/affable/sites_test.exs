@@ -102,18 +102,99 @@ defmodule Affable.SitesTest do
       assert item.name == "Golden Delicious"
 
       assert Map.keys(item) == [
+               :attributes,
                :description,
                :image_url,
                :name,
                :position,
                :url
              ]
+
+      assert item.attributes == [%{name: "Price", value: "$1.23"}]
     end
 
     test "returns error when untyped representation isn't available", %{
       get_raw_site_1: get_raw_site
     } do
       {:error, :not_found} = get_raw_site.(8_675_309)
+    end
+
+    test "raw representation formats item attributes" do
+      %{items: [%{attributes: attributes}]} =
+        Sites.Raw.raw(%Site{
+          name: "Top 10 Apples",
+          internal_name: "asdf",
+          items: [
+            %Item{
+              position: 1,
+              name: "Cox",
+              description: "The best apple",
+              image_url: "",
+              url: "",
+              attributes: [
+                %Attribute{
+                  definition: %AttributeDefinition{
+                    name: "Price",
+                    type: "dollar"
+                  },
+                  value: "1.23"
+                },
+                %Attribute{
+                  definition: %AttributeDefinition{
+                    name: "Price in pounds",
+                    type: "pound"
+                  },
+                  value: "3.46"
+                },
+                %Attribute{
+                  definition: %AttributeDefinition{
+                    name: "Price in pounds but nil",
+                    type: "pound"
+                  },
+                  value: nil
+                },
+                %Attribute{
+                  definition: %AttributeDefinition{
+                    name: "Price in euro",
+                    type: "euro"
+                  },
+                  value: "6.46"
+                },
+                %Attribute{
+                  definition: %AttributeDefinition{
+                    name: "Price in euro but blank",
+                    type: "euro"
+                  },
+                  value: ""
+                },
+                %Attribute{
+                  definition: %AttributeDefinition{
+                    name: "Number",
+                    type: "number"
+                  },
+                  value: "123"
+                },
+                %Attribute{
+                  definition: %AttributeDefinition{
+                    name: "Text",
+                    type: "text"
+                  },
+                  value: "Hi there"
+                }
+              ]
+            }
+          ]
+        })
+
+      assert attributes == [
+               %{name: "Price", value: "$1.23"},
+               %{name: "Price in pounds", value: "£3.46"},
+               %{name: "Price in pounds but nil", value: ""},
+               %{name: "Price in euro", value: "€6.46"},
+               %{name: "Price in euro but blank", value: ""},
+               %{name: "Number", value: "123"},
+               %{name: "Text", value: "Hi there"}
+             ]
     end
 
     test "new sites have a name, internal name, member, default domain and items" do
@@ -168,7 +249,7 @@ defmodule Affable.SitesTest do
       assert [
                %Attribute{
                  definition_id: ^definition_id,
-                 value: nil
+                 value: _
                }
                | _
              ] = first_item.attributes

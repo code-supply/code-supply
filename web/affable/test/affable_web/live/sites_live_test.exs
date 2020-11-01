@@ -30,7 +30,7 @@ defmodule AffableWeb.SitesLiveTest do
       assert view |> has_element?(".pending")
 
       Phoenix.PubSub.broadcast(:affable, site.internal_name, %{
-        Sites.raw(site |> Affable.Repo.preload(:items))
+        Sites.Raw.raw(site |> Affable.Repo.preload(items: [attributes: :definition]))
         | made_available_at: DateTime.utc_now()
       })
 

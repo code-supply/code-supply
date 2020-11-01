@@ -4,7 +4,7 @@ defmodule Affable.Sites do
   import Ecto.Query, warn: false
   alias Affable.Repo
   alias Affable.Accounts.User
-  alias Affable.Sites.{Site, SiteMember, Item, AttributeDefinition, Attribute}
+  alias Affable.Sites.{Site, SiteMember, Item, AttributeDefinition, Attribute, Raw}
   alias Affable.Domains.Domain
 
   alias Ecto.Multi
@@ -47,34 +47,11 @@ defmodule Affable.Sites do
     |> Repo.one!()
   end
 
-  def raw(%Site{} = site) do
-    %{
-      id: site.id,
-      name: site.name,
-      site_logo_url: site.site_logo_url,
-      page_subtitle: site.page_subtitle,
-      header_image_url: site.header_image_url,
-      text: site.text,
-      made_available_at: site.made_available_at,
-      items:
-        site.items
-        |> Enum.map(fn i ->
-          %{
-            description: i.description,
-            image_url: i.image_url,
-            name: i.name,
-            position: i.position,
-            url: i.url
-          }
-        end)
-    }
-  end
-
   @impl true
   def get_raw_site(id) do
     case get_site_query(id) |> Repo.one() do
       %Site{} = site ->
-        {:ok, raw(site)}
+        {:ok, Raw.raw(site)}
 
       nil ->
         {:error, :not_found}
@@ -332,7 +309,7 @@ defmodule Affable.Sites do
     |> Enum.reduce(multi, fn item, multi ->
       multi
       |> Multi.insert("item#{item.id}", fn %{definition: definition} ->
-        Ecto.build_assoc(item, :attributes, %{definition_id: definition.id})
+        Ecto.build_assoc(item, :attributes, %{definition_id: definition.id, value: "1.23"})
       end)
     end)
   end

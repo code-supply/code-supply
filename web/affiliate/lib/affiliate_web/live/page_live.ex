@@ -17,12 +17,4 @@ defmodule AffiliateWeb.PageLive do
   def handle_info(site, socket) do
     {:noreply, assign(socket, site: site, page_title: site.name)}
   end
-
-  def format_price(nil) do
-    ""
-  end
-
-  def format_price(price) do
-    "$" <> (price |> Decimal.to_string())
-  end
 end
