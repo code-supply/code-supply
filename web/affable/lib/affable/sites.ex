@@ -124,26 +124,33 @@ defmodule Affable.Sites do
     end
   end
 
+  def create_site_multi(user, attrs) do
+    Multi.new()
+    |> Multi.insert(
+      :site,
+      %Site{}
+      |> Site.changeset(attrs)
+      |> Site.change_internal_name("pending")
+      |> Ecto.Changeset.put_assoc(:members, [Ecto.build_assoc(user, :site_members)])
+      |> Ecto.Changeset.put_assoc(:items, default_items())
+    )
+    |> Multi.update(:site_with_internal_name, fn %{site: site} ->
+      site
+      |> Site.change_internal_name(Affable.ID.site_name_from_id(site.id))
+    end)
+    |> Multi.insert(
+      :domain,
+      fn %{site_with_internal_name: site} ->
+        Ecto.build_assoc(site, :domains, %{name: "#{site.internal_name}.affable.app"})
+      end
+    )
+    |> Multi.merge(fn %{site: site} ->
+      add_attribute_definition_multi(site)
+    end)
+  end
+
   def create_site(%User{} = user, attrs \\ %{}) do
-    case Multi.new()
-         |> Multi.insert(
-           :site,
-           %Site{attribute_definitions: []}
-           |> Site.changeset(attrs)
-           |> Site.change_internal_name("pending")
-           |> Ecto.Changeset.put_assoc(:members, [Ecto.build_assoc(user, :site_members)])
-           |> Ecto.Changeset.put_assoc(:items, default_items())
-         )
-         |> Multi.update(:site_with_internal_name, fn %{site: site} ->
-           site
-           |> Site.change_internal_name(Affable.ID.site_name_from_id(site.id))
-         end)
-         |> Multi.insert(
-           :domain,
-           fn %{site_with_internal_name: site} ->
-             Ecto.build_assoc(site, :domains, %{name: "#{site.internal_name}.affable.app"})
-           end
-         )
+    case create_site_multi(user, attrs)
          |> Repo.transaction() do
       {:ok, %{site_with_internal_name: site}} ->
         {:ok, site |> Repo.preload([:domains, [items: :attributes]])}
@@ -311,25 +318,29 @@ defmodule Affable.Sites do
 
   alias Affable.Sites.AttributeDefinition
 
+  defp add_attribute_definition_multi(site) do
+    multi =
+      Multi.new()
+      |> Multi.insert(
+        :definition,
+        site
+        |> Ecto.build_assoc(:attribute_definitions)
+        |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
+      )
+
+    site.items
+    |> Enum.reduce(multi, fn item, multi ->
+      multi
+      |> Multi.insert("item#{item.id}", fn %{definition: definition} ->
+        Ecto.build_assoc(item, :attributes, %{definition_id: definition.id})
+      end)
+    end)
+  end
+
   def add_attribute_definition(user, site) do
     if site |> has_user?(user) do
-      multi =
-        Multi.new()
-        |> Multi.insert(
-          :definition,
-          site
-          |> Ecto.build_assoc(:attribute_definitions)
-          |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
-        )
-
       {:ok, _} =
-        site.items
-        |> Enum.reduce(multi, fn item, multi ->
-          multi
-          |> Multi.insert("item#{item.id}", fn %{definition: definition} ->
-            Ecto.build_assoc(item, :attributes, %{definition_id: definition.id})
-          end)
-        end)
+        add_attribute_definition_multi(site)
         |> Repo.transaction()
 
       {:ok, get_site!(site.id)}

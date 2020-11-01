@@ -24,7 +24,13 @@ defmodule Affable.SitesTest do
 
     defp user_and_site_with_items() do
       %User{sites: [site]} = user = user_fixture()
-      {user, site |> Repo.preload(items: :attributes)}
+
+      {
+        user,
+        site
+        |> Repo.preload(items: :attributes)
+        |> Repo.preload(:attribute_definitions)
+      }
     end
 
     test "status of new site is pending" do
@@ -68,7 +74,7 @@ defmodule Affable.SitesTest do
     test "get_site!/2 returns the site with given user id and id" do
       user = user_fixture()
       site = site_fixture(user)
-      assert Sites.get_site!(user, site.id) == site
+      assert Sites.get_site!(user, site.id).id == site.id
     end
 
     test "get_site!/2 fails if user is incorrect" do
@@ -130,11 +136,29 @@ defmodule Affable.SitesTest do
       assert {:error, %Ecto.Changeset{}} = Sites.create_site(user_fixture(), @invalid_attrs)
     end
 
+    test "there is a finite set of attribute types" do
+      definition = %AttributeDefinition{name: "validname"}
+
+      has_valid = fn definition, attr, ty ->
+        AttributeDefinition.changeset(definition, %{attr => ty}).valid?
+      end
+
+      refute definition |> has_valid.(:type, "bad-type")
+      assert definition |> has_valid.(:type, "dollar")
+      assert definition |> has_valid.(:type, "pound")
+      assert definition |> has_valid.(:type, "euro")
+      assert definition |> has_valid.(:type, "number")
+      assert definition |> has_valid.(:type, "text")
+    end
+
     test "site members can manage attribute definitions" do
       {user, site} = user_and_site_with_items()
       wrong_user = user_fixture()
 
-      {:ok, %Site{attribute_definitions: [%AttributeDefinition{id: definition_id} = definition]}} =
+      definitions_before = site.attribute_definitions
+
+      {:ok,
+       %Site{attribute_definitions: [%AttributeDefinition{id: definition_id} = definition | _]}} =
         Sites.add_attribute_definition(user, site)
 
       {:error, _} = Sites.add_attribute_definition(wrong_user, site)
@@ -146,13 +170,16 @@ defmodule Affable.SitesTest do
                  definition_id: ^definition_id,
                  value: nil
                }
+               | _
              ] = first_item.attributes
 
       {:error, _} = Sites.delete_attribute_definition(wrong_user, definition.id)
-      assert Sites.get_site!(user, site.id).attribute_definitions == [definition]
+      assert [definition | _] = Sites.get_site!(user, site.id).attribute_definitions
 
       {:ok, _} = Sites.delete_attribute_definition(user, definition.id)
-      assert Sites.get_site!(user, site.id).attribute_definitions == []
+
+      assert Sites.get_site!(user, site.id).attribute_definitions ==
+               definitions_before
     end
 
     test "can delete an item" do
@@ -248,8 +275,7 @@ defmodule Affable.SitesTest do
     end
 
     test "update_site/2 with valid data updates the site" do
-      {user, site} = user_and_site_with_items()
-      {:ok, site} = Sites.add_attribute_definition(user, site)
+      {_, site} = user_and_site_with_items()
       [definition] = site.attribute_definitions
 
       assert {:ok, %Site{} = site} =
@@ -274,10 +300,7 @@ defmodule Affable.SitesTest do
     end
 
     test "update_site/2 with invalid data returns error changeset" do
-      user = user_fixture()
-      site = site_fixture(user)
-      assert {:error, %Ecto.Changeset{}} = Sites.update_site(site, @invalid_attrs)
-      assert site == Sites.get_site!(user, site.id)
+      assert {:error, %Ecto.Changeset{}} = Sites.update_site(site_fixture(), @invalid_attrs)
     end
 
     test "delete_site/1 deletes the site" do

@@ -4,14 +4,10 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
   import Affable.SitesFixtures
   import Hammox
 
-  alias Affable.{Accounts, Sites}
+  alias Affable.{Repo, Accounts, Sites}
   alias Affable.Sites.{Site, Item, Attribute}
 
   setup :verify_on_exit!
-
-  setup do
-    %{site: site_fixture()}
-  end
 
   defp path(conn, site) do
     Routes.affiliate_sites_path(conn, :edit, site.id)
@@ -20,7 +16,8 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
   describe "authenticated user" do
     setup context do
       %{conn: conn, user: user} = register_and_log_in_user(context)
-      %{conn: conn, user: user, site: site_fixture(user)}
+      [site] = user.sites
+      %{conn: conn, user: user, site: site |> Repo.preload(:items)}
     end
 
     test "can create / update / delete an attribute definition", %{
@@ -30,10 +27,17 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
     } do
       {:ok, view, _html} = live(conn, path(conn, site))
 
-      refute view
-             |> has_element?(".attribute-definition:nth-child(1)")
+      %Site{attribute_definitions: [existing_definition]} =
+        site |> Affable.Repo.preload(:attribute_definitions)
 
       stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+
+      view
+      |> element("#delete-attribute-definition-#{existing_definition.id}")
+      |> render_click()
+
+      refute view
+             |> has_element?(".attribute-definition:nth-child(1)")
 
       view
       |> element("#new-attribute-definition")
@@ -72,13 +76,6 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
 
       assert view
              |> has_element?("#site_items_0_attributes_0_value[value=King]")
-
-      view
-      |> element("#delete-attribute-definition-#{new_definition.id}")
-      |> render_click()
-
-      refute view
-             |> has_element?("#site_attribute_definitions_0_name")
     end
 
     test "can create new item", %{conn: conn, user: user, site: site} do
@@ -89,7 +86,10 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       refute view
              |> has_element?(".item:nth-child(#{num_items + 1})")
 
-      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+      expect(Affable.MockBroadcaster, :broadcast, fn %{items: [item | _]} ->
+        assert item.name == "New item"
+        :ok
+      end)
 
       view
       |> element("#new-item")
@@ -105,19 +105,6 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
              |> has_element?(".item:nth-child(#{num_items + 1})")
     end
 
-    test "creating an item broadcasts the change", %{conn: conn, site: site} do
-      {:ok, view, _html} = live(conn, path(conn, site))
-
-      expect(Affable.MockBroadcaster, :broadcast, fn %{items: [item | _]} ->
-        assert item.name == "New item"
-        :ok
-      end)
-
-      view
-      |> element("#new-item")
-      |> render_click()
-    end
-
     test "can edit an item", %{conn: conn, site: site} do
       conn = get(conn, path(conn, site))
       assert html_response(conn, 200)
@@ -128,30 +115,17 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
 
       assert html =~ first_item.description
 
-      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+      expect(Affable.MockBroadcaster, :broadcast, fn message ->
+        assert [%{description: "My new description!"} | _] = message.items
+        :ok
+      end)
 
       assert render_first_item_change(view, site.items, %{
                "description" => "My new description!"
              }) =~ "My new description!"
     end
 
-    test "editing an item broadcasts the change to the site", %{conn: conn, site: site} do
-      conn = get(conn, path(conn, site))
-
-      {:ok, view, _html} = live(conn, path(conn, site))
-
-      expected_message = Sites.raw(%{site | name: "new name"})
-
-      expect(Affable.MockBroadcaster, :broadcast, fn ^expected_message -> :ok end)
-
-      render_change(view, :save, %{
-        "site" => %{
-          "name" => "new name"
-        }
-      })
-    end
-
-    test "editing an item shows the user that the change was saved", %{conn: conn, site: site} do
+    test "editing shows the user that the change was saved", %{conn: conn, site: site} do
       conn = get(conn, path(conn, site))
 
       {:ok, view, before_save} = live(conn, path(conn, site))
@@ -316,6 +290,10 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
   end
 
   describe "not authenticated" do
+    setup do
+      %{site: site_fixture()}
+    end
+
     test "redirects to login page when not logged in", %{conn: conn, site: site} do
       conn = get(conn, path(conn, site))
       assert html_response(conn, 302)

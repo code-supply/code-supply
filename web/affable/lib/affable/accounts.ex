@@ -82,8 +82,8 @@ defmodule Affable.Accounts do
            %User{}
            |> User.registration_changeset(attrs)
          )
-         |> Multi.run(:site, fn _repo, %{user: user} ->
-           Sites.create_site(user, %{
+         |> Multi.merge(fn %{user: user} ->
+           Sites.create_site_multi(user, %{
              name: "Top 10 Apples",
              site_logo_url:
                "https://fontmeme.com/permalink/201007/1dc0c470f4a553f8c24eb121aff0b7b6.png",

@@ -17,5 +17,6 @@ defmodule Affable.Sites.AttributeDefinition do
     attribute_definition
     |> cast(attrs, [:name, :type])
     |> validate_required([:name, :type])
+    |> validate_inclusion(:type, ["dollar", "pound", "euro", "number", "text"])
   end
 end
