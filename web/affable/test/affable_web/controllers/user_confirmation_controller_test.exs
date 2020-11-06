@@ -4,6 +4,11 @@ defmodule AffableWeb.UserConfirmationControllerTest do
   alias Affable.Accounts
   alias Affable.Repo
   import Affable.AccountsFixtures
+  import Hammox
+
+  alias Affable.MockK8s
+
+  setup :verify_on_exit!
 
   setup do
     %{user: user_fixture()}
@@ -61,6 +66,17 @@ defmodule AffableWeb.UserConfirmationControllerTest do
         extract_user_token(fn url ->
           Accounts.deliver_user_confirmation_instructions(user, url)
         end)
+
+      expect(MockK8s, :deploy, fn %{
+                                    "apiVersion" => "site-operator.code.supply/v1",
+                                    "kind" => "AffiliateSite",
+                                    "metadata" => %{"name" => name},
+                                    "spec" => %{"domains" => [domain_name]}
+                                  } ->
+        assert name =~ ~r/[a-z0-9]+/
+        assert domain_name =~ ~r/.+\.affable\.app/
+        {:ok, ""}
+      end)
 
       conn = get(conn, Routes.user_confirmation_path(conn, :confirm, token))
       assert redirected_to(conn) == "/"

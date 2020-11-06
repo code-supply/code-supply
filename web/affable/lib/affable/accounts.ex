@@ -307,7 +307,7 @@ defmodule Affable.Accounts do
     with {:ok, query} <- UserToken.verify_email_token_query(token, "confirm"),
          %User{} = user <- Repo.one(query),
          {:ok, %{user: user}} <- Repo.transaction(confirm_user_multi(user)) do
-      {:ok, user}
+      {:ok, user |> Repo.preload(sites: :domains)}
     else
       _ -> :error
     end
