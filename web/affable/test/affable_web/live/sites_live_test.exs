@@ -1,27 +1,24 @@
 defmodule AffableWeb.SitesLiveTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
+  import Affable.AccountsFixtures
 
   alias Affable.Accounts
   alias Affable.Accounts.User
   alias Affable.Sites
 
-  describe "authenticated user" do
+  describe "authenticated and confirmed user" do
     setup context do
-      register_and_log_in_user(context)
-    end
+      %{conn: conn, user: user} = register_and_log_in_user(context)
 
-    test "redirects to login page when token is bogus", %{conn: conn, user: user} do
-      Accounts.delete_user(user)
+      token =
+        extract_user_token(fn url ->
+          Accounts.deliver_user_confirmation_instructions(user, url)
+        end)
 
-      conn = get(conn, "/sites")
-      assert html_response(conn, 302)
+      Accounts.confirm_user(token)
 
-      expected_path = Routes.user_session_path(conn, :new)
-
-      {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn))
-
-      assert actual_path == expected_path
+      {:ok, %{conn: conn, user: user}}
     end
 
     test "shows spinner until site is available", %{conn: conn, user: %User{sites: [site]}} do
@@ -36,6 +33,32 @@ defmodule AffableWeb.SitesLiveTest do
 
       refute view |> has_element?(".pending")
       assert view |> has_element?(".available")
+    end
+  end
+
+  describe "authenticated, unconfirmed user" do
+    setup context do
+      register_and_log_in_user(context)
+    end
+
+    test "shows message until email is confirmed", %{conn: conn} do
+      {:ok, view, _html} = live(conn, path(conn))
+
+      refute view |> has_element?(".pending")
+      refute view |> has_element?(".available")
+    end
+
+    test "redirects to login page when token is bogus", %{conn: conn, user: user} do
+      Accounts.delete_user(user)
+
+      conn = get(conn, "/sites")
+      assert html_response(conn, 302)
+
+      expected_path = Routes.user_session_path(conn, :new)
+
+      {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn))
+
+      assert actual_path == expected_path
     end
   end
 

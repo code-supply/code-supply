@@ -45,8 +45,11 @@ defmodule AffableWeb.UserConfirmationController do
         k8s().deploy(K8sFactories.affiliate_site(internal_name, [domain_name]))
 
         conn
-        |> put_flash(:info, "Account confirmed successfully. We're busy building your first site. It should be ready in a few seconds.")
-        |> redirect(to: "/")
+        |> put_flash(
+          :info,
+          "Account confirmed successfully. We're busy building your first site. It should be ready in a few seconds."
+        )
+        |> redirect(to: Routes.sites_path(conn, :index))
 
       :error ->
         conn

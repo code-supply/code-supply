@@ -17,7 +17,7 @@ defmodule AffableWeb.SitesLive do
           end
         end
 
-        {:ok, assign(socket, sites: user.sites)}
+        {:ok, assign(socket, sites: user.sites, user_confirmed_at: user.confirmed_at)}
     end
   end
 
