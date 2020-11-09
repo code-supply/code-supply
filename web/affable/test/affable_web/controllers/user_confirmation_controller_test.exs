@@ -1,5 +1,6 @@
 defmodule AffableWeb.UserConfirmationControllerTest do
   use AffableWeb.ConnCase, async: true
+  use Bamboo.Test
 
   alias Affable.Accounts
   alias Affable.Repo
@@ -23,8 +24,15 @@ defmodule AffableWeb.UserConfirmationControllerTest do
   end
 
   describe "POST /users/confirm" do
-    @tag :capture_log
-    test "sends a new confirmation token", %{conn: conn, user: user} do
+    setup do
+      %{expected_subject: "Confirmation of your Affable account"}
+    end
+
+    test "sends a new confirmation token", %{
+      conn: conn,
+      user: user,
+      expected_subject: expected_subject
+    } do
       conn =
         post(conn, Routes.user_confirmation_path(conn, :create), %{
           "user" => %{"email" => user.email}
@@ -33,9 +41,18 @@ defmodule AffableWeb.UserConfirmationControllerTest do
       assert redirected_to(conn) == "/"
       assert get_flash(conn, :info) =~ "If your e-mail is in our system"
       assert Repo.get_by!(Accounts.UserToken, user_id: user.id).context == "confirm"
+
+      assert_email_delivered_with(
+        to: [nil: user.email],
+        subject: expected_subject
+      )
     end
 
-    test "does not send confirmation token if account is confirmed", %{conn: conn, user: user} do
+    test "does not send confirmation token if account is confirmed", %{
+      conn: conn,
+      user: user,
+      expected_subject: expected_subject
+    } do
       Repo.update!(Accounts.User.confirm_changeset(user))
 
       conn =
@@ -46,6 +63,7 @@ defmodule AffableWeb.UserConfirmationControllerTest do
       assert redirected_to(conn) == "/"
       assert get_flash(conn, :info) =~ "If your e-mail is in our system"
       refute Repo.get_by(Accounts.UserToken, user_id: user.id)
+      refute_email_delivered_with(subject: expected_subject)
     end
 
     test "does not send confirmation token if email is invalid", %{conn: conn} do

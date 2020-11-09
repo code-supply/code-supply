@@ -23,7 +23,6 @@ defmodule AffableWeb.UserResetPasswordControllerTest do
       %{expected_subject: "Affable password reset request"}
     end
 
-    @tag :capture_log
     test "sends a new reset password token", %{
       conn: conn,
       user: user,

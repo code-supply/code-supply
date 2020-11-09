@@ -6,7 +6,15 @@ defmodule Affable.Email do
     new_email()
     |> to(user.email)
     |> subject("Affable password reset request")
-    |> from("passwordreset@affable.app")
+    |> from("noreply@affable.app")
     |> render(:reset_password, url: url)
+  end
+
+  def confirmation_instructions(user, url) do
+    new_email()
+    |> to(user.email)
+    |> subject("Confirmation of your Affable account")
+    |> from("noreply@affable.app")
+    |> render(:confirmation_instructions, url: url)
   end
 end
