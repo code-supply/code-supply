@@ -95,6 +95,12 @@ defmodule SiteOperator.K8s.Conversions do
                   %{"name" => "erlang", "containerPort" => 5555},
                   %{"name" => "epmd", "containerPort" => 4369}
                 ],
+                "livenessProbe" => %{
+                  "httpGet" => %{
+                    "path" => "/",
+                    "port" => "http"
+                  }
+                },
                 "envFrom" => [%{"secretRef" => %{"name" => name}}],
                 "env" =>
                   [
