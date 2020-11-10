@@ -46,12 +46,12 @@ defmodule SiteOperator.K8sSiteMakerTest do
       batch_1 = [ns, cert]
       batch_2 = [service]
 
-      expect(MockK8s, :execute, fn [^ns, ^cert] ->
-        expect(MockK8s, :execute, fn [^service] ->
-          {:ok, "don't match on this"}
-        end)
-
+      MockK8s
+      |> expect(:execute, fn [^ns, ^cert] ->
         {:ok, ""}
+      end)
+      |> expect(:execute, fn [^service] ->
+        {:ok, "don't match on this"}
       end)
 
       {:ok, _} = create.([batch_1, batch_2])
@@ -88,11 +88,12 @@ defmodule SiteOperator.K8sSiteMakerTest do
     test "does nothing when the top-level resources are available", %{
       reconcile_1: reconcile
     } do
-      stub(MockK8s, :execute, fn [
-                                   %Operation{action: :get},
-                                   %Operation{action: :get},
-                                   %Operation{action: :get}
-                                 ] ->
+      MockK8s
+      |> stub(:execute, fn [
+                             %Operation{action: :get},
+                             %Operation{action: :get},
+                             %Operation{action: :get}
+                           ] ->
         {:ok, "Some message"}
       end)
 
@@ -111,14 +112,13 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       binding_k8s = binding |> to_k8s
 
-      stub(MockK8s, :execute, fn outer_ops ->
+      MockK8s
+      |> expect(:execute, fn outer_ops ->
         assert %Operation{action: :get, resource: binding_k8s} in outer_ops
-
-        expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^binding_k8s}] ->
-          {:ok, ""}
-        end)
-
         {:error, some_resources_missing: [binding]}
+      end)
+      |> expect(:execute, fn [%Operation{action: :create, resource: ^binding_k8s}] ->
+        {:ok, ""}
       end)
 
       {:ok, recreated: [^binding]} =
@@ -134,17 +134,17 @@ defmodule SiteOperator.K8sSiteMakerTest do
         domains: @domains
       }
 
-      stub(MockK8s, :execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _, _] ->
-        expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^ns_k8s}] ->
-          expect(MockK8s, :execute, fn operations ->
-            assert operations == Operations.inner_ns_creations(site |> from_k8s())
-            {:ok, "don't match on this"}
-          end)
+      expected_inner_operations = Operations.inner_ns_creations(site |> from_k8s())
 
-          {:ok, ""}
-        end)
-
+      MockK8s
+      |> expect(:execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _, _] ->
         {:error, some_resources_missing: [ns]}
+      end)
+      |> expect(:execute, fn [%Operation{action: :create, resource: ^ns_k8s}] ->
+        {:ok, ""}
+      end)
+      |> expect(:execute, fn ^expected_inner_operations ->
+        {:ok, "don't match on this"}
       end)
 
       {:ok, recreated: [^ns]} = reconcile.(site)
@@ -160,14 +160,13 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       vs_k8s = vs |> to_k8s
 
-      stub(MockK8s, :execute, fn outer_ops ->
+      MockK8s
+      |> expect(:execute, fn outer_ops ->
         assert %Operation{action: :get, resource: vs_k8s} in outer_ops
-
-        expect(MockK8s, :execute, fn [%Operation{action: :create, resource: ^vs_k8s}] ->
-          {:ok, ""}
-        end)
-
         {:error, some_resources_missing: [vs]}
+      end)
+      |> expect(:execute, fn [%Operation{action: :create, resource: ^vs_k8s}] ->
+        {:ok, ""}
       end)
 
       {:ok, recreated: [^vs]} = reconcile.(%AffiliateSite{name: @namespace, domains: @domains})
