@@ -172,6 +172,10 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
         Logger.info("reconciled", log_metadata ++ [recreated: resources])
         :ok
 
+      {:ok, upgraded: resources} ->
+        Logger.info("upgraded", log_metadata ++ [upgraded: resources])
+        :ok
+
       {:error, message} ->
         Logger.error(message, log_metadata)
         :error

@@ -161,6 +161,14 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
                                              } ->
             {:ok, recreated: [%SiteOperator.K8s.Namespace{name: "mysite"}]}
           end)
+        end,
+        stub_upgraded: fn ->
+          stub(MockSiteMaker, :reconcile, fn %AffiliateSite{
+                                               name: "mysite",
+                                               domains: ["www.example.com"]
+                                             } ->
+            {:ok, upgraded: []}
+          end)
         end
       }
     end
@@ -191,6 +199,31 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
       stub.()
       logs = capture_log(reconcile)
       assert logs =~ "reconciled"
+    end
+
+    test "upgrades deployments", %{reconcile: reconcile} do
+      expect(MockSiteMaker, :reconcile, fn %AffiliateSite{
+                                             name: "mysite",
+                                             domains: ["www.example.com"]
+                                           } ->
+        {:ok,
+         upgraded: [
+           %SiteOperator.K8s.Deployment{
+             name: "therightone",
+             namespace: "foo",
+             image: "bar",
+             env_vars: []
+           }
+         ]}
+      end)
+
+      reconcile.()
+    end
+
+    test "logs upgraded deployments", %{reconcile: reconcile, stub_upgraded: stub} do
+      stub.()
+      logs = capture_log(reconcile)
+      assert logs =~ "upgraded"
     end
 
     test "returns :error on error", %{reconcile: reconcile, stub_error: stub} do
