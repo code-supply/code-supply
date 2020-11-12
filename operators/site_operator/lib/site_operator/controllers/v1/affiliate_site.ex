@@ -90,7 +90,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
 
   @rule {"", ["namespaces"], ["get"]}
   @rule {"", ["namespaces", "secrets", "services"], ["create", "delete"]}
-  @rule {"apps", ["deployments"], ["create", "delete"]}
+  @rule {"apps", ["deployments"], ["create", "get", "update", "delete"]}
   @rule {"networking.istio.io", ["gateways", "virtualservices"], ["get", "create", "delete"]}
   @rule {"cert-manager.io", ["certificates"], ["get", "create", "delete"]}
   @rule {"rbac.authorization.k8s.io", ["rolebindings"], ["get", "create", "delete"]}
