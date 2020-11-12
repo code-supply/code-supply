@@ -14,9 +14,8 @@ defmodule SiteOperator.K8sSiteMakerTest do
     VirtualService
   }
 
-  import SiteOperator.K8s.Conversions, only: [to_k8s: 1]
+  import SiteOperator.K8s.Conversions
   import SiteOperator.AffiliateSiteFixtures
-  import SiteOperator.PhoenixSites
 
   import Hammox
 
@@ -35,6 +34,16 @@ defmodule SiteOperator.K8sSiteMakerTest do
     )
   end
 
+  defp deployment() do
+    Operations.deployment(
+      %AffiliateSite{
+        name: @namespace,
+        domains: @domains
+      }
+      |> from_k8s()
+    )
+  end
+
   describe "creation" do
     test "executes operation batches in order",
          %{create_1: create} do
@@ -48,10 +57,10 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       MockK8s
       |> expect(:execute, fn [^ns, ^cert] ->
-        {:ok, ""}
+        {:ok, []}
       end)
       |> expect(:execute, fn [^service] ->
-        {:ok, "don't match on this"}
+        {:ok, []}
       end)
 
       {:ok, _} = create.([batch_1, batch_2])
@@ -77,10 +86,10 @@ defmodule SiteOperator.K8sSiteMakerTest do
         assert operations ==
                  Operations.deletions(affiliate_site_no_custom_domain(name: @namespace))
 
-        {:ok, "pass message through"}
+        {:ok, []}
       end)
 
-      {:ok, "pass message through"} = delete.(affiliate_site_no_custom_domain(name: @namespace))
+      {:ok, []} = delete.(affiliate_site_no_custom_domain(name: @namespace))
     end
   end
 
@@ -92,9 +101,10 @@ defmodule SiteOperator.K8sSiteMakerTest do
       |> stub(:execute, fn [
                              %Operation{action: :get},
                              %Operation{action: :get},
+                             %Operation{action: :get},
                              %Operation{action: :get}
                            ] ->
-        {:ok, "Some message"}
+        {:ok, [%{}, %{}, %{}, deployment() |> to_k8s()]}
       end)
 
       assert reconcile.(%AffiliateSite{name: @namespace, domains: @domains}) ==
@@ -118,7 +128,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
         {:error, some_resources_missing: [binding]}
       end)
       |> expect(:execute, fn [%Operation{action: :create, resource: ^binding_k8s}] ->
-        {:ok, ""}
+        {:ok, []}
       end)
 
       {:ok, recreated: [^binding]} =
@@ -137,17 +147,50 @@ defmodule SiteOperator.K8sSiteMakerTest do
       expected_inner_operations = Operations.inner_ns_creations(site |> from_k8s())
 
       MockK8s
-      |> expect(:execute, fn [%Operation{action: :get, resource: ^ns_k8s}, _, _] ->
+      |> expect(:execute, fn [%Operation{action: :get, resource: ^ns_k8s} | _] ->
         {:error, some_resources_missing: [ns]}
       end)
       |> expect(:execute, fn [%Operation{action: :create, resource: ^ns_k8s}] ->
-        {:ok, ""}
+        {:ok, []}
       end)
       |> expect(:execute, fn ^expected_inner_operations ->
-        {:ok, "don't match on this"}
+        {:ok, []}
       end)
 
       {:ok, recreated: [^ns]} = reconcile.(site)
+    end
+
+    test "upgrades deployments when changed", %{reconcile_1: reconcile} do
+      ns = %Namespace{name: @namespace}
+      ns_k8s = ns |> to_k8s
+
+      deployment = deployment()
+
+      outdated_deployment = %{deployment | image: "old-image"}
+
+      outdated_deployment_k8s = outdated_deployment |> to_k8s
+      deployment_k8s = deployment |> to_k8s
+
+      site = %AffiliateSite{
+        name: @namespace,
+        domains: @domains
+      }
+
+      MockK8s
+      |> expect(:execute, fn [
+                               %Operation{action: :get, resource: ^ns_k8s},
+                               _,
+                               _,
+                               %Operation{action: :get, resource: deployment_resource}
+                             ] ->
+        assert deployment_resource == deployment_k8s
+        {:ok, [ns_k8s, %{}, %{}, outdated_deployment_k8s]}
+      end)
+      |> expect(:execute, fn [%Operation{action: :update, resource: ^deployment_k8s}] ->
+        {:ok, [deployment_k8s]}
+      end)
+
+      {:ok, upgraded: [^deployment]} = reconcile.(site)
     end
 
     test "creates missing wildcard virtual service", %{reconcile_1: reconcile} do
@@ -166,7 +209,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
         {:error, some_resources_missing: [vs]}
       end)
       |> expect(:execute, fn [%Operation{action: :create, resource: ^vs_k8s}] ->
-        {:ok, ""}
+        {:ok, []}
       end)
 
       {:ok, recreated: [^vs]} = reconcile.(%AffiliateSite{name: @namespace, domains: @domains})

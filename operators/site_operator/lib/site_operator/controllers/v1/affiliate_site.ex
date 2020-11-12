@@ -66,7 +66,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
 
   alias SiteOperator.K8s.{AffiliateSite, Operations}
 
-  import SiteOperator.PhoenixSites
+  import SiteOperator.K8s.Conversions
 
   # @group "your-operator.your-domain.com"
   # @version "v1"

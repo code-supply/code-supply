@@ -9,6 +9,7 @@ defmodule SiteOperator.SiteMaker do
   @callback delete(%AffiliateSite{}) :: {:ok, term} | {:error, String.t()}
   @callback reconcile(%AffiliateSite{}) ::
               {:ok, recreated: list(map())}
+              | {:ok, upgraded: list(map())}
               | {:ok, :nothing_to_do}
               | {:error, String.t()}
 end

@@ -14,37 +14,24 @@ defmodule SiteOperator.K8s.Operations do
     VirtualService
   }
 
+  import SiteOperator.K8s.Conversions
+
   def initial_creations(%PhoenixSite{name: name, domains: domains}) do
     initial_resources(name, domains)
     |> Enum.map(&create/1)
   end
 
-  def inner_ns_creations(%PhoenixSite{
-        name: namespace,
-        image: image,
-        domains: domains,
-        secret_key_base: secret_key_base,
-        distribution_cookie: distribution_cookie
-      }) do
+  def inner_ns_creations(
+        %PhoenixSite{
+          name: namespace,
+          secret_key_base: secret_key_base,
+          distribution_cookie: distribution_cookie
+        } = phoenix_site
+      ) do
     name = "affiliate"
 
     [
-      %Deployment{
-        name: name,
-        namespace: namespace,
-        image: image,
-        env_vars: %{
-          "CHECK_ORIGINS" =>
-            domains
-            |> Enum.map(fn domain -> "https://#{domain}" end)
-            |> Enum.join(" "),
-          "PUBSUB_TOPIC_INCOMING" => namespace,
-          "PUBSUB_TOPIC_REQUESTS" => Application.get_env(:site_operator, :pubsub_topic_requests),
-          "ELIXIR_ERL_OPTIONS" => "-kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556",
-          "RELEASE_DISTRIBUTION" => "name",
-          "RELEASE_NODE" => "affable@$(POD_IP)"
-        }
-      },
+      deployment(phoenix_site),
       %Service{name: name, namespace: namespace},
       %Secret{
         name: name,
@@ -58,8 +45,32 @@ defmodule SiteOperator.K8s.Operations do
     |> Enum.map(&create/1)
   end
 
-  def checks(%AffiliateSite{name: name, domains: domains}) do
-    initial_resources(name, domains)
+  def deployment(%PhoenixSite{
+        name: namespace,
+        image: image,
+        domains: domains
+      }) do
+    %Deployment{
+      name: "affiliate",
+      namespace: namespace,
+      image: image,
+      env_vars: %{
+        "CHECK_ORIGINS" =>
+          domains
+          |> Enum.map(fn domain -> "https://#{domain}" end)
+          |> Enum.join(" "),
+        "PUBSUB_TOPIC_INCOMING" => namespace,
+        "PUBSUB_TOPIC_REQUESTS" => Application.get_env(:site_operator, :pubsub_topic_requests),
+        "ELIXIR_ERL_OPTIONS" => "-kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556",
+        "RELEASE_DISTRIBUTION" => "name",
+        "RELEASE_NODE" => "affable@$(POD_IP)"
+      }
+    }
+  end
+
+  def checks(%AffiliateSite{name: namespace, domains: domains} = affiliate_site) do
+    (initial_resources(namespace, domains) ++
+       [deployment(affiliate_site |> from_k8s())])
     |> Enum.map(&get/1)
   end
 
@@ -78,6 +89,10 @@ defmodule SiteOperator.K8s.Operations do
 
   def delete(resource) do
     %Operation{action: :delete, resource: resource |> to_k8s()}
+  end
+
+  def update(resource) do
+    %Operation{action: :update, resource: resource |> to_k8s()}
   end
 
   defp initial_resources(name, domains) do

@@ -54,11 +54,7 @@ defmodule SiteOperator.RealK8sTest do
     on_exit(fn ->
       SiteOperator.RealK8s.execute([
         Operations.delete(certificate),
-        Operations.delete(deployment),
-        Operations.delete(gateway),
-        Operations.delete(namespace),
-        Operations.delete(service),
-        Operations.delete(virtual_service)
+        Operations.delete(namespace)
       ])
     end)
 
@@ -132,5 +128,20 @@ defmodule SiteOperator.RealK8sTest do
              Operations.get(missing_namespace)
            ]) ==
              {:error, some_resources_missing: [missing_namespace]}
+
+    # no change
+    assert execute.([
+             Operations.update(deployment)
+           ]) == {:ok, [deployment]}
+
+    # change the image
+    assert execute.([
+             Operations.update(%{deployment | image: "alpine"})
+           ]) == {:ok, [%{deployment | image: "alpine"}]}
+
+    # change affects gets
+    assert execute.([
+             Operations.get(deployment)
+           ]) == {:ok, [%{deployment | image: "alpine"}]}
   end
 end

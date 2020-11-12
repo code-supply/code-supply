@@ -1,5 +1,6 @@
 defmodule SiteOperator.K8s.Conversions do
   alias SiteOperator.K8s.{
+    AffiliateSite,
     Certificate,
     Deployment,
     Gateway,
@@ -9,6 +10,8 @@ defmodule SiteOperator.K8s.Conversions do
     Service,
     VirtualService
   }
+
+  alias SiteOperator.PhoenixSites.PhoenixSite
 
   def to_k8s(%Certificate{name: site_name, domains: domains}) do
     %{
@@ -218,6 +221,35 @@ defmodule SiteOperator.K8s.Conversions do
           }
         ]
       }
+    }
+  end
+
+  defp affiliate_site_image do
+    Application.get_env(:site_operator, :affiliate_site_image)
+  end
+
+  defp distribution_cookie do
+    Application.get_env(:site_operator, :distribution_cookie)
+  end
+
+  defp generate_secret_key do
+    case Application.get_env(:site_operator, :secret_key_generator) do
+      :generate ->
+        length = 64
+        :crypto.strong_rand_bytes(length) |> Base.encode64() |> binary_part(0, length)
+
+      value ->
+        value
+    end
+  end
+
+  def from_k8s(%AffiliateSite{} = site) do
+    %PhoenixSite{
+      name: site.name,
+      domains: site.domains,
+      image: affiliate_site_image(),
+      secret_key_base: generate_secret_key(),
+      distribution_cookie: distribution_cookie()
     }
   end
 
