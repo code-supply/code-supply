@@ -94,9 +94,10 @@ defmodule SiteOperator.K8sSiteMakerTest do
   end
 
   describe "reconciliation" do
-    test "does nothing when the top-level resources are available", %{
-      reconcile_1: reconcile
-    } do
+    test "does nothing when the top-level resources are available with insignificant differences",
+         %{
+           reconcile_1: reconcile
+         } do
       MockK8s
       |> stub(:execute, fn [
                              %Operation{action: :get},
@@ -104,7 +105,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
                              %Operation{action: :get},
                              %Operation{action: :get}
                            ] ->
-        {:ok, [%{}, %{}, %{}, deployment() |> to_k8s()]}
+        {:ok, [%{}, %{}, %{}, deployment() |> to_k8s() |> Map.put("extra", "stuff")]}
       end)
 
       assert reconcile.(%AffiliateSite{name: @namespace, domains: @domains}) ==
