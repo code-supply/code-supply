@@ -11609,7 +11609,7 @@ spec:
             name: site-operator
         - configMapRef:
             name: site-operator-96ctt5dct4
-        image: eu.gcr.io/code-supply/site-operator:5d2b3f0
+        image: eu.gcr.io/code-supply/site-operator:976cf6b
         name: site-operator
         resources:
           limits:
