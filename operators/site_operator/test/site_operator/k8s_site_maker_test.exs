@@ -105,7 +105,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
                              %Operation{action: :get},
                              %Operation{action: :get}
                            ] ->
-        {:ok, [%{}, %{}, %{}, deployment() |> to_k8s() |> Map.put("extra", "stuff")]}
+        {:ok, [%{}, %{}, %{}, deployment()]}
       end)
 
       assert reconcile.(%AffiliateSite{name: @namespace, domains: @domains}) ==
@@ -169,7 +169,6 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       outdated_deployment = %{deployment | image: "old-image"}
 
-      outdated_deployment_k8s = outdated_deployment |> to_k8s
       deployment_k8s = deployment |> to_k8s
 
       site = %AffiliateSite{
@@ -185,10 +184,10 @@ defmodule SiteOperator.K8sSiteMakerTest do
                                %Operation{action: :get, resource: deployment_resource}
                              ] ->
         assert deployment_resource == deployment_k8s
-        {:ok, [ns_k8s, %{}, %{}, outdated_deployment_k8s]}
+        {:ok, [ns_k8s, %{}, %{}, outdated_deployment]}
       end)
       |> expect(:execute, fn [%Operation{action: :update, resource: ^deployment_k8s}] ->
-        {:ok, [deployment_k8s]}
+        {:ok, [deployment]}
       end)
 
       {:ok, upgraded: [^deployment]} = reconcile.(site)
