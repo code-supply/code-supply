@@ -68,7 +68,7 @@ tbody tr:hover {
 }
 
 .save-indicator {
-    @apply fixed top-0 left-0 mt-4 ml-48;
+    @apply fixed top-0 left-0 mt-4 ml-48 z-50;
 }
 .save-indicator .saved-state {
     @apply m-auto w-32 pl-4
