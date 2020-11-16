@@ -397,10 +397,17 @@ defmodule Affable.Sites do
             )
           end
 
-          create_item(site, %{name: "New item", position: 1})
+          create_item(site, %{
+            name: "New item",
+            position: 1,
+            attributes:
+              for definition <- site.attribute_definitions do
+                %{definition_id: definition.id, value: "1.23"}
+              end
+          })
         end)
 
-      {:ok, item |> Repo.preload(:attributes)}
+      {:ok, item |> Repo.preload(attributes: :definition)}
     else
       {:error, :unauthorized}
     end

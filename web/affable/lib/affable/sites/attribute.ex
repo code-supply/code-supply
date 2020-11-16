@@ -15,6 +15,6 @@ defmodule Affable.Sites.Attribute do
   @doc false
   def changeset(attribute, attrs) do
     attribute
-    |> cast(attrs, [:value])
+    |> cast(attrs, [:value, :definition_id])
   end
 end

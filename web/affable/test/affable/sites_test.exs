@@ -460,13 +460,15 @@ defmodule Affable.SitesTest do
     test "prepend_item/2 makes default item at position 1" do
       {user, site} = user_and_site_with_items()
 
-      {:ok, item} = Sites.prepend_item(user, site)
+      {:ok, prepended_item} = Sites.prepend_item(user, site)
       {:error, :unauthorized} = Sites.prepend_item(user_fixture(), site)
 
-      %Site{items: [first_item | _]} = Sites.get_site!(user, site.id)
+      %Site{items: [%Item{attributes: retrieved_attributes} = retrieved_item | _]} =
+        Sites.get_site!(user, site.id)
 
-      assert item == first_item
-      assert first_item.name == "New item"
+      assert prepended_item == retrieved_item
+      assert retrieved_item.name == "New item"
+      assert length(retrieved_attributes) > 0
     end
 
     test "update_item/2 with valid data updates the item" do
