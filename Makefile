@@ -57,6 +57,32 @@ affiliate_use_latest:
 		| tr -d '\n' \
 		> k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
 
+web/affable/VERSION: .git/refs/heads/master
+	git diff-index --quiet HEAD --
+	git rev-parse --short HEAD > $@
+
+web/affable/VERSION_BUILT: web/affable/VERSION
+	docker build -t eu.gcr.io/code-supply/affable:$$(cat $<) web/affable
+	cat $< > $@
+
+web/affable/VERSION_PUSHED: web/affable/VERSION_BUILT
+	docker push eu.gcr.io/code-supply/affable:$$(cat $<)
+	cat $< > $@
+
+k8s/affable/version.yaml: web/affable/VERSION_PUSHED
+	cd k8s/affable && \
+		kustomize edit set image affable=eu.gcr.io/code-supply/affable:$$(cat ../../$<)
+	> $@
+	echo "apiVersion: apps/v1" >> $@
+	echo "kind: StatefulSet" >> $@
+	echo "metadata:" >> $@
+	echo "  name: affable" >> $@
+	echo "spec:" >> $@
+	echo "  template:" >> $@
+	echo "    metadata:" >> $@
+	echo "      labels:" >> $@
+	echo "        version: \"$$(cat $<)\"" >> $@
+
 .PHONY:
 affable_use_head:
 	cd k8s/affable && \
