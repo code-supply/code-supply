@@ -83,21 +83,6 @@ k8s/affable/version.yaml: web/affable/VERSION_PUSHED
 	echo "      labels:" >> $@
 	echo "        version: \"$$(cat $<)\"" >> $@
 
-.PHONY:
-affable_use_head:
-	cd k8s/affable && \
-		kustomize edit set image "affable=eu.gcr.io/code-supply/affable:$$(git rev-parse --short HEAD)"
-	> $(affable_version)
-	echo "apiVersion: apps/v1" >> $(affable_version)
-	echo "kind: StatefulSet" >> $(affable_version)
-	echo "metadata:" >> $(affable_version)
-	echo "  name: affable" >> $(affable_version)
-	echo "spec:" >> $(affable_version)
-	echo "  template:" >> $(affable_version)
-	echo "    metadata:" >> $(affable_version)
-	echo "      labels:" >> $(affable_version)
-	echo "        version: \"$$(git rev-parse --short HEAD)\"" >> $(affable_version)
-
 .PHONY: affable_rotate_sql_credentials
 affable_rotate_sql_credentials:
 	bin/rotate-google-service-account-key \
