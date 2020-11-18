@@ -9,6 +9,7 @@ k8s/manifest.yaml: \
 	k8s/operators/site-operator-version.yaml
 	kustomize build k8s > $@
 
+.PHONY: apply
 apply: \
 	k8s/manifest.yaml
 	kubectl \
@@ -21,7 +22,7 @@ diff: \
 	kubectl diff \
 		-f k8s/manifest.yaml
 
-.PHONY:
+.PHONY: operator_use_head
 operator_use_head:
 	git rev-parse --short HEAD > operators/site_operator/VERSION
 
@@ -51,7 +52,7 @@ k8s/operators/site-operator-version.yaml:
 	echo "      labels:" >> $(operator_version)
 	echo "        version: \"$$(cat operators/site_operator/VERSION)\"" >> $(operator_version)
 
-.PHONY:
+.PHONY: affiliate_use_latest
 affiliate_use_latest:
 	echo "eu.gcr.io/code-supply/affiliate@$$(latest-affiliate-digest)" \
 		| tr -d '\n' \
