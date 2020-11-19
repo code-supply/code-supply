@@ -3,25 +3,25 @@ defmodule Affable.Sites.Raw do
 
   def raw(%Site{} = site) do
     %{
-      id: site.id,
-      name: site.name,
-      site_logo_url: site.site_logo_url,
-      page_subtitle: site.page_subtitle,
-      header_image_url: site.header_image_url,
-      text: site.text,
-      made_available_at: site.made_available_at,
-      items: site.items |> Enum.map(&raw/1)
+      "id" => site.id,
+      "name" => site.name,
+      "site_logo_url" => site.site_logo_url,
+      "page_subtitle" => site.page_subtitle,
+      "header_image_url" => site.header_image_url,
+      "text" => site.text,
+      "made_available_at" => format_datetime(site.made_available_at),
+      "items" => site.items |> Enum.map(&raw/1)
     }
   end
 
   def raw(%Item{} = item) do
     %{
-      description: item.description,
-      image_url: item.image_url,
-      name: item.name,
-      position: item.position,
-      url: item.url,
-      attributes: item.attributes |> Enum.map(&raw/1)
+      "description" => item.description,
+      "image_url" => item.image_url,
+      "name" => item.name,
+      "position" => item.position,
+      "url" => item.url,
+      "attributes" => item.attributes |> Enum.map(&raw/1)
     }
   end
 
@@ -30,8 +30,8 @@ defmodule Affable.Sites.Raw do
         definition: %AttributeDefinition{name: name, type: type}
       }) do
     %{
-      name: name,
-      value:
+      "name" => name,
+      "value" =>
         case {value, type} do
           {nil, _} ->
             ""
@@ -52,5 +52,12 @@ defmodule Affable.Sites.Raw do
             value
         end
     }
+  end
+
+  defp format_datetime(datetime) do
+    case datetime do
+      nil -> nil
+      dt -> dt |> DateTime.to_iso8601()
+    end
   end
 end

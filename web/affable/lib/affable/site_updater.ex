@@ -17,7 +17,7 @@ defmodule Affable.SiteUpdater do
   @impl true
   def broadcast(site) do
     GenServer.cast(__MODULE__, %{
-      topic: Affable.ID.site_name_from_id(site.id),
+      topic: Affable.ID.site_name_from_id(site["id"]),
       site: site
     })
   end

@@ -26,8 +26,8 @@ defmodule AffableWeb.SitesLive do
     updated_sites =
       sites
       |> Enum.map(fn site ->
-        if site.id == raw_site.id do
-          %{site | made_available_at: raw_site.made_available_at}
+        if site.id == raw_site["id"] do
+          %{site | made_available_at: raw_site["made_available_at"]}
         else
           site
         end

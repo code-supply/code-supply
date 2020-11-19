@@ -4,7 +4,7 @@ defmodule Affable.Sites do
   import Ecto.Query, warn: false
   alias Affable.Repo
   alias Affable.Accounts.User
-  alias Affable.Sites.{Site, SiteMember, Item, AttributeDefinition, Attribute, Raw}
+  alias Affable.Sites.{Publication, Site, SiteMember, Item, AttributeDefinition, Attribute, Raw}
   alias Affable.Domains.Domain
 
   alias Ecto.Multi
@@ -15,6 +15,32 @@ defmodule Affable.Sites do
     else
       :pending
     end
+  end
+
+  def publish(site) do
+    Ecto.build_assoc(site, :publications, %{data: Raw.raw(site)})
+    |> Repo.insert()
+
+    {:ok, site}
+  end
+
+  def is_published?(site) do
+    case latest_publication(site) do
+      nil ->
+        false
+
+      latest ->
+        latest.data == Raw.raw(site)
+    end
+  end
+
+  defp latest_publication(site) do
+    from(p in Publication,
+      where: p.site_id == ^site.id,
+      order_by: [desc: p.id],
+      limit: 1
+    )
+    |> Repo.one()
   end
 
   def canonical_url(%Site{domains: [%Domain{name: name}]}) do

@@ -5,7 +5,7 @@ defmodule Affable.SiteUpdaterTest do
   alias Phoenix.PubSub
   alias Affable.MockSiteClusterIO
   alias Affable.{Broadcaster, SiteUpdater}
-  alias Affable.Sites.Site
+  alias Affable.Sites.{Raw, Site}
 
   setup :set_mox_from_context
   setup :verify_on_exit!
@@ -35,14 +35,14 @@ defmodule Affable.SiteUpdaterTest do
     site_name: site_name
   } do
     stub(MockSiteClusterIO, :get_raw_site, fn ^site_id ->
-      {:ok, %{name: "Some Site", made_available_at: DateTime.utc_now()}}
+      {:ok, Raw.raw(%Site{items: [], name: "Some Site", made_available_at: DateTime.utc_now()})}
     end)
 
     stub(MockSiteClusterIO, :set_available, fn _, _ -> {:ok, %Site{}} end)
 
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
-    assert_receive %{name: "Some Site", made_available_at: _}
+    assert_receive %{"name" => "Some Site", "made_available_at" => _}
   end
 
   test "records when the site was first made available", %{site_id: site_id, site_name: site_name} do
@@ -51,17 +51,17 @@ defmodule Affable.SiteUpdaterTest do
     end)
 
     stub(MockSiteClusterIO, :get_raw_site, fn ^site_id ->
-      {:ok, %{name: "must wait"}}
+      {:ok, Raw.raw(%Site{items: [], name: "must wait"})}
     end)
 
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
-    assert_receive %{name: "must wait"}, 1000, nil
+    assert_receive %{"name" => "must wait"}, 1000, nil
   end
 
   test "can broadcast on demand", %{site_id: site_id, broadcast_1: broadcast} do
-    broadcast.(%{name: "Some Site", id: site_id})
+    broadcast.(Raw.raw(%Site{items: [], name: "Some Site", id: site_id}))
 
-    assert_receive %{name: "Some Site"}
+    assert_receive %{"name" => "Some Site"}
   end
 end

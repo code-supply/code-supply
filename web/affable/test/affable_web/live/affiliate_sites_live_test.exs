@@ -20,6 +20,27 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       %{conn: conn, user: user, site: site |> Repo.preload(:items)}
     end
 
+    test "can publish the changes", %{
+      conn: conn,
+      site: site
+    } do
+      {:ok, view, _html} = live(conn, path(conn, site))
+
+      assert view
+             |> has_element?("#publish")
+
+      expect(Affable.MockBroadcaster, :broadcast, fn _site ->
+        :ok
+      end)
+
+      view
+      |> element("#publish")
+      |> render_click()
+
+      refute view
+             |> has_element?("#publish")
+    end
+
     test "can create / update / delete an attribute definition", %{
       conn: conn,
       user: user,
@@ -86,8 +107,8 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       refute view
              |> has_element?(".item:nth-child(#{num_items + 1})")
 
-      expect(Affable.MockBroadcaster, :broadcast, fn %{items: [item | _]} ->
-        assert item.name == "New item"
+      expect(Affable.MockBroadcaster, :broadcast, fn %{"items" => [item | _]} ->
+        assert item["name"] == "New item"
         :ok
       end)
 
@@ -116,7 +137,7 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       assert html =~ first_item.description
 
       expect(Affable.MockBroadcaster, :broadcast, fn message ->
-        assert [%{description: "My new description!"} | _] = message.items
+        assert [%{"description" => "My new description!"} | _] = message["items"]
         :ok
       end)
 
@@ -207,8 +228,8 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
 
       [first_item | _] = site.items
 
-      expect(Affable.MockBroadcaster, :broadcast, fn %{items: [_, new_second_item | _]} ->
-        assert first_item.name == new_second_item.name
+      expect(Affable.MockBroadcaster, :broadcast, fn %{"items" => [_, new_second_item | _]} ->
+        assert first_item.name == new_second_item["name"]
         :ok
       end)
 
@@ -216,8 +237,8 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       |> element("#demote-#{first_item.id}")
       |> render_click()
 
-      expect(Affable.MockBroadcaster, :broadcast, fn %{items: [new_first_item | _]} ->
-        assert first_item.name == new_first_item.name
+      expect(Affable.MockBroadcaster, :broadcast, fn %{"items" => [new_first_item | _]} ->
+        assert first_item.name == new_first_item["name"]
         :ok
       end)
 

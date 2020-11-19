@@ -71,6 +71,26 @@ defmodule Affable.SitesTest do
       assert site.made_available_at == first_made_available_at
     end
 
+    test "site is published when latest publication is same as current raw representation", %{
+      set_available_2: set_available
+    } do
+      user = user_fixture()
+      site = site_fixture(user)
+
+      {:ok, site} = set_available.(site.id, DateTime.from_unix!(0))
+
+      site = site |> Repo.preload(items: [attributes: :definition])
+
+      refute Sites.is_published?(site)
+      {:ok, ^site} = Sites.publish(site)
+
+      assert Sites.is_published?(site)
+
+      {:ok, ^site} = Sites.publish(site)
+
+      assert Sites.is_published?(site)
+    end
+
     test "get_site!/2 returns the site with given user id and id" do
       user = user_fixture()
       site = site_fixture(user)
@@ -93,24 +113,24 @@ defmodule Affable.SitesTest do
 
       {:ok,
        %{
-         name: "Top 10 Apples",
-         items: [item | _rest] = items
+         "name" => "Top 10 Apples",
+         "items" => [item | _rest] = items
        }} = get_raw_site.(site.id)
 
       assert length(items) == 10
 
-      assert item.name == "Golden Delicious"
+      assert item["name"] == "Golden Delicious"
 
       assert Map.keys(item) == [
-               :attributes,
-               :description,
-               :image_url,
-               :name,
-               :position,
-               :url
+               "attributes",
+               "description",
+               "image_url",
+               "name",
+               "position",
+               "url"
              ]
 
-      assert item.attributes == [%{name: "Price", value: "$1.23"}]
+      assert item["attributes"] == [%{"name" => "Price", "value" => "$1.23"}]
     end
 
     test "returns error when untyped representation isn't available", %{
@@ -120,7 +140,7 @@ defmodule Affable.SitesTest do
     end
 
     test "raw representation formats item attributes" do
-      %{items: [%{attributes: attributes}]} =
+      %{"items" => [%{"attributes" => attributes}]} =
         Sites.Raw.raw(%Site{
           name: "Top 10 Apples",
           internal_name: "asdf",
@@ -187,13 +207,13 @@ defmodule Affable.SitesTest do
         })
 
       assert attributes == [
-               %{name: "Price", value: "$1.23"},
-               %{name: "Price in pounds", value: "£3.46"},
-               %{name: "Price in pounds but nil", value: ""},
-               %{name: "Price in euro", value: "€6.46"},
-               %{name: "Price in euro but blank", value: ""},
-               %{name: "Number", value: "123"},
-               %{name: "Text", value: "Hi there"}
+               %{"name" => "Price", "value" => "$1.23"},
+               %{"name" => "Price in pounds", "value" => "£3.46"},
+               %{"name" => "Price in pounds but nil", "value" => ""},
+               %{"name" => "Price in euro", "value" => "€6.46"},
+               %{"name" => "Price in euro but blank", "value" => ""},
+               %{"name" => "Number", "value" => "123"},
+               %{"name" => "Text", "value" => "Hi there"}
              ]
     end
 

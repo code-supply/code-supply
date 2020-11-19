@@ -31,6 +31,17 @@ defmodule AffableWeb.AffiliateSitesLive do
   end
 
   def handle_event(
+        "publish",
+        _params,
+        %{assigns: %{user: user, site_id: site_id}} = socket
+      ) do
+    site = Sites.get_site!(user, site_id)
+    {:ok, site} = Sites.publish(site)
+
+    complete_update(socket, site)
+  end
+
+  def handle_event(
         "delete-attribute-definition",
         %{"id" => definition_id},
         %{assigns: %{site_id: id, user: user}} = socket
@@ -102,14 +113,15 @@ defmodule AffableWeb.AffiliateSitesLive do
       user: user,
       site_id: id,
       changeset: Site.changeset(site, %{}),
-      saved_state: :neutral
+      saved_state: :neutral,
+      published: Sites.is_published?(site)
     )
   end
 
   defp complete_update(socket, site) do
     site
     |> broadcast()
-    |> reset_changeset(socket)
+    |> reset_site(socket)
   end
 
   defp broadcast(site) do
@@ -117,9 +129,15 @@ defmodule AffableWeb.AffiliateSitesLive do
     site
   end
 
-  defp reset_changeset(site, socket) do
+  defp reset_site(site, socket) do
     Process.send_after(self(), :clear_save, 2000)
-    {:noreply, assign(socket, changeset: Site.changeset(site, %{}), saved_state: :saved)}
+
+    {:noreply,
+     assign(socket,
+       changeset: Site.changeset(site, %{}),
+       saved_state: :saved,
+       published: Sites.is_published?(site)
+     )}
   end
 
   defp broadcaster() do

@@ -26,10 +26,10 @@ defmodule AffableWeb.SitesLiveTest do
 
       assert view |> has_element?(".pending")
 
-      Phoenix.PubSub.broadcast(:affable, site.internal_name, %{
-        Sites.Raw.raw(site |> Affable.Repo.preload(items: [attributes: :definition]))
-        | made_available_at: DateTime.utc_now()
-      })
+      message = Sites.Raw.raw(site |> Affable.Repo.preload(items: [attributes: :definition]))
+      message = Map.put(message, "made_available_at", DateTime.utc_now())
+
+      Phoenix.PubSub.broadcast(:affable, site.internal_name, message)
 
       refute view |> has_element?(".pending")
       assert view |> has_element?(".available")

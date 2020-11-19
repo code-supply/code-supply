@@ -1,6 +1,12 @@
 <%= outer_form = form_for @changeset, '#', id: "item-edit", csrf_token: false, phx_change: :save, phx_submit: :save %>
   <h1>Editing <%= @changeset.data.name %></h1>
 
+  <%= unless @published do %>
+    <div class="fixed top-0 right-0 mt-12 z-50">
+    <button id="publish" phx-click="publish" class="btn">Publish</button>
+    </div>
+  <% end %>
+
   <%= if @saved_state != :neutral do %>
     <div class="save-indicator">
       <p class="saved-state <%= @saved_state %>">
