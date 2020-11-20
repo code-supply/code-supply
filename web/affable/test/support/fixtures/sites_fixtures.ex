@@ -17,6 +17,6 @@ defmodule Affable.SitesFixtures do
         })
       )
 
-    site
+    site |> Affable.Repo.preload(items: [attributes: :definition])
   end
 end

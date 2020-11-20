@@ -11,35 +11,18 @@ defmodule AffiliateWeb.PageLiveTest do
       {:affable, "testsite123", "testsiterequests"}
     })
 
-    incoming_site = %{
-      name: "My Awesome Affiliate Site",
-      header_image_url: "",
-      site_logo_url: "",
-      page_subtitle: "",
-      text: "",
-      items: [
-        %{
-          position: 1,
-          name: "",
-          description: "",
-          image_url: "",
-          attributes: [
-            %{
-              name: "Price",
-              value: "$1.23"
-            }
-          ],
-          url: ""
-        }
-      ]
-    }
+    fixture_path = Path.dirname(__ENV__.file) <> "/../../../../fixtures/raw_site.ex"
+
+    {incoming_site, _} = Code.eval_file(fixture_path)
 
     :ok = PubSub.broadcast(:affable, "testsite123", incoming_site)
+
+    %{site: incoming_site}
   end
 
-  test "disconnected and connected render", %{conn: conn} do
+  test "disconnected and connected render", %{conn: conn, site: site} do
     {:ok, page_live, disconnected_html} = live(conn, "/")
-    assert disconnected_html =~ "Affiliate"
-    assert render(page_live) =~ "Affiliate"
+    assert disconnected_html =~ site["name"]
+    assert render(page_live) =~ site["name"]
   end
 end

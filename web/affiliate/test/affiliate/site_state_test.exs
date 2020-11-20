@@ -28,7 +28,7 @@ defmodule Affiliate.SiteStateTest do
 
     test "new content is stored and served" do
       incoming_site = %{
-        name: "My Awesome Affiliate Site"
+        "name" => "My Awesome Affiliate Site"
       }
 
       :ok = PubSub.broadcast(:affable, "testsite123", incoming_site)
