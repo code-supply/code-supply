@@ -1,6 +1,7 @@
 defmodule Affable.SiteUpdaterTest do
-  use ExUnit.Case
+  use Affable.DataCase
   import Hammox
+  import Affable.SitesFixtures
 
   alias Phoenix.PubSub
   alias Affable.MockSiteClusterIO
@@ -34,15 +35,20 @@ defmodule Affable.SiteUpdaterTest do
     site_id: site_id,
     site_name: site_name
   } do
+    site = site_fixture()
+    raw_site = Raw.raw(site)
+
     stub(MockSiteClusterIO, :get_raw_site, fn ^site_id ->
-      {:ok, Raw.raw(%Site{items: [], name: "Some Site", made_available_at: DateTime.utc_now()})}
+      {:ok, raw_site}
     end)
 
     stub(MockSiteClusterIO, :set_available, fn _, _ -> {:ok, %Site{}} end)
 
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
-    assert_receive %{"name" => "Some Site", "made_available_at" => _}
+    message = assert_receive %{preview: ^raw_site}
+
+    write_fixture_for_external_consumption("site_update_message", message)
   end
 
   test "records when the site was first made available", %{site_id: site_id, site_name: site_name} do
@@ -56,12 +62,17 @@ defmodule Affable.SiteUpdaterTest do
 
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
-    assert_receive %{"name" => "must wait"}, 1000, nil
+    assert_receive %{preview: %{"name" => "must wait"}}, 1000, nil
   end
 
   test "can broadcast on demand", %{site_id: site_id, broadcast_1: broadcast} do
-    broadcast.(Raw.raw(%Site{items: [], name: "Some Site", id: site_id}))
+    broadcast.(preview: Raw.raw(%Site{items: [], name: "Some Site", id: site_id}))
 
-    assert_receive %{"name" => "Some Site"}
+    assert_receive %{preview: %{"name" => "Some Site"}}
+  end
+
+  defp write_fixture_for_external_consumption(name, obj) do
+    (Path.dirname(__ENV__.file) <> "/../../../fixtures/#{name}.ex")
+    |> File.write!(inspect(obj, pretty: true))
   end
 end

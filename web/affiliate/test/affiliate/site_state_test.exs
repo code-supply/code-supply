@@ -1,6 +1,8 @@
 defmodule Affiliate.SiteStateTest do
   use ExUnit.Case
 
+  import Affiliate.Fixtures
+
   alias Phoenix.PubSub
   alias Affiliate.SiteState
 
@@ -27,14 +29,12 @@ defmodule Affiliate.SiteStateTest do
     end
 
     test "new content is stored and served" do
-      incoming_site = %{
-        "name" => "My Awesome Affiliate Site"
-      }
+      incoming_payload = site_update_message()
 
-      :ok = PubSub.broadcast(:affable, "testsite123", incoming_site)
+      :ok = PubSub.broadcast(:affable, "testsite123", incoming_payload)
 
-      assert SiteState.site() == incoming_site
-      assert SiteState.site() == incoming_site
+      assert SiteState.get() == incoming_payload
+      assert SiteState.get() == incoming_payload
     end
 
     test "can get subscription info" do

@@ -107,7 +107,7 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       refute view
              |> has_element?(".item:nth-child(#{num_items + 1})")
 
-      expect(Affable.MockBroadcaster, :broadcast, fn %{"items" => [item | _]} ->
+      expect(Affable.MockBroadcaster, :broadcast, fn preview: %{"items" => [item | _]} ->
         assert item["name"] == "New item"
         :ok
       end)
@@ -136,10 +136,13 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
 
       assert html =~ first_item.description
 
-      expect(Affable.MockBroadcaster, :broadcast, fn message ->
-        assert [%{"description" => "My new description!"} | _] = message["items"]
-        :ok
-      end)
+      expect(
+        Affable.MockBroadcaster,
+        :broadcast,
+        fn preview: %{"items" => [%{"description" => "My new description!"} | _]} ->
+          :ok
+        end
+      )
 
       assert render_first_item_change(view, site.items, %{
                "description" => "My new description!"
@@ -228,19 +231,27 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
 
       [first_item | _] = site.items
 
-      expect(Affable.MockBroadcaster, :broadcast, fn %{"items" => [_, new_second_item | _]} ->
-        assert first_item.name == new_second_item["name"]
-        :ok
-      end)
+      expect(
+        Affable.MockBroadcaster,
+        :broadcast,
+        fn preview: %{"items" => [_, new_second_item | _]} ->
+          assert first_item.name == new_second_item["name"]
+          :ok
+        end
+      )
 
       view
       |> element("#demote-#{first_item.id}")
       |> render_click()
 
-      expect(Affable.MockBroadcaster, :broadcast, fn %{"items" => [new_first_item | _]} ->
-        assert first_item.name == new_first_item["name"]
-        :ok
-      end)
+      expect(
+        Affable.MockBroadcaster,
+        :broadcast,
+        fn preview: %{"items" => [new_first_item | _]} ->
+          assert first_item.name == new_first_item["name"]
+          :ok
+        end
+      )
 
       view
       |> element("#promote-#{first_item.id}")

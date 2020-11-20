@@ -1,6 +1,7 @@
 defmodule AffiliateWeb.PageLiveTest do
   use AffiliateWeb.ConnCase
 
+  import Affiliate.Fixtures
   import Phoenix.LiveViewTest
 
   alias Phoenix.PubSub
@@ -11,13 +12,11 @@ defmodule AffiliateWeb.PageLiveTest do
       {:affable, "testsite123", "testsiterequests"}
     })
 
-    fixture_path = Path.dirname(__ENV__.file) <> "/../../../../fixtures/raw_site.ex"
+    incoming_payload = site_update_message()
 
-    {incoming_site, _} = Code.eval_file(fixture_path)
+    :ok = PubSub.broadcast(:affable, "testsite123", incoming_payload)
 
-    :ok = PubSub.broadcast(:affable, "testsite123", incoming_site)
-
-    %{site: incoming_site}
+    %{site: incoming_payload.preview}
   end
 
   test "disconnected and connected render", %{conn: conn, site: site} do

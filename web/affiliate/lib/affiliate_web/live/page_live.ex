@@ -6,13 +6,13 @@ defmodule AffiliateWeb.PageLive do
   @impl true
   def mount(_params, _session, socket) do
     {pubsub, topic} = SiteState.subscription_info()
-    %{"name" => _} = site = SiteState.site()
+    %{preview: %{"name" => page_title} = site} = SiteState.get()
     Phoenix.PubSub.subscribe(pubsub, topic)
-    {:ok, assign(socket, site: site, page_title: site["name"])}
+    {:ok, assign(socket, site: site, page_title: page_title)}
   end
 
   @impl true
-  def handle_info(site, socket) do
+  def handle_info(%{preview: site}, socket) do
     {:noreply, assign(socket, site: site, page_title: site["name"])}
   end
 end
