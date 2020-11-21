@@ -1,0 +1,65 @@
+<div class="bg-gray-300">
+  <p class="alert alert-info" role="alert"
+                              phx-click="lv:clear-flash"
+                              phx-value-key="info"><%= live_flash(@flash, :info) %></p>
+
+  <p class="alert alert-danger" role="alert"
+                                phx-click="lv:clear-flash"
+                                phx-value-key="error"><%= live_flash(@flash, :error) %></p>
+
+  <div class="container mx-auto bg-white">
+    <header
+      class="flex bg-white block
+                   border-b-8 border-black
+                   bg-no-repeat bg-cover"
+      style="background-image: url('<%= @site["header_image_url"] %>')"
+      >
+      <img alt="<%= @site["name"] %>" class="h-12 my-6 px-8 max-w-full" src="<%= @site["site_logo_url"] %>">
+    </header>
+
+    <main role="main">
+      <header class="bg-blue-600 text-white p-4 md:p-8 pb-12">
+        <h1 class="text-3xl font-extrabold"><%= @site["page_subtitle"] %></h1>
+
+        <div class="text-lg max-w-3xl mt-4">
+          <%= text_to_html (@site["text"] || "") %>
+        </div>
+      </header>
+
+      <section class="px-2 md:px-8">
+        <ol>
+          <%= for item <- @site["items"] do %>
+            <li class="rounded-md border-solid border-2 border-gray-300
+                       mt-6 pl-2 md:pl-6 pr-0 py-1 md:py-4">
+              <h1 class="mb-4">
+                <span class="font-bold"><%= item["position"] %></span>
+                <span class="ml-4 text-gray-800"><%= item["name"] %></span>
+              </h1>
+              <div class="grid grid-cols-8 divide-x divide-gray-300
+                          font-black text-gray-800">
+                <div class="block h-16 mr-2">
+                  <img class="max-h-full" src="<%= item["image_url"] %>">
+                </div>
+                <p class="col-span-3 px-2 md:px-8">
+                <%= item["description"] %>
+                </p>
+                <%= for attribute <- item["attributes"] do %>
+                  <p class="col-span-2 px-2 md:px-8 md:py-4 text-xl text-center
+                            font-extrabold
+                            "><%= attribute["value"] %></p>
+                <% end %>
+                <p class="col-span-2 px-2 md:px-4">
+                <a class="block py-4 rounded-full
+                               text-center text-lg
+                               bg-green-600 hover:bg-green-700 text-white
+                               "
+                   href="<%= item["url"] %>">Go</a>
+                </p>
+              </div>
+            </li>
+          <% end %>
+        </ol>
+      </section>
+    </main>
+  </div>
+</div>
