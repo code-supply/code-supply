@@ -36,7 +36,11 @@ defmodule Affable.SiteUpdaterTest do
     site_name: site_name
   } do
     site = site_fixture()
-    raw_site = Raw.raw(site)
+
+    raw_site = %{
+      preview: Raw.raw(site),
+      published: Raw.raw(site)
+    }
 
     stub(MockSiteClusterIO, :get_raw_site, fn ^site_id ->
       {:ok, raw_site}
@@ -46,7 +50,7 @@ defmodule Affable.SiteUpdaterTest do
 
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
-    message = assert_receive %{preview: ^raw_site}
+    message = assert_receive ^raw_site
 
     write_fixture_for_external_consumption("site_update_message", message)
   end
@@ -56,19 +60,28 @@ defmodule Affable.SiteUpdaterTest do
       {:ok, %Site{}}
     end)
 
+    raw_site = Raw.raw(%Site{items: [], name: "must wait"})
+    raw_site_representation = %{preview: raw_site, published: raw_site}
+
     stub(MockSiteClusterIO, :get_raw_site, fn ^site_id ->
-      {:ok, Raw.raw(%Site{items: [], name: "must wait"})}
+      {:ok, raw_site_representation}
     end)
 
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
-    assert_receive %{preview: %{"name" => "must wait"}}, 1000, nil
+    assert_receive ^raw_site_representation, 1000, nil
   end
 
   test "can broadcast on demand", %{site_id: site_id, broadcast_1: broadcast} do
-    broadcast.(preview: Raw.raw(%Site{items: [], name: "Some Site", id: site_id}))
+    broadcast.(%{
+      preview: Raw.raw(%Site{items: [], name: "Some Site", id: site_id}),
+      published: Raw.raw(%Site{items: [], name: "Published Site", id: site_id})
+    })
 
-    assert_receive %{preview: %{"name" => "Some Site"}}
+    assert_receive %{
+      preview: %{"name" => "Some Site"},
+      published: %{"name" => "Published Site"}
+    }
   end
 
   defp write_fixture_for_external_consumption(name, obj) do

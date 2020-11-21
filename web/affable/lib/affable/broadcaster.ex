@@ -1,3 +1,6 @@
 defmodule Affable.Broadcaster do
-  @callback broadcast(preview: map()) :: :ok
+  @callback broadcast(%{
+              published: map(),
+              preview: map()
+            }) :: :ok
 end

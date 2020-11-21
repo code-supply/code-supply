@@ -111,17 +111,27 @@ defmodule Affable.SitesTest do
     } do
       site = site_fixture()
 
+      Sites.update_site(site, %{name: "Top 10 Bananas"})
+
       {:ok,
        %{
-         "name" => "Top 10 Apples",
-         "items" => [item | _rest] = items
+         preview: %{
+           "name" => "Top 10 Bananas",
+           "items" => [preview_item | _] = preview_items
+         },
+         published: %{
+           "name" => "Top 10 Apples",
+           "items" => [published_item | _] = published_items
+         }
        }} = get_raw_site.(site.id)
 
-      assert length(items) == 10
+      assert length(preview_items) == 10
+      assert length(published_items) == 10
 
-      assert item["name"] == "Golden Delicious"
+      assert preview_item["name"] == "Golden Delicious"
+      assert published_item["name"] == "Golden Delicious"
 
-      assert Map.keys(item) == [
+      assert Map.keys(preview_item) == [
                "attributes",
                "description",
                "image_url",
@@ -130,7 +140,7 @@ defmodule Affable.SitesTest do
                "url"
              ]
 
-      assert item["attributes"] == [%{"name" => "Price", "value" => "$1.23"}]
+      assert preview_item["attributes"] == [%{"name" => "Price", "value" => "$1.23"}]
     end
 
     test "returns error when untyped representation isn't available", %{
@@ -217,7 +227,7 @@ defmodule Affable.SitesTest do
              ]
     end
 
-    test "new sites have a name, internal name, member, default domain and items" do
+    test "new sites have batteries-included defaults" do
       user = user_fixture()
       site = site_fixture(user, %{name: "some name !@#!@#$@#%#$"})
 
@@ -231,6 +241,8 @@ defmodule Affable.SitesTest do
 
       assert [%Item{name: "Golden Delicious"} | rest] = site.items
       assert length(rest) == 9
+
+      assert Sites.is_published?(site)
     end
 
     test "create_site/1 with invalid data returns error changeset" do

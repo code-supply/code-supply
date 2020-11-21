@@ -34,7 +34,7 @@ defmodule Affable.Sites do
     end
   end
 
-  defp latest_publication(site) do
+  def latest_publication(site) do
     from(p in Publication,
       where: p.site_id == ^site.id,
       order_by: [desc: p.id],
@@ -65,7 +65,7 @@ defmodule Affable.Sites do
     |> Repo.one!()
   end
 
-  defp get_site!(id) do
+  def get_site!(id) do
     get_site_query(id)
     |> join(:inner, [s], m in SiteMember, on: s.id == m.site_id)
     |> where([s, m], s.id == ^id)
@@ -77,7 +77,11 @@ defmodule Affable.Sites do
   def get_raw_site(id) do
     case get_site_query(id) |> Repo.one() do
       %Site{} = site ->
-        {:ok, Raw.raw(site)}
+        {:ok,
+         %{
+           preview: Raw.raw(site),
+           published: latest_publication(site).data
+         }}
 
       nil ->
         {:error, :not_found}
@@ -150,6 +154,14 @@ defmodule Affable.Sites do
     |> Multi.merge(fn %{site: site} ->
       add_attribute_definition_multi(site)
     end)
+    |> Multi.insert(
+      :publish,
+      fn %{site: site} ->
+        Ecto.build_assoc(site, :publications, %{
+          data: Raw.raw(site |> Repo.preload(items: [attributes: :definition]))
+        })
+      end
+    )
   end
 
   def create_site(%User{} = user, attrs \\ %{}) do

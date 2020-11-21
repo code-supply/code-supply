@@ -3,6 +3,7 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
   import Phoenix.LiveViewTest
   import Affable.SitesFixtures
   import Hammox
+  import Affable.Sites.Raw
 
   alias Affable.{Repo, Accounts, Sites}
   alias Affable.Sites.{Site, Item, Attribute}
@@ -17,7 +18,12 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
     setup context do
       %{conn: conn, user: user} = register_and_log_in_user(context)
       [site] = user.sites
-      %{conn: conn, user: user, site: site |> Repo.preload(:items)}
+
+      %{
+        conn: conn,
+        user: user,
+        site: site |> Repo.preload(items: [attributes: :definition])
+      }
     end
 
     test "can publish the changes", %{
@@ -26,10 +32,23 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
     } do
       {:ok, view, _html} = live(conn, path(conn, site))
 
+      refute view
+             |> has_element?("#publish")
+
+      stub(Affable.MockBroadcaster, :broadcast, fn _ ->
+        :ok
+      end)
+
+      view
+      |> element("#new-attribute-definition")
+      |> render_click()
+
       assert view
              |> has_element?("#publish")
 
-      expect(Affable.MockBroadcaster, :broadcast, fn _site ->
+      raw_site = raw(Sites.get_site!(site.id))
+
+      expect(Affable.MockBroadcaster, :broadcast, fn %{published: ^raw_site} ->
         :ok
       end)
 
@@ -107,7 +126,7 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       refute view
              |> has_element?(".item:nth-child(#{num_items + 1})")
 
-      expect(Affable.MockBroadcaster, :broadcast, fn preview: %{"items" => [item | _]} ->
+      expect(Affable.MockBroadcaster, :broadcast, fn %{preview: %{"items" => [item | _]}} ->
         assert item["name"] == "New item"
         :ok
       end)
@@ -139,7 +158,7 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       expect(
         Affable.MockBroadcaster,
         :broadcast,
-        fn preview: %{"items" => [%{"description" => "My new description!"} | _]} ->
+        fn %{preview: %{"items" => [%{"description" => "My new description!"} | _]}} ->
           :ok
         end
       )
@@ -234,7 +253,7 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       expect(
         Affable.MockBroadcaster,
         :broadcast,
-        fn preview: %{"items" => [_, new_second_item | _]} ->
+        fn %{preview: %{"items" => [_, new_second_item | _]}} ->
           assert first_item.name == new_second_item["name"]
           :ok
         end
@@ -247,7 +266,7 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
       expect(
         Affable.MockBroadcaster,
         :broadcast,
-        fn preview: %{"items" => [new_first_item | _]} ->
+        fn %{preview: %{"items" => [new_first_item | _]}} ->
           assert first_item.name == new_first_item["name"]
           :ok
         end

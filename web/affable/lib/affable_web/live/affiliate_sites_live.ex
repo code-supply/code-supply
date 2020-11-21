@@ -125,7 +125,12 @@ defmodule AffableWeb.AffiliateSitesLive do
   end
 
   defp broadcast(site) do
-    :ok = broadcaster().broadcast(preview: Sites.Raw.raw(site))
+    :ok =
+      broadcaster().broadcast(%{
+        preview: Sites.Raw.raw(site),
+        published: Sites.latest_publication(site).data
+      })
+
     site
   end
 
