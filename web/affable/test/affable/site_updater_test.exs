@@ -50,9 +50,8 @@ defmodule Affable.SiteUpdaterTest do
 
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
-    message = assert_receive ^raw_site
-
-    write_fixture_for_external_consumption("site_update_message", message)
+    assert_receive(^raw_site)
+    |> write_fixture_for_external_consumption("site_update_message")
   end
 
   test "records when the site was first made available", %{site_id: site_id, site_name: site_name} do
@@ -84,7 +83,7 @@ defmodule Affable.SiteUpdaterTest do
     }
   end
 
-  defp write_fixture_for_external_consumption(name, obj) do
+  defp write_fixture_for_external_consumption(obj, name) do
     (Path.dirname(__ENV__.file) <> "/../../../fixtures/#{name}.ex")
     |> File.write!(inspect(obj, pretty: true))
   end
