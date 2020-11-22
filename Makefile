@@ -58,7 +58,7 @@ affiliate_use_latest:
 		| tr -d '\n' \
 		> k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
 
-web/affable/VERSION: .git/refs/heads/master
+web/affable/VERSION:
 	git diff-index --quiet HEAD --
 	git rev-parse --short HEAD > $@
 
