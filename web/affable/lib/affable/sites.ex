@@ -58,24 +58,20 @@ defmodule Affable.Sites do
   end
 
   def get_site!(user, id) do
-    get_site_query(id)
+    site_query(id)
     |> join(:inner, [s], m in SiteMember, on: s.id == m.site_id)
-    |> where([s, m], s.id == ^id and m.user_id == ^user.id)
-    |> preload([], [:domains, :members])
+    |> where([s, m], m.user_id == ^user.id)
     |> Repo.one!()
   end
 
   def get_site!(id) do
-    get_site_query(id)
-    |> join(:inner, [s], m in SiteMember, on: s.id == m.site_id)
-    |> where([s, m], s.id == ^id)
-    |> preload([], [:domains, :members])
+    site_query(id)
     |> Repo.one!()
   end
 
   @impl true
   def get_raw_site(id) do
-    case get_site_query(id) |> Repo.one() do
+    case base_site_query(id) |> Repo.one() do
       %Site{} = site ->
         {:ok,
          %{
@@ -86,6 +82,21 @@ defmodule Affable.Sites do
       nil ->
         {:error, :not_found}
     end
+  end
+
+  defp base_site_query(id) do
+    items_q = items_query()
+    definitions_q = definitions_query()
+
+    from(s in Site,
+      where: s.id == ^id,
+      preload: [items: ^items_q, attribute_definitions: ^definitions_q]
+    )
+  end
+
+  defp site_query(id) do
+    base_site_query(id)
+    |> preload([], [:domains, :members])
   end
 
   @impl true
@@ -101,16 +112,6 @@ defmodule Affable.Sites do
       |> Site.change_made_available_at(at)
       |> Repo.update()
     end
-  end
-
-  defp get_site_query(id) do
-    items_q = items_query()
-    definitions_q = definitions_query()
-
-    from(s in Site,
-      where: s.id == ^id,
-      preload: [items: ^items_q, attribute_definitions: ^definitions_q]
-    )
   end
 
   defp items_query do
