@@ -1,24 +1,28 @@
 defmodule AffiliateWeb.Router do
   use AffiliateWeb, :router
 
-  pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, {AffiliateWeb.LayoutView, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+  pipeline :insecure_browser do
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, {AffiliateWeb.LayoutView, :root})
+    plug(:protect_from_forgery)
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   scope "/", AffiliateWeb do
-    pipe_through :browser
+    pipe_through([:insecure_browser, :put_secure_browser_headers])
 
-    live "/", PageLive, :index
-    live "/preview", PreviewLive, :index
+    live("/", PageLive, :index)
+  end
+
+  scope "/preview", AffiliateWeb do
+    pipe_through(:insecure_browser)
+
+    live("/", PreviewLive, :index)
   end
 
   # Other scopes may use custom stacks.
@@ -37,8 +41,8 @@ defmodule AffiliateWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
-      pipe_through :browser
-      live_dashboard "/dashboard", metrics: AffiliateWeb.Telemetry
+      pipe_through(:insecure_browser)
+      live_dashboard("/dashboard", metrics: AffiliateWeb.Telemetry)
     end
   end
 end
