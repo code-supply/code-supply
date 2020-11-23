@@ -51,6 +51,8 @@ defmodule Affable.SiteUpdaterTest do
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
     assert_receive(^raw_site)
+    |> put_in([:preview, "id"], 1)
+    |> put_in([:published, "id"], 1)
     |> write_fixture_for_external_consumption("site_update_message")
   end
 

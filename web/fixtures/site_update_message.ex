@@ -1,7 +1,7 @@
 %{
   preview: %{
     "header_image_url" => nil,
-    "id" => 8045,
+    "id" => 1,
     "items" => [
       %{
         "attributes" => [%{"name" => "Price", "value" => "$1.23"}],
@@ -92,7 +92,7 @@
   },
   published: %{
     "header_image_url" => nil,
-    "id" => 8045,
+    "id" => 1,
     "items" => [
       %{
         "attributes" => [%{"name" => "Price", "value" => "$1.23"}],
