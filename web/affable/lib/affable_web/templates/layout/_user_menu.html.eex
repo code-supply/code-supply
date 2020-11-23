@@ -1,5 +1,5 @@
 <div
-  class="mr-5 text-2xl font-serif font-medium"><a href="/">Affable</a></div>
+  class="mr-5 text-2xl leading-9 font-serif font-medium"><a href="/">Affable</a></div>
 
 <%= if @current_user do %>
   <nav role="navigation"

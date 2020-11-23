@@ -38,14 +38,14 @@ a:hover {
     @apply text-blue-600;
 }
 a:focus {
-    @apply outline-none shadow-outline rounded
+    @apply outline-none ring rounded
 }
 a.phx-click-loading {
     @apply animate-ping;
 }
 
 h1 {
-    @apply text-5xl mb-6;
+    @apply text-5xl leading-relaxed mb-6;
 }
 .h2 {
     @apply text-4xl my-6;
@@ -136,7 +136,7 @@ li:first-child .promote, li:last-child .demote {
     @apply p-2 border-gray-400 border-2 rounded bg-white h-12;
 }
 .field input:focus, .field textarea:focus, .field select:focus {
-    @apply border-blue-600 shadow-outline outline-none border-transparent;
+    @apply border-blue-600 ring outline-none border-transparent;
 }
 .standard-w .field label, .standard-w .field input, .standard-w .field textarea {
     @apply w-2/3 max-w-md;
@@ -165,7 +165,7 @@ li:first-child .promote, li:last-child .demote {
 .btn:hover,
 .btn:focus {
     @apply
-    shadow-outline outline-none
+    ring outline-none
     text-gray-300;
 }
 .btn:hover {
