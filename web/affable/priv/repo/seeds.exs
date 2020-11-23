@@ -11,6 +11,10 @@
 # and so on) as they will fail if something goes wrong.
 
 alias Affable.Accounts
+alias Affable.Domains.Domain
+alias Affable.Repo
+
+import Ecto.Query
 
 if Mix.env() == :dev do
   {:ok, user} =
@@ -31,4 +35,11 @@ if Mix.env() == :dev do
     end)
 
   Accounts.confirm_user(token)
+
+  [site] = user.sites
+  [domain] = site.domains
+
+  # subvert validation for the special-case localhost entry
+  from(d in Domain, where: d.id == ^domain.id)
+  |> Repo.update_all(set: [name: "localhost:4001"])
 end
