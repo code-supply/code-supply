@@ -16,13 +16,13 @@
             <div class="domains pending-invisible">
               <ul>
                 <%= for domain <- site.domains do %>
-                  <li><a target="_blank" href="https://<%= domain.name %>/"><%= domain.name %></a></li>
+                  <li><a target="_blank" rel="noopener" href="https://<%= domain.name %>/"><%= domain.name %></a></li>
                 <% end %>
               </ul>
             </div>
             <ul class="float-right cta">
               <li class="float-left mr-4 pending-spinner">
-                <a target="_blank" class="pending-invisible" href="<%= site |> canonical_url() %>">Visit</a>
+                <a target="_blank" rel="noopener" class="pending-invisible" href="<%= site |> canonical_url() %>">Visit</a>
               </li>
               <li class="float-left">
                 <a href="<%= Routes.affiliate_sites_path(@socket, :edit, site.id) %>">Edit</a>
