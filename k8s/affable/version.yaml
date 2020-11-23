@@ -6,4 +6,4 @@ spec:
   template:
     metadata:
       labels:
-        version: "b940e33"
+        version: "d698ce6"
