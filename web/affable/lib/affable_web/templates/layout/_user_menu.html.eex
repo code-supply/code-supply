@@ -11,13 +11,13 @@
   <div class="pop-out
               absolute right-0 top-0 mt-2 mr-2 z-50
               overflow-hidden
-              bg-white
               ">
     <button class="px-4 py-2"><%= @current_user.email %>▼</button>
     <nav role="navigation"
     class="menu
     px-4 py-2
-    leading-loose">
+    leading-loose
+    bg-white">
       <ul>
         <li><%= link to: Routes.user_settings_path(@conn, :edit),
          tabindex: 1,
