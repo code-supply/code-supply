@@ -1,38 +1,40 @@
-<h1>My Sites</h1>
+<div class="container">
+  <h1>My Sites</h1>
 
-<%= if @user_confirmed_at do %>
-  <ul class="resources">
-    <%= for site <- @sites do %>
-      <li class="float-left w-1/3 <%= site |> status() %>">
-        <div class="
-                    overflow-hidden
-                    rounded
-                    border-white
-                    border-8
-                    shadow-lg
-                    p-4 mr-4 mb-4">
-          <h2 class="mb-4 text-2xl"><%= site.name %></h2>
-          <div class="domains pending-invisible">
-            <ul>
-              <%= for domain <- site.domains do %>
-                <li><a target="_blank" href="https://<%= domain.name %>/"><%= domain.name %></a></li>
-              <% end %>
+  <%= if @user_confirmed_at do %>
+    <ul class="resources">
+      <%= for site <- @sites do %>
+        <li class="float-left w-1/3 <%= site |> status() %>">
+          <div class="
+                      overflow-hidden
+                      rounded
+                      border-white
+                      border-8
+                      shadow-lg
+                      p-4 mr-4 mb-4">
+            <h2 class="mb-4 text-2xl"><%= site.name %></h2>
+            <div class="domains pending-invisible">
+              <ul>
+                <%= for domain <- site.domains do %>
+                  <li><a target="_blank" href="https://<%= domain.name %>/"><%= domain.name %></a></li>
+                <% end %>
+              </ul>
+            </div>
+            <ul class="float-right cta">
+              <li class="float-left mr-4 pending-spinner">
+                <a target="_blank" class="pending-invisible" href="<%= site |> canonical_url() %>">Visit</a>
+              </li>
+              <li class="float-left">
+                <a href="<%= Routes.affiliate_sites_path(@socket, :edit, site.id) %>">Edit</a>
+              </li>
             </ul>
           </div>
-          <ul class="float-right cta">
-            <li class="float-left mr-4 pending-spinner">
-              <a target="_blank" class="pending-invisible" href="<%= site |> canonical_url() %>">Visit</a>
-            </li>
-            <li class="float-left">
-              <a href="<%= Routes.affiliate_sites_path(@socket, :edit, site.id) %>">Edit</a>
-            </li>
-          </ul>
-        </div>
-      </li>
-    <% end %>
-  </ul>
-<% else %>
-  <p>
-  Check your email! We need to confirm you're real before we can build sites for you.
-  </p>
-<% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>
+    Check your email! We need to confirm you're real before we can build sites for you.
+    </p>
+  <% end %>
+</div>

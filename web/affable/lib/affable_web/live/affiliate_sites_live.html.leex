@@ -1,4 +1,5 @@
-<%= outer_form = form_for @changeset, '#', id: "item-edit", csrf_token: false, phx_change: :save, phx_submit: :save %>
+<%= outer_form = form_for @changeset, '#', id: "item-edit",
+    class: "h-body top-12 mt-1 fixed w-1/3 overflow-y-scroll px-4", csrf_token: false, phx_change: :save, phx_submit: :save %>
   <h1>Editing <%= @changeset.data.name %></h1>
 
   <%= unless @published do %>
@@ -22,85 +23,83 @@
     </div>
   <% end %>
 
-  <div class="flex">
-    <div class="w-1/2 pr-3">
-      <h2 class="h2">Site info</h2>
+  <div class="pr-3">
+    <h2 class="h2">Site info</h2>
 
-      <div class="field">
-        <%= label outer_form, :name, "Site name" %>
-        <%= text_input outer_form, :name, phx_debounce: 1000, class: "w-full" %>
-        <%= error_tag outer_form, :name %>
-      </div>
-
-      <div class="field">
-        <%= label outer_form, :page_subtitle, "Page subtitle" %>
-        <%= text_input outer_form, :page_subtitle, phx_debounce: 1000, class: "w-full"%>
-        <%= error_tag outer_form, :page_subtitle %>
-      </div>
-
-      <div class="field">
-        <%= label outer_form, :site_logo_url, "Site logo URL" %>
-        <%= text_input outer_form, :site_logo_url, phx_debounce: 1000, class: "w-full" %>
-        <%= error_tag outer_form, :site_logo_url %>
-      </div>
-
-      <div class="field">
-        <%= label outer_form, :header_image_url, "Header image URL" %>
-        <%= text_input outer_form, :header_image_url, phx_debounce: 1000, class: "w-full" %>
-        <%= error_tag outer_form, :header_image_url %>
-      </div>
-
-      <div class="field">
-        <%= label outer_form, :text %>
-        <%= textarea outer_form, :text, phx_debounce: 1000, class: "w-full" %>
-        <%= error_tag outer_form, :text %>
-      </div>
+    <div class="field">
+      <%= label outer_form, :name, "Site name" %>
+      <%= text_input outer_form, :name, phx_debounce: 1000, class: "w-full" %>
+      <%= error_tag outer_form, :name %>
     </div>
 
-    <div class="w-1/2 pl-3">
-      <h2 class="h2">Item Attributes</h2>
+    <div class="field">
+      <%= label outer_form, :page_subtitle, "Page subtitle" %>
+      <%= text_input outer_form, :page_subtitle, phx_debounce: 1000, class: "w-full"%>
+      <%= error_tag outer_form, :page_subtitle %>
+    </div>
 
-      <a href="#" id="new-attribute-definition" class="btn" phx-click="new-attribute-definition">New Attribute</a>
+    <div class="field">
+      <%= label outer_form, :site_logo_url, "Site logo URL" %>
+      <%= text_input outer_form, :site_logo_url, phx_debounce: 1000, class: "w-full" %>
+      <%= error_tag outer_form, :site_logo_url %>
+    </div>
 
-      <ul class="divide-y-2">
-        <%= for f <- inputs_for(outer_form, :attribute_definitions) do %>
-          <li class="attribute-definition pb-6">
-            <%= hidden_inputs_for f %>
+    <div class="field">
+      <%= label outer_form, :header_image_url, "Header image URL" %>
+      <%= text_input outer_form, :header_image_url, phx_debounce: 1000, class: "w-full" %>
+      <%= error_tag outer_form, :header_image_url %>
+    </div>
 
-            <div class="flex items-end">
-              <div class="field w-3/12 pr-2">
-                <%= label f, :type %>
-                <%= select f, :type, [
-                      "Text": "text",
-                      "Number": "number",
-                      "$": "dollar",
-                      "€": "euro",
-                      "£": "pound",
-                    ],
-                    class: "w-full" %>
-              </div>
+    <div class="field">
+      <%= label outer_form, :text %>
+      <%= textarea outer_form, :text, phx_debounce: 1000, class: "w-full" %>
+      <%= error_tag outer_form, :text %>
+    </div>
+  </div>
 
-              <div class="field w-8/12 pl-2">
-                <%= label f, :name %>
-                <%= text_input f, :name, phx_debounce: 1000, class: "w-full" %>
-                <%= error_tag f, :name %>
-              </div>
+  <div class="pl-3">
+    <h2 class="h2">Item Attributes</h2>
 
-              <div class="flex-none w-1/12 pl-2">
-                <a id="delete-attribute-definition-<%= f.data.id %>"
-                   href="#"
-                   class="m-auto trash block w-8 h-12 bg-contain bg-no-repeat bg-center"
-                   phx-click="delete-attribute-definition"
-                   phx-value-id="<%= f.data.id %>"
-                   >
-                </a>
-              </div>
+    <a href="#" id="new-attribute-definition" class="btn" phx-click="new-attribute-definition">New Attribute</a>
 
+    <ul class="divide-y-2">
+      <%= for f <- inputs_for(outer_form, :attribute_definitions) do %>
+        <li class="attribute-definition pb-6">
+          <%= hidden_inputs_for f %>
+
+          <div class="flex items-end">
+            <div class="field w-3/12 pr-2">
+              <%= label f, :type %>
+              <%= select f, :type, [
+                    "Text": "text",
+                    "Number": "number",
+                    "$": "dollar",
+                    "€": "euro",
+                    "£": "pound",
+                  ],
+                  class: "w-full" %>
             </div>
-          </li>
-        <% end %>
-      </ul>
-    </div>
+
+            <div class="field w-8/12 pl-2">
+              <%= label f, :name %>
+              <%= text_input f, :name, phx_debounce: 1000, class: "w-full" %>
+              <%= error_tag f, :name %>
+            </div>
+
+            <div class="flex-none w-1/12 pl-2">
+              <a id="delete-attribute-definition-<%= f.data.id %>"
+                 href="#"
+                 class="m-auto trash block w-8 h-12 bg-contain bg-no-repeat bg-center"
+                 phx-click="delete-attribute-definition"
+                 phx-value-id="<%= f.data.id %>"
+                 >
+              </a>
+            </div>
+
+          </div>
+        </li>
+      <% end %>
+    </ul>
   </div>
 
   <h2 class="h2">Items</h2>
@@ -110,25 +109,25 @@
   <ol>
     <%= for f <- inputs_for(outer_form, :items) do %>
       <li class="item standard-w">
-        <p id="position-<%= f.data.id %>" class="position">
+        <p id="position-<%= f.data.id %>" class="position overflow-hidden">
           <span class="number"><%= f.data.position %></span>
           <a id="delete-item-<%= f.data.id %>"
              href="#"
-             class="trash feather"
+             class="trash feather w-8 h-12 mr-16"
              phx-click="delete-item"
              phx-value-id="<%= f.data.id %>"
              >
           </a>
           <a id="demote-<%= f.data.id %>"
              href="#"
-             class="demote feather"
+             class="demote feather w-8 h-12 mr-8"
              phx-click="demote"
              phx-value-id="<%= f.data.id %>"
              >
           </a>
           <a id="promote-<%= f.data.id %>"
              href="#"
-             class="promote feather"
+             class="promote feather w-8 h-12"
              phx-click="promote"
              phx-value-id="<%= f.data.id %>"
              >
@@ -176,3 +175,4 @@
     <% end %>
   </ol>
 </form>
+<iframe class="h-body top-12 mt-1 fixed left-1/3 w-2/3 overflow-scroll" src="<%= @changeset.data |> canonical_url() %>preview">

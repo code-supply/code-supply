@@ -6,6 +6,8 @@ defmodule AffableWeb.AffiliateSitesLive do
   alias Affable.Sites
   alias Affable.Sites.Site
 
+  import Affable.Sites, only: [canonical_url: 1]
+
   def mount(%{"id" => id}, %{"user_token" => token}, socket) do
     case Accounts.get_user_by_session_token(token) do
       nil ->

@@ -44,7 +44,7 @@ defmodule Affable.Sites do
   end
 
   def canonical_url(%Site{domains: [%Domain{name: name}]}) do
-    "https://#{name}/"
+    "//#{name}/"
   end
 
   def canonical_url(%Site{domains: domains}) do
@@ -54,7 +54,7 @@ defmodule Affable.Sites do
         !(d.name |> String.ends_with?(".affable.app"))
       end)
 
-    "https://#{domain.name}/"
+    "//#{domain.name}/"
   end
 
   def get_site!(user, id) do
