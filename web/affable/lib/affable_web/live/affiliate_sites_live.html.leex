@@ -6,7 +6,7 @@
 
 <%= outer_form = form_for @changeset, '#', id: "item-edit",
     class: "h-body top-12 mt-1 fixed w-1/3 overflow-y-scroll px-4", csrf_token: false, phx_change: :save, phx_submit: :save %>
-  <h1>Editing <%= @changeset.data.name %></h1>
+  <h1 class="h2">Editing <%= @changeset.data.name %></h1>
 
   <%= if @saved_state != :neutral do %>
     <div class="save-indicator">
@@ -24,8 +24,6 @@
   <% end %>
 
   <div>
-    <h2 class="h2">Site info</h2>
-
     <div class="field">
       <%= label outer_form, :name, "Site name" %>
       <%= text_input outer_form, :name, phx_debounce: 1000, class: "w-full" %>
