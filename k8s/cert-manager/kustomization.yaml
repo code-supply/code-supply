@@ -9,3 +9,4 @@ patches:
       value: --dns01-recursive-nameservers="8.8.8.8:53"
   target:
     kind: Deployment
+    labelSelector: app=cert-manager
