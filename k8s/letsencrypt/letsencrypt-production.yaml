@@ -1,5 +1,5 @@
 kind: ClusterIssuer
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 metadata:
   name: letsencrypt-production
 spec:
@@ -9,11 +9,8 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-production
     solvers:
-    - http01:
-        ingress:
-          class: istio
     - dns01:
-        clouddns:
+        cloudDNS:
           project: code-supply
           serviceAccountSecretRef:
             name: dns-key
