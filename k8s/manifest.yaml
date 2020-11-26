@@ -15438,7 +15438,7 @@ spec:
       labels:
         app: site-operator
         k8s-app: site-operator
-        version: 293f764
+        version: cea19a5
     spec:
       containers:
       - env:
