@@ -52,12 +52,6 @@ k8s/operators/site-operator-version.yaml:
 	echo "      labels:" >> $(operator_version)
 	echo "        version: \"$$(cat operators/site_operator/VERSION)\"" >> $(operator_version)
 
-.PHONY: affiliate_use_latest
-affiliate_use_latest:
-	echo "eu.gcr.io/code-supply/affiliate@$$(latest-affiliate-digest)" \
-		| tr -d '\n' \
-		> k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
-
 web/affable/VERSION:
 	git diff-index --quiet HEAD --
 	git rev-parse --short HEAD > $@
@@ -91,6 +85,29 @@ affable_rotate_sql_credentials:
 		google-credentials \
 		key.json \
 		sql-shared-affable@code-supply.iam.gserviceaccount.com
+
+web/affiliate/VERSION:
+	git diff-index --quiet HEAD --
+	git rev-parse --short HEAD > $@
+
+web/affiliate/VERSION_BUILT: web/affiliate/VERSION
+	docker build -t eu.gcr.io/code-supply/affiliate:$$(cat $<) web/affiliate
+	cat $< > $@
+
+web/affiliate/VERSION_PUSHED: web/affiliate/VERSION_BUILT
+	docker push eu.gcr.io/code-supply/affiliate:$$(cat $<)
+	cat $< > $@
+
+k8s/operators/env-vars/AFFILIATE_SITE_IMAGE: web/affiliate/VERSION_PUSHED
+	docker inspect --format='{{index .RepoDigests 0}}' eu.gcr.io/code-supply/affiliate:$$(cat $<) \
+		| tr -d '\n' \
+		> k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
+
+.PHONY: affiliate_use_latest
+affiliate_use_latest:
+	echo "eu.gcr.io/code-supply/affiliate@$$(latest-affiliate-digest)" \
+		| tr -d '\n' \
+		> k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
 
 .PHONY: triggers
 triggers:
