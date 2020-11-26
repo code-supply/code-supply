@@ -22,20 +22,28 @@ diff: \
 	kubectl diff \
 		-f k8s/manifest.yaml
 
-.PHONY: operator_use_head
-operator_use_head:
-	git rev-parse --short HEAD > operators/site_operator/VERSION
+operators/site_operator/VERSION:
+	git diff-index --quiet HEAD --
+	git rev-parse --short HEAD > $@
+
+operators/site_operator/VERSION_BUILT: operators/site_operator/VERSION
+	docker build -t eu.gcr.io/code-supply/site-operator:$$(cat $<) operators/site_operator
+	cat $< > $@
+
+operators/site_operator/VERSION_PUSHED: operators/site_operator/VERSION_BUILT
+	docker push eu.gcr.io/code-supply/site-operator:$$(cat $<)
+	cat $< > $@
 
 k8s/operators/site-operator.yaml: \
 	operators/site_operator/lib/site_operator/controllers/v1/* \
 	operators/site_operator/config/* \
-	operators/site_operator/VERSION \
+	operators/site_operator/VERSION_PUSHED \
 	k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
 	cd operators/site_operator && \
 		mix compile && \
 		mix bonny.gen.manifest \
 		--namespace operators \
-		--image eu.gcr.io/code-supply/site-operator:$$(cat VERSION) \
+		--image eu.gcr.io/code-supply/site-operator:$$(cat VERSION_PUSHED) \
 		--out - \
 		> ../../$@
 
