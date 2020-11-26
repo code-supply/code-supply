@@ -58,7 +58,7 @@ k8s/operators/site-operator-version.yaml:
 	echo "  template:" >> $(operator_version)
 	echo "    metadata:" >> $(operator_version)
 	echo "      labels:" >> $(operator_version)
-	echo "        version: \"$$(cat operators/site_operator/VERSION)\"" >> $(operator_version)
+	echo "        version: \"$$(cat operators/site_operator/VERSION_PUSHED)\"" >> $(operator_version)
 
 web/affable/VERSION:
 	git diff-index --quiet HEAD --
