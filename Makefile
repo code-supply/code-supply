@@ -23,7 +23,6 @@ diff: \
 		-f k8s/manifest.yaml
 
 operators/site_operator/VERSION:
-	git diff-index --quiet HEAD --
 	git rev-parse --short HEAD > $@
 
 operators/site_operator/VERSION_BUILT: operators/site_operator/VERSION
@@ -61,7 +60,6 @@ k8s/operators/site-operator-version.yaml:
 	echo "        version: \"$$(cat operators/site_operator/VERSION_PUSHED)\"" >> $(operator_version)
 
 web/affable/VERSION:
-	git diff-index --quiet HEAD --
 	git rev-parse --short HEAD > $@
 
 web/affable/VERSION_BUILT: web/affable/VERSION
@@ -95,7 +93,6 @@ affable_rotate_sql_credentials:
 		sql-shared-affable@code-supply.iam.gserviceaccount.com
 
 web/affiliate/VERSION:
-	git diff-index --quiet HEAD --
 	git rev-parse --short HEAD > $@
 
 web/affiliate/VERSION_BUILT: web/affiliate/VERSION
