@@ -103,12 +103,6 @@ k8s/operators/env-vars/AFFILIATE_SITE_IMAGE: web/affiliate/VERSION_PUSHED
 		| tr -d '\n' \
 		> k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
 
-.PHONY: affiliate_use_latest
-affiliate_use_latest:
-	echo "eu.gcr.io/code-supply/affiliate@$$(latest-affiliate-digest)" \
-		| tr -d '\n' \
-		> k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
-
 .PHONY: triggers
 triggers:
 	for id in $$(gcloud --format=json beta builds triggers list | jq -r .[].id); \
