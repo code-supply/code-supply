@@ -3,6 +3,7 @@ defmodule Affable.SiteUpdater do
   use GenServer
 
   alias Phoenix.PubSub
+  alias Affable.Sites.Payload
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args, name: __MODULE__)
@@ -15,7 +16,7 @@ defmodule Affable.SiteUpdater do
   end
 
   @impl true
-  def broadcast(%{preview: preview} = payload) do
+  def broadcast(%Payload{preview: preview} = payload) do
     GenServer.cast(__MODULE__, %{
       topic: Affable.ID.site_name_from_id(preview["id"]),
       payload: payload

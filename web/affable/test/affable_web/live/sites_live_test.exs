@@ -5,7 +5,7 @@ defmodule AffableWeb.SitesLiveTest do
 
   alias Affable.Accounts
   alias Affable.Accounts.User
-  alias Affable.Sites
+  alias Affable.Sites.{Payload, Raw}
 
   describe "authenticated and confirmed user" do
     setup context do
@@ -26,8 +26,15 @@ defmodule AffableWeb.SitesLiveTest do
 
       assert view |> has_element?(".pending")
 
-      message = Sites.Raw.raw(site |> Affable.Repo.preload(items: [attributes: :definition]))
-      message = Map.put(message, "made_available_at", DateTime.utc_now())
+      raw_site =
+        site
+        |> Affable.Repo.preload(items: [attributes: :definition])
+        |> Raw.raw()
+        |> Map.put("made_available_at", DateTime.utc_now())
+
+      message =
+        %Payload{preview: raw_site, published: raw_site}
+        |> Map.from_struct()
 
       Phoenix.PubSub.broadcast(:affable, site.internal_name, message)
 
