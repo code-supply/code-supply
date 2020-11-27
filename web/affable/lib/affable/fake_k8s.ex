@@ -1,6 +1,10 @@
 defmodule Affable.FakeK8s do
   @behaviour Affable.K8s
 
+  alias Affable.Repo
+  alias Affable.Sites.Site
+  alias Phoenix.PubSub
+
   @impl true
   def deploy(resource) do
     IO.puts("FakeK8s: would have deployed #{inspect(resource)}")
@@ -9,5 +13,17 @@ defmodule Affable.FakeK8s do
   @impl true
   def undeploy(resource) do
     IO.puts("FakeK8s: would have undeployed #{inspect(resource)}")
+  end
+
+  def ready() do
+    for site <- Site |> Repo.all() do
+      IO.puts("FakeK8s: broadcasting for site #{site.internal_name}")
+
+      PubSub.broadcast(
+        :affable,
+        Application.get_env(:affable, :pubsub_topic_requests),
+        site.internal_name
+      )
+    end
   end
 end
