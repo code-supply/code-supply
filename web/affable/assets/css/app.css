@@ -2,12 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+.flash {
+    @apply w-3/4 max-w-lg m-auto mt-2 text-xl font-semibold text-center text-white;
+}
+
+.flash-error {
+    @apply p-4 mb-4 bg-red-500 rounded-lg shadow-md;
+}
+
+.flash-info {
+    @apply p-4 mb-4 font-semibold text-white bg-green-500 rounded-lg shadow-md;
+}
+
 .h-body {
     height: calc(100% - 3.5rem);
 }
 
 .pop-out button {
-    @apply outline-none border-white border-t-2 border-r-2 border-l-2 rounded-t-lg;
+    @apply border-t-2 border-l-2 border-r-2 border-white rounded-t-lg outline-none;
 }
 .pop-out .menu {
     @apply hidden rounded-b-lg;
@@ -18,7 +30,7 @@
 }
 .pop-out button + .menu:active,
 .pop-out button:focus + .menu {
-    @apply block border-l-2 border-r-2 border-b-2;
+    @apply block border-b-2 border-l-2 border-r-2;
 }
 .pop-out .menu li a {
     @apply p-2 no-underline rounded;
@@ -35,7 +47,7 @@ body {
 }
 
 .container {
-    @apply clear-both mx-auto p-2;
+    @apply p-2 mx-auto clear-both;
 }
 
 a:hover {
@@ -49,10 +61,10 @@ a.phx-click-loading {
 }
 
 h1 {
-    @apply text-5xl leading-relaxed mb-6;
+    @apply mb-6 text-5xl leading-relaxed;
 }
 .h2 {
-    @apply text-4xl my-6;
+    @apply my-6 text-4xl;
 }
 
 th {
@@ -60,7 +72,7 @@ th {
 }
 
 th,td {
-    @apply pt-4 pr-4 pb-4;
+    @apply pt-4 pb-4 pr-4;
 }
 
 thead tr {
@@ -72,20 +84,21 @@ tbody tr:hover {
 }
 
 .save-indicator {
-    @apply fixed top-0 left-0 mt-4 ml-48 z-50;
+    @apply fixed top-0 left-0 z-50 mt-4 ml-48;
 }
+
 .save-indicator .saved-state {
-    @apply m-auto w-32 pl-4
-    transition-opacity duration-1000 ease-out
-    opacity-0;
+    @apply w-32 pl-4 m-auto opacity-0 transition-opacity duration-1000 ease-out;
 }
+
 .save-indicator .saved-state.saved {
     @apply opacity-100;
 }
+
 .save-indicator .saved .message,
 .save-indicator .clear .message,
 .save-indicator .neutral .message {
-    @apply bg-contain bg-no-repeat pl-6;
+    @apply pl-6 bg-no-repeat bg-contain;
     background-image: url("/images/check-circle.svg");
 }
 
@@ -96,66 +109,70 @@ tbody tr:hover {
 .field {
     @apply mt-4 clear-left;
 }
+
 .field label {
     @apply block text-lg;
 }
+
 .invalid-feedback {
-    @apply block text-red-800 font-bold;
+    @apply block font-bold text-red-800;
 }
+
 .field input, .field textarea, .field select {
-    @apply p-2 border-gray-400 border-2 rounded bg-white h-12;
+    @apply h-12 p-2 bg-white border-2 border-gray-400 rounded;
 }
+
 .field input:focus, .field textarea:focus, .field select:focus {
-    @apply border-blue-600 ring outline-none border-transparent;
+    @apply border-transparent border-blue-600 outline-none ring;
 }
+
 .standard-w .field label, .standard-w .field input, .standard-w .field textarea {
     @apply w-2/3 max-w-md;
 }
+
 .chk {
     @apply mr-1;
 }
+
 .item .image {
-    @apply float-right w-1/3 mt-6 pl-2 mb-4;
+    @apply float-right w-1/3 pl-2 mt-6 mb-4;
 }
+
 .field input[type="number"] {
     @apply text-right;
 }
+
 .field textarea {
     @apply h-32;
 }
+
 .btn {
-    @apply
-    block w-48
-    text-center
-    bg-gradient-to-br from-blue-400 to-blue-600
-    rounded-md
-    text-white text-xl font-bold
-    px-2 py-3 mt-6 mb-4 mr-4;
+    @apply block w-48 px-2 py-3 mt-6 mb-4 mr-4 text-xl font-bold text-center text-white bg-gradient-to-br from-blue-400 to-blue-600 rounded-md;
 }
+
 .btn:hover,
 .btn:focus {
-    @apply
-    ring outline-none
-    text-gray-300;
+    @apply text-gray-300 outline-none ring;
 }
+
 .btn:hover {
-    @apply
-    from-blue-500 to-blue-700
+    @apply from-blue-500 to-blue-700
 }
+
 .btn:active {
-    @apply
-    text-gray-200
-    from-blue-300 to-blue-400
+    @apply text-gray-200 from-blue-300 to-blue-400
 }
 
 .resources {
     @apply w-full;
 }
+
 .pending .pending-spinner {
     @apply bg-center bg-no-repeat animate-spin;
     animation-duration: 4s;
     background-image: url("/images/loader.svg");
 }
+
 .pending .pending-invisible {
     @apply invisible;
 }
@@ -165,7 +182,7 @@ tbody tr:hover {
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
-    @apply stroke-current text-gray-600;
+    @apply text-gray-600 stroke-current;
 }
 
 .feather:hover {
@@ -177,15 +194,15 @@ tbody tr:hover {
 }
 
 .position {
-    @apply clear-left w-full;
+    @apply w-full clear-left;
 }
 
 .position .number {
-    @apply mt-2 font-bold text-xl text-center text-white rounded-r-md rounded-l-md bg-gray-800 block w-16 float-left;
+    @apply block float-left w-16 mt-2 text-xl font-bold text-center text-white bg-gray-800 rounded-r-md rounded-l-md;
 }
 
 .position a {
-    @apply bg-contain bg-no-repeat block absolute top-0 right-0;
+    @apply absolute top-0 right-0 block bg-no-repeat bg-contain;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
