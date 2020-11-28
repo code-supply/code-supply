@@ -275,7 +275,12 @@ defmodule Affable.Sites do
          |> Site.changeset(attrs)
          |> Repo.update() do
       {:ok, site} ->
-        {:ok, site |> Repo.preload([items: items_query()], force: true)}
+        {
+          :ok,
+          site
+          |> Repo.preload([items: items_query()], force: true)
+          |> broadcast()
+        }
 
       otherwise ->
         otherwise

@@ -112,6 +112,8 @@ defmodule Affable.SitesTest do
     } do
       site = site_fixture()
 
+      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+
       Sites.update_site(site, %{name: "Top 10 Bananas"})
 
       {:ok,
@@ -414,6 +416,10 @@ defmodule Affable.SitesTest do
     test "update_site/2 with valid data updates the site" do
       {_, site} = user_and_site_with_items()
       [definition] = site.attribute_definitions
+
+      expect(Affable.MockBroadcaster, :broadcast, fn %Payload{} ->
+        :ok
+      end)
 
       assert {:ok, %Site{} = site} =
                Sites.update_site(site, %{

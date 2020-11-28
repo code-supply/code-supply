@@ -64,16 +64,14 @@ defmodule AffableWeb.EditorLive do
     complete_update(socket, %{site | items: [new_item | repositioned]})
   end
 
-  def handle_event("save", %{"site" => attrs}, %{assigns: %{site_id: id, user: user}} = socket) do
-    site = Sites.get_site!(user, id)
-
-    case Sites.update_site(site, attrs) do
-      {:ok, site} ->
-        complete_update(socket, site)
-
-      {:error, changeset} ->
-        {:noreply, assign(socket, changeset: changeset, saved_state: :error)}
-    end
+  def handle_event(
+        "save",
+        %{"site" => attrs},
+        %{assigns: %{site_id: id, user: user}} = socket
+      ) do
+    Sites.get_site!(user, id)
+    |> Sites.update_site(attrs)
+    |> reset_site(socket)
   end
 
   def handle_event(
@@ -139,5 +137,9 @@ defmodule AffableWeb.EditorLive do
 
   defp reset_site({:ok, site}, socket) do
     reset_site(site, socket)
+  end
+
+  defp reset_site({:error, changeset}, socket) do
+    {:noreply, assign(socket, changeset: changeset, saved_state: :error)}
   end
 end
