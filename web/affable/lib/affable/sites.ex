@@ -337,6 +337,7 @@ defmodule Affable.Sites do
             |> Repo.preload(:members)
             |> Repo.preload(attribute_definitions: definitions_query())
             |> Repo.preload(items: items_query())
+            |> broadcast()
           }
       end
     else
@@ -542,5 +543,19 @@ defmodule Affable.Sites do
   """
   def change_item(%Item{} = item, attrs \\ %{}) do
     Item.changeset(item, attrs)
+  end
+
+  def broadcast(site) do
+    :ok =
+      broadcaster().broadcast(%Payload{
+        preview: Raw.raw(site),
+        published: latest_publication(site).data
+      })
+
+    site
+  end
+
+  defp broadcaster() do
+    Application.get_env(:affable, :broadcaster)
   end
 end

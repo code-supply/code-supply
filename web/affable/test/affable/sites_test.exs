@@ -1,11 +1,12 @@
 defmodule Affable.SitesTest do
   use Affable.DataCase
 
+  import Hammox
   import Affable.{AccountsFixtures, SitesFixtures}
 
   alias Affable.Accounts.User
   alias Affable.Sites
-  alias Affable.Sites.{Site, SiteMember, Item, Attribute, AttributeDefinition}
+  alias Affable.Sites.{Payload, Site, SiteMember, Item, Attribute, AttributeDefinition}
   alias Affable.Domains.Domain
 
   describe "sites" do
@@ -325,6 +326,14 @@ defmodule Affable.SitesTest do
       assert first_before.position == 1
       assert second_before.position == 2
 
+      expect(Affable.MockBroadcaster, :broadcast, fn %Payload{
+                                                       preview: preview,
+                                                       published: published
+                                                     } ->
+        assert Map.fetch!(preview, "items") != Map.fetch!(published, "items")
+        :ok
+      end)
+
       {:ok, site} = Sites.demote_item(user, site, "#{first_before.id}")
 
       [first_after | rest] = site.items
@@ -359,6 +368,8 @@ defmodule Affable.SitesTest do
 
       assert first_before.position == 1
       assert second_before.position == 2
+
+      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
 
       {:ok, site} = Sites.promote_item(user, site, "#{second_before.id}")
       {:error, _} = Sites.promote_item(user_fixture(), site, "#{second_before.id}")

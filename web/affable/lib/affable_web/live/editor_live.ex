@@ -4,9 +4,9 @@ defmodule AffableWeb.EditorLive do
   alias Affable.Accounts
   alias Affable.Accounts.User
   alias Affable.Sites
-  alias Affable.Sites.{Payload, Site}
+  alias Affable.Sites.Site
 
-  import Affable.Sites, only: [canonical_url: 1]
+  import Affable.Sites, only: [canonical_url: 1, broadcast: 1]
 
   def mount(%{"id" => id}, %{"user_token" => token}, socket) do
     case Accounts.get_user_by_session_token(token) do
@@ -90,14 +90,18 @@ defmodule AffableWeb.EditorLive do
     site = Sites.get_site!(user, id)
 
     {:ok, site} = Sites.promote_item(user, site, item_id)
-    complete_update(socket, site)
+
+    site
+    |> reset_site(socket)
   end
 
   def handle_event("demote", %{"id" => item_id}, %{assigns: %{site_id: id, user: user}} = socket) do
     site = Sites.get_site!(user, id)
 
     {:ok, site} = Sites.demote_item(user, site, item_id)
-    complete_update(socket, site)
+
+    site
+    |> reset_site(socket)
   end
 
   def handle_info(:clear_save, socket) do
@@ -126,16 +130,6 @@ defmodule AffableWeb.EditorLive do
     |> reset_site(socket)
   end
 
-  defp broadcast(site) do
-    :ok =
-      broadcaster().broadcast(%Payload{
-        preview: Sites.Raw.raw(site),
-        published: Sites.latest_publication(site).data
-      })
-
-    site
-  end
-
   defp reset_site(site, socket) do
     Process.send_after(self(), :clear_save, 2000)
 
@@ -145,9 +139,5 @@ defmodule AffableWeb.EditorLive do
        saved_state: :saved,
        published: Sites.is_published?(site)
      )}
-  end
-
-  defp broadcaster() do
-    Application.get_env(:affable, :broadcaster)
   end
 end
