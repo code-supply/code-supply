@@ -521,38 +521,35 @@ defmodule Affable.Sites do
       |> delete_item_multi(item_id_s)
       |> Repo.transaction()
 
-    {:ok,
-     site
-     |> Map.update!(:items, fn items ->
-       items
-       |> Enum.reverse()
-       |> Enum.reduce([], fn item, acc ->
-         case "#{item.id}" do
-           ^item_id_s ->
-             acc
+    {
+      :ok,
+      site
+      |> Map.update!(:items, fn items ->
+        items
+        |> Enum.reverse()
+        |> Enum.reduce([], fn item, acc ->
+          case "#{item.id}" do
+            ^item_id_s ->
+              acc
 
-           _ ->
-             [%{item | position: item.position - 1} | acc]
-         end
-       end)
-     end)}
+            _ ->
+              [%{item | position: item.position - 1} | acc]
+          end
+        end)
+      end)
+      |> broadcast()
+    }
   end
 
-  defp delete_item_multi(items, item_id_s) do
+  defp delete_item_multi(items, id) do
     delete_position =
       items
-      |> Enum.find_value(fn item ->
-        if "#{item.id}" == item_id_s do
-          item.position
-        else
-          false
-        end
-      end)
+      |> Enum.find_value(&("#{&1.id}" == id && &1.position))
 
     items
     |> Enum.reduce(Ecto.Multi.new(), fn item, multi ->
       cond do
-        "#{item.id}" == item_id_s ->
+        "#{item.id}" == id ->
           Multi.delete(multi, :delete, item)
 
         item.position > delete_position ->

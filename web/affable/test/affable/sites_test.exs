@@ -301,6 +301,19 @@ defmodule Affable.SitesTest do
       site_before = site_fixture(user)
       [first | _] = site_before.items
 
+      expect(
+        Affable.MockBroadcaster,
+        :broadcast,
+        fn %Payload{
+             preview: %{"items" => preview_items},
+             published: %{"items" => published_items}
+           } ->
+          assert preview_items |> length() == (published_items |> length()) - 1
+
+          :ok
+        end
+      )
+
       {:ok, site_after} = Sites.delete_item(site_before, "#{first.id}")
 
       positions_after =

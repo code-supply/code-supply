@@ -81,26 +81,22 @@ defmodule AffableWeb.EditorLive do
         %{"id" => item_id},
         %{assigns: %{site_id: id, user: user}} = socket
       ) do
-    site = Sites.get_site!(user, id)
-    {:ok, site} = Sites.delete_item(site, item_id)
-    complete_update(socket, site)
+    Sites.get_site!(user, id)
+    |> Sites.delete_item(item_id)
+    |> reset_site(socket)
   end
 
   def handle_event("promote", %{"id" => item_id}, %{assigns: %{site_id: id, user: user}} = socket) do
     site = Sites.get_site!(user, id)
 
-    {:ok, site} = Sites.promote_item(user, site, item_id)
-
-    site
+    Sites.promote_item(user, site, item_id)
     |> reset_site(socket)
   end
 
   def handle_event("demote", %{"id" => item_id}, %{assigns: %{site_id: id, user: user}} = socket) do
     site = Sites.get_site!(user, id)
 
-    {:ok, site} = Sites.demote_item(user, site, item_id)
-
-    site
+    Sites.demote_item(user, site, item_id)
     |> reset_site(socket)
   end
 
@@ -130,7 +126,7 @@ defmodule AffableWeb.EditorLive do
     |> reset_site(socket)
   end
 
-  defp reset_site(site, socket) do
+  defp reset_site(%Site{} = site, socket) do
     Process.send_after(self(), :clear_save, 2000)
 
     {:noreply,
@@ -139,5 +135,9 @@ defmodule AffableWeb.EditorLive do
        saved_state: :saved,
        published: Sites.is_published?(site)
      )}
+  end
+
+  defp reset_site({:ok, site}, socket) do
+    reset_site(site, socket)
   end
 end
