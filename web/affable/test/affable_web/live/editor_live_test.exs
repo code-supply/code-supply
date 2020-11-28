@@ -196,6 +196,7 @@ defmodule AffableWeb.EditorLiveTest do
       assert after_timeout =~ "Saved."
     end
 
+    @tag :capture_log
     test "editing an item to be invalid marks the item as invalid", %{conn: conn, site: site} do
       {:ok, view, _html} = live(conn, path(conn, site))
 

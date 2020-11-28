@@ -1,4 +1,6 @@
 defmodule AffableWeb.EditorLive do
+  require Logger
+
   use AffableWeb, :live_view
 
   alias Affable.Accounts
@@ -133,6 +135,7 @@ defmodule AffableWeb.EditorLive do
   end
 
   defp reset_site({:error, changeset}, socket) do
+    Logger.error("CHANGESET: #{inspect(changeset)}\n\nSOCKET: #{inspect(socket)}")
     {:noreply, assign(socket, changeset: changeset, saved_state: :error)}
   end
 end
