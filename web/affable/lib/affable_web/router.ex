@@ -67,7 +67,7 @@ defmodule AffableWeb.Router do
     pipe_through([:browser, :require_authenticated_user])
 
     live("/sites", SitesLive, :index)
-    live("/sites/:id/edit", AffiliateSitesLive, :edit)
+    live("/sites/:id/edit", EditorLive, :edit)
     get("/users/settings", UserSettingsController, :edit)
     put("/users/settings/update_password", UserSettingsController, :update_password)
     put("/users/settings/update_email", UserSettingsController, :update_email)

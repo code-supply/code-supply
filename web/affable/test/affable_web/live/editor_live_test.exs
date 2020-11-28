@@ -1,4 +1,4 @@
-defmodule AffableWeb.AffiliateSitesLiveTest do
+defmodule AffableWeb.EditorLiveTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
   import Affable.SitesFixtures
@@ -11,7 +11,7 @@ defmodule AffableWeb.AffiliateSitesLiveTest do
   setup :verify_on_exit!
 
   defp path(conn, site) do
-    Routes.affiliate_sites_path(conn, :edit, site.id)
+    Routes.editor_path(conn, :edit, site.id)
   end
 
   describe "authenticated user" do

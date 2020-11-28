@@ -1,4 +1,4 @@
-defmodule AffableWeb.AffiliateSitesLive do
+defmodule AffableWeb.EditorLive do
   use AffableWeb, :live_view
 
   alias Affable.Accounts
