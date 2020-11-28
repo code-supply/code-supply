@@ -291,58 +291,72 @@ defmodule Affable.Sites do
   end
 
   def promote_item(user, site, item_id) do
-    move_item(user, site, item_id, fn pos -> pos - 1 end)
-  end
-
-  def demote_item(user, site, item_id) do
-    move_item(user, site, item_id, fn pos -> pos + 1 end)
-  end
-
-  defp move_item(user, site, item_id, f) do
     if site |> has_user?(user) do
-      {item_id, ""} = Integer.parse(item_id)
-
-      demotee =
-        site.items
-        |> Enum.find(fn item -> item.id == item_id end)
-
-      promotee =
-        site.items
-        |> Enum.find(fn item -> item.position == f.(demotee.position) end)
-
-      case promotee do
-        nil ->
-          {:ok, site}
-
-        _ ->
-          Multi.new()
-          |> Multi.update(
-            :move,
-            Item.changeset(demotee, %{position: -demotee.position})
-          )
-          |> Multi.update(
-            :promote,
-            Item.changeset(promotee, %{position: promotee.position - f.(0)})
-          )
-          |> Multi.update(
-            :demote,
-            Item.changeset(demotee, %{position: promotee.position})
-          )
-          |> Repo.transaction()
-
-          {
-            :ok,
-            Repo.get!(Site, site.id)
-            |> Repo.preload(:domains)
-            |> Repo.preload(:members)
-            |> Repo.preload(attribute_definitions: definitions_query())
-            |> Repo.preload(items: items_query())
-            |> broadcast()
-          }
-      end
+      move_item(site, item_id, &(&1 - 1))
     else
       {:error, :unauthorized}
     end
+  end
+
+  def demote_item(user, site, item_id) do
+    if site |> has_user?(user) do
+      move_item(site, item_id, &(&1 + 1))
+    else
+      {:error, :unauthorized}
+    end
+  end
+
+  defp move_item(site, item_id, f) do
+    {item_id, ""} = Integer.parse(item_id)
+
+    demotee_idx =
+      site.items
+      |> Enum.find_index(&(&1.id == item_id))
+
+    demotee = site.items |> Enum.at(demotee_idx)
+
+    promotee_idx =
+      site.items
+      |> Enum.find_index(&(&1.position == f.(demotee.position)))
+
+    if promotee_idx do
+      promotee = site.items |> Enum.at(promotee_idx)
+
+      {:ok, %{promote: promoted_item, demote: demoted_item}} =
+        move_item_multi(demotee, promotee, f)
+        |> Repo.transaction()
+
+      {
+        :ok,
+        site
+        |> Map.update!(:items, fn items ->
+          items
+          |> List.replace_at(promotee_idx, promoted_item)
+          |> List.replace_at(demotee_idx, demoted_item)
+          |> Enum.sort_by(& &1.position)
+        end)
+        |> Repo.preload(items: [attributes: :definition])
+        |> broadcast()
+      }
+    else
+      {:ok, site}
+    end
+  end
+
+  defp move_item_multi(demotee, promotee, f) do
+    Multi.new()
+    |> Multi.update(
+      :move,
+      Item.changeset(demotee, %{position: -demotee.position})
+    )
+    |> Multi.update(
+      :promote,
+      Item.changeset(promotee, %{position: promotee.position - f.(0)})
+    )
+    |> Multi.update(
+      :demote,
+      Item.changeset(demotee, %{position: promotee.position})
+    )
   end
 
   alias Affable.Sites.AttributeDefinition
