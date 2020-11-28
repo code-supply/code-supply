@@ -478,7 +478,16 @@ defmodule Affable.Sites do
           })
         end)
 
-      {:ok, item |> Repo.preload(attributes: :definition)}
+      repositioned =
+        site.items
+        |> Enum.map(fn item ->
+          %{item | position: item.position + 1}
+        end)
+
+      {:ok,
+       %{site | items: [item | repositioned]}
+       |> Repo.preload(items: [attributes: :definition])
+       |> broadcast()}
     else
       {:error, :unauthorized}
     end

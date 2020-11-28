@@ -522,12 +522,21 @@ defmodule Affable.SitesTest do
     test "prepend_item/2 makes default item at position 1" do
       {user, site} = user_and_site_with_items()
 
-      {:ok, prepended_item} = Sites.prepend_item(user, site)
+      expect(Affable.MockBroadcaster, :broadcast, fn %Payload{
+                                                       preview: %{"items" => new},
+                                                       published: %{"items" => old}
+                                                     } ->
+        assert new |> length() == (old |> length()) + 1
+        :ok
+      end)
+
+      {:ok, prepended_site} = Sites.prepend_item(user, site)
       {:error, :unauthorized} = Sites.prepend_item(user_fixture(), site)
 
       %Site{items: [%Item{attributes: retrieved_attributes} = retrieved_item | _]} =
         Sites.get_site!(user, site.id)
 
+      [prepended_item | _] = prepended_site.items
       assert prepended_item == retrieved_item
       assert retrieved_item.name == "New item"
       assert length(retrieved_attributes) > 0

@@ -53,15 +53,8 @@ defmodule AffableWeb.EditorLive do
   end
 
   def handle_event("new-item", %{}, %{assigns: %{user: user, changeset: %{data: site}}} = socket) do
-    {:ok, new_item} = Sites.prepend_item(user, site)
-
-    repositioned =
-      site.items
-      |> Enum.map(fn item ->
-        %{item | position: item.position + 1}
-      end)
-
-    complete_update(socket, %{site | items: [new_item | repositioned]})
+    Sites.prepend_item(user, site)
+    |> reset_site(socket)
   end
 
   def handle_event(
