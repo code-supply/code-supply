@@ -15438,7 +15438,7 @@ spec:
       labels:
         app: site-operator
         k8s-app: site-operator
-        version: cea19a5
+        version: 853ed4a
     spec:
       containers:
       - env:
@@ -15465,7 +15465,7 @@ spec:
             name: site-operator
         - configMapRef:
             name: site-operator-7mc299m9mg
-        image: eu.gcr.io/code-supply/site-operator:853ed4a
+        image: eu.gcr.io/code-supply/site-operator:6b081b5
         name: site-operator
         resources:
           limits:
@@ -15502,7 +15502,7 @@ spec:
         traffic.sidecar.istio.io/excludeInboundPorts: 5555,4369
       labels:
         app: affable
-        version: 93285ac
+        version: 6b081b5
     spec:
       containers:
       - env:
@@ -15521,7 +15521,7 @@ spec:
         envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:93285ac
+        image: eu.gcr.io/code-supply/affable:6b081b5
         name: affable
         ports:
         - containerPort: 4000
