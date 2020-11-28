@@ -4,7 +4,18 @@ defmodule Affable.Sites do
   import Ecto.Query, warn: false
   alias Affable.Repo
   alias Affable.Accounts.User
-  alias Affable.Sites.{Publication, Site, SiteMember, Item, AttributeDefinition, Attribute, Raw}
+
+  alias Affable.Sites.{
+    Payload,
+    Publication,
+    Site,
+    SiteMember,
+    Item,
+    AttributeDefinition,
+    Attribute,
+    Raw
+  }
+
   alias Affable.Domains.Domain
 
   alias Ecto.Multi
@@ -74,10 +85,11 @@ defmodule Affable.Sites do
     case base_site_query(id) |> Repo.one() do
       %Site{} = site ->
         {:ok,
-         %{
+         %Payload{
            preview: Raw.raw(site),
            published: latest_publication(site).data
-         }}
+         }
+         |> Map.from_struct()}
 
       nil ->
         {:error, :not_found}

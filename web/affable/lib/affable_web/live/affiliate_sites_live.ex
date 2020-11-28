@@ -4,7 +4,7 @@ defmodule AffableWeb.AffiliateSitesLive do
   alias Affable.Accounts
   alias Affable.Accounts.User
   alias Affable.Sites
-  alias Affable.Sites.Site
+  alias Affable.Sites.{Payload, Site}
 
   import Affable.Sites, only: [canonical_url: 1]
 
@@ -128,7 +128,7 @@ defmodule AffableWeb.AffiliateSitesLive do
 
   defp broadcast(site) do
     :ok =
-      broadcaster().broadcast(%{
+      broadcaster().broadcast(%Payload{
         preview: Sites.Raw.raw(site),
         published: Sites.latest_publication(site).data
       })
