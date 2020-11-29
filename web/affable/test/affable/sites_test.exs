@@ -1,7 +1,6 @@
 defmodule Affable.SitesTest do
   use Affable.DataCase
 
-  import Hammox
   import Affable.{AccountsFixtures, SitesFixtures}
 
   alias Affable.Accounts.User
@@ -112,7 +111,7 @@ defmodule Affable.SitesTest do
     } do
       site = site_fixture()
 
-      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+      stub_broadcast()
 
       Sites.update_site(site, %{name: "Top 10 Bananas"})
 
@@ -273,6 +272,10 @@ defmodule Affable.SitesTest do
 
       definitions_before = site.attribute_definitions
 
+      expect_broadcast(fn %Payload{preview: %{"items" => [%{"attributes" => attrs} | _]}} ->
+        assert length(attrs) == length(definitions_before) + 1
+      end)
+
       {:ok,
        %Site{attribute_definitions: [%AttributeDefinition{id: definition_id} = definition | _]}} =
         Sites.add_attribute_definition(user, site)
@@ -289,10 +292,14 @@ defmodule Affable.SitesTest do
                | _
              ] = first_item.attributes
 
-      {:error, _} = Sites.delete_attribute_definition(wrong_user, definition.id)
+      {:error, _} = Sites.delete_attribute_definition(site.id, definition.id, wrong_user)
       assert [definition | _] = Sites.get_site!(user, site.id).attribute_definitions
 
-      {:ok, _} = Sites.delete_attribute_definition(user, definition.id)
+      expect_broadcast(fn %Payload{preview: %{"items" => [%{"attributes" => attrs} | _]}} ->
+        assert length(attrs) == length(definitions_before)
+      end)
+
+      {:ok, _} = Sites.delete_attribute_definition(site.id, definition.id, user)
 
       assert Sites.get_site!(user, site.id).attribute_definitions ==
                definitions_before
@@ -303,18 +310,12 @@ defmodule Affable.SitesTest do
       site_before = site_fixture(user)
       [first | _] = site_before.items
 
-      expect(
-        Affable.MockBroadcaster,
-        :broadcast,
-        fn %Payload{
-             preview: %{"items" => preview_items},
-             published: %{"items" => published_items}
-           } ->
-          assert preview_items |> length() == (published_items |> length()) - 1
-
-          :ok
-        end
-      )
+      expect_broadcast(fn %Payload{
+                            preview: %{"items" => preview_items},
+                            published: %{"items" => published_items}
+                          } ->
+        assert preview_items |> length() == (published_items |> length()) - 1
+      end)
 
       {:ok, site_after} = Sites.delete_item(site_before, "#{first.id}")
 
@@ -328,8 +329,8 @@ defmodule Affable.SitesTest do
       assert positions_after ==
                1..length(site_after.items) |> Enum.into([])
 
-      assert Sites.get_site!(user, site_before.id).items ==
-               site_after.items
+      assert Enum.map(Sites.get_site!(user, site_before.id).items, & &1.id) ==
+               Enum.map(site_after.items, & &1.id)
     end
 
     test "can demote an item" do
@@ -341,12 +342,8 @@ defmodule Affable.SitesTest do
       assert first_before.position == 1
       assert second_before.position == 2
 
-      expect(Affable.MockBroadcaster, :broadcast, fn %Payload{
-                                                       preview: preview,
-                                                       published: published
-                                                     } ->
+      expect_broadcast(fn %Payload{preview: preview, published: published} ->
         assert Map.fetch!(preview, "items") != Map.fetch!(published, "items")
-        :ok
       end)
 
       {:ok, site} = Sites.demote_item(user, site, "#{first_before.id}")
@@ -384,7 +381,7 @@ defmodule Affable.SitesTest do
       assert first_before.position == 1
       assert second_before.position == 2
 
-      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+      stub_broadcast()
 
       {:ok, site} = Sites.promote_item(user, site, "#{second_before.id}")
       {:error, _} = Sites.promote_item(user_fixture(), site, "#{second_before.id}")
@@ -417,9 +414,7 @@ defmodule Affable.SitesTest do
       {_, site} = user_and_site_with_items()
       [definition] = site.attribute_definitions
 
-      expect(Affable.MockBroadcaster, :broadcast, fn %Payload{} ->
-        :ok
-      end)
+      expect_broadcast()
 
       assert {:ok, %Site{} = site} =
                Sites.update_site(site, %{
@@ -522,12 +517,8 @@ defmodule Affable.SitesTest do
     test "append_item/2 adds a default item to the end of the items list" do
       {user, site} = user_and_site_with_items()
 
-      expect(Affable.MockBroadcaster, :broadcast, fn %Payload{
-                                                       preview: %{"items" => new},
-                                                       published: %{"items" => old}
-                                                     } ->
+      expect_broadcast(fn %Payload{preview: %{"items" => new}, published: %{"items" => old}} ->
         assert new |> length() == (old |> length()) + 1
-        :ok
       end)
 
       {:ok, appended_site} = Sites.append_item(site, user)

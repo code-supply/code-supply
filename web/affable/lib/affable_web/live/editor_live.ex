@@ -29,9 +29,8 @@ defmodule AffableWeb.EditorLive do
         %{},
         %{assigns: %{changeset: %{data: site}, user: user}} = socket
       ) do
-    {:ok, site} = Sites.add_attribute_definition(user, site)
-
-    complete_update(socket, site)
+    Sites.add_attribute_definition(user, site)
+    |> reset_site(socket)
   end
 
   def handle_event(
@@ -48,10 +47,10 @@ defmodule AffableWeb.EditorLive do
   def handle_event(
         "delete-attribute-definition",
         %{"id" => definition_id},
-        %{assigns: %{site_id: id, user: user}} = socket
+        %{assigns: %{site_id: site_id, user: user}} = socket
       ) do
-    {:ok, _} = Sites.delete_attribute_definition(user, definition_id)
-    complete_update(socket, Sites.get_site!(user, id))
+    Sites.delete_attribute_definition(site_id, definition_id, user)
+    |> reset_site(socket)
   end
 
   def handle_event("new-item", %{}, %{assigns: %{user: user, changeset: %{data: site}}} = socket) do

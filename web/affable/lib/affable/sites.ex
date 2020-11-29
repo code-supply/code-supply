@@ -391,7 +391,7 @@ defmodule Affable.Sites do
         add_attribute_definition_multi(site)
         |> Repo.transaction()
 
-      {:ok, get_site!(site.id)}
+      {:ok, get_site!(site.id) |> broadcast()}
     else
       {:error, :unauthorized}
     end
@@ -401,7 +401,7 @@ defmodule Affable.Sites do
     Repo.exists?(from(SiteMember, where: [user_id: ^user.id, site_id: ^site.id]))
   end
 
-  def delete_attribute_definition(%User{} = user, definition_id) do
+  def delete_attribute_definition(site_id, definition_id, %User{} = user) do
     case from(ad in AttributeDefinition,
            where: ad.id == ^definition_id,
            join: s in Site,
@@ -415,7 +415,7 @@ defmodule Affable.Sites do
         {:error, "Couldn't delete"}
 
       _ ->
-        {:ok, ""}
+        {:ok, get_site!(site_id) |> broadcast()}
     end
   end
 

@@ -6,7 +6,7 @@ defmodule AffableWeb.EditorLiveTest do
   import Affable.Sites.Raw
 
   alias Affable.{Repo, Accounts, Sites}
-  alias Affable.Sites.{Site, Item, Attribute}
+  alias Affable.Sites.{Payload, Site, Item, Attribute}
 
   setup :verify_on_exit!
 
@@ -35,9 +35,7 @@ defmodule AffableWeb.EditorLiveTest do
       refute view
              |> has_element?("#publish")
 
-      stub(Affable.MockBroadcaster, :broadcast, fn _ ->
-        :ok
-      end)
+      stub_broadcast()
 
       view
       |> element("#new-attribute-definition")
@@ -48,9 +46,7 @@ defmodule AffableWeb.EditorLiveTest do
 
       raw_site = raw(Sites.get_site!(site.id))
 
-      expect(Affable.MockBroadcaster, :broadcast, fn %{published: ^raw_site} ->
-        :ok
-      end)
+      expect_broadcast(fn %Payload{published: ^raw_site} -> nil end)
 
       view
       |> element("#publish")
@@ -70,7 +66,7 @@ defmodule AffableWeb.EditorLiveTest do
       %Site{attribute_definitions: [existing_definition]} =
         site |> Affable.Repo.preload(:attribute_definitions)
 
-      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+      stub_broadcast()
 
       view
       |> element("#delete-attribute-definition-#{existing_definition.id}")
@@ -126,9 +122,8 @@ defmodule AffableWeb.EditorLiveTest do
       refute view
              |> has_element?(".item:nth-child(#{num_items + 1})")
 
-      expect(Affable.MockBroadcaster, :broadcast, fn %{preview: %{"items" => items}} ->
+      expect_broadcast(fn %{preview: %{"items" => items}} ->
         assert (items |> List.last())["name"] == "New item"
-        :ok
       end)
 
       view
@@ -155,13 +150,11 @@ defmodule AffableWeb.EditorLiveTest do
 
       assert html =~ first_item.description
 
-      expect(
-        Affable.MockBroadcaster,
-        :broadcast,
-        fn %{preview: %{"items" => [%{"description" => "My new description!"} | _]}} ->
-          :ok
-        end
-      )
+      expect_broadcast(fn %{
+                            preview: %{"items" => [%{"description" => "My new description!"} | _]}
+                          } ->
+        nil
+      end)
 
       assert render_first_item_change(view, site.items, %{
                "description" => "My new description!"
@@ -177,7 +170,7 @@ defmodule AffableWeb.EditorLiveTest do
       refute before_save =~ "saved-state"
       refute before_save =~ "Saved."
 
-      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+      stub_broadcast()
 
       after_save =
         render_change(view, :save, %{
@@ -214,7 +207,7 @@ defmodule AffableWeb.EditorLiveTest do
 
       [first_item | _] = site.items
 
-      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+      stub_broadcast()
 
       view
       |> element("#delete-item-#{first_item.id}")
@@ -230,7 +223,7 @@ defmodule AffableWeb.EditorLiveTest do
 
       assert view |> has_element?("#position-#{first_item.id}", "1")
 
-      stub(Affable.MockBroadcaster, :broadcast, fn _message -> :ok end)
+      stub_broadcast()
 
       view
       |> element("#demote-#{first_item.id}")
@@ -251,27 +244,17 @@ defmodule AffableWeb.EditorLiveTest do
 
       [first_item | _] = site.items
 
-      expect(
-        Affable.MockBroadcaster,
-        :broadcast,
-        fn %{preview: %{"items" => [_, new_second_item | _]}} ->
-          assert first_item.name == new_second_item["name"]
-          :ok
-        end
-      )
+      expect_broadcast(fn %{preview: %{"items" => [_, new_second_item | _]}} ->
+        assert first_item.name == new_second_item["name"]
+      end)
 
       view
       |> element("#demote-#{first_item.id}")
       |> render_click()
 
-      expect(
-        Affable.MockBroadcaster,
-        :broadcast,
-        fn %{preview: %{"items" => [new_first_item | _]}} ->
-          assert first_item.name == new_first_item["name"]
-          :ok
-        end
-      )
+      expect_broadcast(fn %{preview: %{"items" => [new_first_item | _]}} ->
+        assert first_item.name == new_first_item["name"]
+      end)
 
       view
       |> element("#promote-#{first_item.id}")

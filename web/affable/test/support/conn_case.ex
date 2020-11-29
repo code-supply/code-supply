@@ -23,6 +23,7 @@ defmodule AffableWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import AffableWeb.ConnCase
+      import Affable.BroadcastExpectations
 
       alias AffableWeb.Router.Helpers, as: Routes
 
