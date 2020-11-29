@@ -3,16 +3,36 @@ defmodule AffiliateWeb.PageLive do
 
   alias Affiliate.SiteState
 
+  @key :published
+
   @impl true
-  def mount(_params, _session, socket) do
-    {pubsub, topic} = SiteState.subscription_info()
-    %{published: %{"name" => page_title} = site} = SiteState.get()
-    Phoenix.PubSub.subscribe(pubsub, topic)
-    {:ok, assign(socket, site: site, page_title: page_title)}
+  def render(assigns) do
+    Phoenix.View.render(AffiliateWeb.PageView, "page_live.html", assigns)
   end
 
   @impl true
-  def handle_info(%{published: site}, socket) do
-    {:noreply, assign(socket, site: site, page_title: site["name"])}
+  def mount(_params, _session, socket) do
+    {pubsub, topic} = SiteState.subscription_info()
+    %{@key => site} = SiteState.get()
+    Phoenix.PubSub.subscribe(pubsub, topic)
+
+    {:ok, assign_site(socket, site)}
+  end
+
+  @impl true
+  def handle_info(%{@key => site}, socket) do
+    {:noreply, assign_site(socket, site)}
+  end
+
+  defp assign_site(socket, site) do
+    assign(socket,
+      page_title: site["name"],
+      header_image_url: site["header_image_url"],
+      name: site["name"],
+      logo_url: site["site_logo_url"],
+      subtitle: site["page_subtitle"],
+      text: site["text"],
+      items: site["items"]
+    )
   end
 end

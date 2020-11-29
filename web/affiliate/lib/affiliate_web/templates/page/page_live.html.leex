@@ -1,0 +1,47 @@
+<div class="bg-gray-300">
+  <div class="container mx-auto bg-white">
+    <header
+      class="flex block bg-white bg-no-repeat bg-cover border-b-8 border-black"
+      style="background-image: url('<%= @header_image_url %>')"
+      >
+      <img alt="<%= @name %>" class="h-12 max-w-full px-8 my-6" src="<%= @logo_url %>">
+    </header>
+
+    <main role="main">
+      <header class="p-4 pb-12 text-white bg-blue-600 md:p-8">
+        <h1 class="text-3xl font-extrabold"><%= @subtitle %></h1>
+
+        <div class="max-w-3xl mt-4 text-lg">
+          <%= text_to_html (@text || "") %>
+        </div>
+      </header>
+
+      <section class="px-2 md:px-8">
+        <ol>
+          <%= for item <- @items do %>
+            <li class="py-1 pl-2 pr-0 mt-6 border-2 border-gray-300 border-solid rounded-md md:pl-6 md:py-4">
+              <h1 class="mb-4">
+                <span class="font-bold"><%= item["position"] %></span>
+                <span class="ml-4 text-gray-800"><%= item["name"] %></span>
+              </h1>
+              <div class="font-black text-gray-800 grid grid-cols-8 divide-x divide-gray-300">
+                <div class="block h-16 mr-2">
+                  <img class="max-h-full" src="<%= item["image_url"] %>">
+                </div>
+                <p class="px-2 col-span-3 md:px-8">
+                <%= item["description"] %>
+                </p>
+                <%= for attribute <- item["attributes"] do %>
+                  <p class="px-2 text-xl font-extrabold text-center col-span-2 md:px-8 md:py-4"><%= attribute["value"] %></p>
+                <% end %>
+                <p class="px-2 col-span-2 md:px-4">
+                <a class="block py-4 text-lg text-center text-white bg-green-600 rounded-full hover:bg-green-700" href="<%= item["url"] %>">Go</a>
+                </p>
+              </div>
+            </li>
+          <% end %>
+        </ol>
+      </section>
+    </main>
+  </div>
+</div>
