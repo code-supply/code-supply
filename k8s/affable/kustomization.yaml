@@ -20,6 +20,6 @@ commonLabels:
 images:
 - name: affable
   newName: eu.gcr.io/code-supply/affable
-  newTag: e989677
+  newTag: 31709a5
 patchesStrategicMerge:
 - version.yaml
