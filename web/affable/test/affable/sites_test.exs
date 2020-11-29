@@ -278,9 +278,9 @@ defmodule Affable.SitesTest do
 
       {:ok,
        %Site{attribute_definitions: [%AttributeDefinition{id: definition_id} = definition | _]}} =
-        Sites.add_attribute_definition(user, site)
+        Sites.add_attribute_definition(site, user)
 
-      {:error, _} = Sites.add_attribute_definition(wrong_user, site)
+      {:error, _} = Sites.add_attribute_definition(site, wrong_user)
 
       [first_item | _] = Sites.get_site!(user, site.id).items
 

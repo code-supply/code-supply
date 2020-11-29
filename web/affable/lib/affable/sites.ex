@@ -385,7 +385,7 @@ defmodule Affable.Sites do
     end)
   end
 
-  def add_attribute_definition(user, site) do
+  def add_attribute_definition(%Site{} = site, %User{} = user) do
     if site |> has_user?(user) do
       {:ok, _} =
         add_attribute_definition_multi(site)

@@ -29,7 +29,8 @@ defmodule AffableWeb.EditorLive do
         %{},
         %{assigns: %{changeset: %{data: site}, user: user}} = socket
       ) do
-    Sites.add_attribute_definition(user, site)
+    site
+    |> Sites.add_attribute_definition(user)
     |> reset_site(socket)
   end
 
