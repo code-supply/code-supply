@@ -80,12 +80,16 @@ defmodule Affable.SitesTest do
       {:ok, site} = set_available.(site.id, DateTime.from_unix!(0))
 
       site = site |> Repo.preload(items: [attributes: :definition])
+      raw_site = Affable.Sites.Raw.raw(site)
 
       refute Sites.is_published?(site)
+
+      expect_broadcast(fn %Payload{published: ^raw_site} -> nil end)
       {:ok, ^site} = Sites.publish(site)
 
       assert Sites.is_published?(site)
 
+      expect_broadcast(fn %Payload{published: ^raw_site} -> nil end)
       {:ok, ^site} = Sites.publish(site)
 
       assert Sites.is_published?(site)

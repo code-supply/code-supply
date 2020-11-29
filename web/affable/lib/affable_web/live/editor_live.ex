@@ -8,8 +8,6 @@ defmodule AffableWeb.EditorLive do
   alias Affable.Sites
   alias Affable.Sites.Site
 
-  import Affable.Sites, only: [broadcast: 1]
-
   def mount(%{"id" => id}, %{"user_token" => token}, socket) do
     case Accounts.get_user_by_session_token(token) do
       nil ->
@@ -39,10 +37,9 @@ defmodule AffableWeb.EditorLive do
         _params,
         %{assigns: %{user: user, site_id: site_id}} = socket
       ) do
-    site = Sites.get_site!(user, site_id)
-    {:ok, site} = Sites.publish(site)
-
-    complete_update(socket, site)
+    Sites.get_site!(user, site_id)
+    |> Sites.publish()
+    |> reset_site(socket)
   end
 
   def handle_event(
@@ -113,12 +110,6 @@ defmodule AffableWeb.EditorLive do
       published: Sites.is_published?(site),
       preview_url: "#{Sites.canonical_url(site)}preview"
     )
-  end
-
-  defp complete_update(socket, site) do
-    site
-    |> broadcast()
-    |> reset_site(socket)
   end
 
   defp reset_site(%Site{} = site, socket) do

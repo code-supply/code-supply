@@ -29,10 +29,11 @@ defmodule Affable.Sites do
   end
 
   def publish(site) do
-    Ecto.build_assoc(site, :publications, %{data: Raw.raw(site)})
+    site
+    |> Ecto.build_assoc(:publications, %{data: Raw.raw(site)})
     |> Repo.insert()
 
-    {:ok, site}
+    {:ok, site |> broadcast()}
   end
 
   def is_published?(site) do
