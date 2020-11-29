@@ -418,7 +418,7 @@ defmodule Affable.SitesTest do
       {_, site} = user_and_site_with_items()
       [definition] = site.attribute_definitions
 
-      expect_broadcast()
+      expect_broadcast(fn %Payload{preview: %{"name" => "some updated name"}} -> nil end)
 
       assert {:ok, %Site{} = site} =
                Sites.update_site(site, %{
@@ -523,6 +523,7 @@ defmodule Affable.SitesTest do
 
       expect_broadcast(fn %Payload{preview: %{"items" => new}, published: %{"items" => old}} ->
         assert new |> length() == (old |> length()) + 1
+        assert List.last(new)["name"] == "New item"
       end)
 
       {:ok, appended_site} = Sites.append_item(site, user)

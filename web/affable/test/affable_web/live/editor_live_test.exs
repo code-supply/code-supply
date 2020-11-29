@@ -122,9 +122,7 @@ defmodule AffableWeb.EditorLiveTest do
       refute view
              |> has_element?(".item:nth-child(#{num_items + 1})")
 
-      expect_broadcast(fn %{preview: %{"items" => items}} ->
-        assert (items |> List.last())["name"] == "New item"
-      end)
+      stub_broadcast()
 
       view
       |> element("#new-item")
