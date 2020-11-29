@@ -126,8 +126,8 @@ defmodule AffableWeb.EditorLiveTest do
       refute view
              |> has_element?(".item:nth-child(#{num_items + 1})")
 
-      expect(Affable.MockBroadcaster, :broadcast, fn %{preview: %{"items" => [item | _]}} ->
-        assert item["name"] == "New item"
+      expect(Affable.MockBroadcaster, :broadcast, fn %{preview: %{"items" => items}} ->
+        assert (items |> List.last())["name"] == "New item"
         :ok
       end)
 

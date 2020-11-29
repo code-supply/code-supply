@@ -457,37 +457,24 @@ defmodule Affable.Sites do
     |> Repo.insert()
   end
 
-  def prepend_item(user, site) do
+  def append_item(site, user) do
     if site |> has_user?(user) do
-      {:ok, {:ok, item}} =
-        Repo.transaction(fn ->
-          for item <- site.items |> Enum.reverse() do
-            update_item(
-              item,
-              %{position: item.position + 1}
-            )
-          end
+      {:ok, %Item{} = item} =
+        create_item(site, %{
+          name: "New item",
+          position: length(site.items) + 1,
+          attributes:
+            for definition <- site.attribute_definitions do
+              %{definition_id: definition.id, value: "1.23"}
+            end
+        })
 
-          create_item(site, %{
-            name: "New item",
-            position: 1,
-            attributes:
-              for definition <- site.attribute_definitions do
-                %{definition_id: definition.id, value: "1.23"}
-              end
-          })
-        end)
-
-      repositioned =
-        site.items
-        |> Enum.map(fn item ->
-          %{item | position: item.position + 1}
-        end)
-
-      {:ok,
-       %{site | items: [item | repositioned]}
-       |> Repo.preload(items: [attributes: :definition])
-       |> broadcast()}
+      {
+        :ok,
+        %{site | items: site.items ++ [item]}
+        |> Repo.preload(items: [attributes: :definition])
+        |> broadcast()
+      }
     else
       {:error, :unauthorized}
     end

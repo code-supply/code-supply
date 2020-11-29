@@ -55,7 +55,8 @@ defmodule AffableWeb.EditorLive do
   end
 
   def handle_event("new-item", %{}, %{assigns: %{user: user, changeset: %{data: site}}} = socket) do
-    Sites.prepend_item(user, site)
+    site
+    |> Sites.append_item(user)
     |> reset_site(socket)
   end
 

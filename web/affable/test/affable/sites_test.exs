@@ -519,7 +519,7 @@ defmodule Affable.SitesTest do
       assert {:error, %Ecto.Changeset{}} = Sites.create_item(site_fixture(), @invalid_attrs)
     end
 
-    test "prepend_item/2 makes default item at position 1" do
+    test "append_item/2 adds a default item to the end of the items list" do
       {user, site} = user_and_site_with_items()
 
       expect(Affable.MockBroadcaster, :broadcast, fn %Payload{
@@ -530,16 +530,16 @@ defmodule Affable.SitesTest do
         :ok
       end)
 
-      {:ok, prepended_site} = Sites.prepend_item(user, site)
-      {:error, :unauthorized} = Sites.prepend_item(user_fixture(), site)
+      {:ok, appended_site} = Sites.append_item(site, user)
+      {:error, :unauthorized} = Sites.append_item(site, user_fixture())
 
-      %Site{items: [%Item{attributes: retrieved_attributes} = retrieved_item | _]} =
-        Sites.get_site!(user, site.id)
+      site = Sites.get_site!(user, site.id)
+      retrieved_item = List.last(site.items)
 
-      [prepended_item | _] = prepended_site.items
-      assert prepended_item == retrieved_item
+      appended_item = List.last(appended_site.items)
+      assert appended_item == retrieved_item
       assert retrieved_item.name == "New item"
-      assert length(retrieved_attributes) > 0
+      assert length(retrieved_item.attributes) > 0
     end
 
     test "update_item/2 with valid data updates the item" do
