@@ -3,9 +3,7 @@ defmodule AffableWeb.EditorLiveTest do
   import Phoenix.LiveViewTest
   import Affable.SitesFixtures
   import Hammox
-  import Affable.Sites.Raw
 
-  alias Affable.Messages.WholeSite
   alias Affable.{Repo, Accounts, Sites}
   alias Affable.Sites.{Site, Item, Attribute}
 
@@ -33,6 +31,9 @@ defmodule AffableWeb.EditorLiveTest do
     } do
       {:ok, view, _html} = live(conn, path(conn, site))
 
+      attribute_definitions_before =
+        Repo.preload(site, :attribute_definitions).attribute_definitions
+
       refute view
              |> has_element?("#publish")
 
@@ -45,9 +46,10 @@ defmodule AffableWeb.EditorLiveTest do
       assert view
              |> has_element?("#publish")
 
-      raw_site = raw(Sites.get_site!(site.id))
-
-      expect_broadcast(fn %WholeSite{published: ^raw_site} -> nil end)
+      expect_broadcast(fn updated_site ->
+        assert length(updated_site.attribute_definitions) ==
+                 length(attribute_definitions_before) + 1
+      end)
 
       view
       |> element("#publish")
@@ -160,9 +162,7 @@ defmodule AffableWeb.EditorLiveTest do
 
       assert html =~ first_item.description
 
-      expect_broadcast(fn %{
-                            preview: %{"items" => [%{"description" => "My new description!"} | _]}
-                          } ->
+      expect_broadcast(fn %Site{items: [%Item{description: "My new description!"} | _]} ->
         nil
       end)
 
@@ -224,16 +224,16 @@ defmodule AffableWeb.EditorLiveTest do
 
       [first_item | _] = site.items
 
-      expect_broadcast(fn %{preview: %{"items" => [_, new_second_item | _]}} ->
-        assert first_item.name == new_second_item["name"]
+      expect_broadcast(fn %Site{items: [_, new_second_item | _]} ->
+        assert first_item.name == new_second_item.name
       end)
 
       view
       |> element("#demote-#{first_item.id}")
       |> render_click()
 
-      expect_broadcast(fn %{preview: %{"items" => [new_first_item | _]}} ->
-        assert first_item.name == new_first_item["name"]
+      expect_broadcast(fn %Site{items: [new_first_item | _]} ->
+        assert first_item.name == new_first_item.name
       end)
 
       view

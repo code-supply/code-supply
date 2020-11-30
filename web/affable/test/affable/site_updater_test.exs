@@ -6,7 +6,7 @@ defmodule Affable.SiteUpdaterTest do
   alias Phoenix.PubSub
   alias Affable.MockSiteClusterIO
   alias Affable.{Broadcaster, SiteUpdater}
-  alias Affable.Sites.{Raw, Site}
+  alias Affable.Sites.{Publication, Raw, Site}
 
   setup :set_mox_from_context
   setup :verify_on_exit!
@@ -37,20 +37,15 @@ defmodule Affable.SiteUpdaterTest do
   } do
     site = site_fixture()
 
-    raw_site = %{
-      preview: Raw.raw(site),
-      published: Raw.raw(site)
-    }
-
-    stub(MockSiteClusterIO, :get_raw_site, fn ^site_id ->
-      {:ok, raw_site}
+    stub(MockSiteClusterIO, :get_site!, fn ^site_id ->
+      site
     end)
 
     stub(MockSiteClusterIO, :set_available, fn _, _ -> {:ok, %Site{}} end)
 
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
-    assert_receive(^raw_site)
+    assert_receive(%{preview: %{}, published: %{}})
     |> put_in([:preview, "id"], 1)
     |> put_in([:published, "id"], 1)
     |> write_fixture_for_external_consumption("site_update_message")
@@ -61,22 +56,34 @@ defmodule Affable.SiteUpdaterTest do
       {:ok, %Site{}}
     end)
 
-    raw_site = Raw.raw(%Site{items: [], name: "must wait"})
-    raw_site_representation = %{preview: raw_site, published: raw_site}
+    site = %Site{
+      items: [],
+      name: "preview name",
+      latest_publication: %Publication{data: %{"name" => "published name"}}
+    }
 
-    stub(MockSiteClusterIO, :get_raw_site, fn ^site_id ->
-      {:ok, raw_site_representation}
+    stub(MockSiteClusterIO, :get_site!, fn ^site_id ->
+      site
     end)
 
     :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
 
-    assert_receive ^raw_site_representation, 1000, nil
+    assert_receive %{
+                     preview: %{"name" => "preview name"},
+                     published: %{"name" => "published name"}
+                   },
+                   1000,
+                   nil
   end
 
   test "can broadcast on demand", %{site_id: site_id, broadcast_1: broadcast} do
-    broadcast.(%Affable.Messages.WholeSite{
-      preview: Raw.raw(%Site{items: [], name: "Some Site", id: site_id}),
-      published: Raw.raw(%Site{items: [], name: "Published Site", id: site_id})
+    broadcast.(%Site{
+      id: site_id,
+      items: [],
+      name: "Some Site",
+      latest_publication: %Publication{
+        data: Raw.raw(%Site{items: [], name: "Published Site", id: site_id})
+      }
     })
 
     assert_receive %{

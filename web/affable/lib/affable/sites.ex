@@ -74,10 +74,12 @@ defmodule Affable.Sites do
     |> Repo.one!()
   end
 
+  @impl true
   def get_site!(%Site{id: id}) do
     get_site!(id)
   end
 
+  @impl true
   def get_site!(id) do
     site_query(id)
     |> Repo.one!()
@@ -101,27 +103,11 @@ defmodule Affable.Sites do
     )
   end
 
-  @impl true
-  def get_raw_site(id) do
-    case base_site_query(id) |> Repo.one() do
-      %Site{} = site ->
-        {:ok,
-         %WholeSite{
-           preview: raw(site),
-           published: latest_publication_data(site)
-         }
-         |> Map.from_struct()}
-
-      nil ->
-        {:error, :not_found}
-    end
-  end
-
-  defp latest_publication_data(site) do
+  def latest_publication_data(site) do
     preload_latest_publication(site).latest_publication.data
   end
 
-  defp preload_latest_publication(site) do
+  def preload_latest_publication(site) do
     Repo.preload(site, latest_publication: from(p in Publication, order_by: [desc: p.id]))
   end
 
@@ -586,13 +572,10 @@ defmodule Affable.Sites do
   end
 
   def broadcast(site) do
-    site = preload_latest_publication(site)
-
     :ok =
-      broadcaster().broadcast(%WholeSite{
-        preview: raw(site),
-        published: site.latest_publication.data
-      })
+      site
+      |> preload_latest_publication()
+      |> (&broadcaster().broadcast(&1)).()
 
     site
   end

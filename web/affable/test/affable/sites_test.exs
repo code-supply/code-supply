@@ -4,7 +4,6 @@ defmodule Affable.SitesTest do
   import Affable.{AccountsFixtures, SitesFixtures}
 
   alias Affable.Accounts.User
-  alias Affable.Messages.WholeSite
   alias Affable.Sites
   alias Affable.Sites.{Site, SiteMember, Item, Attribute, AttributeDefinition}
   alias Affable.Domains.Domain
@@ -18,7 +17,7 @@ defmodule Affable.SitesTest do
       Hammox.protect(
         Sites,
         Affable.SiteClusterIO,
-        get_raw_site: 1,
+        get_site!: 1,
         set_available: 2
       )
     end
@@ -81,16 +80,18 @@ defmodule Affable.SitesTest do
       {:ok, site} = set_available.(site.id, DateTime.from_unix!(0))
 
       site = site |> Repo.preload(items: [attributes: :definition])
-      raw_site = Affable.Sites.Raw.raw(site)
 
       refute Sites.is_published?(site)
 
-      expect_broadcast(fn %WholeSite{published: ^raw_site} -> nil end)
+      expect_broadcast(fn site ->
+        assert Sites.is_published?(site)
+      end)
+
       {:ok, published_site} = Sites.publish(site)
 
       assert Sites.is_published?(published_site)
 
-      expect_broadcast(fn %WholeSite{published: ^raw_site} -> nil end)
+      expect_broadcast(fn %Site{} -> nil end)
       {:ok, published_again_site} = Sites.publish(site)
 
       assert Sites.is_published?(published_again_site)
@@ -109,129 +110,6 @@ defmodule Affable.SitesTest do
       assert_raise Ecto.NoResultsError, fn ->
         Sites.get_site!(user, site.id)
       end
-    end
-
-    test "can fetch an untyped representation of the site, for distribution", %{
-      get_raw_site_1: get_raw_site
-    } do
-      site = site_fixture()
-
-      stub_broadcast()
-
-      Sites.update_site(site, %{name: "Top 10 Bananas"})
-
-      {:ok,
-       %{
-         preview: %{
-           "name" => "Top 10 Bananas",
-           "items" => [preview_item | _] = preview_items
-         },
-         published: %{
-           "name" => "Top 10 Apples",
-           "items" => [published_item | _] = published_items
-         }
-       }} = get_raw_site.(site.id)
-
-      assert length(preview_items) == 10
-      assert length(published_items) == 10
-
-      assert preview_item["name"] == "Golden Delicious"
-      assert published_item["name"] == "Golden Delicious"
-
-      assert Map.keys(preview_item) == [
-               "attributes",
-               "description",
-               "image_url",
-               "name",
-               "position",
-               "url"
-             ]
-
-      assert preview_item["attributes"] == [%{"name" => "Price", "value" => "$1.23"}]
-    end
-
-    test "returns error when untyped representation isn't available", %{
-      get_raw_site_1: get_raw_site
-    } do
-      {:error, :not_found} = get_raw_site.(8_675_309)
-    end
-
-    test "raw representation formats item attributes" do
-      %{"items" => [%{"attributes" => attributes}]} =
-        Sites.Raw.raw(%Site{
-          name: "Top 10 Apples",
-          internal_name: "asdf",
-          items: [
-            %Item{
-              position: 1,
-              name: "Cox",
-              description: "The best apple",
-              image_url: "",
-              url: "",
-              attributes: [
-                %Attribute{
-                  definition: %AttributeDefinition{
-                    name: "Price",
-                    type: "dollar"
-                  },
-                  value: "1.23"
-                },
-                %Attribute{
-                  definition: %AttributeDefinition{
-                    name: "Price in pounds",
-                    type: "pound"
-                  },
-                  value: "3.46"
-                },
-                %Attribute{
-                  definition: %AttributeDefinition{
-                    name: "Price in pounds but nil",
-                    type: "pound"
-                  },
-                  value: nil
-                },
-                %Attribute{
-                  definition: %AttributeDefinition{
-                    name: "Price in euro",
-                    type: "euro"
-                  },
-                  value: "6.46"
-                },
-                %Attribute{
-                  definition: %AttributeDefinition{
-                    name: "Price in euro but blank",
-                    type: "euro"
-                  },
-                  value: ""
-                },
-                %Attribute{
-                  definition: %AttributeDefinition{
-                    name: "Number",
-                    type: "number"
-                  },
-                  value: "123"
-                },
-                %Attribute{
-                  definition: %AttributeDefinition{
-                    name: "Text",
-                    type: "text"
-                  },
-                  value: "Hi there"
-                }
-              ]
-            }
-          ]
-        })
-
-      assert attributes == [
-               %{"name" => "Price", "value" => "$1.23"},
-               %{"name" => "Price in pounds", "value" => "£3.46"},
-               %{"name" => "Price in pounds but nil", "value" => ""},
-               %{"name" => "Price in euro", "value" => "€6.46"},
-               %{"name" => "Price in euro but blank", "value" => ""},
-               %{"name" => "Number", "value" => "123"},
-               %{"name" => "Text", "value" => "Hi there"}
-             ]
     end
 
     test "new sites have batteries-included defaults" do
@@ -277,8 +155,8 @@ defmodule Affable.SitesTest do
 
       definitions_before = site.attribute_definitions
 
-      expect_broadcast(fn %WholeSite{preview: %{"items" => [%{"attributes" => attrs} | _]}} ->
-        assert length(attrs) == length(definitions_before) + 1
+      expect_broadcast(fn %Site{attribute_definitions: definitions} ->
+        assert length(definitions) == length(definitions_before) + 1
       end)
 
       {:ok,
@@ -300,8 +178,8 @@ defmodule Affable.SitesTest do
       {:error, _} = Sites.delete_attribute_definition(site.id, definition.id, wrong_user)
       assert [definition | _] = Sites.get_site!(user, site.id).attribute_definitions
 
-      expect_broadcast(fn %WholeSite{preview: %{"items" => [%{"attributes" => attrs} | _]}} ->
-        assert length(attrs) == length(definitions_before)
+      expect_broadcast(fn %Site{attribute_definitions: definitions} ->
+        assert length(definitions) == length(definitions_before)
       end)
 
       {:ok, _} = Sites.delete_attribute_definition(site.id, definition.id, user)
@@ -314,9 +192,9 @@ defmodule Affable.SitesTest do
       user = user_fixture()
       site_before = site_fixture(user)
 
-      expect_broadcast(fn %WholeSite{
-                            preview: %{"items" => preview_items},
-                            published: %{"items" => published_items}
+      expect_broadcast(fn %Site{
+                            items: preview_items,
+                            latest_publication: %{data: %{"items" => published_items}}
                           } ->
         assert preview_items |> length() == (published_items |> length()) - 1
       end)
@@ -341,9 +219,9 @@ defmodule Affable.SitesTest do
       user = user_fixture()
       site_before = site_fixture(user)
 
-      expect_broadcast(fn %WholeSite{
-                            preview: %{"items" => preview_items},
-                            published: %{"items" => published_items}
+      expect_broadcast(fn %Site{
+                            items: preview_items,
+                            latest_publication: %{data: %{"items" => published_items}}
                           } ->
         assert preview_items |> length() == (published_items |> length()) - 1
       end)
@@ -373,8 +251,11 @@ defmodule Affable.SitesTest do
       assert first_before.position == 1
       assert second_before.position == 2
 
-      expect_broadcast(fn %WholeSite{preview: preview, published: published} ->
-        assert Map.fetch!(preview, "items") != Map.fetch!(published, "items")
+      expect_broadcast(fn %Site{
+                            items: preview_items,
+                            latest_publication: %{data: %{"items" => published_items}}
+                          } ->
+        assert preview_items != published_items
       end)
 
       {:ok, site} = Sites.demote_item(user, site, "#{first_before.id}")
@@ -445,7 +326,7 @@ defmodule Affable.SitesTest do
       {_, site} = user_and_site_with_items()
       [definition] = site.attribute_definitions
 
-      expect_broadcast(fn %WholeSite{preview: %{"name" => "some updated name"}} -> nil end)
+      expect_broadcast(fn %Site{name: "some updated name"} -> nil end)
 
       assert {:ok, %Site{} = site} =
                Sites.update_site(site, %{
@@ -548,9 +429,9 @@ defmodule Affable.SitesTest do
     test "append_item/2 adds a default item to the end of the items list" do
       {user, site} = user_and_site_with_items()
 
-      expect_broadcast(fn %WholeSite{preview: %{"items" => new}, published: %{"items" => old}} ->
-        assert new |> length() == (old |> length()) + 1
-        assert List.last(new)["name"] == "New item"
+      expect_broadcast(fn site ->
+        assert site.items |> length() == (site.latest_publication.data["items"] |> length()) + 1
+        assert List.last(site.items).name == "New item"
       end)
 
       {:ok, appended_site} = Sites.append_item(site, user)
