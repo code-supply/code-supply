@@ -114,7 +114,7 @@ defmodule AffableWeb.EditorLiveTest do
              |> has_element?("#site_items_0_attributes_0_value[value=King]")
     end
 
-    test "can create new item", %{conn: conn, user: user, site: site} do
+    test "can create / delete new item", %{conn: conn, site: site} do
       {:ok, view, _html} = live(conn, path(conn, site))
 
       num_items = site.items |> length()
@@ -128,7 +128,9 @@ defmodule AffableWeb.EditorLiveTest do
       |> element("#new-item")
       |> render_click()
 
-      assert Sites.get_site!(user, site.id).items
+      site = Sites.get_site!(site.id)
+
+      assert site.items
              |> length() == num_items + 1
 
       assert view
@@ -136,6 +138,15 @@ defmodule AffableWeb.EditorLiveTest do
 
       assert view
              |> has_element?(".item:nth-child(#{num_items + 1})")
+
+      view
+      |> element("#delete-item-#{List.last(site.items).id}")
+      |> render_click()
+
+      assert view
+             |> element(".item:nth-child(1) .number")
+             |> render() =~
+               ">1<"
     end
 
     test "can edit an item", %{conn: conn, site: site} do

@@ -76,6 +76,10 @@ defmodule Affable.Sites do
     |> Repo.one!()
   end
 
+  def get_site!(%Site{id: id}) do
+    get_site!(id)
+  end
+
   def get_site!(id) do
     site_query(id)
     |> Repo.one!()
@@ -499,26 +503,10 @@ defmodule Affable.Sites do
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a item.
-
-  ## Examples
-
-      iex> delete_item(item)
-      {:ok, %Item{}}
-
-      iex> delete_item(item)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_item(%Item{} = item) do
-    Repo.delete(item)
-  end
-
   def delete_item(%Site{} = site, item_id) do
     item_id_s = "#{item_id}"
 
-    {:ok, _changes} =
+    {:ok, %{delete: deleted_item}} =
       site.items
       |> delete_item_multi(item_id_s)
       |> Repo.transaction()
@@ -530,12 +518,15 @@ defmodule Affable.Sites do
         items
         |> Enum.reverse()
         |> Enum.reduce([], fn item, acc ->
-          case "#{item.id}" do
-            ^item_id_s ->
+          cond do
+            item.id == deleted_item.id ->
               acc
 
-            _ ->
-              [%{item | position: item.position - 1} | acc]
+            item.position > deleted_item.position ->
+              [Map.update!(item, :position, &(&1 - 1)) | acc]
+
+            true ->
+              [item | acc]
           end
         end)
       end)

@@ -309,10 +309,9 @@ defmodule Affable.SitesTest do
                definitions_before
     end
 
-    test "can delete an item" do
+    test "can delete an item from start of list" do
       user = user_fixture()
       site_before = site_fixture(user)
-      [first | _] = site_before.items
 
       expect_broadcast(fn %Payload{
                             preview: %{"items" => preview_items},
@@ -321,7 +320,34 @@ defmodule Affable.SitesTest do
         assert preview_items |> length() == (published_items |> length()) - 1
       end)
 
-      {:ok, site_after} = Sites.delete_item(site_before, "#{first.id}")
+      {:ok, site_after} = Sites.delete_item(site_before, "#{Enum.at(site_before.items, 1).id}")
+
+      positions_after =
+        site_after.items
+        |> Enum.map(fn i -> i.position end)
+
+      assert length(site_after.items) ==
+               length(site_before.items) - 1
+
+      assert positions_after ==
+               1..length(site_after.items) |> Enum.into([])
+
+      assert Enum.map(Sites.get_site!(user, site_before.id).items, & &1.id) ==
+               Enum.map(site_after.items, & &1.id)
+    end
+
+    test "can delete an item from end of list" do
+      user = user_fixture()
+      site_before = site_fixture(user)
+
+      expect_broadcast(fn %Payload{
+                            preview: %{"items" => preview_items},
+                            published: %{"items" => published_items}
+                          } ->
+        assert preview_items |> length() == (published_items |> length()) - 1
+      end)
+
+      {:ok, site_after} = Sites.delete_item(site_before, "#{List.last(site_before.items).id}")
 
       positions_after =
         site_after.items
@@ -552,12 +578,6 @@ defmodule Affable.SitesTest do
       item = item_fixture()
       assert {:error, %Ecto.Changeset{}} = Sites.update_item(item, @invalid_attrs)
       assert item == Sites.get_item!(item.id)
-    end
-
-    test "delete_item/1 deletes the item" do
-      item = item_fixture()
-      assert {:ok, %Item{}} = Sites.delete_item(item)
-      assert_raise Ecto.NoResultsError, fn -> Sites.get_item!(item.id) end
     end
 
     test "change_item/1 returns a item changeset" do
