@@ -22,8 +22,10 @@ let liveSocket = new LiveSocket("/live", Socket, {
     Scroll: {
       mounted() {
         this.handleEvent("scroll", ({id}) => {
-          document.getElementById(id)
-            .scrollIntoView({behavior: "smooth"})
+          let el = document.getElementById(id);
+          el.scrollIntoView({behavior: "smooth"});
+          let focusEls = el.getElementsByClassName('scrollfocus');
+          focusEls[0] && focusEls[0].select();
         })
       }
     }
