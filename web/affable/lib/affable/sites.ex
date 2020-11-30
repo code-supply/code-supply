@@ -7,7 +7,6 @@ defmodule Affable.Sites do
 
   alias Affable.Repo
   alias Affable.Accounts.User
-  alias Affable.Messages.WholeSite
 
   alias Affable.Sites.{
     Publication,
@@ -103,11 +102,7 @@ defmodule Affable.Sites do
     )
   end
 
-  def latest_publication_data(site) do
-    preload_latest_publication(site).latest_publication.data
-  end
-
-  def preload_latest_publication(site) do
+  defp preload_latest_publication(site) do
     Repo.preload(site, latest_publication: from(p in Publication, order_by: [desc: p.id]))
   end
 
