@@ -5,7 +5,8 @@ defmodule AffableWeb.SitesLiveTest do
 
   alias Affable.Accounts
   alias Affable.Accounts.User
-  alias Affable.Sites.{Payload, Raw}
+  alias Affable.Messages.WholeSite
+  alias Affable.Sites.Raw
 
   describe "authenticated and confirmed user" do
     setup context do
@@ -33,7 +34,7 @@ defmodule AffableWeb.SitesLiveTest do
         |> Map.put("made_available_at", DateTime.utc_now())
 
       message =
-        %Payload{preview: raw_site, published: raw_site}
+        %WholeSite{preview: raw_site, published: raw_site}
         |> Map.from_struct()
 
       Phoenix.PubSub.broadcast(:affable, site.internal_name, message)

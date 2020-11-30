@@ -1,7 +1,5 @@
 defmodule Affable.Broadcaster do
-  alias Affable.Sites.Payload
-
-  @callback broadcast(%Payload{
+  @callback broadcast(%Affable.Messages.WholeSite{
               published: map(),
               preview: map()
             }) :: :ok

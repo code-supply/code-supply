@@ -6,7 +6,7 @@ defmodule Affable.SiteUpdaterTest do
   alias Phoenix.PubSub
   alias Affable.MockSiteClusterIO
   alias Affable.{Broadcaster, SiteUpdater}
-  alias Affable.Sites.{Payload, Raw, Site}
+  alias Affable.Sites.{Raw, Site}
 
   setup :set_mox_from_context
   setup :verify_on_exit!
@@ -74,7 +74,7 @@ defmodule Affable.SiteUpdaterTest do
   end
 
   test "can broadcast on demand", %{site_id: site_id, broadcast_1: broadcast} do
-    broadcast.(%Payload{
+    broadcast.(%Affable.Messages.WholeSite{
       preview: Raw.raw(%Site{items: [], name: "Some Site", id: site_id}),
       published: Raw.raw(%Site{items: [], name: "Published Site", id: site_id})
     })

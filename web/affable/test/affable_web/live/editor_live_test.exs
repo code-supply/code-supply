@@ -5,8 +5,9 @@ defmodule AffableWeb.EditorLiveTest do
   import Hammox
   import Affable.Sites.Raw
 
+  alias Affable.Messages.WholeSite
   alias Affable.{Repo, Accounts, Sites}
-  alias Affable.Sites.{Payload, Site, Item, Attribute}
+  alias Affable.Sites.{Site, Item, Attribute}
 
   setup :verify_on_exit!
 
@@ -46,7 +47,7 @@ defmodule AffableWeb.EditorLiveTest do
 
       raw_site = raw(Sites.get_site!(site.id))
 
-      expect_broadcast(fn %Payload{published: ^raw_site} -> nil end)
+      expect_broadcast(fn %WholeSite{published: ^raw_site} -> nil end)
 
       view
       |> element("#publish")

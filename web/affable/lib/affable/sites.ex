@@ -7,9 +7,9 @@ defmodule Affable.Sites do
 
   alias Affable.Repo
   alias Affable.Accounts.User
+  alias Affable.Messages.WholeSite
 
   alias Affable.Sites.{
-    Payload,
     Publication,
     Site,
     SiteMember,
@@ -106,7 +106,7 @@ defmodule Affable.Sites do
     case base_site_query(id) |> Repo.one() do
       %Site{} = site ->
         {:ok,
-         %Payload{
+         %WholeSite{
            preview: raw(site),
            published: preloaded_latest_publication_data(site)
          }
@@ -594,7 +594,7 @@ defmodule Affable.Sites do
     site = preload_latest_publication(site)
 
     :ok =
-      broadcaster().broadcast(%Payload{
+      broadcaster().broadcast(%WholeSite{
         preview: raw(site),
         published: site.latest_publication.data
       })

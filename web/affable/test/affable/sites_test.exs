@@ -4,8 +4,9 @@ defmodule Affable.SitesTest do
   import Affable.{AccountsFixtures, SitesFixtures}
 
   alias Affable.Accounts.User
+  alias Affable.Messages.WholeSite
   alias Affable.Sites
-  alias Affable.Sites.{Payload, Site, SiteMember, Item, Attribute, AttributeDefinition}
+  alias Affable.Sites.{Site, SiteMember, Item, Attribute, AttributeDefinition}
   alias Affable.Domains.Domain
 
   describe "sites" do
@@ -84,12 +85,12 @@ defmodule Affable.SitesTest do
 
       refute Sites.is_published?(site)
 
-      expect_broadcast(fn %Payload{published: ^raw_site} -> nil end)
+      expect_broadcast(fn %WholeSite{published: ^raw_site} -> nil end)
       {:ok, published_site} = Sites.publish(site)
 
       assert Sites.is_published?(published_site)
 
-      expect_broadcast(fn %Payload{published: ^raw_site} -> nil end)
+      expect_broadcast(fn %WholeSite{published: ^raw_site} -> nil end)
       {:ok, published_again_site} = Sites.publish(site)
 
       assert Sites.is_published?(published_again_site)
@@ -276,7 +277,7 @@ defmodule Affable.SitesTest do
 
       definitions_before = site.attribute_definitions
 
-      expect_broadcast(fn %Payload{preview: %{"items" => [%{"attributes" => attrs} | _]}} ->
+      expect_broadcast(fn %WholeSite{preview: %{"items" => [%{"attributes" => attrs} | _]}} ->
         assert length(attrs) == length(definitions_before) + 1
       end)
 
@@ -299,7 +300,7 @@ defmodule Affable.SitesTest do
       {:error, _} = Sites.delete_attribute_definition(site.id, definition.id, wrong_user)
       assert [definition | _] = Sites.get_site!(user, site.id).attribute_definitions
 
-      expect_broadcast(fn %Payload{preview: %{"items" => [%{"attributes" => attrs} | _]}} ->
+      expect_broadcast(fn %WholeSite{preview: %{"items" => [%{"attributes" => attrs} | _]}} ->
         assert length(attrs) == length(definitions_before)
       end)
 
@@ -313,7 +314,7 @@ defmodule Affable.SitesTest do
       user = user_fixture()
       site_before = site_fixture(user)
 
-      expect_broadcast(fn %Payload{
+      expect_broadcast(fn %WholeSite{
                             preview: %{"items" => preview_items},
                             published: %{"items" => published_items}
                           } ->
@@ -340,7 +341,7 @@ defmodule Affable.SitesTest do
       user = user_fixture()
       site_before = site_fixture(user)
 
-      expect_broadcast(fn %Payload{
+      expect_broadcast(fn %WholeSite{
                             preview: %{"items" => preview_items},
                             published: %{"items" => published_items}
                           } ->
@@ -372,7 +373,7 @@ defmodule Affable.SitesTest do
       assert first_before.position == 1
       assert second_before.position == 2
 
-      expect_broadcast(fn %Payload{preview: preview, published: published} ->
+      expect_broadcast(fn %WholeSite{preview: preview, published: published} ->
         assert Map.fetch!(preview, "items") != Map.fetch!(published, "items")
       end)
 
@@ -444,7 +445,7 @@ defmodule Affable.SitesTest do
       {_, site} = user_and_site_with_items()
       [definition] = site.attribute_definitions
 
-      expect_broadcast(fn %Payload{preview: %{"name" => "some updated name"}} -> nil end)
+      expect_broadcast(fn %WholeSite{preview: %{"name" => "some updated name"}} -> nil end)
 
       assert {:ok, %Site{} = site} =
                Sites.update_site(site, %{
@@ -547,7 +548,7 @@ defmodule Affable.SitesTest do
     test "append_item/2 adds a default item to the end of the items list" do
       {user, site} = user_and_site_with_items()
 
-      expect_broadcast(fn %Payload{preview: %{"items" => new}, published: %{"items" => old}} ->
+      expect_broadcast(fn %WholeSite{preview: %{"items" => new}, published: %{"items" => old}} ->
         assert new |> length() == (old |> length()) + 1
         assert List.last(new)["name"] == "New item"
       end)
