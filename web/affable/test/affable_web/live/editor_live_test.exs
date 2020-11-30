@@ -219,7 +219,7 @@ defmodule AffableWeb.EditorLiveTest do
 
       [first_item | _] = site.items
 
-      assert view |> has_element?("#position-#{first_item.id}", "1")
+      assert view |> has_element?("#item-#{first_item.id} .number", "1")
 
       stub_broadcast()
 
@@ -227,13 +227,13 @@ defmodule AffableWeb.EditorLiveTest do
       |> element("#demote-#{first_item.id}")
       |> render_click()
 
-      assert view |> has_element?("#position-#{first_item.id}", "2")
+      assert view |> has_element?("#item-#{first_item.id} .number", "2")
 
       view
       |> element("#promote-#{first_item.id}")
       |> render_click()
 
-      assert view |> has_element?("#position-#{first_item.id}", "1")
+      assert view |> has_element?("#item-#{first_item.id} .number", "1")
       assert view |> has_element?(".saved-state.saved")
     end
 

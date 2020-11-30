@@ -102,12 +102,12 @@
 
   <h2 class="h2">Items</h2>
 
-  <a href="#" id="new-item" class="btn" phx-click="new-item">New Item</a>
+  <a href="#" id="new-item" class="btn" phx-hook="Scroll" phx-click="new-item">New Item</a>
 
   <ol>
     <%= for f <- inputs_for(outer_form, :items) do %>
-      <li class="item standard-w">
-        <p id="position-<%= f.data.id %>" class="overflow-hidden position">
+      <li id="item-<%= f.data.id %>" class="item standard-w">
+        <p class="overflow-hidden position">
           <span class="number"><%= f.data.position %></span>
           <a id="delete-item-<%= f.data.id %>"
              href="#"

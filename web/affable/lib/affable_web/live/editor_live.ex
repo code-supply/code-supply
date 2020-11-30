@@ -52,9 +52,12 @@ defmodule AffableWeb.EditorLive do
   end
 
   def handle_event("new-item", %{}, %{assigns: %{user: user, changeset: %{data: site}}} = socket) do
-    site
-    |> Sites.append_item(user)
-    |> reset_site(socket)
+    {_, %{assigns: %{changeset: %{data: changed_site}}} = socket} =
+      site
+      |> Sites.append_item(user)
+      |> reset_site(socket)
+
+    {:noreply, push_event(socket, "scroll", %{id: "item-#{List.last(changed_site.items).id}"})}
   end
 
   def handle_event(
