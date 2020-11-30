@@ -2,6 +2,9 @@ defmodule Affable.Sites do
   @behaviour Affable.SiteClusterIO
 
   import Ecto.Query, warn: false
+
+  import Affable.Sites.Raw
+
   alias Affable.Repo
   alias Affable.Accounts.User
 
@@ -12,8 +15,7 @@ defmodule Affable.Sites do
     SiteMember,
     Item,
     AttributeDefinition,
-    Attribute,
-    Raw
+    Attribute
   }
 
   alias Affable.Domains.Domain
@@ -30,29 +32,25 @@ defmodule Affable.Sites do
 
   def publish(site) do
     site
-    |> Ecto.build_assoc(:publications, %{data: Raw.raw(site)})
+    |> Ecto.build_assoc(:publications, %{data: raw(site)})
     |> Repo.insert()
 
-    {:ok, site |> broadcast()}
+    {
+      :ok,
+      site
+      |> preload_latest_publication()
+      |> broadcast()
+    }
   end
 
   def is_published?(site) do
-    case latest_publication(site) do
+    case preload_latest_publication(site).latest_publication do
       nil ->
         false
 
       latest ->
-        latest.data == Raw.raw(site)
+        latest.data == raw(site)
     end
-  end
-
-  def latest_publication(site) do
-    from(p in Publication,
-      where: p.site_id == ^site.id,
-      order_by: [desc: p.id],
-      limit: 1
-    )
-    |> Repo.one()
   end
 
   def canonical_url(%Site{domains: [%Domain{name: name}]}) do
@@ -85,20 +83,9 @@ defmodule Affable.Sites do
     |> Repo.one!()
   end
 
-  @impl true
-  def get_raw_site(id) do
-    case base_site_query(id) |> Repo.one() do
-      %Site{} = site ->
-        {:ok,
-         %Payload{
-           preview: Raw.raw(site),
-           published: latest_publication(site).data
-         }
-         |> Map.from_struct()}
-
-      nil ->
-        {:error, :not_found}
-    end
+  defp site_query(id) do
+    base_site_query(id)
+    |> preload([], [:domains, :members])
   end
 
   defp base_site_query(id) do
@@ -107,13 +94,40 @@ defmodule Affable.Sites do
 
     from(s in Site,
       where: s.id == ^id,
-      preload: [items: ^items_q, attribute_definitions: ^definitions_q]
+      preload: [
+        items: ^items_q,
+        attribute_definitions: ^definitions_q
+      ]
     )
   end
 
-  defp site_query(id) do
-    base_site_query(id)
-    |> preload([], [:domains, :members])
+  @impl true
+  def get_raw_site(id) do
+    case base_site_query(id) |> Repo.one() do
+      %Site{} = site ->
+        {:ok,
+         %Payload{
+           preview: raw(site),
+           published: preloaded_latest_publication_data(site)
+         }
+         |> Map.from_struct()}
+
+      nil ->
+        {:error, :not_found}
+    end
+  end
+
+  defp preloaded_latest_publication_data(site) do
+    preload_latest_publication(site).latest_publication.data
+  end
+
+  defp preload_latest_publication(site) do
+    site
+    |> Repo.preload(latest_publication: latest_publication_q())
+  end
+
+  defp latest_publication_q() do
+    from(p in Publication, order_by: [desc: p.id])
   end
 
   @impl true
@@ -176,7 +190,7 @@ defmodule Affable.Sites do
       :publish,
       fn %{site: site} ->
         Ecto.build_assoc(site, :publications, %{
-          data: Raw.raw(site |> Repo.preload(items: [attributes: :definition]))
+          data: raw(site |> Repo.preload(items: [attributes: :definition]))
         })
       end
     )
@@ -186,7 +200,12 @@ defmodule Affable.Sites do
     case create_site_multi(user, attrs)
          |> Repo.transaction() do
       {:ok, %{site_with_internal_name: site}} ->
-        {:ok, site |> Repo.preload([:domains, [items: :attributes]])}
+        {
+          :ok,
+          site
+          |> Repo.preload([:domains, [items: :attributes]])
+          |> preload_latest_publication()
+        }
 
       {:error, :site, site, %{} = _domain} ->
         {:error, site}
@@ -572,10 +591,12 @@ defmodule Affable.Sites do
   end
 
   def broadcast(site) do
+    site = preload_latest_publication(site)
+
     :ok =
       broadcaster().broadcast(%Payload{
-        preview: Raw.raw(site),
-        published: latest_publication(site).data
+        preview: raw(site),
+        published: site.latest_publication.data
       })
 
     site

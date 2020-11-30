@@ -85,14 +85,14 @@ defmodule Affable.SitesTest do
       refute Sites.is_published?(site)
 
       expect_broadcast(fn %Payload{published: ^raw_site} -> nil end)
-      {:ok, ^site} = Sites.publish(site)
+      {:ok, published_site} = Sites.publish(site)
 
-      assert Sites.is_published?(site)
+      assert Sites.is_published?(published_site)
 
       expect_broadcast(fn %Payload{published: ^raw_site} -> nil end)
-      {:ok, ^site} = Sites.publish(site)
+      {:ok, published_again_site} = Sites.publish(site)
 
-      assert Sites.is_published?(site)
+      assert Sites.is_published?(published_again_site)
     end
 
     test "get_site!/2 returns the site with given user id and id" do

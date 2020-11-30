@@ -19,6 +19,7 @@ defmodule Affable.Sites.Site do
     has_many :items, Item
     has_many :attribute_definitions, AttributeDefinition
     has_many :publications, Publication
+    has_one :latest_publication, Publication
 
     timestamps()
   end
