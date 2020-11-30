@@ -8,21 +8,6 @@
     class: "h-body top-12 mt-1 fixed w-1/3 overflow-y-scroll px-4", csrf_token: false, phx_change: :save, phx_submit: :save %>
   <h1 class="h2">Editing <%= @changeset.data.name %></h1>
 
-  <%= if @saved_state != :neutral do %>
-    <div class="save-indicator">
-      <p class="saved-state <%= @saved_state %>">
-        <span class="message">
-          <%= case @saved_state do %>
-            <% :error -> %>
-              Whoops!
-            <% _ -> %>
-              Saved.
-          <% end %>
-        </span>
-      </p>
-    </div>
-  <% end %>
-
   <div>
     <div class="field">
       <label for="site_name">Site name</label>

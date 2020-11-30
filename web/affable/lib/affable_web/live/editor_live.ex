@@ -94,10 +94,6 @@ defmodule AffableWeb.EditorLive do
     |> reset_site(socket)
   end
 
-  def handle_info(:clear_save, socket) do
-    {:noreply, assign(socket, saved_state: :clear)}
-  end
-
   defp redirect_to_login(socket) do
     {:ok, redirect(socket, to: "/users/log_in")}
   end
@@ -109,19 +105,15 @@ defmodule AffableWeb.EditorLive do
       user: user,
       site_id: id,
       changeset: Site.changeset(site, %{}),
-      saved_state: :neutral,
       published: Sites.is_published?(site),
       preview_url: "#{Sites.canonical_url(site)}preview"
     )
   end
 
   defp reset_site(%Site{} = site, socket) do
-    Process.send_after(self(), :clear_save, 2000)
-
     {:noreply,
      assign(socket,
        changeset: Site.changeset(site, %{}),
-       saved_state: :saved,
        published: Sites.is_published?(site)
      )}
   end
@@ -131,6 +123,6 @@ defmodule AffableWeb.EditorLive do
   end
 
   defp reset_site({:error, changeset}, socket) do
-    {:noreply, assign(socket, changeset: changeset, saved_state: :error)}
+    {:noreply, assign(socket, changeset: changeset)}
   end
 end

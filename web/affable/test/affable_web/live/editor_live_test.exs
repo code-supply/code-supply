@@ -171,34 +171,6 @@ defmodule AffableWeb.EditorLiveTest do
              }) =~ "My new description!"
     end
 
-    test "editing shows the user that the change was saved", %{conn: conn, site: site} do
-      conn = get(conn, path(conn, site))
-
-      {:ok, view, before_save} = live(conn, path(conn, site))
-
-      # glitches on load when the element present, so ensure it's not present
-      refute before_save =~ "saved-state"
-      refute before_save =~ "Saved."
-
-      stub_broadcast()
-
-      after_save =
-        render_change(view, :save, %{
-          "site" => %{
-            "name" => "new name"
-          }
-        })
-
-      assert after_save =~ "saved-state saved"
-      assert after_save =~ "Saved."
-
-      send(view.pid, :clear_save)
-      after_timeout = view |> render()
-
-      assert after_timeout =~ "saved-state clear"
-      assert after_timeout =~ "Saved."
-    end
-
     @tag :capture_log
     test "editing an item to be invalid marks the item as invalid", %{conn: conn, site: site} do
       {:ok, view, _html} = live(conn, path(conn, site))
@@ -209,7 +181,6 @@ defmodule AffableWeb.EditorLiveTest do
         })
 
       assert result =~ "phx-feedback-for=\"site_items_0_name"
-      assert result =~ "Whoops!"
     end
 
     test "can delete an item", %{conn: conn, site: site} do
@@ -246,7 +217,6 @@ defmodule AffableWeb.EditorLiveTest do
       |> render_click()
 
       assert view |> has_element?("#item-#{first_item.id} .number", "1")
-      assert view |> has_element?(".saved-state.saved")
     end
 
     test "reordering broadcasts the change to the site", %{conn: conn, site: site} do
