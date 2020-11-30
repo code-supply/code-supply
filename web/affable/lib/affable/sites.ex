@@ -82,6 +82,7 @@ defmodule Affable.Sites do
   def get_site!(id) do
     site_query(id)
     |> Repo.one!()
+    |> preload_latest_publication()
   end
 
   defp site_query(id) do

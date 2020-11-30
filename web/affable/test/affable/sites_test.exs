@@ -97,6 +97,11 @@ defmodule Affable.SitesTest do
       assert Sites.is_published?(published_again_site)
     end
 
+    test "get_site!/1 preloads latest publication" do
+      site = site_fixture()
+      assert Sites.get_site!(site.id).latest_publication.data
+    end
+
     test "get_site!/2 returns the site with given user id and id" do
       user = user_fixture()
       site = site_fixture(user)
