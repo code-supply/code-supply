@@ -108,7 +108,7 @@ defmodule Affable.Sites do
         {:ok,
          %WholeSite{
            preview: raw(site),
-           published: preloaded_latest_publication_data(site)
+           published: latest_publication_data(site)
          }
          |> Map.from_struct()}
 
@@ -117,17 +117,12 @@ defmodule Affable.Sites do
     end
   end
 
-  defp preloaded_latest_publication_data(site) do
+  defp latest_publication_data(site) do
     preload_latest_publication(site).latest_publication.data
   end
 
   defp preload_latest_publication(site) do
-    site
-    |> Repo.preload(latest_publication: latest_publication_q())
-  end
-
-  defp latest_publication_q() do
-    from(p in Publication, order_by: [desc: p.id])
+    Repo.preload(site, latest_publication: from(p in Publication, order_by: [desc: p.id]))
   end
 
   @impl true
