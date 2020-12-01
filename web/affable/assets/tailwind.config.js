@@ -1,10 +1,10 @@
 module.exports = {
   purge: {
     content: [
-      "../lib/**/*.html.*",
-      "../lib/**/views/**/*.ex",
-      "../lib/**/live/**/*.ex",
-      "./js/**/*.js",
+      "../lib/affable_web/templates/*/*.html.*",
+      "../lib/affable_web/views/*.ex",
+      "../lib/affable_web/live/*.ex",
+      "./js/*.js",
       "./css/*.css",
     ]
   },
