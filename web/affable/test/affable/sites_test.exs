@@ -2,11 +2,14 @@ defmodule Affable.SitesTest do
   use Affable.DataCase
 
   import Affable.{AccountsFixtures, SitesFixtures}
+  import Hammox
 
   alias Affable.Accounts.User
   alias Affable.Sites
   alias Affable.Sites.{Site, SiteMember, Item, Attribute, AttributeDefinition}
   alias Affable.Domains.Domain
+
+  setup :verify_on_exit!
 
   describe "sites" do
     alias Affable.Sites.Site
