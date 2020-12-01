@@ -19,7 +19,7 @@
 
   <div class="pt-4">
     <%= checkbox f, :remember_me %>
-    <%= label f, :remember_me, "Keep me logged in for 60 days" %>
+    <%= label f, :remember_me, "Keep me logged in for 60 days", class: "pl-1" %>
   </div>
 
   <div>
