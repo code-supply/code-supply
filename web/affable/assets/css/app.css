@@ -107,11 +107,11 @@ tbody tr:hover {
 }
 
 .field {
-    @apply mt-4 clear-left;
+    @apply mt-4;
 }
 
 .field label {
-    @apply block text-lg;
+    @apply text-lg;
 }
 
 .invalid-feedback {
