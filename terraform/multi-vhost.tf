@@ -2,7 +2,7 @@ resource "google_compute_instance" "multi-vhost" {
   name         = "multi-vhost"
   machine_type = "f1-micro"
   zone         = "us-east1-b"
-  tags         = ["web", "mosh"]
+  tags         = ["web", "ssh"]
 
   boot_disk {
     initialize_params {
@@ -38,14 +38,14 @@ resource "google_compute_firewall" "web" {
   target_tags = ["web"]
 }
 
-resource "google_compute_firewall" "mosh" {
-  name    = "mosh"
+resource "google_compute_firewall" "ssh" {
+  name    = "ssh"
   network = data.google_compute_network.default.name
 
   allow {
-    protocol = "udp"
-    ports    = ["60001"]
+    protocol = "tcp"
+    ports    = ["22"]
   }
 
-  target_tags = ["mosh"]
+  target_tags = ["ssh"]
 }
