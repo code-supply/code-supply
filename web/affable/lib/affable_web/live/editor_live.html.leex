@@ -1,6 +1,6 @@
 <%= unless @published do %>
-  <div class="fixed top-0 right-0 z-40 mt-12 mr-4">
-    <button id="publish" phx-click="publish" class="shadow-md btn">Publish</button>
+  <div class="fixed top-0 right-0 mr-4 mt-12 z-40">
+    <button id="publish" phx-click="publish" class="btn shadow-md">Publish</button>
   </div>
 <% end %>
 
@@ -11,31 +11,31 @@
   <div>
     <div class="field">
       <label for="site_name">Site name</label>
-      <%= text_input outer_form, :name, class: "w-full" %>
+      <%= text_input outer_form, :name, phx_debounce: 250, class: "w-full" %>
       <%= error_tag outer_form, :name %>
     </div>
 
     <div class="field">
       <label for="page_subtitle">Page subtitle</label>
-      <%= text_input outer_form, :page_subtitle, class: "w-full"%>
+      <%= text_input outer_form, :page_subtitle, phx_debounce: 250, cclass: "w-full"%>
       <%= error_tag outer_form, :page_subtitle %>
     </div>
 
     <div class="field">
       <label for="site_logo_url">Site logo URL</label>
-      <%= text_input outer_form, :site_logo_url, class: "w-full" %>
+      <%= text_input outer_form, :site_logo_url, phx_debounce: 250, cclass: "w-full" %>
       <%= error_tag outer_form, :site_logo_url %>
     </div>
 
     <div class="field">
       <label for="header_image_url">Header image URL</label>
-      <%= text_input outer_form, :header_image_url, class: "w-full" %>
+      <%= text_input outer_form, :header_image_url, phx_debounce: 250, cclass: "w-full" %>
       <%= error_tag outer_form, :header_image_url %>
     </div>
 
     <div class="field">
       <label for="text">Text</label>
-      <%= textarea outer_form, :text, class: "w-full" %>
+      <%= textarea outer_form, :text, phx_debounce: 250, cclass: "w-full" %>
       <%= error_tag outer_form, :text %>
     </div>
   </div>
@@ -47,11 +47,11 @@
 
     <ul class="divide-y-2">
       <%= for f <- inputs_for(outer_form, :attribute_definitions) do %>
-        <li class="pb-6 attribute-definition">
+        <li class="attribute-definition pb-6">
           <%= hidden_inputs_for f %>
 
           <div class="flex items-end">
-            <div class="w-3/12 pr-2 field">
+            <div class="field w-3/12 pr-2">
               <%= label f, :type %>
               <%= select f, :type, [
                     "Text": "text",
@@ -63,16 +63,16 @@
                   class: "w-full" %>
             </div>
 
-            <div class="w-8/12 pl-2 field">
+            <div class="field w-8/12 pl-2">
               <%= label f, :name %>
-              <%= text_input f, :name, class: "w-full" %>
+              <%= text_input f, :name, phx_debounce: 250, class: "w-full" %>
               <%= error_tag f, :name %>
             </div>
 
             <div class="flex-none w-1/12 pl-2">
               <a id="delete-attribute-definition-<%= f.data.id %>"
                  href="#"
-                 class="block w-8 h-12 m-auto bg-center bg-no-repeat bg-contain trash"
+                 class="m-auto trash block w-8 h-12 bg-contain bg-no-repeat bg-center"
                  phx-click="delete-attribute-definition"
                  phx-value-id="<%= f.data.id %>"
                  >
@@ -96,21 +96,21 @@
           <span class="number"><%= f.data.position %></span>
           <a id="delete-item-<%= f.data.id %>"
              href="#"
-             class="w-8 h-12 mr-16 trash feather"
+             class="trash feather w-8 h-12 mr-16"
              phx-click="delete-item"
              phx-value-id="<%= f.data.id %>"
              >
           </a>
           <a id="demote-<%= f.data.id %>"
              href="#"
-             class="w-8 h-12 mr-8 demote feather"
+             class="demote feather w-8 h-12 mr-8"
              phx-click="demote"
              phx-value-id="<%= f.data.id %>"
              >
           </a>
           <a id="promote-<%= f.data.id %>"
              href="#"
-             class="w-8 h-12 promote feather"
+             class="promote feather w-8 h-12"
              phx-click="promote"
              phx-value-id="<%= f.data.id %>"
              >
@@ -124,19 +124,19 @@
         <%= hidden_inputs_for f %>
         <div class="field">
           <%= label f, :name %>
-          <%= text_input f, :name, required: true, class: "scrollfocus" %>
+          <%= text_input f, :name, required: true, phx_debounce: 250, cclass: "scrollfocus" %>
           <%= error_tag f, :name %>
         </div>
 
         <div class="field">
           <%= label f, :url, "URL" %>
-          <%= text_input f, :url %>
+          <%= text_input f, :url, phx_debounce: 250 %>
           <%= error_tag f, :url %>
         </div>
 
         <div class="field">
           <%= label f, :image_url, "Image URL" %>
-          <%= text_input f, :image_url %>
+          <%= text_input f, :image_url, phx_debounce: 250 %>
           <%= error_tag f, :image_url %>
         </div>
 
@@ -144,14 +144,14 @@
           <%= hidden_inputs_for af %>
           <div class="field">
             <%= label af, :value, "#{af.data.definition.name}" %>
-            <%= text_input af, :value %>
+            <%= text_input af, :value, phx_debounce: 250 %>
             <%= error_tag af, :value %>
           </div>
         <% end %>
 
         <div class="field">
           <%= label f, :description %>
-          <%= textarea f, :description %>
+          <%= textarea f, :description, phx_debounce: 250 %>
           <%= error_tag f, :description %>
         </div>
       </li>
