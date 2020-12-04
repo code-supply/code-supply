@@ -5,8 +5,8 @@
     </header>
 
     <main role="main">
-      <header class="grid grid-cols-2 pt-4 pb-12 text-white bg-blue-600 md:p-8">
-        <div class="pr-4">
+      <header class="grid grid-cols-5 pt-4 pb-12 text-white bg-blue-600 md:p-8 px-4">
+        <div class="col-span-3 pr-4">
           <h1 class="text-3xl font-extrabold"><%= @subtitle %></h1>
 
           <div class="max-w-3xl mt-4 text-lg">
@@ -14,7 +14,7 @@
           </div>
         </div>
 
-        <img class="w-full" src="<%= @header_image_url %>" />
+        <img class="col-span-2 w-full" src="<%= @header_image_url %>" />
       </header>
 
       <section class="px-2 md:px-8">
