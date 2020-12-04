@@ -1,19 +1,20 @@
 <div class="bg-gray-300">
   <div class="container mx-auto bg-white">
-    <header
-      class="flex block bg-white bg-no-repeat bg-cover border-b-8 border-black"
-      style="background-image: url('<%= @header_image_url %>')"
-      >
+    <header class="flex block bg-white bg-no-repeat bg-cover border-b-8 border-black">
       <img alt="<%= @name %>" class="h-12 max-w-full px-8 my-6" src="<%= @logo_url %>">
     </header>
 
     <main role="main">
-      <header class="p-4 pb-12 text-white bg-blue-600 md:p-8">
-        <h1 class="text-3xl font-extrabold"><%= @subtitle %></h1>
+      <header class="grid grid-cols-2 pt-4 pb-12 text-white bg-blue-600 md:p-8">
+        <div class="pr-4">
+          <h1 class="text-3xl font-extrabold"><%= @subtitle %></h1>
 
-        <div class="max-w-3xl mt-4 text-lg">
-          <%= text_to_html (@text || "") %>
+          <div class="max-w-3xl mt-4 text-lg">
+            <%= text_to_html (@text || "") %>
+          </div>
         </div>
+
+        <img class="w-full" src="<%= @header_image_url %>" />
       </header>
 
       <section class="px-2 md:px-8">
