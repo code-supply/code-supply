@@ -15534,6 +15534,7 @@ spec:
           httpGet:
             path: /
             port: http
+          initialDelaySeconds: 20
         resources:
           limits:
             cpu: 200m
@@ -15547,8 +15548,8 @@ spec:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /secrets/cloudsql/key.json
         - name: INSTANCES
-          value: code-supply:europe-west2:shared-belgium=tcp:5432
-        image: eu.gcr.io/cloudsql-docker/gce-proxy:1.17
+          value: code-supply:europe-west1:shared-belgium=tcp:5432
+        image: eu.gcr.io/cloudsql-docker/gce-proxy:1.19.1
         name: cloudsql-proxy
         resources:
           limits:
