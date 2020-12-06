@@ -128,7 +128,7 @@ defmodule AffableWeb.EditorLiveTest do
       stub_broadcast()
 
       view
-      |> element("#new-item")
+      |> element("#new-item-top")
       |> render_click()
 
       site = Sites.get_site!(site.id)
