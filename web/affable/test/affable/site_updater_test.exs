@@ -6,7 +6,7 @@ defmodule Affable.SiteUpdaterTest do
   alias Phoenix.PubSub
   alias Affable.MockSiteClusterIO
   alias Affable.{Broadcaster, SiteUpdater}
-  alias Affable.Sites.{Publication, Raw, Site}
+  alias Affable.Sites.{Attribute, AttributeDefinition, Item, Publication, Raw, Site}
 
   setup :set_mox_from_context
   setup :verify_on_exit!
@@ -76,7 +76,31 @@ defmodule Affable.SiteUpdaterTest do
                    nil
   end
 
-  test "can broadcast on demand", %{site_id: site_id, broadcast_1: broadcast} do
+  test "can broadcast appended resources", %{site_id: site_id, broadcast_1: broadcast} do
+    item = %Item{
+      site_id: site_id,
+      name: "A great item",
+      description: "A great description",
+      image_url: "https://example.com/cool-image.jpeg",
+      position: 11,
+      url: "https://example.com/send-money.html",
+      attributes: [
+        %Attribute{
+          value: "3.21",
+          definition: %AttributeDefinition{name: "$", type: "dollar"}
+        }
+      ]
+    }
+
+    broadcast.(append: item)
+
+    raw_item = Raw.raw(item)
+
+    assert_receive(%{append: %{item: ^raw_item}})
+    |> write_fixture_for_external_consumption("item_append_message")
+  end
+
+  test "can broadcast full site on demand", %{site_id: site_id, broadcast_1: broadcast} do
     broadcast.(%Site{
       id: site_id,
       items: [],

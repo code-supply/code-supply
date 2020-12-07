@@ -466,7 +466,10 @@ defmodule Affable.Sites do
           position: length(site.items) + 1,
           attributes:
             for definition <- site.attribute_definitions do
-              %{definition_id: definition.id, value: "1.23"}
+              %{
+                definition_id: definition.id,
+                value: "1.23"
+              }
             end
         })
 
@@ -474,7 +477,7 @@ defmodule Affable.Sites do
         :ok,
         %{site | items: site.items ++ [item]}
         |> Repo.preload(items: [attributes: :definition])
-        |> broadcast()
+        |> broadcast(append: item |> Repo.preload(attributes: :definition))
       }
     else
       {:error, :unauthorized}
@@ -567,12 +570,17 @@ defmodule Affable.Sites do
     Item.changeset(item, attrs)
   end
 
-  def broadcast(site) do
+  def broadcast(%Site{} = site) do
     :ok =
       site
       |> preload_latest_publication()
       |> (&broadcaster().broadcast(&1)).()
 
+    site
+  end
+
+  def broadcast(%Site{} = site, append: resource) do
+    broadcaster().broadcast(append: resource)
     site
   end
 

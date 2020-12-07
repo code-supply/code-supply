@@ -29,7 +29,13 @@ defmodule Affiliate.SiteState do
     {:reply, subscription, state}
   end
 
-  def handle_info(payload, state) do
+  def handle_info(%{preview: _} = payload, state) do
     {:noreply, %{state | payload: payload}}
+  end
+
+  def handle_info(%{append: %{item: item}}, state) do
+    {:noreply,
+     state
+     |> update_in([:payload, :preview, "items"], &(&1 ++ [item]))}
   end
 end

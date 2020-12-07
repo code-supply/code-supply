@@ -28,13 +28,27 @@ defmodule Affiliate.SiteStateTest do
       %{site_state: site_state}
     end
 
-    test "new content is stored and served" do
-      incoming_payload = site_update_message()
+    test "replacement content is stored and served" do
+      incoming_payload = fixture("site_update_message")
 
       :ok = PubSub.broadcast(:affable, "testsite123", incoming_payload)
 
       assert SiteState.get() == incoming_payload
       assert SiteState.get() == incoming_payload
+    end
+
+    test "appended content is stored and served" do
+      :ok = PubSub.broadcast(:affable, "testsite123", fixture("site_update_message"))
+
+      items_before = SiteState.get().preview["items"]
+
+      incoming_payload = fixture("item_append_message")
+
+      :ok = PubSub.broadcast(:affable, "testsite123", incoming_payload)
+
+      items_after = SiteState.get().preview["items"]
+
+      assert length(items_after) == length(items_before) + 1
     end
 
     test "can get subscription info" do

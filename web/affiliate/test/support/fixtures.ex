@@ -1,7 +1,7 @@
 defmodule Affiliate.Fixtures do
-  def site_update_message do
+  def fixture(name) do
     {incoming_payload, _} =
-      (Path.dirname(__ENV__.file) <> "/../../../fixtures/site_update_message.ex")
+      (Path.dirname(__ENV__.file) <> "/../../../fixtures/#{name}.ex")
       |> Code.eval_file()
 
     incoming_payload

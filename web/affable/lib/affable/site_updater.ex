@@ -3,7 +3,7 @@ defmodule Affable.SiteUpdater do
   use GenServer
 
   alias Phoenix.PubSub
-  alias Affable.Sites.Site
+  alias Affable.Sites.{Item, Site}
 
   import Affable.Sites.Raw
 
@@ -26,6 +26,14 @@ defmodule Affable.SiteUpdater do
   end
 
   @impl true
+  def broadcast(append: %Item{} = item) do
+    GenServer.cast(__MODULE__, %{
+      topic: Affable.ID.site_name_from_id(item.site_id),
+      payload: payload(append: item)
+    })
+  end
+
+  @impl true
   def handle_info(site_topic, %{pubsub: pubsub, site_io: site_io} = state) do
     id = Affable.ID.id_from_site_name(site_topic)
     {:ok, _} = site_io.set_available(id, DateTime.utc_now())
@@ -42,10 +50,17 @@ defmodule Affable.SiteUpdater do
     {:noreply, state}
   end
 
-  defp payload(site) do
+  defp payload(%Site{} = site) do
     %Affable.Messages.WholeSite{
       preview: raw(site),
       published: site.latest_publication.data
+    }
+    |> Map.from_struct()
+  end
+
+  defp payload(append: %Item{} = item) do
+    %Affable.Messages.Append{
+      append: %{item: raw(item)}
     }
     |> Map.from_struct()
   end

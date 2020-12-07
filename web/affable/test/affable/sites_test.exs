@@ -2,6 +2,7 @@ defmodule Affable.SitesTest do
   use Affable.DataCase
 
   import Affable.{AccountsFixtures, SitesFixtures}
+  import Affable.Sites.Raw
   import Hammox
 
   alias Affable.Accounts.User
@@ -437,15 +438,15 @@ defmodule Affable.SitesTest do
     test "append_item/2 adds a default item to the end of the items list" do
       {user, site} = user_and_site_with_items()
 
-      expect_broadcast(fn site ->
-        assert site.items |> length() == (site.latest_publication.data["items"] |> length()) + 1
-        assert List.last(site.items).name == "New item"
+      expect_broadcast(fn append: %Item{name: "New item"} = item ->
+        assert %{"name" => "New item"} = raw(item)
       end)
 
       {:ok, appended_site} = Sites.append_item(site, user)
+
       {:error, :unauthorized} = Sites.append_item(site, user_fixture())
 
-      site = Sites.get_site!(user, site.id)
+      site = Sites.get_site!(site.id)
       retrieved_item = List.last(site.items)
 
       appended_item = List.last(appended_site.items)

@@ -1,4 +1,4 @@
-defmodule AffiliateWeb.PageLiveTest do
+defmodule AffiliateWeb.PreviewLiveTest do
   use AffiliateWeb.ConnCase
 
   import Affiliate.Fixtures
@@ -20,8 +20,18 @@ defmodule AffiliateWeb.PageLiveTest do
   end
 
   test "disconnected and connected render", %{conn: conn, site: site} do
-    {:ok, page_live, disconnected_html} = live(conn, "/")
+    {:ok, page_live, disconnected_html} = live(conn, "/preview")
     assert disconnected_html =~ site["name"]
     assert render(page_live) =~ site["name"]
+  end
+
+  test "appends items", %{conn: conn} do
+    {:ok, page, _html} = live(conn, "/preview")
+
+    append_payload = fixture("item_append_message")
+
+    :ok = PubSub.broadcast(:affable, "testsite123", append_payload)
+
+    assert render(page) =~ append_payload.append.item["name"]
   end
 end

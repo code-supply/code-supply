@@ -24,6 +24,11 @@ defmodule AffiliateWeb.PreviewLive do
     {:noreply, assign_site(socket, site)}
   end
 
+  @impl true
+  def handle_info(%{append: %{item: item}}, socket) do
+    {:noreply, update(socket, :items, &(&1 ++ [item]))}
+  end
+
   defp assign_site(socket, site) do
     assign(socket,
       header_image_url: site["header_image_url"],
