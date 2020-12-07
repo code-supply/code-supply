@@ -24,4 +24,14 @@ defmodule AffiliateWeb.PageLiveTest do
     assert disconnected_html =~ site["name"]
     assert render(page_live) =~ site["name"]
   end
+
+  test "ignores append messages", %{conn: conn} do
+    {:ok, page, _html} = live(conn, "/")
+
+    append_payload = fixture("item_append_message")
+
+    :ok = PubSub.broadcast(:affable, "testsite123", append_payload)
+
+    refute render(page) =~ append_payload.append.item["name"]
+  end
 end

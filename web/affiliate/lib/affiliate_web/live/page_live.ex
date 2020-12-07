@@ -24,6 +24,11 @@ defmodule AffiliateWeb.PageLive do
     {:noreply, assign_site(socket, site)}
   end
 
+  @impl true
+  def handle_info(%{append: _}, socket) do
+    {:noreply, socket}
+  end
+
   defp assign_site(socket, site) do
     assign(socket,
       page_title: site["name"],
