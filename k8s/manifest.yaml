@@ -15177,10 +15177,10 @@ subjects:
 ---
 apiVersion: v1
 data:
-  AFFILIATE_SITE_IMAGE: eu.gcr.io/code-supply/affiliate@sha256:559926eea662e08ba88fe8cf0b3aec97deece6cdbe1b32699b5d78b246bada67
+  AFFILIATE_SITE_IMAGE: eu.gcr.io/code-supply/affiliate@sha256:59bd9a044c0bf3f6912140b8ac837fa856e1b75c50167a5ec37e70c165e5fb93
 kind: ConfigMap
 metadata:
-  name: site-operator-8d8t6d9gdd
+  name: site-operator-mg78hk5f9g
   namespace: operators
 ---
 apiVersion: v1
@@ -15464,7 +15464,7 @@ spec:
         - secretRef:
             name: site-operator
         - configMapRef:
-            name: site-operator-8d8t6d9gdd
+            name: site-operator-mg78hk5f9g
         image: eu.gcr.io/code-supply/site-operator:6b081b5
         name: site-operator
         resources:
@@ -15502,7 +15502,7 @@ spec:
         traffic.sidecar.istio.io/excludeInboundPorts: 5555,4369
       labels:
         app: affable
-        version: ef4e2de
+        version: 291fd55
     spec:
       containers:
       - env:
@@ -15521,7 +15521,7 @@ spec:
         envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:ef4e2de
+        image: eu.gcr.io/code-supply/affable:291fd55
         name: affable
         ports:
         - containerPort: 4000
