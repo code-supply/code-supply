@@ -136,6 +136,18 @@ defmodule AffableWeb.UserAuthTest do
       assert get_flash(conn, :error) == "You must log in to access this page."
     end
 
+    test "redirects if user is not confirmed", %{conn: conn, user: user} do
+      conn =
+        conn
+        |> fetch_flash()
+        |> assign(:current_user, user)
+        |> UserAuth.require_authenticated_user([])
+
+      assert conn.halted
+      assert redirected_to(conn) == "/"
+      assert get_flash(conn, :info) =~ "Please check your email"
+    end
+
     test "stores the path to redirect to on GET", %{conn: conn} do
       halted_conn =
         %{conn | request_path: "/foo?bar"}
@@ -154,8 +166,12 @@ defmodule AffableWeb.UserAuthTest do
       refute get_session(halted_conn, :user_return_to)
     end
 
-    test "does not redirect if user is authenticated", %{conn: conn, user: user} do
-      conn = conn |> assign(:current_user, user) |> UserAuth.require_authenticated_user([])
+    test "does not redirect if user is authenticated and confirmed", %{conn: conn, user: user} do
+      conn =
+        conn
+        |> assign(:current_user, %{user | confirmed_at: NaiveDateTime.utc_now()})
+        |> UserAuth.require_authenticated_user([])
+
       refute conn.halted
       refute conn.status
     end

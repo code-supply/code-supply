@@ -415,7 +415,7 @@ defmodule Affable.AccountsTest do
 
   describe "confirm_user/2" do
     setup do
-      user = user_fixture()
+      user = unconfirmed_user_fixture()
 
       token =
         extract_user_token(fn url ->

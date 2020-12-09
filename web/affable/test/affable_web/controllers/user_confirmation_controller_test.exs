@@ -12,7 +12,7 @@ defmodule AffableWeb.UserConfirmationControllerTest do
   setup :verify_on_exit!
 
   setup do
-    %{user: user_fixture()}
+    %{user: unconfirmed_user_fixture()}
   end
 
   describe "GET /users/confirm" do

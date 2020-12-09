@@ -3,6 +3,7 @@ defmodule AffableWeb.UserAuth do
   import Phoenix.Controller
 
   alias Affable.Accounts
+  alias Affable.Accounts.User
   alias AffableWeb.Router.Helpers, as: Routes
 
   # Make the remember me cookie valid for 60 days.
@@ -128,14 +129,22 @@ defmodule AffableWeb.UserAuth do
   they use the application at all, here would be a good place.
   """
   def require_authenticated_user(conn, _opts) do
-    if conn.assigns[:current_user] do
-      conn
-    else
-      conn
-      |> put_flash(:error, "You must log in to access this page.")
-      |> maybe_store_return_to()
-      |> redirect(to: Routes.user_session_path(conn, :new))
-      |> halt()
+    case conn.assigns[:current_user] do
+      %User{confirmed_at: nil} ->
+        conn
+        |> put_flash(:info, "Please check your email for confirmation instructions.")
+        |> redirect(to: "/")
+        |> halt()
+
+      %User{} ->
+        conn
+
+      _ ->
+        conn
+        |> put_flash(:error, "You must log in to access this page.")
+        |> maybe_store_return_to()
+        |> redirect(to: Routes.user_session_path(conn, :new))
+        |> halt()
     end
   end
 

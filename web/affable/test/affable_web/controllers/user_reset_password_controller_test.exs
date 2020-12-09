@@ -7,7 +7,7 @@ defmodule AffableWeb.UserResetPasswordControllerTest do
   import Affable.AccountsFixtures
 
   setup do
-    %{user: user_fixture()}
+    %{user: unconfirmed_user_fixture()}
   end
 
   describe "GET /users/reset_password" do
