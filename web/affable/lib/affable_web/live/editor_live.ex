@@ -4,22 +4,12 @@ defmodule AffableWeb.EditorLive do
   use AffableWeb, :live_view
 
   alias Affable.Accounts
-  alias Affable.Accounts.User
   alias Affable.Sites
   alias Affable.Sites.Site
 
   def mount(%{"id" => id}, %{"user_token" => token}, socket) do
-    case Accounts.get_user_by_session_token(token) do
-      nil ->
-        redirect_to_login(socket)
-
-      %User{} = user ->
-        {:ok, retrieve_state(user, socket, id)}
-    end
-  end
-
-  def mount(_params, _logged_out_session, socket) do
-    redirect_to_login(socket)
+    user = Accounts.get_user_by_session_token(token)
+    {:ok, retrieve_state(user, socket, id)}
   end
 
   def handle_event(
