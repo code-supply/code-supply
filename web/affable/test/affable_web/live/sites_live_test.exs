@@ -1,24 +1,13 @@
 defmodule AffableWeb.SitesLiveTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
-  import Affable.AccountsFixtures
 
-  alias Affable.Accounts
   alias Affable.Accounts.User
   alias Affable.Messages.WholeSite
   alias Affable.Sites.Raw
 
   setup context do
-    %{conn: conn, user: user} = register_and_log_in_user(context)
-
-    token =
-      extract_user_token(fn url ->
-        Accounts.deliver_user_confirmation_instructions(user, url)
-      end)
-
-    Accounts.confirm_user(token)
-
-    {:ok, %{conn: conn, user: user}}
+    {:ok, register_and_log_in_user(context)}
   end
 
   test "shows spinner until site is available", %{conn: conn, user: %User{sites: [site]}} do
