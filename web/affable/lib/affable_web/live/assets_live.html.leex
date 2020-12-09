@@ -1,0 +1,12 @@
+<div class="container">
+  <h1>My Assets</h1>
+
+  <%= if @user_confirmed_at do %>
+    <ul class="resources">
+    </ul>
+  <% else %>
+    <p>
+    Check your email! We need to confirm you're real before you can upload assets.
+    </p>
+  <% end %>
+</div>

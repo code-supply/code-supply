@@ -3,10 +3,10 @@
 </div>
 
 <%= if @current_user do %>
-  <nav role="navigation"
-  class="flex-1 inline-block mt-2">
-    <ul>
+  <nav role="navigation" class="flex-1 mt-2">
+    <ul class="inline-flex space-x-4">
       <li><%= link "Sites", to: Routes.sites_path(@conn, :index) %></li>
+      <li><%= link "Assets", to: Routes.assets_path(@conn, :index) %></li>
     </ul>
   </nav>
   <div class="absolute top-0 right-0 z-50 mt-2 mr-2 overflow-hidden pop-out">
