@@ -27,7 +27,7 @@ defmodule Affable.SitesTest do
     end
 
     defp user_and_site_with_items() do
-      %User{sites: [site]} = user = user_fixture()
+      %User{sites: [site]} = user = unconfirmed_user_fixture()
 
       {
         user,
