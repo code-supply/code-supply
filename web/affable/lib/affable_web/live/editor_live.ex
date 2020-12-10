@@ -84,10 +84,6 @@ defmodule AffableWeb.EditorLive do
     |> reset_site(socket)
   end
 
-  defp redirect_to_login(socket) do
-    {:ok, redirect(socket, to: "/users/log_in")}
-  end
-
   defp retrieve_state(user, socket, id) do
     site = Sites.get_site!(user, id)
 
