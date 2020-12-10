@@ -21,7 +21,7 @@ defmodule AffableWeb.EditorLiveTest do
       %{
         conn: conn,
         user: user,
-        site: site |> Repo.preload(items: [attributes: :definition])
+        site: site |> Sites.with_items()
       }
     end
 

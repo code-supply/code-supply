@@ -122,6 +122,17 @@ defmodule Affable.Sites do
     end
   end
 
+  def with_items(site, attrs \\ []) do
+    site
+    |> Repo.preload(
+      [
+        items: items_query(),
+        attribute_definitions: definitions_query()
+      ],
+      attrs
+    )
+  end
+
   defp items_query do
     attributes_q = from(a in Attribute, order_by: [desc: a.definition_id])
     from(i in Item, order_by: i.position, preload: ^[attributes: {attributes_q, [:definition]}])
@@ -279,7 +290,7 @@ defmodule Affable.Sites do
         {
           :ok,
           site
-          |> Repo.preload([items: items_query()], force: true)
+          |> with_items(force: true)
           |> broadcast()
         }
 
@@ -341,7 +352,7 @@ defmodule Affable.Sites do
           |> List.replace_at(demotee_idx, demoted_item)
           |> Enum.sort_by(& &1.position)
         end)
-        |> Repo.preload(items: [attributes: :definition])
+        |> with_items()
         |> broadcast()
       }
     else

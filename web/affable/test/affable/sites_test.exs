@@ -31,9 +31,7 @@ defmodule Affable.SitesTest do
 
       {
         user,
-        site
-        |> Repo.preload(items: :attributes)
-        |> Repo.preload(:attribute_definitions)
+        site |> Sites.with_items()
       }
     end
 
