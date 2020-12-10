@@ -1,5 +1,5 @@
 defmodule Affable.DomainsTest do
-  use Affable.DataCase
+  use Affable.DataCase, async: true
   import Hammox
 
   alias Affable.Domains

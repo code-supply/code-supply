@@ -1,5 +1,5 @@
 defmodule Affable.DomainValidationTest do
-  use Affable.DataCase
+  use Affable.DataCase, async: true
 
   alias Affable.Domains.Domain
 

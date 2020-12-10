@@ -1,5 +1,5 @@
 defmodule Affable.SitesTest do
-  use Affable.DataCase
+  use Affable.DataCase, async: true
 
   import Affable.{AccountsFixtures, SitesFixtures}
   import Affable.Sites.Raw

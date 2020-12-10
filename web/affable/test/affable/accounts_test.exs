@@ -1,5 +1,5 @@
 defmodule Affable.AccountsTest do
-  use Affable.DataCase
+  use Affable.DataCase, async: true
 
   alias Affable.Accounts
   alias Affable.Accounts.{User, UserToken}
