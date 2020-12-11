@@ -83,25 +83,6 @@ tbody tr:hover {
     @apply bg-gray-100;
 }
 
-.save-indicator {
-    @apply fixed top-0 left-0 z-50 mt-4 ml-48;
-}
-
-.save-indicator .saved-state {
-    @apply w-32 pl-4 m-auto opacity-0 transition-opacity duration-1000 ease-out;
-}
-
-.save-indicator .saved-state.saved {
-    @apply opacity-100;
-}
-
-.save-indicator .saved .message,
-.save-indicator .clear .message,
-.save-indicator .neutral .message {
-    @apply pl-6 bg-no-repeat bg-contain;
-    background-image: url("/images/check-circle.svg");
-}
-
 .item {
     @apply relative clear-both;
 }
