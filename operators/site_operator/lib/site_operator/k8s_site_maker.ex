@@ -4,6 +4,7 @@ defmodule SiteOperator.K8sSiteMaker do
   alias SiteOperator.K8s.{
     AffiliateSite,
     Certificate,
+    Deployment,
     RoleBinding,
     Namespace,
     Operations,
@@ -78,6 +79,10 @@ defmodule SiteOperator.K8sSiteMaker do
 
   defp recreate(%VirtualService{} = vs, _) do
     execute([Operations.create(vs)])
+  end
+
+  defp recreate(%Deployment{}, _) do
+    {:ok, "Refusing to do anything until we decide we need to"}
   end
 
   defp execute(ops) do

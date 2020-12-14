@@ -193,6 +193,39 @@ defmodule SiteOperator.K8sSiteMakerTest do
       {:ok, upgraded: [^deployment]} = reconcile.(site)
     end
 
+    test "copes with missing deployment when namespace deleted", %{reconcile_1: reconcile} do
+      ns = %Namespace{name: @namespace}
+      ns_k8s = ns |> to_k8s
+
+      deployment = deployment()
+      deployment_k8s = deployment |> to_k8s
+
+      site = %AffiliateSite{
+        name: @namespace,
+        domains: @domains
+      }
+
+      expected_inner_operations = Operations.inner_ns_creations(site |> from_k8s())
+
+      MockK8s
+      |> expect(:execute, fn [
+                               %Operation{action: :get, resource: ^ns_k8s},
+                               _,
+                               _,
+                               %Operation{action: :get, resource: ^deployment_k8s}
+                             ] ->
+        {:error, some_resources_missing: [ns, deployment]}
+      end)
+      |> expect(:execute, fn [%Operation{action: :create, resource: ^ns_k8s}] ->
+        {:ok, [ns]}
+      end)
+      |> expect(:execute, fn ^expected_inner_operations ->
+        {:ok, []}
+      end)
+
+      {:ok, recreated: [^ns, ^deployment]} = reconcile.(site)
+    end
+
     test "creates missing wildcard virtual service", %{reconcile_1: reconcile} do
       vs = %VirtualService{
         name: @namespace,
