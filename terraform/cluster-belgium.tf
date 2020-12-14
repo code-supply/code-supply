@@ -44,6 +44,10 @@ resource "google_container_cluster" "belgium_pink" {
     cluster_ipv4_cidr_block  = ""
     services_ipv4_cidr_block = ""
   }
+
+  workload_identity_config {
+    identity_namespace = "${data.google_project.project.project_id}.svc.id.goog"
+  }
 }
 
 resource "google_container_node_pool" "belgium_c" {
