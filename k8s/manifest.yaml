@@ -15642,9 +15642,12 @@ spec:
     pilot:
       k8s:
         resources:
-          requests:
-            cpu: 200m
+          limits:
+            cpu: 500m
             memory: 500Mi
+          requests:
+            cpu: 5m
+            memory: 49Mi
   meshConfig:
     accessLogEncoding: JSON
     accessLogFile: /dev/stdout
