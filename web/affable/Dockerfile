@@ -1,6 +1,6 @@
-FROM elixir:1.11.2-alpine@sha256:d9d139ec50c400086062e5114834dc095618efc12984fbb9a404a5ffc6a36f70 AS build
+FROM elixir:1.11.2-alpine@sha256:01aa42ec636b857222938db072b0107af941f0ab5ead26de4047e6b79485cf69 AS build
 
-RUN apk add --no-cache build-base npm git
+RUN apk add --no-cache build-base npm git python2
 
 WORKDIR /app
 
