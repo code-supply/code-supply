@@ -14,8 +14,8 @@ spec:
       k8s:
         resources:
           requests:
-            memory: 1Gi
-            cpu: 250m
+            memory: 500Mi
+            cpu: 200m
     egressGateways:
     - name: istio-egressgateway
       enabled: true
