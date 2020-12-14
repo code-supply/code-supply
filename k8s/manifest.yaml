@@ -15540,8 +15540,8 @@ spec:
             cpu: 200m
             memory: 250Mi
           requests:
-            cpu: 100m
-            memory: 180Mi
+            cpu: 25m
+            memory: 100Mi
       - command:
         - /cloud_sql_proxy
         env:
