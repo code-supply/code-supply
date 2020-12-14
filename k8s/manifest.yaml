@@ -15502,7 +15502,7 @@ spec:
         traffic.sidecar.istio.io/excludeInboundPorts: 5555,4369
       labels:
         app: affable
-        version: e522aba
+        version: f3221ea
     spec:
       containers:
       - env:
@@ -15521,7 +15521,7 @@ spec:
         envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:e522aba
+        image: eu.gcr.io/code-supply/affable:f3221ea
         name: affable
         ports:
         - containerPort: 4000
