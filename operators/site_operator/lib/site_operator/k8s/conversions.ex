@@ -104,6 +104,16 @@ defmodule SiteOperator.K8s.Conversions do
                     "port" => "http"
                   }
                 },
+                "resources" => %{
+                  "limits" => %{
+                    "cpu" => "25m",
+                    "memory" => "250Mi"
+                  },
+                  "requests" => %{
+                    "cpu" => "5m",
+                    "memory" => "100Mi"
+                  }
+                },
                 "envFrom" => [%{"secretRef" => %{"name" => name}}],
                 "env" =>
                   [
