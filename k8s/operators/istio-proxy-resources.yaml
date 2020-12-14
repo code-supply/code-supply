@@ -8,4 +8,4 @@ spec:
     metadata:
       annotations:
         sidecar.istio.io/proxyCPU: 50m
-        sidecar.istio.io/proxyCPULimit: 1000m
+        sidecar.istio.io/proxyCPULimit: 500m

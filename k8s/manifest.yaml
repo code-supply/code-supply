@@ -15434,7 +15434,7 @@ spec:
     metadata:
       annotations:
         sidecar.istio.io/proxyCPU: 50m
-        sidecar.istio.io/proxyCPULimit: 1000m
+        sidecar.istio.io/proxyCPULimit: 500m
       labels:
         app: site-operator
         k8s-app: site-operator
@@ -15465,7 +15465,7 @@ spec:
             name: site-operator
         - configMapRef:
             name: site-operator-dtfhg94h96
-        image: eu.gcr.io/code-supply/site-operator:75807a4
+        image: eu.gcr.io/code-supply/site-operator:4842c9f
         name: site-operator
         resources:
           limits:
@@ -15643,8 +15643,8 @@ spec:
       k8s:
         resources:
           requests:
-            cpu: 250m
-            memory: 1Gi
+            cpu: 200m
+            memory: 500Mi
   meshConfig:
     accessLogEncoding: JSON
     accessLogFile: /dev/stdout
