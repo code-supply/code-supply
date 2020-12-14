@@ -15465,14 +15465,14 @@ spec:
             name: site-operator
         - configMapRef:
             name: site-operator-dtfhg94h96
-        image: eu.gcr.io/code-supply/site-operator:a55e920
+        image: eu.gcr.io/code-supply/site-operator:3940bdf
         name: site-operator
         resources:
           limits:
             cpu: 50m
             memory: 100Mi
           requests:
-            cpu: 10m
+            cpu: 2m
             memory: 48Mi
         securityContext:
           allowPrivilegeEscalation: false
