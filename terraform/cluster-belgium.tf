@@ -54,7 +54,7 @@ resource "google_container_node_pool" "belgium_d" {
   name       = "waffles"
   location   = "europe-west1-b"
   cluster    = google_container_cluster.belgium_pink.name
-  node_count = 2
+  node_count = 3
 
   node_config {
     preemptible  = true
