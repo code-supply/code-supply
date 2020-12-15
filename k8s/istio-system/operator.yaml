@@ -26,6 +26,13 @@ spec:
         resources:
           requests:
             cpu: 3m
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 5m
   addonComponents:
     kiali:
       enabled: true

@@ -15643,6 +15643,13 @@ spec:
           requests:
             cpu: 3m
       name: istio-egressgateway
+    ingressGateways:
+    - enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 5m
+      name: istio-ingressgateway
     pilot:
       k8s:
         resources:
