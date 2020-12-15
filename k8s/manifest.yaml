@@ -15638,6 +15638,10 @@ spec:
   components:
     egressGateways:
     - enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 3m
       name: istio-egressgateway
     pilot:
       k8s:
