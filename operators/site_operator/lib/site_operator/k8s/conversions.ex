@@ -83,6 +83,10 @@ defmodule SiteOperator.K8s.Conversions do
         },
         "template" => %{
           "metadata" => %{
+            "annotations" => %{
+              "sidecar.istio.io/proxyCPU" => "5m",
+              "sidecar.istio.io/proxyCPULimit" => "100m"
+            },
             "labels" => %{
               "app" => name,
               "version" => "1"
