@@ -114,7 +114,7 @@ defmodule SiteOperator.K8s.Conversions do
                     "memory" => "100Mi"
                   },
                   "requests" => %{
-                    "cpu" => "1m",
+                    "cpu" => "5m",
                     "memory" => "50Mi"
                   }
                 },
