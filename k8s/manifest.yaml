@@ -15497,8 +15497,8 @@ spec:
   template:
     metadata:
       annotations:
-        sidecar.istio.io/proxyCPU: 50m
-        sidecar.istio.io/proxyCPULimit: 1000m
+        sidecar.istio.io/proxyCPU: 5m
+        sidecar.istio.io/proxyCPULimit: 500m
         traffic.sidecar.istio.io/excludeInboundPorts: 5555,4369
       labels:
         app: affable

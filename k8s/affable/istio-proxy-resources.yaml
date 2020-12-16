@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: affable
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/proxyCPU: 5m
+        sidecar.istio.io/proxyCPULimit: 500m

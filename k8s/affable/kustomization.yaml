@@ -23,3 +23,4 @@ images:
   newTag: f3221ea
 patchesStrategicMerge:
 - version.yaml
+- istio-proxy-resources.yaml
