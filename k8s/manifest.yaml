@@ -15541,7 +15541,7 @@ spec:
             memory: 250Mi
           requests:
             cpu: 2m
-            memory: 100Mi
+            memory: 55Mi
       - command:
         - /cloud_sql_proxy
         env:
@@ -15556,8 +15556,8 @@ spec:
             cpu: 20m
             memory: 48Mi
           requests:
-            cpu: 20m
-            memory: 48Mi
+            cpu: 1m
+            memory: 8Mi
         securityContext:
           allowPrivilegeEscalation: false
         volumeMounts:
