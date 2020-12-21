@@ -28,7 +28,7 @@ config :bonny,
   },
   resources: %{
     limits: %{cpu: "50m", memory: "100Mi"},
-    requests: %{cpu: "2m", memory: "48Mi"}
+    requests: %{cpu: "1m", memory: "48Mi"}
   }
 
 config :logger_json,

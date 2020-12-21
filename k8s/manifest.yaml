@@ -15433,7 +15433,7 @@ spec:
   template:
     metadata:
       annotations:
-        sidecar.istio.io/proxyCPU: 50m
+        sidecar.istio.io/proxyCPU: 3m
         sidecar.istio.io/proxyCPULimit: 500m
       labels:
         app: site-operator
@@ -15472,7 +15472,7 @@ spec:
             cpu: 50m
             memory: 100Mi
           requests:
-            cpu: 2m
+            cpu: 1m
             memory: 48Mi
         securityContext:
           allowPrivilegeEscalation: false
