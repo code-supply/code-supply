@@ -14217,6 +14217,23 @@ spec:
   scope: Cluster
   version: v1
 ---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: monitoringdashboards.monitoring.kiali.io
+spec:
+  group: monitoring.kiali.io
+  names:
+    kind: MonitoringDashboard
+    listKind: MonitoringDashboardList
+    plural: monitoringdashboards
+    singular: monitoringdashboard
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -14249,6 +14266,20 @@ metadata:
     app.kubernetes.io/name: webhook
   name: cert-manager-webhook
   namespace: cert-manager
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: kiali
+  namespace: istio-system
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -14879,6 +14910,219 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: kiali
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - endpoints
+  - namespaces
+  - nodes
+  - pods
+  - pods/log
+  - pods/proxy
+  - replicationcontrollers
+  - services
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - extensions
+  - apps
+  resources:
+  - deployments
+  - replicasets
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - autoscaling
+  resources:
+  - horizontalpodautoscalers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  - jobs
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - networking.istio.io
+  - security.istio.io
+  resources:
+  - '*'
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - apps.openshift.io
+  resources:
+  - deploymentconfigs
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - project.openshift.io
+  resources:
+  - projects
+  verbs:
+  - get
+- apiGroups:
+  - route.openshift.io
+  resources:
+  - routes
+  verbs:
+  - get
+- apiGroups:
+  - monitoring.kiali.io
+  resources:
+  - monitoringdashboards
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - iter8.tools
+  resources:
+  - experiments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: kiali-viewer
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - endpoints
+  - namespaces
+  - nodes
+  - pods
+  - pods/log
+  - pods/proxy
+  - replicationcontrollers
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - extensions
+  - apps
+  resources:
+  - deployments
+  - replicasets
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - autoscaling
+  resources:
+  - horizontalpodautoscalers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  - jobs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - networking.istio.io
+  - security.istio.io
+  resources:
+  - '*'
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps.openshift.io
+  resources:
+  - deploymentconfigs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - project.openshift.io
+  resources:
+  - projects
+  verbs:
+  - get
+- apiGroups:
+  - route.openshift.io
+  resources:
+  - routes
+  verbs:
+  - get
+- apiGroups:
+  - monitoring.kiali.io
+  resources:
+  - monitoringdashboards
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - iter8.tools
+  resources:
+  - experiments
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
     app: site-operator
     k8s-app: site-operator
   name: site-operator
@@ -15163,6 +15407,27 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: kiali
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kiali
+subjects:
+- kind: ServiceAccount
+  name: kiali
+  namespace: istio-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
     app: site-operator
     k8s-app: site-operator
   name: site-operator
@@ -15174,6 +15439,76 @@ subjects:
 - kind: ServiceAccount
   name: site-operator
   namespace: operators
+---
+apiVersion: v1
+data:
+  config.yaml: |
+    auth:
+      openid: {}
+      openshift:
+        client_id_prefix: kiali
+      strategy: anonymous
+    deployment:
+      accessible_namespaces:
+      - '**'
+      additional_service_yaml: {}
+      affinity:
+        node: {}
+        pod: {}
+        pod_anti: {}
+      custom_dashboards:
+        excludes:
+        - ""
+        includes:
+        - '*'
+      image_name: quay.io/kiali/kiali
+      image_pull_policy: Always
+      image_pull_secrets: []
+      image_version: v1.26
+      ingress_enabled: false
+      namespace: istio-system
+      node_selector: {}
+      override_ingress_yaml:
+        metadata: {}
+      pod_annotations:
+        sidecar.istio.io/inject: "false"
+      pod_labels: {}
+      priority_class_name: ""
+      replicas: 1
+      resources: {}
+      secret_name: kiali
+      service_annotations: {}
+      service_type: ""
+      tolerations: []
+      verbose_mode: "3"
+      version_label: v1.26.0
+      view_only_mode: false
+    external_services:
+      custom_dashboards:
+        enabled: true
+    identity:
+      cert_file: ""
+      private_key_file: ""
+    istio_namespace: istio-system
+    login_token:
+      signing_key: CHANGEME
+    server:
+      metrics_enabled: true
+      metrics_port: 9090
+      port: 20001
+      web_root: /kiali
+kind: ConfigMap
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: kiali
+  namespace: istio-system
 ---
 apiVersion: v1
 data:
@@ -15260,6 +15595,34 @@ spec:
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: webhook
   type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kiali.io/api-spec: https://kiali.io/api
+    kiali.io/api-type: rest
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: kiali
+  namespace: istio-system
+spec:
+  ports:
+  - name: http
+    port: 20001
+    protocol: TCP
+  - name: http-metrics
+    port: 9090
+    protocol: TCP
+  selector:
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/name: kiali
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -15415,6 +15778,102 @@ spec:
           timeoutSeconds: 1
         resources: {}
       serviceAccountName: cert-manager-webhook
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: kiali
+  namespace: istio-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: kiali-server
+      app.kubernetes.io/name: kiali
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kiali.io/runtimes: go,kiali
+        prometheus.io/port: "9090"
+        prometheus.io/scrape: "true"
+        sidecar.istio.io/inject: "false"
+      labels:
+        app: kiali
+        app.kubernetes.io/instance: kiali-server
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: kiali
+        app.kubernetes.io/version: v1.26.0
+        helm.sh/chart: kiali-server-1.26.0
+        version: v1.26.0
+      name: kiali
+    spec:
+      containers:
+      - command:
+        - /opt/kiali/kiali
+        - -config
+        - /kiali-configuration/config.yaml
+        - -v
+        - "3"
+        env:
+        - name: ACTIVE_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: quay.io/kiali/kiali:v1.26
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /kiali/healthz
+            port: api-port
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 30
+        name: kiali
+        ports:
+        - containerPort: 20001
+          name: api-port
+        - containerPort: 9090
+          name: http-metrics
+        readinessProbe:
+          httpGet:
+            path: /kiali/healthz
+            port: api-port
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 30
+        volumeMounts:
+        - mountPath: /kiali-configuration
+          name: kiali-configuration
+        - mountPath: /kiali-cert
+          name: kiali-cert
+        - mountPath: /kiali-secret
+          name: kiali-secret
+      serviceAccountName: kiali
+      volumes:
+      - configMap:
+          name: kiali
+        name: kiali-configuration
+      - name: kiali-cert
+        secret:
+          optional: true
+          secretName: istio.kiali-service-account
+      - name: kiali-secret
+        secret:
+          optional: true
+          secretName: kiali
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -15656,6 +16115,995 @@ spec:
     outboundTrafficPolicy:
       mode: REGISTRY_ONLY
   profile: default
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: envoy
+  namespace: istio-system
+spec:
+  items:
+  - chart:
+      dataType: raw
+      metricName: envoy_server_uptime
+      name: Pods uptime
+      spans: 4
+  - chart:
+      dataType: raw
+      metricName: envoy_server_memory_allocated
+      min: 0
+      name: Allocated memory
+      spans: 4
+      unit: bytes
+  - chart:
+      dataType: raw
+      metricName: envoy_server_memory_heap_size
+      min: 0
+      name: Heap size
+      spans: 4
+      unit: bytes
+  - chart:
+      dataType: raw
+      metricName: envoy_cluster_upstream_cx_active
+      name: Upstream active connections
+      spans: 6
+  - chart:
+      dataType: rate
+      metricName: envoy_cluster_upstream_rq_total
+      name: Upstream total requests
+      spans: 6
+      unit: rps
+  - chart:
+      dataType: raw
+      metricName: envoy_listener_downstream_cx_active
+      name: Downstream active connections
+      spans: 6
+  - chart:
+      dataType: rate
+      metricName: envoy_listener_http_downstream_rq
+      name: Downstream HTTP requests
+      spans: 6
+      unit: rps
+  title: Envoy Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: go
+  namespace: istio-system
+spec:
+  discoverOn: go_info
+  items:
+  - chart:
+      aggregations:
+      - displayName: Pod
+        label: pod_name
+      dataType: rate
+      metricName: process_cpu_seconds_total
+      name: CPU ratio
+      spans: 6
+  - chart:
+      aggregations:
+      - displayName: Pod
+        label: pod_name
+      dataType: raw
+      metricName: process_resident_memory_bytes
+      name: RSS Memory
+      spans: 6
+      unit: bytes
+  - chart:
+      aggregations:
+      - displayName: Pod
+        label: pod_name
+      dataType: raw
+      metricName: go_goroutines
+      name: Goroutines
+      spans: 6
+  - chart:
+      aggregations:
+      - displayName: Pod
+        label: pod_name
+      dataType: rate
+      metricName: go_memstats_alloc_bytes_total
+      name: Heap allocation rate
+      spans: 6
+      unit: bytes/s
+  - chart:
+      aggregations:
+      - displayName: Pod
+        label: pod_name
+      dataType: rate
+      metricName: go_gc_duration_seconds_count
+      name: GC rate
+      spans: 6
+  - chart:
+      aggregations:
+      - displayName: Pod
+        label: pod_name
+      dataType: raw
+      metricName: go_memstats_next_gc_bytes
+      name: Next GC
+      spans: 6
+      unit: bytes
+  runtime: Go
+  title: Go Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: kiali
+  namespace: istio-system
+spec:
+  items:
+  - chart:
+      aggregations:
+      - displayName: Route
+        label: route
+      dataType: histogram
+      metricName: kiali_api_processing_duration_seconds
+      name: API processing duration
+      spans: 6
+      unit: seconds
+  - chart:
+      aggregations:
+      - displayName: Function
+        label: function
+      - displayName: Package
+        label: package
+      dataType: histogram
+      metricName: kiali_go_function_processing_duration_seconds
+      name: Functions processing duration
+      spans: 6
+      unit: seconds
+  - chart:
+      aggregations:
+      - displayName: Function
+        label: function
+      - displayName: Package
+        label: package
+      dataType: raw
+      metricName: kiali_go_function_failures_total
+      name: Failures
+      spans: 12
+  title: Kiali Internal Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: micrometer-1.0.6-jvm
+  namespace: istio-system
+spec:
+  discoverOn: jvm_threads_live
+  items:
+  - chart:
+      dataType: raw
+      metricName: jvm_threads_live
+      name: Total live threads
+      spans: 4
+  - chart:
+      dataType: raw
+      metricName: jvm_threads_daemon
+      name: Daemon threads
+      spans: 4
+  - chart:
+      dataType: raw
+      metricName: jvm_classes_loaded
+      name: Loaded classes
+      spans: 4
+  - chart:
+      aggregations:
+      - displayName: Area
+        label: area
+      - displayName: Space
+        label: id
+      dataType: raw
+      metricName: jvm_memory_used_bytes
+      name: Memory used
+      spans: 4
+      unit: bytes
+  - chart:
+      aggregations:
+      - displayName: Area
+        label: area
+      - displayName: Space
+        label: id
+      dataType: raw
+      metricName: jvm_memory_committed_bytes
+      name: Memory commited
+      spans: 4
+      unit: bytes
+  - chart:
+      aggregations:
+      - displayName: Area
+        label: area
+      - displayName: Space
+        label: id
+      dataType: raw
+      metricName: jvm_memory_max_bytes
+      name: Memory max
+      spans: 4
+      unit: bytes
+  runtime: JVM
+  title: JVM Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: micrometer-1.0.6-jvm-pool
+  namespace: istio-system
+spec:
+  discoverOn: jvm_buffer_total_capacity_bytes
+  items:
+  - chart:
+      aggregations:
+      - displayName: Pool
+        label: id
+      dataType: raw
+      metricName: jvm_buffer_memory_used_bytes
+      name: Pool buffer memory used
+      spans: 4
+      unit: bytes
+  - chart:
+      aggregations:
+      - displayName: Pool
+        label: id
+      dataType: raw
+      metricName: jvm_buffer_total_capacity_bytes
+      name: Pool buffer capacity
+      spans: 4
+      unit: bytes
+  - chart:
+      aggregations:
+      - displayName: Pool
+        label: id
+      dataType: raw
+      metricName: jvm_buffer_count
+      name: Pool buffer count
+      spans: 4
+      unit: bytes
+  runtime: JVM
+  title: JVM Pool Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: micrometer-1.1-jvm
+  namespace: istio-system
+spec:
+  discoverOn: jvm_threads_live_threads
+  items:
+  - chart:
+      aggregations:
+      - displayName: Area
+        label: area
+      - displayName: Space
+        label: id
+      dataType: raw
+      metricName: jvm_memory_used_bytes
+      name: Memory used
+      spans: 4
+      unit: bytes
+  - chart:
+      aggregations:
+      - displayName: Area
+        label: area
+      - displayName: Space
+        label: id
+      dataType: raw
+      metricName: jvm_memory_committed_bytes
+      name: Memory commited
+      spans: 4
+      unit: bytes
+  - chart:
+      aggregations:
+      - displayName: Area
+        label: area
+      - displayName: Space
+        label: id
+      dataType: raw
+      metricName: jvm_memory_max_bytes
+      name: Memory max
+      spans: 4
+      unit: bytes
+  - chart:
+      dataType: raw
+      metricName: jvm_threads_live_threads
+      name: Total live threads
+      spans: 4
+  - chart:
+      dataType: raw
+      metricName: jvm_threads_daemon_threads
+      name: Daemon threads
+      spans: 4
+  - chart:
+      aggregations:
+      - displayName: State
+        label: state
+      dataType: raw
+      metricName: jvm_threads_states_threads
+      name: Threads states
+      spans: 4
+  runtime: JVM
+  title: JVM Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: microprofile-1.1
+  namespace: istio-system
+spec:
+  discoverOn: base:thread_count
+  items:
+  - chart:
+      dataType: raw
+      metricName: base:classloader_current_loaded_class_count
+      name: Current loaded classes
+      spans: 6
+  - chart:
+      dataType: raw
+      metricName: base:classloader_total_unloaded_class_count
+      name: Unloaded classes
+      spans: 6
+  - chart:
+      dataType: raw
+      metricName: base:thread_count
+      name: Thread count
+      spans: 4
+  - chart:
+      dataType: raw
+      metricName: base:thread_max_count
+      name: Thread max count
+      spans: 4
+  - chart:
+      dataType: raw
+      metricName: base:thread_daemon_count
+      name: Thread daemon count
+      spans: 4
+  - chart:
+      dataType: raw
+      metricName: base:memory_committed_heap_bytes
+      name: Committed heap
+      spans: 4
+      unit: bytes
+  - chart:
+      dataType: raw
+      metricName: base:memory_max_heap_bytes
+      name: Max heap
+      spans: 4
+      unit: bytes
+  - chart:
+      dataType: raw
+      metricName: base:memory_used_heap_bytes
+      name: Used heap
+      spans: 4
+      unit: bytes
+  runtime: MicroProfile
+  title: MicroProfile Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: microprofile-x.y
+  namespace: istio-system
+spec:
+  discoverOn: base:gc_complete_scavenger_count
+  items:
+  - chart:
+      dataType: raw
+      metricName: base:gc_young_generation_scavenger_time_seconds
+      name: Young GC time
+      spans: 3
+      unit: seconds
+  - chart:
+      dataType: raw
+      metricName: base:gc_young_generation_scavenger_count
+      name: Young GC count
+      spans: 3
+  - chart:
+      dataType: raw
+      metricName: base:gc_complete_scavenger_time_seconds
+      name: Total GC time
+      spans: 3
+      unit: seconds
+  - chart:
+      dataType: raw
+      metricName: base:gc_complete_scavenger_count
+      name: Total GC count
+      spans: 3
+  runtime: MicroProfile
+  title: MicroProfile Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: nodejs
+  namespace: istio-system
+spec:
+  discoverOn: nodejs_active_handles_total
+  items:
+  - chart:
+      dataType: raw
+      metricName: nodejs_active_handles_total
+      name: Active handles
+      spans: 4
+  - chart:
+      dataType: raw
+      metricName: nodejs_active_requests_total
+      name: Active requests
+      spans: 4
+  - chart:
+      dataType: raw
+      metricName: nodejs_eventloop_lag_seconds
+      name: Event loop lag
+      spans: 4
+      unit: seconds
+  - chart:
+      aggregations:
+      - displayName: Space
+        label: space
+      dataType: raw
+      metricName: nodejs_heap_space_size_total_bytes
+      name: Total heap size
+      spans: 12
+      unit: bytes
+  - chart:
+      aggregations:
+      - displayName: Space
+        label: space
+      dataType: raw
+      metricName: nodejs_heap_space_size_used_bytes
+      name: Used heap size
+      spans: 6
+      unit: bytes
+  - chart:
+      aggregations:
+      - displayName: Space
+        label: space
+      dataType: raw
+      metricName: nodejs_heap_space_size_available_bytes
+      name: Available heap size
+      spans: 6
+      unit: bytes
+  runtime: Node.js
+  title: Node.js Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: quarkus
+  namespace: istio-system
+spec:
+  items:
+  - chart:
+      dataType: raw
+      metricName: vendor:thread_count
+      name: Thread count
+      spans: 4
+  - chart:
+      dataType: raw
+      metricName: vendor:memory_heap_usage_bytes
+      name: Used heap
+      spans: 4
+      unit: bytes
+  - chart:
+      dataType: raw
+      metricName: vendor:memory_non_heap_usage_bytes
+      name: Used non-heap
+      spans: 4
+      unit: bytes
+  - include: microprofile-x.y
+  runtime: Quarkus
+  title: Quarkus Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: springboot-jvm
+  namespace: istio-system
+spec:
+  items:
+  - include: micrometer-1.0.6-jvm
+  runtime: Spring Boot
+  title: JVM Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: springboot-jvm-pool
+  namespace: istio-system
+spec:
+  items:
+  - include: micrometer-1.0.6-jvm-pool
+  runtime: Spring Boot
+  title: JVM Pool Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: springboot-tomcat
+  namespace: istio-system
+spec:
+  items:
+  - include: tomcat
+  runtime: Spring Boot
+  title: Tomcat Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: thorntail
+  namespace: istio-system
+spec:
+  discoverOn: vendor:loaded_modules
+  items:
+  - include: microprofile-1.1
+  - chart:
+      dataType: raw
+      metricName: vendor:loaded_modules
+      name: Loaded modules
+      spans: 6
+  runtime: Thorntail
+  title: Thorntail Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: tomcat
+  namespace: istio-system
+spec:
+  discoverOn: tomcat_sessions_created_total
+  items:
+  - chart:
+      dataType: raw
+      metricName: tomcat_sessions_created_total
+      name: Sessions created
+      spans: 4
+  - chart:
+      dataType: raw
+      metricName: tomcat_sessions_active_current
+      name: Active sessions
+      spans: 4
+  - chart:
+      dataType: raw
+      metricName: tomcat_sessions_rejected_total
+      name: Sessions rejected
+      spans: 4
+  - chart:
+      aggregations:
+      - displayName: Name
+        label: name
+      dataType: rate
+      metricName: tomcat_global_sent_bytes_total
+      name: Bytes sent
+      spans: 6
+      unit: bitrate
+  - chart:
+      aggregations:
+      - displayName: Name
+        label: name
+      dataType: rate
+      metricName: tomcat_global_received_bytes_total
+      name: Bytes received
+      spans: 6
+      unit: bitrate
+  - chart:
+      aggregations:
+      - displayName: Name
+        label: name
+      dataType: raw
+      metricName: tomcat_global_error_total
+      name: Global errors
+      spans: 6
+  - chart:
+      aggregations:
+      - displayName: Name
+        label: name
+      dataType: raw
+      metricName: tomcat_servlet_error_total
+      name: Servlet errors
+      spans: 6
+  runtime: Tomcat
+  title: Tomcat Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: vertx-client
+  namespace: istio-system
+spec:
+  discoverOn: vertx_http_client_connections
+  items:
+  - chart:
+      aggregations:
+      - displayName: Path
+        label: path
+      - displayName: Method
+        label: method
+      dataType: histogram
+      metricName: vertx_http_client_responseTime_seconds
+      name: Client response time
+      spans: 6
+      unit: seconds
+  - chart:
+      aggregations:
+      - displayName: Path
+        label: path
+      - displayName: Method
+        label: method
+      dataType: rate
+      metricName: vertx_http_client_requestCount_total
+      name: Client request count rate
+      spans: 6
+      unit: ops
+  - chart:
+      dataType: raw
+      metricName: vertx_http_client_connections
+      name: Client active connections
+      spans: 6
+  - chart:
+      dataType: raw
+      metricName: vertx_http_client_wsConnections
+      name: Client active websockets
+      spans: 6
+  - chart:
+      dataType: histogram
+      metricName: vertx_http_client_bytesSent
+      name: Client bytes sent
+      spans: 6
+      unit: bytes
+  - chart:
+      dataType: histogram
+      metricName: vertx_http_client_bytesReceived
+      name: Client bytes received
+      spans: 6
+      unit: bytes
+  runtime: Vert.x
+  title: Vert.x Client Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: vertx-eventbus
+  namespace: istio-system
+spec:
+  discoverOn: vertx_eventbus_handlers
+  items:
+  - chart:
+      aggregations:
+      - displayName: Eventbus address
+        label: address
+      dataType: raw
+      metricName: vertx_eventbus_handlers
+      name: Event bus handlers
+      spans: 6
+  - chart:
+      aggregations:
+      - displayName: Eventbus address
+        label: address
+      dataType: raw
+      metricName: vertx_eventbus_pending
+      name: Event bus pending messages
+      spans: 6
+  - chart:
+      aggregations:
+      - displayName: Eventbus address
+        label: address
+      dataType: histogram
+      metricName: vertx_eventbus_processingTime_seconds
+      name: Event bus processing time
+      spans: 6
+      unit: seconds
+  - chart:
+      aggregations:
+      - displayName: Eventbus address
+        label: address
+      dataType: histogram
+      metricName: vertx_eventbus_bytesRead
+      name: Event bus bytes read
+      spans: 6
+      unit: bytes
+  - chart:
+      aggregations:
+      - displayName: Eventbus address
+        label: address
+      dataType: histogram
+      metricName: vertx_eventbus_bytesWritten
+      name: Event bus bytes written
+      spans: 6
+      unit: bytes
+  runtime: Vert.x
+  title: Vert.x Eventbus Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: vertx-jvm
+  namespace: istio-system
+spec:
+  items:
+  - include: micrometer-1.1-jvm
+  runtime: Vert.x
+  title: JVM Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: vertx-pool
+  namespace: istio-system
+spec:
+  discoverOn: vertx_pool_ratio
+  items:
+  - chart:
+      aggregations:
+      - displayName: Name
+        label: pool_name
+      - displayName: Type
+        label: pool_type
+      dataType: histogram
+      metricName: vertx_pool_usage_seconds
+      name: Usage duration
+      spans: 6
+      unit: seconds
+  - chart:
+      aggregations:
+      - displayName: Name
+        label: pool_name
+      - displayName: Type
+        label: pool_type
+      dataType: raw
+      metricName: vertx_pool_ratio
+      name: Usage ratio
+      spans: 6
+  - chart:
+      aggregations:
+      - displayName: Name
+        label: pool_name
+      - displayName: Type
+        label: pool_type
+      dataType: raw
+      metricName: vertx_pool_queue_size
+      name: Queue size
+      spans: 6
+  - chart:
+      aggregations:
+      - displayName: Name
+        label: pool_name
+      - displayName: Type
+        label: pool_type
+      dataType: histogram
+      metricName: vertx_pool_queue_delay_seconds
+      name: Time in queue
+      spans: 6
+      unit: seconds
+  - chart:
+      aggregations:
+      - displayName: Name
+        label: pool_name
+      - displayName: Type
+        label: pool_type
+      dataType: raw
+      metricName: vertx_pool_inUse
+      name: Resources used
+      spans: 6
+  runtime: Vert.x
+  title: Vert.x Pools Metrics
+---
+apiVersion: monitoring.kiali.io/v1alpha1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: kiali
+    app.kubernetes.io/instance: kiali-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kiali
+    app.kubernetes.io/version: v1.26.0
+    helm.sh/chart: kiali-server-1.26.0
+    version: v1.26.0
+  name: vertx-server
+  namespace: istio-system
+spec:
+  discoverOn: vertx_http_server_connections
+  items:
+  - chart:
+      aggregations:
+      - displayName: Path
+        label: path
+      - displayName: Method
+        label: method
+      dataType: histogram
+      metricName: vertx_http_server_responseTime_seconds
+      name: Server response time
+      spans: 6
+      unit: seconds
+  - chart:
+      aggregations:
+      - displayName: Error code
+        label: code
+      - displayName: Path
+        label: path
+      - displayName: Method
+        label: method
+      dataType: rate
+      metricName: vertx_http_server_requestCount_total
+      name: Server request count rate
+      spans: 6
+      unit: ops
+  - chart:
+      dataType: raw
+      metricName: vertx_http_server_connections
+      name: Server active connections
+      spans: 6
+  - chart:
+      dataType: raw
+      metricName: vertx_http_server_wsConnections
+      name: Server active websockets
+      spans: 6
+  - chart:
+      dataType: histogram
+      metricName: vertx_http_server_bytesSent
+      name: Server bytes sent
+      spans: 6
+      unit: bytes
+  - chart:
+      dataType: histogram
+      metricName: vertx_http_server_bytesReceived
+      name: Server bytes received
+      spans: 6
+      unit: bytes
+  runtime: Vert.x
+  title: Vert.x Server Metrics
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
