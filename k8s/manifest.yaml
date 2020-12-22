@@ -15626,15 +15626,6 @@ metadata:
   name: istio-control-plane
   namespace: istio-system
 spec:
-  addonComponents:
-    grafana:
-      enabled: true
-    kiali:
-      enabled: true
-    prometheus:
-      enabled: true
-    tracing:
-      enabled: true
   components:
     egressGateways:
     - enabled: true
