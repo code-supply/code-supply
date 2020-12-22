@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-proxy-monitor
+  labels:
+    istio: proxy
+spec:
+  jobLabel: component
+  selector:
+    matchLabels:
+      security.istio.io/tlsMode: "istio"
+    matchExpressions:
+    - key: migration
+      operator: NotIn
+      values: [ "true", "1" ]
+
+  namespaceSelector:
+    any: true
+
+  podMetricsEndpoints:
+  - port: http-envoy-prom
+    path: /stats/prometheus
+    relabelings:
+    - action: labeldrop
+      regex: __meta_kubernetes_pod_label_skaffold_dev.*
+    - action: labeldrop
+      regex: __meta_kubernetes_pod_label_pod_template_hash.*
+    - action: labelmap
+      regex: __meta_kubernetes_pod_label_(.+)
