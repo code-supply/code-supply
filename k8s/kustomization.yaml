@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
 - cert-manager
 - prometheus-operator
+- prometheus
 - affable
 - certificates
 - istio-system

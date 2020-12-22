@@ -26,6 +26,11 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: prometheus
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: prometheus-operator
 ---
 apiVersion: apiextensions.k8s.io/v1
@@ -28109,6 +28114,12 @@ metadata:
   name: prometheus-operator
   namespace: prometheus-operator
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: prometheus
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -28941,6 +28952,42 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  name: prometheus
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - nodes/metrics
+  - services
+  - endpoints
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
   labels:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: prometheus-operator
@@ -29322,6 +29369,19 @@ subjects:
 - kind: ServiceAccount
   name: kiali
   namespace: istio-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+- kind: ServiceAccount
+  name: prometheus
+  namespace: prometheus
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -30097,6 +30157,39 @@ spec:
     outboundTrafficPolicy:
       mode: REGISTRY_ONLY
   profile: default
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus
+  namespace: prometheus
+spec:
+  alerting:
+    alertmanagers:
+    - name: alertmanager
+      namespace: prometheus
+      port: web
+  nodeSelector:
+    kubernetes.io/os: linux
+  podMonitorNamespaceSelector: {}
+  podMonitorSelector: {}
+  replicas: 1
+  resources:
+    requests:
+      cpu: 1m
+      memory: 24Mi
+  ruleSelector:
+    matchLabels:
+      prometheus: prometheus
+      role: alert-rules
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  serviceAccountName: prometheus
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector: {}
+  version: v2.23.0
 ---
 apiVersion: monitoring.kiali.io/v1alpha1
 kind: MonitoringDashboard
