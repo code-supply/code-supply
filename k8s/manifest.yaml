@@ -29780,6 +29780,35 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
+  labels:
+    k8s-app: istio-components
+    monitoring: istio-components
+  name: istio-component-monitor
+  namespace: istio-system
+spec:
+  endpoints:
+  - interval: 15s
+    port: http-monitoring
+  - interval: 15s
+    port: http-policy-monitoring
+  jobLabel: istio
+  namespaceSelector:
+    matchNames:
+    - istio-system
+  selector:
+    matchExpressions:
+    - key: istio
+      operator: In
+      values:
+      - mixer
+      - pilot
+      - galley
+      - citadel
+      - sidecar-injector
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
   name: kiali
   namespace: istio-system
 spec:
