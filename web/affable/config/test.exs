@@ -27,5 +27,7 @@ config :affable, AffableWeb.Endpoint,
 
 config :affable, Affable.Mailer, adapter: Bamboo.TestAdapter
 
-# Print only warnings and errors during test
-config :logger, level: :warn
+# capture all logs
+config :logger, level: :debug
+# but only show warnings and up on the console
+config :logger, :console, level: :warn

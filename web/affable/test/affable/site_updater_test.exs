@@ -1,7 +1,9 @@
 defmodule Affable.SiteUpdaterTest do
   use Affable.DataCase
-  import Hammox
+
   import Affable.SitesFixtures
+  import ExUnit.CaptureLog
+  import Hammox
 
   alias Phoenix.PubSub
   alias Affable.MockSiteClusterIO
@@ -31,6 +33,7 @@ defmodule Affable.SiteUpdaterTest do
     |> Map.merge(%{server: server, site_id: site_id, site_name: site_name})
   end
 
+  @tag :capture_log
   test "responds to requests for content with a broadcast back for the site", %{
     site_id: site_id,
     site_name: site_name
@@ -51,6 +54,24 @@ defmodule Affable.SiteUpdaterTest do
     |> write_fixture_for_external_consumption("site_update_message")
   end
 
+  test "requests for content are logged", %{
+    site_id: site_id,
+    site_name: site_name
+  } do
+    site = site_fixture()
+
+    stub(MockSiteClusterIO, :get_site!, fn ^site_id ->
+      site
+    end)
+
+    stub(MockSiteClusterIO, :set_available, fn _, _ -> {:ok, %Site{}} end)
+
+    assert capture_log(fn ->
+             SiteUpdater.handle_info(site_name, %{pubsub: :affable, site_io: MockSiteClusterIO})
+           end) =~ "Broadcasting whole site for #{site_id}"
+  end
+
+  @tag :capture_log
   test "records when the site was first made available", %{site_id: site_id, site_name: site_name} do
     expect(MockSiteClusterIO, :set_available, fn ^site_id, _datetime ->
       {:ok, %Site{}}
