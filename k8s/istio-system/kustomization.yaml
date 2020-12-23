@@ -7,4 +7,4 @@ resources:
 - peer-authentication.yaml
 - kiali.yaml
 - kiali-service-monitor.yaml
-- istio-component-service-monitor.yaml
+- istio-service-monitors.yaml
