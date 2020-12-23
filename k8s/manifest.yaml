@@ -29707,6 +29707,8 @@ metadata:
   name: kiali
   namespace: istio-system
 spec:
+  api:
+    namespaces: '**'
   auth:
     strategy: anonymous
   deployment:
