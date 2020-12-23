@@ -29777,6 +29777,21 @@ spec:
   serviceMonitorSelector: {}
   version: v2.23.0
 ---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kiali
+  namespace: istio-system
+spec:
+  endpoints:
+  - port: http-metrics
+  namespaceSelector:
+    matchNames:
+    - istio-system
+  selector:
+    matchLabels:
+      app: kiali
+---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
