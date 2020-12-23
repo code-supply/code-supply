@@ -29707,18 +29707,19 @@ metadata:
   name: kiali
   namespace: istio-system
 spec:
-  api:
-    namespaces: '**'
   auth:
     strategy: anonymous
   deployment:
-    logger:
-      log_level: debug
+    accessible_namespaces:
+    - '**'
+    ingress_enabled: false
   external_services:
     prometheus:
       url: http://prometheus-operated.prometheus:9090
   istio_component_namespaces:
     prometheus: prometheus
+  kubernetes_config:
+    cache_enabled: false
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
@@ -29821,21 +29822,6 @@ spec:
       - pilot
   targetLabels:
   - app
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: kiali
-  namespace: istio-system
-spec:
-  endpoints:
-  - port: http-metrics
-  namespaceSelector:
-    matchNames:
-    - istio-system
-  selector:
-    matchLabels:
-      app: kiali
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway

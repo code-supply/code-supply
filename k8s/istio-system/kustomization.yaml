@@ -6,5 +6,4 @@ resources:
 - operator.yaml
 - peer-authentication.yaml
 - kiali.yaml
-- kiali-service-monitor.yaml
 - istio-service-monitors.yaml

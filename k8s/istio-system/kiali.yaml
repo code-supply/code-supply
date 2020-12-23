@@ -8,15 +8,16 @@ spec:
   auth:
     strategy: anonymous
   deployment:
-    logger:
-      log_level: debug
+    accessible_namespaces: ['**']
+    ingress_enabled: false
+  kubernetes_config:
+    cache_enabled: false
   istio_component_namespaces:
     prometheus: prometheus
   external_services:
     prometheus:
       url: http://prometheus-operated.prometheus:9090
-  api:
-    namespaces: "**"
+
 ###################################################################
 # kiali_cr.yaml
 #
