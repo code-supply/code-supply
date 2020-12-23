@@ -37,7 +37,7 @@ defmodule AffiliateWeb.PageLive do
       logo_url: site["site_logo_url"],
       subtitle: site["page_subtitle"],
       text: site["text"],
-      items: site["items"]
+      items: Map.get(site, "items", [])
     )
   end
 end

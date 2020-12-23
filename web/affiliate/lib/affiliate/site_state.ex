@@ -10,7 +10,12 @@ defmodule Affiliate.SiteState do
   def init({pubsub, incoming_topic, outgoing_topic}) do
     PubSub.subscribe(pubsub, incoming_topic)
     PubSub.broadcast(pubsub, outgoing_topic, incoming_topic)
-    {:ok, %{subscription: {pubsub, incoming_topic}, payload: %{preview: %{}}}}
+
+    {:ok,
+     %{
+       subscription: {pubsub, incoming_topic},
+       payload: %{preview: %{}, published: %{}}
+     }}
   end
 
   def get() do

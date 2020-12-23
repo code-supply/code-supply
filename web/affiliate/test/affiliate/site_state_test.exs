@@ -28,6 +28,10 @@ defmodule Affiliate.SiteStateTest do
       %{site_state: site_state}
     end
 
+    test "serves a compatible default map" do
+      assert Map.keys(SiteState.get()) == Map.keys(fixture("site_update_message"))
+    end
+
     test "replacement content is stored and served" do
       incoming_payload = fixture("site_update_message")
 
