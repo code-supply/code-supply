@@ -29699,6 +29699,20 @@ spec:
       mode: REGISTRY_ONLY
   profile: default
 ---
+apiVersion: kiali.io/v1alpha1
+kind: Kiali
+metadata:
+  annotations:
+    ansible.operator-sdk/verbosity: "1"
+  name: kiali
+  namespace: istio-system
+spec:
+  auth:
+    strategy: anonymous
+  external_services:
+    prometheus:
+      url: http://prometheus-operated.prometheus:9090
+---
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
