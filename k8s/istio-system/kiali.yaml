@@ -7,6 +7,11 @@ metadata:
 spec:
   auth:
     strategy: anonymous
+  deployment:
+    logger:
+      log_level: debug
+  istio_component_namespaces:
+    prometheus: prometheus
   external_services:
     prometheus:
       url: http://prometheus-operated.prometheus:9090

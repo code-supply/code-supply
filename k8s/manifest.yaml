@@ -29709,9 +29709,14 @@ metadata:
 spec:
   auth:
     strategy: anonymous
+  deployment:
+    logger:
+      log_level: debug
   external_services:
     prometheus:
       url: http://prometheus-operated.prometheus:9090
+  istio_component_namespaces:
+    prometheus: prometheus
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
