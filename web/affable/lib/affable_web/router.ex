@@ -23,10 +23,12 @@ defmodule AffableWeb.Router do
     get("/", HomeController, :show)
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", AffableWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", AffableWeb do
+    pipe_through(:api)
+
+    get("/sites/:id", Api.SitesController, :show, as: :api_sites)
+    get("/sites/:id/preview", Api.SitesController, :preview, as: :api_sites)
+  end
 
   # Enables LiveDashboard only for development
   #
