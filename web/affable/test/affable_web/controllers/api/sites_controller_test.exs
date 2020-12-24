@@ -19,6 +19,15 @@ defmodule AffableWeb.Api.SitesControllerTest do
     assert json_response(conn, 200)["name"] == site.name
   end
 
+  test "providing published state sets site to available", %{conn: conn, published: site} do
+    site_id = site.id
+
+    get(conn, Routes.api_sites_path(conn, :show, site))
+
+    assert Sites.get_site!(site_id).made_available_at
+    assert Sites.get_site!(site_id).made_available_at <= DateTime.utc_now()
+  end
+
   test "can provide preview state as JSON", %{
     conn: conn,
     unpublished: preview,

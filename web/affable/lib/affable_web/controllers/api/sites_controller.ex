@@ -7,6 +7,7 @@ defmodule AffableWeb.Api.SitesController do
 
   def show(conn, %{"id" => site_id}) do
     site = Sites.get_site!(site_id)
+    Sites.set_available(site_id, DateTime.utc_now())
     json(conn, site.latest_publication.data)
   end
 

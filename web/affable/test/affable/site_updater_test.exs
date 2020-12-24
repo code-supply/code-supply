@@ -1,8 +1,6 @@
 defmodule Affable.SiteUpdaterTest do
   use Affable.DataCase
 
-  import Affable.SitesFixtures
-  import ExUnit.CaptureLog
   import Hammox
 
   alias Phoenix.PubSub
@@ -31,70 +29,6 @@ defmodule Affable.SiteUpdaterTest do
       broadcast: 1
     )
     |> Map.merge(%{server: server, site_id: site_id, site_name: site_name})
-  end
-
-  @tag :capture_log
-  test "responds to requests for content with a broadcast back for the site", %{
-    site_id: site_id,
-    site_name: site_name
-  } do
-    site = site_fixture()
-
-    stub(MockSiteClusterIO, :get_site!, fn ^site_id ->
-      site
-    end)
-
-    stub(MockSiteClusterIO, :set_available, fn _, _ -> {:ok, %Site{}} end)
-
-    :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
-
-    assert_receive(%{preview: %{}, published: %{}})
-    |> put_in([:preview, "id"], 1)
-    |> put_in([:published, "id"], 1)
-    |> write_fixture_for_external_consumption("site_update_message")
-  end
-
-  test "requests for content are logged", %{
-    site_id: site_id,
-    site_name: site_name
-  } do
-    site = site_fixture()
-
-    stub(MockSiteClusterIO, :get_site!, fn ^site_id ->
-      site
-    end)
-
-    stub(MockSiteClusterIO, :set_available, fn _, _ -> {:ok, %Site{}} end)
-
-    assert capture_log(fn ->
-             SiteUpdater.handle_info(site_name, %{pubsub: :affable, site_io: MockSiteClusterIO})
-           end) =~ "Broadcasting whole site for #{site_id}"
-  end
-
-  @tag :capture_log
-  test "records when the site was first made available", %{site_id: site_id, site_name: site_name} do
-    expect(MockSiteClusterIO, :set_available, fn ^site_id, _datetime ->
-      {:ok, %Site{}}
-    end)
-
-    site = %Site{
-      items: [],
-      name: "preview name",
-      latest_publication: %Publication{data: %{"name" => "published name"}}
-    }
-
-    stub(MockSiteClusterIO, :get_site!, fn ^site_id ->
-      site
-    end)
-
-    :ok = PubSub.broadcast(:affable, "testsiteupdater", site_name)
-
-    assert_receive %{
-                     preview: %{"name" => "preview name"},
-                     published: %{"name" => "published name"}
-                   },
-                   1000,
-                   nil
   end
 
   test "can broadcast appended resources", %{site_id: site_id, broadcast_1: broadcast} do

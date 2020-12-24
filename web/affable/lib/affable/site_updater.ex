@@ -2,8 +2,6 @@ defmodule Affable.SiteUpdater do
   @behaviour Affable.Broadcaster
   use GenServer
 
-  require Logger
-
   alias Phoenix.PubSub
   alias Affable.Sites.{Item, Site}
 
@@ -33,19 +31,6 @@ defmodule Affable.SiteUpdater do
       topic: Affable.ID.site_name_from_id(item.site_id),
       payload: payload(append: item)
     })
-  end
-
-  @impl true
-  def handle_info(site_topic, %{pubsub: pubsub, site_io: site_io} = state) do
-    id = Affable.ID.id_from_site_name(site_topic)
-    {:ok, _} = site_io.set_available(id, DateTime.utc_now())
-    site = site_io.get_site!(id)
-
-    Logger.info("Broadcasting whole site for #{id}")
-
-    PubSub.broadcast(pubsub, site_topic, payload(site))
-
-    {:noreply, state}
   end
 
   @impl true
