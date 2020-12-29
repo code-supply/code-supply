@@ -28,7 +28,7 @@ defmodule SiteOperator.K8s.Operations do
           distribution_cookie: distribution_cookie
         } = phoenix_site
       ) do
-    name = "affiliate"
+    name = "app"
 
     [
       deployment(phoenix_site),
@@ -51,7 +51,7 @@ defmodule SiteOperator.K8s.Operations do
         domains: domains
       }) do
     %Deployment{
-      name: "affiliate",
+      name: "app",
       namespace: namespace,
       image: image,
       env_vars: %{

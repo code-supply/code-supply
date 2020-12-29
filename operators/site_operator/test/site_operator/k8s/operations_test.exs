@@ -54,7 +54,7 @@ defmodule SiteOperator.K8s.OperationsTest do
                    %{
                      "match" => [%{"uri" => %{"prefix" => "/"}}],
                      "route" => [
-                       %{"destination" => %{"host" => "affiliate.my-namespace.svc.cluster.local"}}
+                       %{"destination" => %{"host" => "app.my-namespace.svc.cluster.local"}}
                      ]
                    }
                  ]
@@ -101,7 +101,7 @@ defmodule SiteOperator.K8s.OperationsTest do
           op.resource |> get_in(["metadata", "name"])
         end
 
-      assert names |> Enum.uniq() == ["affiliate"]
+      assert names |> Enum.uniq() == ["app"]
     end
 
     test "include a secret for the Phoenix app", %{inner_creations: creations} do
@@ -109,7 +109,7 @@ defmodule SiteOperator.K8s.OperationsTest do
         "apiVersion" => "v1",
         "kind" => "Secret",
         "metadata" => %{
-          "name" => "affiliate"
+          "name" => "app"
         },
         "type" => "Opaque",
         "data" => %{

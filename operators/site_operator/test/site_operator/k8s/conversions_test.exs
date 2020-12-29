@@ -219,7 +219,7 @@ defmodule SiteOperator.K8s.ConversionsTest do
                    %{
                      "match" => [%{"uri" => %{"prefix" => "/"}}],
                      "route" => [
-                       %{"destination" => %{"host" => "affiliate.my-vs.svc.cluster.local"}}
+                       %{"destination" => %{"host" => "app.my-vs.svc.cluster.local"}}
                      ]
                    }
                  ]
