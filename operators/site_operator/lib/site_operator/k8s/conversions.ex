@@ -242,10 +242,6 @@ defmodule SiteOperator.K8s.Conversions do
     Application.get_env(:site_operator, :affiliate_site_image)
   end
 
-  defp distribution_cookie do
-    Application.get_env(:site_operator, :distribution_cookie)
-  end
-
   defp generate_secret_key do
     case Application.get_env(:site_operator, :secret_key_generator) do
       :generate ->
@@ -262,8 +258,7 @@ defmodule SiteOperator.K8s.Conversions do
       name: site.name,
       domains: site.domains,
       image: affiliate_site_image(),
-      secret_key_base: generate_secret_key(),
-      distribution_cookie: distribution_cookie()
+      secret_key_base: generate_secret_key()
     }
   end
 

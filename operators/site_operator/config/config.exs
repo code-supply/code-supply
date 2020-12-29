@@ -3,7 +3,6 @@ import Config
 config :site_operator,
   site_maker: SiteOperator.K8sSiteMaker,
   k8s: SiteOperator.RealK8s,
-  distribution_cookie: "atestcookie",
   affiliate_site_image: "nginx",
   pubsub_topic_requests: "sitestate",
   secret_key_generator: :generate

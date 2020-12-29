@@ -40,15 +40,13 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     end
 
     test "creates the site", %{add: add} do
-      expected_cookie = Application.get_env(:site_operator, :distribution_cookie)
       expected_image = Application.get_env(:site_operator, :affiliate_site_image)
 
       site = %PhoenixSite{
         name: "justatest",
         image: expected_image,
         domains: ["www.example.com"],
-        secret_key_base: Application.get_env(:site_operator, :secret_key_generator),
-        distribution_cookie: expected_cookie
+        secret_key_base: Application.get_env(:site_operator, :secret_key_generator)
       }
 
       expected_batches = [

@@ -24,8 +24,7 @@ defmodule SiteOperator.K8s.Operations do
   def inner_ns_creations(
         %PhoenixSite{
           name: namespace,
-          secret_key_base: secret_key_base,
-          distribution_cookie: distribution_cookie
+          secret_key_base: secret_key_base
         } = phoenix_site
       ) do
     name = "app"
@@ -37,8 +36,7 @@ defmodule SiteOperator.K8s.Operations do
         name: name,
         namespace: namespace,
         data: %{
-          "SECRET_KEY_BASE" => secret_key_base,
-          "RELEASE_COOKIE" => distribution_cookie
+          "SECRET_KEY_BASE" => secret_key_base
         }
       }
     ]
@@ -60,10 +58,7 @@ defmodule SiteOperator.K8s.Operations do
           |> Enum.map(fn domain -> "https://#{domain}" end)
           |> Enum.join(" "),
         "PREVIEW_URL" => "http://affable.affable/sites/#{namespace}/preview",
-        "PUBLISHED_URL" => "http://affable.affable/sites/#{namespace}",
-        "ELIXIR_ERL_OPTIONS" => "-kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556",
-        "RELEASE_DISTRIBUTION" => "name",
-        "RELEASE_NODE" => "affable@$(POD_IP)"
+        "PUBLISHED_URL" => "http://affable.affable/sites/#{namespace}"
       }
     }
   end

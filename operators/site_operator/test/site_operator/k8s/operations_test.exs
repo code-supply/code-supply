@@ -10,8 +10,7 @@ defmodule SiteOperator.K8s.OperationsTest do
       name: "my-namespace",
       image: "my-image",
       domains: ["host1.affable.app"],
-      secret_key_base: "some-secret",
-      distribution_cookie: "some-cookie"
+      secret_key_base: "some-secret"
     }
 
     %{
@@ -113,13 +112,11 @@ defmodule SiteOperator.K8s.OperationsTest do
         },
         "type" => "Opaque",
         "data" => %{
-          "SECRET_KEY_BASE" => secret_key_encoded,
-          "RELEASE_COOKIE" => cookie_encoded
+          "SECRET_KEY_BASE" => secret_key_encoded
         }
       } = creations |> find_kind("Secret")
 
       assert {:ok, "some-secret"} = Base.decode64(secret_key_encoded)
-      assert {:ok, "some-cookie"} = Base.decode64(cookie_encoded)
     end
 
     test "sets the fetch URLs in the deployment", %{inner_creations: creations} do
@@ -144,43 +141,6 @@ defmodule SiteOperator.K8s.OperationsTest do
                "name" => "CHECK_ORIGINS",
                "value" => "https://host1.affable.app https://www.custom-domain.com"
              } in (creations |> find_kind("Deployment") |> env_vars())
-    end
-
-    test "sets the elixir erl options, so that we have a predictable distribution port", %{
-      inner_creations: creations
-    } do
-      deployment = creations |> find_kind("Deployment")
-
-      assert %{
-               "name" => "ELIXIR_ERL_OPTIONS",
-               "value" => "-kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556"
-             } in (deployment |> env_vars())
-    end
-
-    test "sets the distribution mode to 'name' and includes the pod IP", %{
-      inner_creations: creations
-    } do
-      deployment = creations |> find_kind("Deployment")
-
-      assert [
-               %{
-                 "name" => "POD_IP",
-                 "valueFrom" => %{
-                   "fieldRef" => %{"fieldPath" => "status.podIP"}
-                 }
-               }
-               | _
-             ] = deployment |> env_vars()
-
-      assert %{
-               "name" => "RELEASE_NODE",
-               "value" => "affable@$(POD_IP)"
-             } in (deployment |> env_vars())
-
-      assert %{
-               "name" => "RELEASE_DISTRIBUTION",
-               "value" => "name"
-             } in (deployment |> env_vars())
     end
 
     defp env_vars(k8s_deployment) do
