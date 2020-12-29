@@ -59,8 +59,8 @@ defmodule SiteOperator.K8s.Operations do
           domains
           |> Enum.map(fn domain -> "https://#{domain}" end)
           |> Enum.join(" "),
-        "PUBSUB_TOPIC_INCOMING" => namespace,
-        "PUBSUB_TOPIC_REQUESTS" => Application.get_env(:site_operator, :pubsub_topic_requests),
+        "PREVIEW_URL" => "http://affable.affable/sites/#{namespace}/preview",
+        "PUBLISHED_URL" => "http://affable.affable/sites/#{namespace}",
         "ELIXIR_ERL_OPTIONS" => "-kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556",
         "RELEASE_DISTRIBUTION" => "name",
         "RELEASE_NODE" => "affable@$(POD_IP)"
