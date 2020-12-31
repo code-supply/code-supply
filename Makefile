@@ -108,31 +108,6 @@ k8s/operators/env-vars/AFFILIATE_SITE_IMAGE: web/affiliate/VERSION_PUSHED
 		| tr -d '\n' \
 		> k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
 
-.PHONY: triggers
-triggers:
-	for id in $$(gcloud --format=json beta builds triggers list | jq -r .[].id); \
-	do \
-		gcloud beta builds triggers delete --quiet "$$id"; \
-	done
-	gcloud beta builds triggers create cloud-source-repositories \
-		--quiet \
-		--description=affable \
-		--repo=mono \
-		--branch-pattern="^master$$" \
-		--build-config=web/affable/cloudbuild.yaml
-	gcloud beta builds triggers create cloud-source-repositories \
-		--quiet \
-		--description=site_operator \
-		--repo=mono \
-		--branch-pattern="^master$$" \
-		--build-config=operators/site_operator/cloudbuild.yaml
-	gcloud beta builds triggers create cloud-source-repositories \
-		--quiet \
-		--description=affiliate \
-		--repo=mono \
-		--branch-pattern="^master$$" \
-		--build-config=web/affiliate/cloudbuild.yaml
-
 .PHONY: install_istio_operator
 install_istio_operator:
 	istioctl operator init
