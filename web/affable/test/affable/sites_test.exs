@@ -128,6 +128,7 @@ defmodule Affable.SitesTest do
 
       assert site.name == "some name !@#!@#$@#%#$"
       assert site.internal_name =~ ~r/site[a-z0-9]+/
+      assert site.internal_hostname =~ ~r/^app\.site[a-z0-9]+$/
       assert domain_name == "#{site.internal_name}.affable.app"
       assert received_user_id == user.id
 

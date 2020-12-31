@@ -12,6 +12,7 @@ defmodule Affable.Sites.Site do
     field :page_subtitle, :string
     field :text, :string
     field :internal_name, :string
+    field :internal_hostname, :string
     field :made_available_at, :utc_datetime
     has_many :members, SiteMember
     has_many :users, through: [:members, :user]
@@ -35,6 +36,7 @@ defmodule Affable.Sites.Site do
 
   def change_internal_name(site, internal_name) do
     site
+    |> Map.put(:internal_hostname, "app.#{internal_name}")
     |> cast(%{internal_name: internal_name}, [:internal_name])
     |> validate_required([:internal_name])
   end
