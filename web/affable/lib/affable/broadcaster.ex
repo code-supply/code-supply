@@ -1,6 +1,5 @@
 defmodule Affable.Broadcaster do
-  alias Affable.Sites.{Item, Site}
+  alias Affable.Sites.Site
 
   @callback broadcast(%Site{}) :: :ok
-  @callback broadcast(append: %Item{}) :: :ok
 end

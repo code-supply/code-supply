@@ -25,23 +25,10 @@ config :affiliate, AffiliateWeb.Endpoint,
 
 config :affiliate,
   children: [
-    {Cluster.Supervisor,
-     [
-       [
-         default: [
-           strategy: Cluster.Strategy.Epmd,
-           config: [
-             hosts: [:"affable@#{hostname}"]
-           ]
-         ]
-       ],
-       [name: Affiliate.ClusterSupervisor]
-     ]},
     {Affiliate.SiteState,
      {
-       :affable,
-       "sitekjq0",
-       "devsiterequests"
+       "http://localhost:4000/api/sites/sitekjq0/preview",
+       "http://localhost:4000/api/sites/sitekjq0"
      }}
   ]
 

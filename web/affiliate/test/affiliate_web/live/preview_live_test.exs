@@ -3,35 +3,49 @@ defmodule AffiliateWeb.PreviewLiveTest do
 
   import Affiliate.Fixtures
   import Phoenix.LiveViewTest
+  import Hammox
 
-  alias Phoenix.PubSub
+  alias Affiliate.MockHTTP
+
+  setup :set_mox_global
 
   setup do
-    start_supervised!({
-      Affiliate.SiteState,
-      {:affable, "testsite123", "testsiterequests"}
-    })
-
     incoming_payload = fixture("site_update_message")
 
-    :ok = PubSub.broadcast(:affable, "testsite123", incoming_payload)
+    MockHTTP
+    |> stub(:get, fn url ->
+      case url do
+        "previewurl" ->
+          {:ok, incoming_payload["preview"]}
 
-    %{site: incoming_payload.preview}
+        "publishedurl" ->
+          {:ok, incoming_payload["published"]}
+      end
+    end)
+
+    start_supervised!({
+      Affiliate.SiteState,
+      {"previewurl", "publishedurl"}
+    })
+
+    %{site: incoming_payload["preview"]}
   end
 
-  test "disconnected and connected render", %{conn: conn, site: site} do
-    {:ok, page_live, disconnected_html} = live(conn, "/preview")
+  test "updates when new content arrives", %{conn: conn, site: site} do
+    {:ok, view, disconnected_html} = live(conn, "/preview")
     assert disconnected_html =~ site["name"]
-    assert render(page_live) =~ site["name"]
-  end
+    assert render(view) =~ site["name"]
 
-  test "appends items", %{conn: conn} do
-    {:ok, page, _html} = live(conn, "/preview")
+    assert view
+           |> element("header h1")
+           |> render() =~ site["page_subtitle"]
 
-    append_payload = fixture("item_append_message")
+    fixture("site_update_message")
+    |> put_in(["preview", "page_subtitle"], "New Name")
+    |> Affiliate.SiteState.store()
 
-    :ok = PubSub.broadcast(:affable, "testsite123", append_payload)
-
-    assert render(page) =~ append_payload.append.item["name"]
+    assert view
+           |> element("header h1")
+           |> render() =~ "New Name"
   end
 end

@@ -12,9 +12,11 @@ defmodule AffiliateWeb.PreviewLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {pubsub, topic} = SiteState.subscription_info()
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Affiliate.PubSub, "updates")
+    end
+
     %{@key => site} = SiteState.get()
-    Phoenix.PubSub.subscribe(pubsub, topic)
 
     {:ok, assign_site(socket, site)}
   end
@@ -22,11 +24,6 @@ defmodule AffiliateWeb.PreviewLive do
   @impl true
   def handle_info(%{@key => site}, socket) do
     {:noreply, assign_site(socket, site)}
-  end
-
-  @impl true
-  def handle_info(%{append: %{item: item}}, socket) do
-    {:noreply, update(socket, :items, &(&1 ++ [item]))}
   end
 
   defp assign_site(socket, site) do

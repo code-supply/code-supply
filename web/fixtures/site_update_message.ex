@@ -1,5 +1,5 @@
 %{
-  preview: %{
+  "preview" => %{
     "header_image_url" => nil,
     "id" => 1,
     "items" => [
@@ -86,11 +86,11 @@
     ],
     "made_available_at" => nil,
     "name" => "Top 10 Apples",
-    "page_subtitle" => nil,
+    "page_subtitle" => "Initial subtitle",
     "site_logo_url" => nil,
     "text" => nil
   },
-  published: %{
+  "published" => %{
     "header_image_url" => nil,
     "id" => 1,
     "items" => [
@@ -177,7 +177,7 @@
     ],
     "made_available_at" => nil,
     "name" => "Top 10 Apples",
-    "page_subtitle" => nil,
+    "page_subtitle" => "Initial subtitle",
     "site_logo_url" => nil,
     "text" => nil
   }

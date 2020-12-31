@@ -6,8 +6,8 @@ config :affiliate, AffiliateWeb.Endpoint,
   http: [port: 4002],
   server: false
 
-config :libcluster,
-  topologies: [default: [config: [hosts: []]]]
+config :affiliate,
+  http: Affiliate.MockHTTP
 
 # Print only warnings and errors during test
 config :logger, level: :warn

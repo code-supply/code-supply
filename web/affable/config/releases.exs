@@ -33,10 +33,7 @@ config :affable,
       raise("""
       environment variable ID_SALT is missing.
       """),
-  pubsub_topic_requests: pubsub_topic_requests,
-  children: [
-    {Affable.SiteUpdater, {Affable.Sites, :affable, pubsub_topic_requests}}
-  ]
+  pubsub_topic_requests: pubsub_topic_requests
 
 config :affable, AffableWeb.Endpoint,
   url: [scheme: "https", port: 443],

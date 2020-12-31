@@ -1,42 +1,16 @@
 defmodule Affable.SiteUpdater do
   @behaviour Affable.Broadcaster
-  use GenServer
 
-  alias Phoenix.PubSub
-  alias Affable.Sites.{Item, Site}
+  alias Affable.Sites.Site
 
   import Affable.Sites.Raw
 
-  def start_link(args) do
-    GenServer.start_link(__MODULE__, args, name: __MODULE__)
-  end
-
-  @impl true
-  def init({site_io, pubsub, topic}) do
-    PubSub.subscribe(pubsub, topic)
-    {:ok, %{pubsub: pubsub, site_io: site_io}}
-  end
-
   @impl true
   def broadcast(%Site{} = site) do
-    GenServer.cast(__MODULE__, %{
-      topic: Affable.ID.site_name_from_id(site.id),
-      payload: payload(site)
-    })
-  end
-
-  @impl true
-  def broadcast(append: %Item{} = item) do
-    GenServer.cast(__MODULE__, %{
-      topic: Affable.ID.site_name_from_id(item.site_id),
-      payload: payload(append: item)
-    })
-  end
-
-  @impl true
-  def handle_cast(%{topic: site_topic, payload: payload}, %{pubsub: pubsub} = state) do
-    PubSub.broadcast(pubsub, site_topic, payload)
-    {:noreply, state}
+    case http().put(payload(site), "http://#{site.internal_hostname}/") do
+      {:ok, _} ->
+        :ok
+    end
   end
 
   defp payload(%Site{} = site) do
@@ -47,10 +21,7 @@ defmodule Affable.SiteUpdater do
     |> Map.from_struct()
   end
 
-  defp payload(append: %Item{} = item) do
-    %Affable.Messages.Append{
-      append: %{item: raw(item)}
-    }
-    |> Map.from_struct()
+  defp http() do
+    Application.get_env(:affable, :http)
   end
 end

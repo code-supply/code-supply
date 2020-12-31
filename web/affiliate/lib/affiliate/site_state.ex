@@ -7,14 +7,15 @@ defmodule Affiliate.SiteState do
     GenServer.start_link(__MODULE__, subscribe_args, name: __MODULE__)
   end
 
-  def init({pubsub, incoming_topic, outgoing_topic}) do
-    PubSub.subscribe(pubsub, incoming_topic)
-    PubSub.broadcast(pubsub, outgoing_topic, incoming_topic)
+  def init({preview_url, published_url}) do
+    {:ok, preview} = http().get(preview_url)
+    {:ok, published} = http().get(published_url)
 
     {:ok,
      %{
-       subscription: {pubsub, incoming_topic},
-       payload: %{preview: %{}, published: %{}}
+       preview_url: preview_url,
+       published_url: published_url,
+       payload: %{preview: preview, published: published}
      }}
   end
 
@@ -22,25 +23,21 @@ defmodule Affiliate.SiteState do
     GenServer.call(__MODULE__, :get)
   end
 
-  def subscription_info() do
-    GenServer.call(__MODULE__, :get_subscription_info)
+  def store(payload) do
+    GenServer.call(__MODULE__, store: payload)
   end
 
   def handle_call(:get, _from, %{payload: payload} = state) do
     {:reply, payload, state}
   end
 
-  def handle_call(:get_subscription_info, _from, %{subscription: subscription} = state) do
-    {:reply, subscription, state}
+  def handle_call([store: %{"preview" => preview, "published" => published}], _from, state) do
+    payload = %{preview: preview, published: published}
+    PubSub.broadcast(Affiliate.PubSub, "updates", payload)
+    {:reply, payload, %{state | payload: payload}}
   end
 
-  def handle_info(%{preview: _} = payload, state) do
-    {:noreply, %{state | payload: payload}}
-  end
-
-  def handle_info(%{append: %{item: item}}, state) do
-    {:noreply,
-     state
-     |> update_in([:payload, :preview, "items"], &(&1 ++ [item]))}
+  defp http() do
+    Application.get_env(:affiliate, :http)
   end
 end

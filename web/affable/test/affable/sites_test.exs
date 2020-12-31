@@ -437,8 +437,8 @@ defmodule Affable.SitesTest do
     test "append_item/2 adds a default item to the end of the items list" do
       {user, site} = user_and_site_with_items()
 
-      expect_broadcast(fn append: %Item{name: "New item"} = item ->
-        assert %{"name" => "New item"} = raw(item)
+      expect_broadcast(fn %{items: items} ->
+        assert %{"name" => "New item"} = raw(items |> List.last())
       end)
 
       {:ok, appended_site} = Sites.append_item(site, user)

@@ -1,9 +1,6 @@
 use Mix.Config
 
 config :affable,
-  children: [
-    {Affable.SiteUpdater, {Affable.Sites, :affable, "devsiterequests"}}
-  ],
   k8s: Affable.FakeK8s
 
 # Configure your database

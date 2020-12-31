@@ -2,9 +2,15 @@ defmodule Affable.SitesFixtures do
   import Affable.AccountsFixtures
 
   alias Affable.Accounts.User
+  alias Affable.Sites.Site
+  alias Affable.Sites.Publication
 
   def site_fixture() do
     site_fixture(user_fixture())
+  end
+
+  def unpersisted_site_fixture() do
+    %Site{items: [], latest_publication: %Publication{}}
   end
 
   def site_fixture(%User{} = user, attrs \\ %{}) do
@@ -13,7 +19,8 @@ defmodule Affable.SitesFixtures do
         user,
         attrs
         |> Enum.into(%{
-          name: "Top 10 Apples"
+          name: "Top 10 Apples",
+          page_subtitle: "Initial subtitle"
         })
       )
 

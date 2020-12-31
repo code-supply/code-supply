@@ -488,7 +488,7 @@ defmodule Affable.Sites do
         :ok,
         %{site | items: site.items ++ [item]}
         |> Repo.preload(items: [attributes: :definition])
-        |> broadcast(append: item |> Repo.preload(attributes: :definition))
+        |> broadcast()
       }
     else
       {:error, :unauthorized}
@@ -587,11 +587,6 @@ defmodule Affable.Sites do
       |> preload_latest_publication()
       |> (&broadcaster().broadcast(&1)).()
 
-    site
-  end
-
-  def broadcast(%Site{} = site, append: resource) do
-    broadcaster().broadcast(append: resource)
     site
   end
 

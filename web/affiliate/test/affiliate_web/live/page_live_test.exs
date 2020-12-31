@@ -3,55 +3,36 @@ defmodule AffiliateWeb.PageLiveTest do
 
   import Affiliate.Fixtures
   import Phoenix.LiveViewTest
+  import Hammox
 
-  alias Phoenix.PubSub
+  alias Affiliate.MockHTTP
+  alias Affiliate.SiteState
+
+  setup :set_mox_global
+
+  setup do
+    MockHTTP
+    |> stub(:get, fn _anyURL -> {:ok, %{}} end)
+
+    start_supervised!({SiteState, {"previewurl", "publishedurl"}})
+
+    %{}
+  end
 
   test "serves 200 when empty", %{conn: conn} do
-    start_supervised!({
-      Affiliate.SiteState,
-      {:affable, "testsite123", "testsiterequests"}
-    })
-
-    incoming_payload =
-      fixture("site_update_message")
-      |> Map.replace(:preview, %{})
-      |> Map.replace(:published, %{})
-
-    :ok = PubSub.broadcast(:affable, "testsite123", incoming_payload)
-
     conn = get(conn, "/")
-
     assert html_response(conn, 200)
   end
 
-  describe "with content" do
-    setup do
-      start_supervised!({
-        Affiliate.SiteState,
-        {:affable, "testsite123", "testsiterequests"}
-      })
+  test "serves content", %{conn: conn} do
+    incoming_payload = fixture("site_update_message")
+    site = incoming_payload["published"]
 
-      incoming_payload = fixture("site_update_message")
+    SiteState.store(incoming_payload)
 
-      :ok = PubSub.broadcast(:affable, "testsite123", incoming_payload)
+    {:ok, page_live, html} = live(conn, "/")
 
-      %{site: incoming_payload.preview}
-    end
-
-    test "disconnected and connected render", %{conn: conn, site: site} do
-      {:ok, page_live, disconnected_html} = live(conn, "/")
-      assert disconnected_html =~ site["name"]
-      assert render(page_live) =~ site["name"]
-    end
-
-    test "ignores append messages", %{conn: conn} do
-      {:ok, page, _html} = live(conn, "/")
-
-      append_payload = fixture("item_append_message")
-
-      :ok = PubSub.broadcast(:affable, "testsite123", append_payload)
-
-      refute render(page) =~ append_payload.append.item["name"]
-    end
+    assert html =~ site["name"]
+    assert render(page_live) =~ site["name"]
   end
 end

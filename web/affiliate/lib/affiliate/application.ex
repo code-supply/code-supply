@@ -11,7 +11,7 @@ defmodule Affiliate.Application do
         # Start the Telemetry supervisor
         AffiliateWeb.Telemetry,
         # Start the PubSub system
-        {Phoenix.PubSub, name: :affable},
+        {Phoenix.PubSub, name: Affiliate.PubSub},
         # Start the Endpoint (http/https)
         AffiliateWeb.Endpoint
       ] ++ Application.get_env(:affiliate, :children)

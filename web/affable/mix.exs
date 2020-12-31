@@ -49,8 +49,9 @@ defmodule Affable.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:phx_gen_auth, "~> 0.4.0", only: [:dev], runtime: false},
-      {:hammox, "~> 0.2", only: [:test]},
+      {:hammox, "~> 0.3", only: [:test]},
       {:k8s, "~> 0.5", only: [:dev, :prod]},
+      {:httpoison, "~> 1.7"},
       {:bamboo, "~> 1.6"},
       {:hashids, "~> 2.0"},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false}

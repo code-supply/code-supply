@@ -2,61 +2,60 @@ defmodule Affiliate.SiteStateTest do
   use ExUnit.Case
 
   import Affiliate.Fixtures
+  import Hammox
 
   alias Phoenix.PubSub
   alias Affiliate.SiteState
+  alias Affiliate.MockHTTP
 
-  test "asks for content on startup" do
-    PubSub.subscribe(:affable, "testsiterequests")
+  setup :verify_on_exit!
+  setup :set_mox_global
+
+  test "retrieves content on startup" do
+    MockHTTP
+    |> expect(:get, fn "http://some.preview.url/" ->
+      {:ok, %{"name" => "preview site"}}
+    end)
+    |> expect(:get, fn "http://some.published.url/" ->
+      {:ok, %{"name" => "published site"}}
+    end)
 
     start_supervised!({
-      Affiliate.SiteState,
-      {:affable, "testsite123", "testsiterequests"}
+      SiteState,
+      {"http://some.preview.url/", "http://some.published.url/"}
     })
 
-    assert_received "testsite123"
+    assert SiteState.get() == %{
+             preview: %{"name" => "preview site"},
+             published: %{"name" => "published site"}
+           }
   end
 
-  describe "after startup" do
-    setup do
-      site_state =
-        start_supervised!({
-          SiteState,
-          {:affable, "testsite123", "testsiterequests"}
-        })
+  test "replacement content is stored, served and broadcasted" do
+    stub(MockHTTP, :get, fn _ -> {:ok, %{}} end)
 
-      %{site_state: site_state}
-    end
+    start_supervised!({
+      SiteState,
+      {"http://some.preview.url/", "http://some.published.url/"}
+    })
 
-    test "serves a compatible default map" do
-      assert Map.keys(SiteState.get()) == Map.keys(fixture("site_update_message"))
-    end
+    assert SiteState.get().preview == %{}
 
-    test "replacement content is stored and served" do
-      incoming_payload = fixture("site_update_message")
+    incoming_payload = fixture("site_update_message")
 
-      :ok = PubSub.broadcast(:affable, "testsite123", incoming_payload)
+    :ok = PubSub.subscribe(Affiliate.PubSub, "updates")
 
-      assert SiteState.get() == incoming_payload
-      assert SiteState.get() == incoming_payload
-    end
+    SiteState.store(incoming_payload)
 
-    test "appended content is stored and served" do
-      :ok = PubSub.broadcast(:affable, "testsite123", fixture("site_update_message"))
+    assert incoming_payload["preview"] != %{}
 
-      items_before = SiteState.get().preview["items"]
+    expected_payload = %{
+      preview: incoming_payload["preview"],
+      published: incoming_payload["published"]
+    }
 
-      incoming_payload = fixture("item_append_message")
-
-      :ok = PubSub.broadcast(:affable, "testsite123", incoming_payload)
-
-      items_after = SiteState.get().preview["items"]
-
-      assert length(items_after) == length(items_before) + 1
-    end
-
-    test "can get subscription info" do
-      assert SiteState.subscription_info() == {:affable, "testsite123"}
-    end
+    assert SiteState.get() == expected_payload
+    assert SiteState.get() == expected_payload
+    assert_receive ^expected_payload
   end
 end

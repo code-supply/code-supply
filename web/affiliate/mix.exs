@@ -36,6 +36,8 @@ defmodule Affiliate.MixProject do
       {:phoenix, "~> 1.5.7"},
       {:phoenix_live_view, "~> 0.15.0"},
       {:floki, ">= 0.0.0", only: :test},
+      {:hammox, "~> 0.3", only: [:test]},
+      {:httpoison, "~> 1.7"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.3", only: :dev},
       {:phoenix_live_dashboard, "~> 0.4.0"},
@@ -44,7 +46,6 @@ defmodule Affiliate.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:libcluster, "~> 3.2"},
       {:decimal, "~> 1.8"}
     ]
   end

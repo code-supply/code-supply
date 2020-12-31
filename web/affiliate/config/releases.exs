@@ -22,24 +22,9 @@ config :affiliate, AffiliateWeb.Endpoint,
 
 config :affiliate,
   children: [
-    {Cluster.Supervisor,
-     [
-       [
-         default: [
-           strategy: Cluster.Strategy.Kubernetes,
-           config: [
-             kubernetes_node_basename: "affable",
-             kubernetes_selector: "app=affable",
-             kubernetes_namespace: "affable"
-           ]
-         ]
-       ],
-       [name: Affiliate.ClusterSupervisor]
-     ]},
     {Affiliate.SiteState,
      {
-       :affable,
-       System.get_env("PUBSUB_TOPIC_INCOMING") || raise("Must set PUBSUB_TOPIC_INCOMING"),
-       System.get_env("PUBSUB_TOPIC_REQUESTS") || raise("Must set PUBSUB_TOPIC_REQUESTS")
+       System.get_env("PREVIEW_URL") || raise("Must set PREVIEW_URL"),
+       System.get_env("PUBLISHED_URL") || raise("Must set PUBLISHED_URL")
      }}
   ]

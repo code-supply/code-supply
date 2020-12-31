@@ -12,6 +12,7 @@ config :affable,
   k8s: Affable.RealK8s,
   id_salt: "replacedinrelease",
   broadcaster: Affable.SiteUpdater,
+  http: Affable.RealHTTP,
   pubsub_topic_requests: "devsiterequests",
   children: []
 

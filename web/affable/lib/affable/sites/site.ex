@@ -36,9 +36,11 @@ defmodule Affable.Sites.Site do
 
   def change_internal_name(site, internal_name) do
     site
-    |> Map.put(:internal_hostname, "app.#{internal_name}")
-    |> cast(%{internal_name: internal_name}, [:internal_name])
-    |> validate_required([:internal_name])
+    |> cast(%{internal_name: internal_name, internal_hostname: "app.#{internal_name}"}, [
+      :internal_name,
+      :internal_hostname
+    ])
+    |> validate_required([:internal_name, :internal_hostname])
   end
 
   def change_made_available_at(site, time) do

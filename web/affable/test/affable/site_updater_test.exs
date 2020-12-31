@@ -1,78 +1,50 @@
 defmodule Affable.SiteUpdaterTest do
-  use Affable.DataCase
+  use Affable.DataCase, async: true
 
   import Hammox
+  import Affable.SitesFixtures
 
-  alias Phoenix.PubSub
-  alias Affable.MockSiteClusterIO
+  alias Affable.MockHTTP
   alias Affable.{Broadcaster, SiteUpdater}
-  alias Affable.Sites.{Attribute, AttributeDefinition, Item, Publication, Raw, Site}
 
-  setup :set_mox_from_context
   setup :verify_on_exit!
 
-  setup do
-    site_id = 1_234_567
-    site_name = Affable.ID.site_name_from_id(site_id)
-
-    PubSub.subscribe(:affable, site_name)
-
-    server =
-      start_supervised!({
-        SiteUpdater,
-        {MockSiteClusterIO, :affable, "testsiteupdater"}
-      })
-
-    Hammox.protect(
-      SiteUpdater,
-      Broadcaster,
-      broadcast: 1
-    )
-    |> Map.merge(%{server: server, site_id: site_id, site_name: site_name})
+  setup_all do
+    Hammox.protect(SiteUpdater, Broadcaster)
   end
 
-  test "can broadcast appended resources", %{site_id: site_id, broadcast_1: broadcast} do
-    item = %Item{
-      site_id: site_id,
-      name: "A great item",
-      description: "A great description",
-      image_url: "https://example.com/cool-image.jpeg",
-      position: 11,
-      url: "https://example.com/send-money.html",
-      attributes: [
-        %Attribute{
-          value: "3.21",
-          definition: %AttributeDefinition{name: "$", type: "dollar"}
-        }
-      ]
-    }
+  test "can broadcast full site on demand", %{broadcast_1: broadcast} do
+    site = %{site_fixture() | id: 1}
+    expected_name = site.name
 
-    broadcast.(append: item)
+    expected_url = "http://#{site.internal_hostname}/"
 
-    raw_item = Raw.raw(item)
+    expect(MockHTTP, :put, fn message, ^expected_url ->
+      assert %{
+               preview: %{"name" => ^expected_name},
+               published: %{"name" => ^expected_name}
+             } = message
 
-    assert_receive(%{append: %{item: ^raw_item}})
-    |> write_fixture_for_external_consumption("item_append_message")
-  end
+      message
+      |> put_in([:preview, "id"], 1)
+      |> put_in([:published, "id"], 1)
+      |> write_fixture_for_external_consumption("site_update_message")
 
-  test "can broadcast full site on demand", %{site_id: site_id, broadcast_1: broadcast} do
-    broadcast.(%Site{
-      id: site_id,
-      items: [],
-      name: "Some Site",
-      latest_publication: %Publication{
-        data: Raw.raw(%Site{items: [], name: "Published Site", id: site_id})
-      }
-    })
+      {:ok, %{}}
+    end)
 
-    assert_receive %{
-      preview: %{"name" => "Some Site"},
-      published: %{"name" => "Published Site"}
-    }
+    assert broadcast.(site) == :ok
   end
 
   defp write_fixture_for_external_consumption(obj, name) do
     (Path.dirname(__ENV__.file) <> "/../../../fixtures/#{name}.ex")
-    |> File.write!(inspect(obj, pretty: true))
+    |> File.write!(
+      inspect(
+        for {key, val} <- obj, into: %{} do
+          {Atom.to_string(key), val}
+        end,
+        pretty: true
+      )
+    )
   end
 end

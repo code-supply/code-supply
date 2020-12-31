@@ -19,6 +19,12 @@ defmodule AffiliateWeb.Router do
     live("/", PageLive, :index)
   end
 
+  scope "/", AffiliateWeb do
+    pipe_through(:api)
+
+    put("/", UpdatesController, :update)
+  end
+
   scope "/preview", AffiliateWeb do
     pipe_through(:insecure_browser)
 

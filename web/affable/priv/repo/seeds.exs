@@ -11,6 +11,7 @@
 # and so on) as they will fail if something goes wrong.
 
 alias Affable.Accounts
+alias Affable.Sites.Site
 alias Affable.Domains.Domain
 alias Affable.Repo
 
@@ -42,4 +43,7 @@ if Mix.env() == :dev do
   # subvert validation for the special-case localhost entry
   from(d in Domain, where: d.id == ^domain.id)
   |> Repo.update_all(set: [name: "localhost:4001"])
+
+  from(s in Site, where: s.id == ^site.id)
+  |> Repo.update_all(set: [internal_hostname: "localhost:4001"])
 end
