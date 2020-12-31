@@ -122,12 +122,12 @@ defmodule SiteOperator.K8s.OperationsTest do
     test "sets the fetch URLs in the deployment", %{inner_creations: creations} do
       assert %{
                "name" => "PREVIEW_URL",
-               "value" => "http://affable.affable/sites/my-namespace/preview"
+               "value" => "http://affable.affable/api/sites/my-namespace/preview"
              } in (creations |> find_kind("Deployment") |> env_vars())
 
       assert %{
                "name" => "PUBLISHED_URL",
-               "value" => "http://affable.affable/sites/my-namespace"
+               "value" => "http://affable.affable/api/sites/my-namespace"
              } in (creations |> find_kind("Deployment") |> env_vars())
     end
 
