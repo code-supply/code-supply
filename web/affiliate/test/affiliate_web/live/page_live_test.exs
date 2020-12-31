@@ -28,11 +28,12 @@ defmodule AffiliateWeb.PageLiveTest do
     incoming_payload = fixture("site_update_message")
     site = incoming_payload["published"]
 
+    {:ok, view, html} = live(conn, "/")
+
+    refute html =~ site["name"]
+
     SiteState.store(incoming_payload)
 
-    {:ok, page_live, html} = live(conn, "/")
-
-    assert html =~ site["name"]
-    assert render(page_live) =~ site["name"]
+    assert render(view) =~ site["name"]
   end
 end
