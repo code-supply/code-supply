@@ -57,8 +57,8 @@ defmodule SiteOperator.K8s.Operations do
           domains
           |> Enum.map(fn domain -> "https://#{domain}" end)
           |> Enum.join(" "),
-        "PREVIEW_URL" => "http://affable.affable/sites/#{namespace}/preview",
-        "PUBLISHED_URL" => "http://affable.affable/sites/#{namespace}"
+        "PREVIEW_URL" => "http://affable.affable/api/sites/#{namespace}/preview",
+        "PUBLISHED_URL" => "http://affable.affable/api/sites/#{namespace}"
       }
     }
   end
