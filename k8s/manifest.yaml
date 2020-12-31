@@ -29460,7 +29460,7 @@ spec:
             name: site-operator
         - configMapRef:
             name: site-operator-h8tm29mt78
-        image: eu.gcr.io/code-supply/site-operator:51c8ff8
+        image: eu.gcr.io/code-supply/site-operator:ab3ca96
         name: site-operator
         resources:
           limits:
