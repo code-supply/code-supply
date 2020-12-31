@@ -3,7 +3,7 @@ defmodule Affable.Repo.Migrations.AddInternalHostnameToSites do
 
   def change do
     alter table(:sites) do
-      add(:internal_hostname, :string, null: false)
+      add(:internal_hostname, :string)
     end
 
     create(unique_index(:sites, [:internal_hostname]))
