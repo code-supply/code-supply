@@ -42,7 +42,7 @@ defmodule SiteOperator.K8s.Operations do
       %AuthorizationPolicy{
         name: name,
         namespace: namespace,
-        allow_all_with_methods: ["GET"],
+        allow_all_with_methods: ["GET", "HEAD", "OPTIONS"],
         allow_all_from_namespaces: ["affable"]
       }
     ]

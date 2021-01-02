@@ -97,7 +97,7 @@ defmodule SiteOperator.K8s.OperationsTest do
             },
             %{
               "to" => [
-                %{"operation" => %{"methods" => ["GET"]}}
+                %{"operation" => %{"methods" => ["GET", "HEAD", "OPTIONS"]}}
               ]
             }
           ]
