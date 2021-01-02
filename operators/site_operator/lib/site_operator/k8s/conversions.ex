@@ -103,9 +103,7 @@ defmodule SiteOperator.K8s.Conversions do
                 "name" => "app",
                 "image" => image,
                 "ports" => [
-                  %{"name" => "http", "containerPort" => 4000},
-                  %{"name" => "erlang", "containerPort" => 5555},
-                  %{"name" => "epmd", "containerPort" => 4369}
+                  %{"name" => "http", "containerPort" => 4000}
                 ],
                 "livenessProbe" => %{
                   "httpGet" => %{

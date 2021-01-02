@@ -125,7 +125,7 @@ defmodule SiteOperator.K8s.ConversionsTest do
              ]) == "1"
     end
 
-    test "has a container with secret as env vars, erlang ports", %{deployment: deployment} do
+    test "has a container with secret as env vars, http port", %{deployment: deployment} do
       assert [
                %{
                  "name" => "app",
@@ -145,9 +145,7 @@ defmodule SiteOperator.K8s.ConversionsTest do
       assert image == @image
 
       assert ports == [
-               %{"name" => "http", "containerPort" => 4000},
-               %{"name" => "erlang", "containerPort" => 5555},
-               %{"name" => "epmd", "containerPort" => 4369}
+               %{"name" => "http", "containerPort" => 4000}
              ]
     end
 
