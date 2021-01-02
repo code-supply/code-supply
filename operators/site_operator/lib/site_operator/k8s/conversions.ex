@@ -106,8 +106,7 @@ defmodule SiteOperator.K8s.Conversions do
                   %{"name" => "http", "containerPort" => 4000}
                 ],
                 "livenessProbe" => %{
-                  "httpGet" => %{
-                    "path" => "/",
+                  "tcpSocket" => %{
                     "port" => "http"
                   }
                 },
