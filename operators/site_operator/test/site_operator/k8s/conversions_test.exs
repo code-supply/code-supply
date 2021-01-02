@@ -5,6 +5,7 @@ defmodule SiteOperator.K8s.ConversionsTest do
   import Access
 
   alias SiteOperator.K8s.{
+    AuthorizationPolicy,
     Certificate,
     Deployment,
     Gateway,
@@ -33,6 +34,14 @@ defmodule SiteOperator.K8s.ConversionsTest do
         |> to_k8s(),
       gateway: %Gateway{name: @name, namespace: @namespace, domains: @domains} |> to_k8s(),
       namespace: %Namespace{name: @name} |> to_k8s(),
+      policy:
+        %AuthorizationPolicy{
+          name: @name,
+          namespace: @namespace,
+          allow_all_from_namespaces: ["from-ns"],
+          allow_all_with_methods: ["GET"]
+        }
+        |> to_k8s(),
       secret: %Secret{name: @name, namespace: @namespace, data: @secret_data} |> to_k8s(),
       service: %Service{name: @name, namespace: @namespace} |> to_k8s(),
       virtual_service:
@@ -172,6 +181,21 @@ defmodule SiteOperator.K8s.ConversionsTest do
                name: @name,
                namespace: @namespace,
                data: @secret_data
+             }
+    end
+  end
+
+  describe "authorization policy" do
+    test "named and namespaced correctly", %{policy: policy} do
+      assert name_and_namespace(policy) == {@name, @namespace}
+    end
+
+    test "can be turned back into a struct", %{policy: policy} do
+      assert policy |> from_k8s() == %AuthorizationPolicy{
+               name: @name,
+               namespace: @namespace,
+               allow_all_from_namespaces: ["from-ns"],
+               allow_all_with_methods: ["GET"]
              }
     end
   end

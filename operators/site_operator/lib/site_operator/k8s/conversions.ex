@@ -13,7 +13,12 @@ defmodule SiteOperator.K8s.Conversions do
 
   alias SiteOperator.PhoenixSites.PhoenixSite
 
-  def to_k8s(%AuthorizationPolicy{name: name, namespace: namespace}) do
+  def to_k8s(%AuthorizationPolicy{
+        name: name,
+        namespace: namespace,
+        allow_all_with_methods: methods,
+        allow_all_from_namespaces: namespaces
+      }) do
     %{
       "apiVersion" => "security.istio.io/v1beta1",
       "kind" => "AuthorizationPolicy",
@@ -25,12 +30,12 @@ defmodule SiteOperator.K8s.Conversions do
         "rules" => [
           %{
             "from" => [
-              %{"source" => %{"namespaces" => ["affable"]}}
+              %{"source" => %{"namespaces" => namespaces}}
             ]
           },
           %{
             "to" => [
-              %{"operation" => %{"methods" => ["GET"]}}
+              %{"operation" => %{"methods" => methods}}
             ]
           }
         ]
@@ -259,6 +264,24 @@ defmodule SiteOperator.K8s.Conversions do
       domains: site.domains,
       image: affiliate_site_image(),
       secret_key_base: generate_secret_key()
+    }
+  end
+
+  def from_k8s(%{
+        "kind" => "AuthorizationPolicy",
+        "metadata" => %{"name" => name, "namespace" => namespace},
+        "spec" => %{
+          "rules" => [
+            %{"from" => [%{"source" => %{"namespaces" => namespaces}}]},
+            %{"to" => [%{"operation" => %{"methods" => methods}}]}
+          ]
+        }
+      }) do
+    %AuthorizationPolicy{
+      name: name,
+      namespace: namespace,
+      allow_all_from_namespaces: namespaces,
+      allow_all_with_methods: methods
     }
   end
 
