@@ -116,11 +116,11 @@ defmodule SiteOperator.K8s.Conversions do
                 "resources" => %{
                   "limits" => %{
                     "cpu" => "250m",
-                    "memory" => "100Mi"
+                    "memory" => "115Mi"
                   },
                   "requests" => %{
-                    "cpu" => "5m",
-                    "memory" => "50Mi"
+                    "cpu" => "3m",
+                    "memory" => "95Mi"
                   }
                 },
                 "envFrom" => [%{"secretRef" => %{"name" => name}}],
