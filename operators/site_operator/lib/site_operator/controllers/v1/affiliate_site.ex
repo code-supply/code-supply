@@ -93,7 +93,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   @rule {"apps", ["deployments"], ["create", "get", "update", "delete"]}
   @rule {"networking.istio.io", ["gateways", "virtualservices"], ["get", "create", "delete"]}
   @rule {"cert-manager.io", ["certificates"], ["get", "create", "delete"]}
-  @rule {"rbac.authorization.k8s.io", ["rolebindings"], ["get", "create", "delete"]}
+  @rule {"security.istio.io", ["authorizationpolicies"], ["get", "create", "delete"]}
 
   @spec add(map()) :: :ok | :error
   @impl Bonny.Controller

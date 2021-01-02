@@ -28869,9 +28869,9 @@ rules:
   - create
   - delete
 - apiGroups:
-  - rbac.authorization.k8s.io
+  - security.istio.io
   resources:
-  - rolebindings
+  - authorizationpolicies
   verbs:
   - get
   - create
