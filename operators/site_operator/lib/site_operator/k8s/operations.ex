@@ -5,6 +5,7 @@ defmodule SiteOperator.K8s.Operations do
 
   alias SiteOperator.K8s.{
     AffiliateSite,
+    AuthorizationPolicy,
     Deployment,
     Namespace,
     Operation,
@@ -37,6 +38,12 @@ defmodule SiteOperator.K8s.Operations do
         data: %{
           "SECRET_KEY_BASE" => secret_key_base
         }
+      },
+      %AuthorizationPolicy{
+        name: name,
+        namespace: namespace,
+        allow_all_with_methods: ["GET"],
+        allow_all_from_namespaces: ["affable"]
       }
     ]
     |> Enum.map(&create/1)

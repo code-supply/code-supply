@@ -1,6 +1,7 @@
 defmodule SiteOperator.K8s.Conversions do
   alias SiteOperator.K8s.{
     AffiliateSite,
+    AuthorizationPolicy,
     Certificate,
     Deployment,
     Gateway,
@@ -12,6 +13,31 @@ defmodule SiteOperator.K8s.Conversions do
   }
 
   alias SiteOperator.PhoenixSites.PhoenixSite
+
+  def to_k8s(%AuthorizationPolicy{name: name, namespace: namespace}) do
+    %{
+      "apiVersion" => "security.istio.io/v1beta1",
+      "kind" => "AuthorizationPolicy",
+      "metadata" => %{
+        "name" => name,
+        "namespace" => namespace
+      },
+      "spec" => %{
+        "rules" => [
+          %{
+            "from" => [
+              %{"source" => %{"namespaces" => ["affable"]}}
+            ]
+          },
+          %{
+            "to" => [
+              %{"operation" => %{"methods" => ["GET"]}}
+            ]
+          }
+        ]
+      }
+    }
+  end
 
   def to_k8s(%Certificate{name: site_name, domains: domains}) do
     %{

@@ -81,6 +81,30 @@ defmodule SiteOperator.K8s.OperationsTest do
       assert names |> Enum.uniq() == ["app"]
     end
 
+    test "include auth rules for site change access", %{inner_creations: creations} do
+      %{
+        "apiVersion" => "security.istio.io/v1beta1",
+        "kind" => "AuthorizationPolicy",
+        "metadata" => %{
+          "name" => "app"
+        },
+        "spec" => %{
+          "rules" => [
+            %{
+              "from" => [
+                %{"source" => %{"namespaces" => ["affable"]}}
+              ]
+            },
+            %{
+              "to" => [
+                %{"operation" => %{"methods" => ["GET"]}}
+              ]
+            }
+          ]
+        }
+      } = creations |> find_kind("AuthorizationPolicy")
+    end
+
     test "include a secret for the Phoenix app", %{inner_creations: creations} do
       %{
         "apiVersion" => "v1",
