@@ -60,28 +60,6 @@ defmodule SiteOperator.K8s.OperationsTest do
                }
              }
     end
-
-    test "permit the default service account to list endpoints in the control plane namespace",
-         %{initial_creations: creations} do
-      binding = creations |> find_kind("RoleBinding")
-
-      assert binding == %{
-               "kind" => "RoleBinding",
-               "apiVersion" => "rbac.authorization.k8s.io/v1",
-               "metadata" => %{
-                 "name" => "endpoint-listing-for-my-namespace",
-                 "namespace" => "affable"
-               },
-               "roleRef" => %{
-                 "apiGroup" => "rbac.authorization.k8s.io",
-                 "kind" => "ClusterRole",
-                 "name" => "endpoint-lister"
-               },
-               "subjects" => [
-                 %{"kind" => "ServiceAccount", "name" => "default", "namespace" => "my-namespace"}
-               ]
-             }
-    end
   end
 
   describe "inner namespace creations" do

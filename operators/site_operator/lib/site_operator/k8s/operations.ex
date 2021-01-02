@@ -8,7 +8,6 @@ defmodule SiteOperator.K8s.Operations do
     Deployment,
     Namespace,
     Operation,
-    RoleBinding,
     Secret,
     Service,
     VirtualService
@@ -94,13 +93,6 @@ defmodule SiteOperator.K8s.Operations do
     [
       %Namespace{
         name: name
-      },
-      %RoleBinding{
-        name: "endpoint-listing-for-#{name}",
-        namespace: "affable",
-        role_kind: "ClusterRole",
-        role_name: "endpoint-lister",
-        subjects: [%{kind: "ServiceAccount", name: "default", namespace: name}]
       },
       %VirtualService{
         name: name,

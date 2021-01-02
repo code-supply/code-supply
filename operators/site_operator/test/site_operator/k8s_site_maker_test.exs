@@ -7,7 +7,6 @@ defmodule SiteOperator.K8sSiteMakerTest do
     AffiliateSite,
     Certificate,
     Namespace,
-    RoleBinding,
     Service,
     Operation,
     Operations,
@@ -102,38 +101,13 @@ defmodule SiteOperator.K8sSiteMakerTest do
       |> stub(:execute, fn [
                              %Operation{action: :get},
                              %Operation{action: :get},
-                             %Operation{action: :get},
                              %Operation{action: :get}
                            ] ->
-        {:ok, [%{}, %{}, %{}, deployment()]}
+        {:ok, [%{}, %{}, deployment()]}
       end)
 
       assert reconcile.(%AffiliateSite{name: @namespace, domains: @domains}) ==
                {:ok, :nothing_to_do}
-    end
-
-    test "creates missing rolebinding", %{reconcile_1: reconcile} do
-      binding = %RoleBinding{
-        name: "endpoint-listing-for-#{@namespace}",
-        namespace: "affable",
-        role_kind: "ClusterRole",
-        role_name: "endpoint-lister",
-        subjects: [%{kind: "ServiceAccount", name: "default", namespace: @namespace}]
-      }
-
-      binding_k8s = binding |> to_k8s
-
-      MockK8s
-      |> expect(:execute, fn outer_ops ->
-        assert %Operation{action: :get, resource: binding_k8s} in outer_ops
-        {:error, some_resources_missing: [binding]}
-      end)
-      |> expect(:execute, fn [%Operation{action: :create, resource: ^binding_k8s}] ->
-        {:ok, []}
-      end)
-
-      {:ok, recreated: [^binding]} =
-        reconcile.(%AffiliateSite{name: @namespace, domains: @domains})
     end
 
     test "creates missing namespace and its resources", %{reconcile_1: reconcile} do
@@ -180,11 +154,10 @@ defmodule SiteOperator.K8sSiteMakerTest do
       |> expect(:execute, fn [
                                %Operation{action: :get, resource: ^ns_k8s},
                                _,
-                               _,
                                %Operation{action: :get, resource: deployment_resource}
                              ] ->
         assert deployment_resource == deployment_k8s
-        {:ok, [ns_k8s, %{}, %{}, outdated_deployment]}
+        {:ok, [ns_k8s, %{}, outdated_deployment]}
       end)
       |> expect(:execute, fn [%Operation{action: :update, resource: ^deployment_k8s}] ->
         {:ok, [deployment]}
@@ -210,7 +183,6 @@ defmodule SiteOperator.K8sSiteMakerTest do
       MockK8s
       |> expect(:execute, fn [
                                %Operation{action: :get, resource: ^ns_k8s},
-                               _,
                                _,
                                %Operation{action: :get, resource: ^deployment_k8s}
                              ] ->

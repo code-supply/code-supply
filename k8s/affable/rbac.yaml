@@ -22,16 +22,3 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: default
----
-# This is bound to sites' default service account
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: endpoint-lister
-rules:
-- apiGroups:
-  - ""
-  resources:
-  - endpoints
-  verbs:
-  - list
