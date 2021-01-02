@@ -6,7 +6,6 @@ defmodule SiteOperator.K8s.Conversions do
     Deployment,
     Gateway,
     Namespace,
-    RoleBinding,
     Secret,
     Service,
     VirtualService
@@ -55,31 +54,6 @@ defmodule SiteOperator.K8s.Conversions do
         },
         "dnsNames" => domains
       }
-    }
-  end
-
-  def to_k8s(%RoleBinding{
-        name: name,
-        namespace: namespace,
-        role_kind: role_kind,
-        role_name: role_name,
-        subjects: subjects
-      }) do
-    %{
-      "apiVersion" => "rbac.authorization.k8s.io/v1",
-      "kind" => "RoleBinding",
-      "metadata" => %{"name" => name, "namespace" => namespace},
-      "roleRef" => %{
-        "apiGroup" => "rbac.authorization.k8s.io",
-        "kind" => role_kind,
-        "name" => role_name
-      },
-      "subjects" =>
-        for subject <- subjects do
-          for {k, v} <- subject, into: %{} do
-            {Atom.to_string(k), v}
-          end
-        end
     }
   end
 
@@ -294,30 +268,6 @@ defmodule SiteOperator.K8s.Conversions do
         "spec" => %{"dnsNames" => domains}
       }) do
     %Certificate{name: name, domains: domains}
-  end
-
-  def from_k8s(%{
-        "kind" => "RoleBinding",
-        "metadata" => %{"name" => name, "namespace" => namespace},
-        "roleRef" => %{
-          "apiGroup" => "rbac.authorization.k8s.io",
-          "kind" => role_kind,
-          "name" => role_name
-        },
-        "subjects" => subjects
-      }) do
-    %RoleBinding{
-      name: name,
-      namespace: namespace,
-      role_kind: role_kind,
-      role_name: role_name,
-      subjects:
-        for subject <- subjects do
-          for {k, v} <- subject, into: %{} do
-            {String.to_atom(k), v}
-          end
-        end
-    }
   end
 
   def from_k8s(%{"kind" => "Namespace", "metadata" => %{"name" => name}}) do
