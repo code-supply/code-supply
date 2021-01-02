@@ -25,7 +25,7 @@ defmodule SiteOperator.MixProject do
       {:bonny, "~> 0.4.0"},
       {:httpoison, "~> 1.7.0"},
       {:poison, "~> 4.0.1"},
-      {:hammox, "~> 0.2", only: [:test]},
+      {:hammox, "~> 0.3", only: [:test]},
       {:logger_json, github: "portal-labs/logger_json", ref: "17aa009"},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false}
     ]

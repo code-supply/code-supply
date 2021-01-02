@@ -63,12 +63,12 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     end
 
     test "returns :error on error", %{add: add} do
-      stub(MockSiteMaker, :create, fn _ -> {:error, ""} end)
+      stub(MockSiteMaker, :create, fn _ -> {:error, [""]} end)
       assert add.() == :error
     end
 
     test "logs failure", %{add: add} do
-      stub(MockSiteMaker, :create, fn _ -> {:error, "upstream error"} end)
+      stub(MockSiteMaker, :create, fn _ -> {:error, ["upstream error"]} end)
       assert capture_log(add) =~ "upstream error"
     end
   end
@@ -115,12 +115,12 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     end
 
     test "returns :error on error", %{delete: delete} do
-      stub(MockSiteMaker, :delete, fn _ -> {:error, ""} end)
+      stub(MockSiteMaker, :delete, fn _ -> {:error, [""]} end)
       assert delete.() == :error
     end
 
     test "logs failure", %{delete: delete} do
-      stub(MockSiteMaker, :delete, fn _ -> {:error, "upstream error"} end)
+      stub(MockSiteMaker, :delete, fn _ -> {:error, ["upstream error"]} end)
       assert capture_log(delete) =~ "upstream error"
     end
   end
@@ -141,7 +141,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
                                                name: "mysite",
                                                domains: ["www.example.com"]
                                              } ->
-            {:error, "upstream error"}
+            {:error, ["upstream error"]}
           end)
         end,
         stub_nothing_to_do: fn ->

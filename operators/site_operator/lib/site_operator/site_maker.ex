@@ -5,11 +5,11 @@ defmodule SiteOperator.SiteMaker do
   @type domain :: String.t()
   @type secret_key_base :: String.t()
   @type batch :: list(%Operation{})
-  @callback create(list(batch)) :: {:ok, term} | {:error, String.t()}
-  @callback delete(%AffiliateSite{}) :: {:ok, term} | {:error, String.t()}
+  @callback create(list(batch)) :: {:ok, term} | {:error, list(term)}
+  @callback delete(%AffiliateSite{}) :: {:ok, term} | {:error, list(term)}
   @callback reconcile(%AffiliateSite{}) ::
               {:ok, recreated: list(map())}
               | {:ok, upgraded: list(map())}
               | {:ok, :nothing_to_do}
-              | {:error, String.t()}
+              | {:error, list(term)}
 end

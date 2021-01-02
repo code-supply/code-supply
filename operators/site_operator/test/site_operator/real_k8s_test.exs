@@ -58,20 +58,20 @@ defmodule SiteOperator.RealK8sTest do
       ])
     end)
 
-    Map.merge(
-      Hammox.protect(
-        SiteOperator.RealK8s,
-        SiteOperator.K8s,
-        execute: 1
-      ),
-      %{
-        certificate: certificate,
-        deployment: deployment,
-        gateway: gateway,
-        namespace: namespace,
-        service: service,
-        virtual_service: virtual_service
-      }
+    %{
+      certificate: certificate,
+      deployment: deployment,
+      gateway: gateway,
+      namespace: namespace,
+      service: service,
+      virtual_service: virtual_service
+    }
+  end
+
+  setup_all do
+    Hammox.protect(
+      SiteOperator.RealK8s,
+      SiteOperator.K8s
     )
   end
 

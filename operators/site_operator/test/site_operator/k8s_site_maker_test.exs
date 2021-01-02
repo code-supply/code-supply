@@ -23,14 +23,8 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
   setup :verify_on_exit!
 
-  setup do
-    Hammox.protect(
-      K8sSiteMaker,
-      SiteMaker,
-      create: 1,
-      delete: 1,
-      reconcile: 1
-    )
+  setup_all do
+    Hammox.protect(K8sSiteMaker, SiteMaker)
   end
 
   defp deployment() do
@@ -68,13 +62,13 @@ defmodule SiteOperator.K8sSiteMakerTest do
     test "returns error when we get a k8s error", %{create_1: create} do
       MockK8s
       |> stub(:execute, fn _ ->
-        {:error, "Bad news"}
+        {:error, ["Bad news"]}
       end)
 
       result = create.([[Operations.create(%Namespace{name: @namespace})]])
 
       assert elem(result, 0) == :error
-      assert elem(result, 1) == "Bad news"
+      assert elem(result, 1) == ["Bad news"]
     end
   end
 
@@ -89,6 +83,15 @@ defmodule SiteOperator.K8sSiteMakerTest do
       end)
 
       {:ok, []} = delete.(affiliate_site_no_custom_domain(name: @namespace))
+    end
+
+    test "returns error when we get a k8s error", %{delete_1: delete} do
+      MockK8s
+      |> stub(:execute, fn _ ->
+        {:error, ["Bad news"]}
+      end)
+
+      assert {:error, ["Bad news"]} = delete.(affiliate_site_no_custom_domain(name: @namespace))
     end
   end
 
