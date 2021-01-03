@@ -40,6 +40,8 @@ defmodule Affable.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_live_view, "~> 0.15.3"},
       {:floki, ">= 0.0.0", only: :test},
+      {:gcs_signed_url, "~> 0.4"},
+      {:goth, "~> 1.2.0"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.3", only: :dev},
       {:phoenix_live_dashboard, "~> 0.4.0"},
