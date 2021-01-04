@@ -11,6 +11,8 @@ spec:
         sidecar.istio.io/proxyCPU: 50m
         sidecar.istio.io/proxyCPULimit: 1000m
     spec:
+      serviceAccountName: affable
+
       volumes:
       - name: google-credentials
         secret:

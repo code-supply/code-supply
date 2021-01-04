@@ -17,11 +17,11 @@ resource "google_service_account" "affable" {
   display_name = "Affable application"
 }
 
-resource "google_project_iam_binding" "affable-workload-identity" {
-  project = data.google_project.project.id
-  role    = "roles/iam.workloadIdentityUser"
+resource "google_service_account_iam_binding" "affable-workload-identity" {
+  service_account_id = google_service_account.affable.name
+  role               = "roles/iam.workloadIdentityUser"
 
   members = [
-    "serviceAccount:${google_service_account.affable.email}",
+    "serviceAccount:${data.google_project.project.project_id}.svc.id.goog[affable/affable]",
   ]
 }

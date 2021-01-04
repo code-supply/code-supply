@@ -1,12 +1,11 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
-  name: google-api
+  name: google-oauth2-api
 spec:
   exportTo:
   - .
   hosts:
-  - sqladmin.googleapis.com
   - oauth2.googleapis.com
   ports:
   - number: 443
