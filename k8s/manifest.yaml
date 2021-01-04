@@ -29875,6 +29875,29 @@ kind: ServiceEntry
 metadata:
   labels:
     app: affable
+  name: google-metadata-ip
+  namespace: affable
+spec:
+  addresses:
+  - 169.254.169.254
+  endpoints:
+  - address: 169.254.169.254
+  exportTo:
+  - .
+  hosts:
+  - ignore.example.com
+  location: MESH_EXTERNAL
+  ports:
+  - name: http
+    number: 80
+    protocol: HTTP
+  resolution: STATIC
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  labels:
+    app: affable
   name: google-oauth2-api
   namespace: affable
 spec:
