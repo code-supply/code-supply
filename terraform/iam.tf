@@ -25,3 +25,13 @@ resource "google_service_account_iam_binding" "affable-workload-identity" {
     "serviceAccount:${data.google_project.project.project_id}.svc.id.goog[affable/affable]",
   ]
 }
+
+resource "google_project_iam_binding" "affable-token-creator" {
+  project = data.google_project.project.id
+  role    = "roles/iam.serviceAccountTokenCreator"
+
+  members = [
+    "serviceAccount:${google_service_account.affable.email}",
+    "user:bruciemoose@gmail.com",
+  ]
+}
