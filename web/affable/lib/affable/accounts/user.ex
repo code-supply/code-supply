@@ -12,6 +12,7 @@ defmodule Affable.Accounts.User do
     field :confirmed_at, :naive_datetime
     has_many :site_members, SiteMember
     has_many :sites, through: [:site_members, :site]
+    has_many :assets, through: [:sites, :assets]
 
     timestamps()
   end

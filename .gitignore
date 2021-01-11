@@ -1,3 +1,4 @@
 terraform/.terraform/plugins
 playbook.retry
 TAGS
+service-account.json

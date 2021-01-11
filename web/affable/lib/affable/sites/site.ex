@@ -3,6 +3,7 @@ defmodule Affable.Sites.Site do
   import Ecto.Changeset
 
   alias Affable.Domains.Domain
+  alias Affable.Assets.Asset
   alias Affable.Sites.{Item, Publication, SiteMember, AttributeDefinition}
 
   schema "sites" do
@@ -14,6 +15,7 @@ defmodule Affable.Sites.Site do
     field :internal_name, :string
     field :internal_hostname, :string
     field :made_available_at, :utc_datetime
+    has_many :assets, Asset
     has_many :members, SiteMember
     has_many :users, through: [:members, :user]
     has_many :domains, Domain

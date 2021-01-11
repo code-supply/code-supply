@@ -29547,7 +29547,7 @@ spec:
         traffic.sidecar.istio.io/excludeInboundPorts: 5555,4369
       labels:
         app: affable
-        version: 5104ad4
+        version: 0f43f60
     spec:
       containers:
       - env:
@@ -29564,7 +29564,7 @@ spec:
         envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:5104ad4
+        image: eu.gcr.io/code-supply/affable:0f43f60
         name: affable
         ports:
         - containerPort: 4000
@@ -29885,6 +29885,7 @@ spec:
   - .
   hosts:
   - compute.googleapis.com
+  - www.googleapis.com
   location: MESH_EXTERNAL
   ports:
   - name: https

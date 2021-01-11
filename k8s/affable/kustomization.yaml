@@ -9,7 +9,7 @@ resources:
 - gateway.yaml
 - virtual-service.yaml
 - cloud-sql-egress.yaml
-- google-compute-api-egress.yaml
+- googleapis-egress.yaml
 - google-metadata-egress.yaml
 - google-oauth2-api-egress.yaml
 - google-sql-api-egress.yaml
@@ -23,7 +23,7 @@ commonLabels:
 images:
 - name: affable
   newName: eu.gcr.io/code-supply/affable
-  newTag: 5104ad4
+  newTag: 0f43f60
 patchesStrategicMerge:
 - version.yaml
 - istio-proxy-resources.yaml
