@@ -30,3 +30,17 @@ resource "google_service_account_iam_binding" "affable-workload-identity" {
     "serviceAccount:${data.google_project.project.project_id}.svc.id.goog[affable/affable]",
   ]
 }
+
+resource "google_service_account" "imgproxy" {
+  account_id   = "imgproxy"
+  display_name = "imgproxy application"
+}
+
+resource "google_service_account_iam_binding" "imgproxy-workload-identity" {
+  service_account_id = google_service_account.imgproxy.name
+  role               = "roles/iam.workloadIdentityUser"
+
+  members = [
+    "serviceAccount:${data.google_project.project.project_id}.svc.id.goog[affable/imgproxy]",
+  ]
+}

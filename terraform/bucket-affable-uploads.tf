@@ -14,7 +14,8 @@ resource "google_storage_bucket_acl" "affable-uploads" {
   bucket = google_storage_bucket.affable-uploads.name
 
   role_entity = [
-    "WRITER:user-${google_service_account.affable.email}"
+    "WRITER:user-${google_service_account.affable.email}",
+    "READER:user-${google_service_account.imgproxy.email}",
   ]
 }
 
@@ -34,6 +35,7 @@ resource "google_storage_bucket_acl" "affable-uploads-dev" {
   bucket = google_storage_bucket.affable-uploads-dev.name
 
   role_entity = [
-    "WRITER:user-${google_service_account.affable-dev.email}"
+    "WRITER:user-${google_service_account.affable-dev.email}",
+    "READER:user-${google_service_account.imgproxy.email}",
   ]
 }

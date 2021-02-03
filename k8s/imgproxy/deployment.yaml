@@ -5,10 +5,14 @@ metadata:
 spec:
   template:
     spec:
+      serviceAccountName: imgproxy
+
       containers:
       - name: imgproxy
         image: darthsim/imgproxy:latest@sha256:5c844ddaf98ca33bf70072a0b66f94cf14bb2c68787adbfa73e076d69d9d1a89
-        env: []
+        env:
+        - name: IMGPROXY_USE_GCS
+          value: "true"
         ports:
         - name: http
           containerPort: 8080

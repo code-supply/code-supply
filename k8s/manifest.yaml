@@ -28044,6 +28044,16 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  annotations:
+    iam.gke.io/gcp-service-account: imgproxy@code-supply.iam.gserviceaccount.com
+  labels:
+    app: imgproxy
+  name: imgproxy
+  namespace: affable
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/component: controller
@@ -29252,12 +29262,15 @@ spec:
         app: imgproxy
     spec:
       containers:
-      - env: []
+      - env:
+        - name: IMGPROXY_USE_GCS
+          value: "true"
         image: darthsim/imgproxy:latest@sha256:5c844ddaf98ca33bf70072a0b66f94cf14bb2c68787adbfa73e076d69d9d1a89
         name: imgproxy
         ports:
         - containerPort: 8080
           name: http
+      serviceAccountName: imgproxy
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -29871,6 +29884,25 @@ spec:
   - name: tcp
     number: 3307
     protocol: tcp
+  resolution: DNS
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  labels:
+    app: imgproxy
+  name: gcs
+  namespace: affable
+spec:
+  exportTo:
+  - .
+  hosts:
+  - storage.googleapis.com
+  location: MESH_EXTERNAL
+  ports:
+  - name: https
+    number: 443
+    protocol: HTTPS
   resolution: DNS
 ---
 apiVersion: networking.istio.io/v1alpha3
