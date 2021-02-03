@@ -6,6 +6,7 @@ spec:
   hosts:
   - affable.app
   - www.affable.app
+  - images.affable.app
   gateways:
   - affable
   http:
@@ -17,8 +18,20 @@ spec:
       authority:
         www.affable.app
   - match:
-    - uri:
+    - authority:
+        exact:
+          www.affable.app
+      uri:
         prefix: /
     route:
     - destination:
         host: affable
+  - match:
+    - authority:
+        exact:
+          images.affable.app
+      uri:
+        prefix: /
+    route:
+    - destination:
+        host: imgproxy

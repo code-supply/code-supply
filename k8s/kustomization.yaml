@@ -5,6 +5,7 @@ resources:
 - prometheus-operator
 - prometheus
 - affable
+- imgproxy
 - certificates
 - istio-system
 - letsencrypt

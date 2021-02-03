@@ -29161,6 +29161,22 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
+    app: imgproxy
+  name: imgproxy
+  namespace: affable
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  selector:
+    app: imgproxy
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
     app: cert-manager
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
@@ -29217,6 +29233,31 @@ spec:
   selector:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: prometheus-operator
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: imgproxy
+  name: imgproxy
+  namespace: affable
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: imgproxy
+  template:
+    metadata:
+      labels:
+        app: imgproxy
+    spec:
+      containers:
+      - env: []
+        image: darthsim/imgproxy:latest@sha256:5c844ddaf98ca33bf70072a0b66f94cf14bb2c68787adbfa73e076d69d9d1a89
+        name: imgproxy
+        ports:
+        - containerPort: 8080
+          name: http
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -29963,6 +30004,7 @@ spec:
   hosts:
   - affable.app
   - www.affable.app
+  - images.affable.app
   http:
   - match:
     - authority:
@@ -29970,11 +30012,21 @@ spec:
     redirect:
       authority: www.affable.app
   - match:
-    - uri:
+    - authority:
+        exact: www.affable.app
+      uri:
         prefix: /
     route:
     - destination:
         host: affable
+  - match:
+    - authority:
+        exact: images.affable.app
+      uri:
+        prefix: /
+    route:
+    - destination:
+        host: imgproxy
 ---
 apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
