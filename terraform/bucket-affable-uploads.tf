@@ -2,6 +2,8 @@ resource "google_storage_bucket" "affable-uploads" {
   name     = "affable-uploads"
   location = "EU"
 
+  uniform_bucket_level_access = true
+
   cors {
     origin          = ["http://localhost:4000"]
     method          = ["POST"]
@@ -22,6 +24,8 @@ resource "google_storage_bucket_acl" "affable-uploads" {
 resource "google_storage_bucket" "affable-uploads-dev" {
   name     = "affable-uploads-dev"
   location = "EU"
+
+  uniform_bucket_level_access = true
 
   cors {
     origin          = ["http://localhost:4000"]
