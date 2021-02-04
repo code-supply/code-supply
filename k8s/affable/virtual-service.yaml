@@ -35,3 +35,10 @@ spec:
     route:
     - destination:
         host: imgproxy
+      headers:
+        request:
+          set:
+            x-envoy-retriable-status-codes: "404"
+    retries:
+      attempts: 5
+      retryOn: retriable-status-codes

@@ -30057,9 +30057,16 @@ spec:
         exact: images.affable.app
       uri:
         prefix: /
+    retries:
+      attempts: 5
+      retryOn: retriable-status-codes
     route:
     - destination:
         host: imgproxy
+      headers:
+        request:
+          set:
+            x-envoy-retriable-status-codes: "404"
 ---
 apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
