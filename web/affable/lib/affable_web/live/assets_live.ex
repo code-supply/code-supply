@@ -18,20 +18,17 @@ defmodule AffableWeb.AssetsLive do
     if connected?(socket) do
     end
 
-    {:ok,
-     socket
-     |> assign(
-       user: user,
-       changeset: Asset.changeset(%Asset{}, %{}),
-       sites: user.sites
-     )
-     |> allow_upload(
-       :asset,
-       progress: &handle_progress/3,
-       external: &presign_upload/2,
-       accept: ~w(.png .jpeg .jpg),
-       max_entries: 1
-     )}
+    {
+      :ok,
+      assign_vars(socket, user)
+      |> allow_upload(
+        :asset,
+        progress: &handle_progress/3,
+        external: &presign_upload/2,
+        accept: ~w(.png .jpeg .jpg),
+        max_entries: 1
+      )
+    }
   end
 
   @impl true
@@ -60,15 +57,17 @@ defmodule AffableWeb.AssetsLive do
       {:ok, new_asset} ->
         {
           :noreply,
-          update(socket, :sites, fn sites ->
-            Enum.reduce_while(sites, [], fn site, acc ->
-              if "#{site.id}" == site_id do
-                {:halt, acc ++ [%{site | assets: [new_asset | site.assets]}]}
-              else
-                {:cont, acc}
-              end
-            end)
-          end)
+          assign_vars(socket, %{
+            user
+            | sites:
+                Enum.reduce_while(user.sites, [], fn site, acc ->
+                  if "#{site.id}" == site_id do
+                    {:halt, acc ++ [%{site | assets: [new_asset | site.assets]}]}
+                  else
+                    {:cont, acc}
+                  end
+                end)
+          })
         }
 
       {:error, changeset} ->
@@ -107,6 +106,15 @@ defmodule AffableWeb.AssetsLive do
     }
 
     {:ok, meta, socket}
+  end
+
+  defp assign_vars(socket, user) do
+    socket
+    |> assign(
+      user: user,
+      changeset: Asset.changeset(%Asset{}, %{}),
+      sites: user.sites
+    )
   end
 
   defp handle_progress(:asset, entry, socket) do
