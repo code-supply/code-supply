@@ -136,10 +136,6 @@ tbody tr:hover {
     @apply text-gray-200 from-blue-300 to-blue-400
 }
 
-.resources {
-    @apply w-full;
-}
-
 .pending .pending-spinner {
     @apply bg-center bg-no-repeat animate-spin;
     animation-duration: 4s;

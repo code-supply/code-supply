@@ -2,10 +2,12 @@ defmodule Affable.Assets.Asset do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Affable.Sites.Site
+
   schema "assets" do
     field :url, :string
     field :name, :string
-    field :site_id, :id
+    belongs_to :site, Site
 
     timestamps()
   end

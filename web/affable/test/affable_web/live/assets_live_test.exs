@@ -12,6 +12,14 @@ defmodule AffableWeb.AssetsLiveTest do
     Routes.assets_path(conn, :index)
   end
 
+  test "shows message when there are no assets for a site", %{conn: conn} do
+    {:ok, view, _html} = live(conn, path(conn))
+
+    assert view
+           |> element(".resources")
+           |> render() =~ "No assets have been uploaded"
+  end
+
   test "shows error when user doesn't provide a name or file", %{conn: conn} do
     {:ok, view, _html} = live(conn, path(conn))
 
@@ -28,7 +36,7 @@ defmodule AffableWeb.AssetsLiveTest do
   } do
     {:ok, view, _html} = live(conn, path(conn))
 
-    refute view |> has_element?(".resources > :first-child")
+    refute view |> has_element?(".resources img")
 
     content = File.read!("test/support/fixtures/tiny.png")
 
@@ -53,6 +61,17 @@ defmodule AffableWeb.AssetsLiveTest do
       }
     })
 
-    assert view |> has_element?(".resources > :first-child")
+    bucket = Application.fetch_env!(:affable, :bucket_name)
+
+    assert view
+           |> element(".resources > :first-child img")
+           |> render() =~
+             ~r(src="https://images.affable.app/nosignature/fill/[0-9]+/[0-9]+/sm/0/plain/gs://#{
+               bucket
+             }/.+")
+
+    refute view
+           |> element(".resources")
+           |> render() =~ "No assets have been uploaded"
   end
 end

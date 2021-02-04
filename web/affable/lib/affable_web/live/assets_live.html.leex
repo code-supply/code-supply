@@ -11,7 +11,7 @@
 
   <h1>My Assets</h1>
 
-  <div class="p-24 text-white bg-blue-300 border-8 border-blue-100 border-double rounded-xl">
+  <div class="p-8 text-white bg-blue-300 border-8 border-blue-100 border-double rounded-xl">
 
     <%= live_file_input @uploads.asset,
         class: "shadow-md bg-blue-600 #{@uploads.asset.entries |> Enum.any? && "invisible absolute top-0"}" %>
@@ -66,8 +66,21 @@
   </div>
 </form>
 
-<ul class="container resources">
-  <%= for _asset <- @assets do %>
-    <li></li>
+<ul class="container w-full resources">
+  <%= for site <- @sites do %>
+    <li class="">
+      <h2 class="mt-4 mb-4 text-xl"><%= site.name %></h2>
+      <%= if site.assets |> Enum.empty? do %>
+        No assets have been uploaded for this site yet.
+      <% end %>
+      <ul class="flex flex-wrap">
+        <%= for asset <- site.assets do %>
+          <li class="mb-8 mr-8">
+            <%= asset.name %>
+            <img src="<%= asset.url |> to_imgproxy_url() %>" />
+          </li>
+        <% end %>
+      </ul>
+    </li>
   <% end %>
 </ul>

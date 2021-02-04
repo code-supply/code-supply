@@ -7,11 +7,13 @@ defmodule AffableWeb.AssetsLive do
   alias Affable.Uploads.UploadRequest
   alias Phoenix.LiveView.UploadEntry
 
+  import Affable.Assets, only: [to_imgproxy_url: 1]
+
   @impl true
   def mount(_params, %{"user_token" => token}, socket) do
     user =
       Accounts.get_user_by_session_token(token)
-      |> Affable.Repo.preload([:sites, :assets])
+      |> Accounts.preload_for_assets()
 
     if connected?(socket) do
     end
@@ -21,8 +23,7 @@ defmodule AffableWeb.AssetsLive do
      |> assign(
        user: user,
        changeset: Asset.changeset(%Asset{}, %{}),
-       sites: user.sites,
-       assets: user.assets
+       sites: user.sites
      )
      |> allow_upload(
        :asset,
@@ -54,10 +55,21 @@ defmodule AffableWeb.AssetsLive do
            user: user,
            bucket_name: bucket_name(),
            key: uuid,
-           params: params
+           params: %{"site_id" => site_id} = params
          ) do
       {:ok, new_asset} ->
-        {:noreply, update(socket, :assets, &(&1 ++ [new_asset]))}
+        {
+          :noreply,
+          update(socket, :sites, fn sites ->
+            Enum.reduce_while(sites, [], fn site, acc ->
+              if "#{site.id}" == site_id do
+                {:halt, acc ++ [%{site | assets: [new_asset | site.assets]}]}
+              else
+                {:cont, acc}
+              end
+            end)
+          end)
+        }
 
       {:error, changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}

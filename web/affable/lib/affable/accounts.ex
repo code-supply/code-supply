@@ -8,6 +8,12 @@ defmodule Affable.Accounts do
   alias Ecto.Multi
   alias Affable.{Email, Mailer, Repo, Sites}
   alias Affable.Accounts.{User, UserToken, UserNotifier}
+  alias Affable.Assets.Asset
+
+  def preload_for_assets(%User{} = user) do
+    user
+    |> Affable.Repo.preload(sites: [assets: from(a in Asset, order_by: [desc: a.updated_at])])
+  end
 
   ## Database getters
 
