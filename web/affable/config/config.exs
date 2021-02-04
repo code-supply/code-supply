@@ -14,9 +14,8 @@ config :affable,
   broadcaster: Affable.SiteUpdater,
   http: Affable.RealHTTP,
   pubsub_topic_requests: "devsiterequests",
-  google_service_account_json: System.fetch_env!("GOOGLE_SERVICE_ACCOUNT_JSON"),
-  bucket_name: System.fetch_env!("BUCKET_NAME"),
-  access_key_id: System.fetch_env!("ACCESS_KEY_ID"),
+  bucket_name: "affable-uploads-dev",
+  access_key_id: "affable-dev@code-supply.iam.gserviceaccount.com",
   children: []
 
 # Configures the endpoint

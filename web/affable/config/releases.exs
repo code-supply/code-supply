@@ -28,7 +28,10 @@ config :affable,
     System.get_env("ID_SALT") ||
       raise("""
       environment variable ID_SALT is missing.
-      """)
+      """),
+  bucket_name: System.fetch_env!("BUCKET_NAME"),
+  google_service_account_json: System.fetch_env!("GOOGLE_SERVICE_ACCOUNT_JSON"),
+  access_key_id: System.fetch_env!("ACCESS_KEY_ID")
 
 config :affable, AffableWeb.Endpoint,
   url: [scheme: "https", port: 443],
