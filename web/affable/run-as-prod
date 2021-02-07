@@ -7,6 +7,9 @@ secret="$(mix phx.gen.secret)"
 
 docker run \
     --network host \
+    --env ACCESS_KEY_ID="affable-dev@code-supply.iam.gserviceaccount.com" \
+    --env BUCKET_NAME=affable-uploads-dev \
+    --env GOOGLE_SERVICE_ACCOUNT_JSON="$GOOGLE_SERVICE_ACCOUNT_JSON" \
     --env SENDGRID_API_KEY=asdf \
     --env ID_SALT=asdf \
     --env SECRET_KEY_BASE="$secret" \
