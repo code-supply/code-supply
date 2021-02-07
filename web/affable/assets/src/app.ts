@@ -16,6 +16,12 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 
+declare global {
+  interface Window {
+    liveSocket: any
+  }
+}
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   hooks: {
@@ -25,7 +31,10 @@ let liveSocket = new LiveSocket("/live", Socket, {
           let el = document.getElementById(id);
           el.scrollIntoView({behavior: "smooth"});
           let focusEls = el.getElementsByClassName('scrollfocus');
-          focusEls[0] && focusEls[0].select();
+          var focusEl = focusEls[0] as HTMLElement;
+          if (focusEl) {
+            focusEl.focus();
+          }
         })
       }
     }
@@ -35,7 +44,9 @@ let liveSocket = new LiveSocket("/live", Socket, {
       entries.forEach(entry => {
         let formData = new FormData();
         let {url, fields} = entry.meta;
-        Object.entries(fields).forEach(([key, val]) => formData.append(key, val));
+        Object.entries(fields).forEach(([key, val]: [string, string]) => {
+          formData.append(key, val);
+        });
         formData.append("file", entry.file);
         let xhr = new XMLHttpRequest();
         onViewError(() => xhr.abort());

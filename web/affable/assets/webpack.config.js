@@ -16,7 +16,7 @@ module.exports = (env, options) => {
       ]
     },
     entry: {
-      'app': glob.sync('./vendor/**/*.js').concat(['./js/app.js'])
+      'app': glob.sync('./vendor/**/*.js').concat(['./src/app.ts'])
     },
     output: {
       filename: '[name].js',
@@ -27,11 +27,9 @@ module.exports = (env, options) => {
     module: {
       rules: [
         {
-          test: /\.js$/,
+          test: /\.ts$/,
+          use: 'ts-loader',
           exclude: /node_modules/,
-          use: {
-            loader: 'babel-loader'
-          }
         },
         {
           test: /\.[s]?css$/,
@@ -42,6 +40,9 @@ module.exports = (env, options) => {
           ],
         }
       ]
+    },
+    resolve: {
+      extensions: ['.ts', '.js'],
     },
     plugins: [
       new MiniCssExtractPlugin({ filename: '../css/app.css' }),
