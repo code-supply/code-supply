@@ -16,3 +16,11 @@ spec:
         ports:
         - name: http
           containerPort: 8080
+
+        resources:
+          requests:
+            cpu: 5m
+            memory: 100Mi
+          limits:
+            cpu: 1
+            memory: 200Mi

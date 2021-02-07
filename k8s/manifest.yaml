@@ -29270,6 +29270,13 @@ spec:
         ports:
         - containerPort: 8080
           name: http
+        resources:
+          limits:
+            cpu: 1
+            memory: 200Mi
+          requests:
+            cpu: 5m
+            memory: 100Mi
       serviceAccountName: imgproxy
 ---
 apiVersion: apps/v1
