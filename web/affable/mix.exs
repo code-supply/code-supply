@@ -38,7 +38,7 @@ defmodule Affable.MixProject do
       {:phoenix_ecto, "~> 4.1"},
       {:ecto_sql, "~> 3.5"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_live_view, "~> 0.15.3"},
+      {:phoenix_live_view, "~> 0.15.4"},
       {:floki, ">= 0.0.0", only: :test},
       {:gcs_signed_url, "~> 0.4"},
       {:phoenix_html, "~> 2.11"},
