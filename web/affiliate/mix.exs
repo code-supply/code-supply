@@ -34,7 +34,7 @@ defmodule Affiliate.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.5.7"},
-      {:phoenix_live_view, "~> 0.15.0"},
+      {:phoenix_live_view, "~> 0.15.4"},
       {:floki, ">= 0.0.0", only: :test},
       {:hammox, "~> 0.3", only: [:test]},
       {:httpoison, "~> 1.7"},
