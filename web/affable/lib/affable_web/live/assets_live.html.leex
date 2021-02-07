@@ -77,7 +77,7 @@
         <%= for asset <- site.assets do %>
           <li class="mb-8 mr-8">
             <%= asset.name %>
-            <img src="<%= asset.url |> to_imgproxy_url() %>" />
+            <img width="300" height="300" src="<%= asset.url |> to_imgproxy_url() %>" />
           </li>
         <% end %>
       </ul>

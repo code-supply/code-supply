@@ -15,7 +15,7 @@ defmodule Affable.Assets.Asset do
   @doc false
   def changeset(asset, attrs) do
     asset
-    |> cast(attrs, [:name, :site_id])
+    |> cast(attrs, [:name, :site_id, :url])
     |> validate_required([:name])
   end
 end

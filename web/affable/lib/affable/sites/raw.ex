@@ -1,13 +1,14 @@
 defmodule Affable.Sites.Raw do
   alias Affable.Sites.{Site, Item, AttributeDefinition, Attribute}
+  alias Affable.Assets
 
-  def raw(%Site{} = site) do
+  def raw(%Site{site_logo: site_logo, header_image: header_image} = site) do
     %{
       "id" => site.id,
       "name" => site.name,
-      "site_logo_url" => site.site_logo_url,
+      "site_logo_url" => site_logo |> Assets.to_imgproxy_url(),
       "page_subtitle" => site.page_subtitle,
-      "header_image_url" => site.header_image_url,
+      "header_image_url" => header_image |> Assets.to_imgproxy_url(),
       "text" => site.text,
       "made_available_at" => format_datetime(site.made_available_at),
       "items" => site.items |> Enum.map(&raw/1)

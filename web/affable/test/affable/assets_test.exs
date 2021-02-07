@@ -7,6 +7,16 @@ defmodule Affable.AssetsTest do
   alias Affable.Accounts.User
 
   describe "assets" do
+    test "can get an imgproxy URL for a GCS URL" do
+      assert Assets.to_imgproxy_url("https://storage.cloud.google.com/somebucket/some/key") ==
+               "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/gs://somebucket/some/key"
+    end
+
+    test "can get an imgproxy URL for a different URL" do
+      assert Assets.to_imgproxy_url("https://example.com/some-image.jpeg") ==
+               "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/https://example.com/some-image.jpeg"
+    end
+
     test "creates uploaded asset with source URL when name and site are given" do
       %User{sites: [site | _]} = user = user_fixture()
 

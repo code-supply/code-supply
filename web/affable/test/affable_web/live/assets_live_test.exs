@@ -3,6 +3,7 @@ defmodule AffableWeb.AssetsLiveTest do
   import Phoenix.LiveViewTest
 
   alias Affable.Accounts.User
+  alias Affable.Sites
 
   setup context do
     {:ok, register_and_log_in_user(context)}
@@ -12,7 +13,12 @@ defmodule AffableWeb.AssetsLiveTest do
     Routes.assets_path(conn, :index)
   end
 
-  test "shows message when there are no assets for a site", %{conn: conn} do
+  test "shows message when there are no assets for a site", %{
+    conn: conn,
+    user: %User{sites: [site]}
+  } do
+    Sites.remove_logo_and_header(site)
+
     {:ok, view, _html} = live(conn, path(conn))
 
     assert view
@@ -38,7 +44,6 @@ defmodule AffableWeb.AssetsLiveTest do
 
     {:ok, view, _html} = live(conn, path(conn))
 
-    refute view |> has_element?(".resources img")
     assert view |> has_element?("option", site1.name)
     assert view |> has_element?("option", site2.name)
 

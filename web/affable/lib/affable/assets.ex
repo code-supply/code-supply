@@ -22,12 +22,23 @@ defmodule Affable.Assets do
     end
   end
 
+  def to_imgproxy_url(nil) do
+    nil
+  end
+
+  def to_imgproxy_url(%Asset{url: url}) do
+    to_imgproxy_url(url)
+  end
+
   def to_imgproxy_url(<<"https://storage.cloud.google.com/", bucket_and_key::binary>>) do
+    to_imgproxy_url("gs://#{bucket_and_key}")
+  end
+
+  def to_imgproxy_url(source_url) do
     width = 300
     height = 300
     gravity = "sm"
     enlarge = 0
-    source_url = "gs://#{bucket_and_key}"
 
     "https://images.affable.app/nosignature/fill/#{width}/#{height}/#{gravity}/#{enlarge}/plain/#{
       source_url

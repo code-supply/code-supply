@@ -22,15 +22,15 @@
     </div>
 
     <div class="field">
-      <label for="site_logo_url">Site logo URL</label>
-      <%= text_input outer_form, :site_logo_url, phx_debounce: 250, cclass: "w-full" %>
-      <%= error_tag outer_form, :site_logo_url %>
+      <label for="site_logo_id">Site logo</label>
+      <%= select outer_form, :site_logo_id, Enum.map(@assets, &{&1.name, &1.id}), prompt: "None", cclass: "w-full" %>
+      <%= error_tag outer_form, :site_logo_id %>
     </div>
 
     <div class="field">
-      <label for="header_image_url">Header image URL</label>
-      <%= text_input outer_form, :header_image_url, phx_debounce: 250, cclass: "w-full" %>
-      <%= error_tag outer_form, :header_image_url %>
+      <label for="header_image_id">Header image</label>
+      <%= select outer_form, :header_image_id, Enum.map(@assets, &{&1.name, &1.id}), prompt: "None", cclass: "w-full" %>
+      <%= error_tag outer_form, :header_image_id %>
     </div>
 
     <div class="field">

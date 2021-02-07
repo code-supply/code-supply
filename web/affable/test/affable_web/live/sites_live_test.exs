@@ -17,7 +17,7 @@ defmodule AffableWeb.SitesLiveTest do
 
     raw_site =
       site
-      |> Affable.Repo.preload(items: [attributes: :definition])
+      |> Affable.Repo.preload(header_image: [], site_logo: [], items: [attributes: :definition])
       |> Raw.raw()
       |> Map.put("made_available_at", DateTime.utc_now())
 

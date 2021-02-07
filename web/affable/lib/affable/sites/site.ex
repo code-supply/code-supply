@@ -8,8 +8,8 @@ defmodule Affable.Sites.Site do
 
   schema "sites" do
     field :name, :string
-    field :site_logo_url, :string
-    field :header_image_url, :string
+    belongs_to :site_logo, Asset
+    belongs_to :header_image, Asset
     field :page_subtitle, :string
     field :text, :string
     field :internal_name, :string
@@ -30,7 +30,7 @@ defmodule Affable.Sites.Site do
   @doc false
   def changeset(site, attrs) do
     site
-    |> cast(attrs, [:name, :site_logo_url, :header_image_url, :page_subtitle, :text])
+    |> cast(attrs, [:name, :site_logo_id, :header_image_id, :page_subtitle, :text])
     |> cast_assoc(:items, with: &Item.changeset/2)
     |> cast_assoc(:attribute_definitions, with: &AttributeDefinition.changeset/2)
     |> validate_required([:name])

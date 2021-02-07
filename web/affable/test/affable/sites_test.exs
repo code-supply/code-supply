@@ -6,6 +6,8 @@ defmodule Affable.SitesTest do
   import Hammox
 
   alias Affable.Accounts.User
+  alias Affable.Assets
+  alias Affable.Assets.Asset
   alias Affable.Sites
   alias Affable.Sites.{Site, SiteMember, Item, Attribute, AttributeDefinition}
   alias Affable.Domains.Domain
@@ -73,6 +75,13 @@ defmodule Affable.SitesTest do
       assert site.made_available_at == first_made_available_at
     end
 
+    test "sites start with a publication" do
+      %{sites: [%Site{header_image: %Asset{url: header_image_url}, publications: [publication]}]} =
+        user_fixture() |> Repo.preload(sites: [:header_image, :publications])
+
+      assert publication.data["header_image_url"] == Assets.to_imgproxy_url(header_image_url)
+    end
+
     test "site is published when latest publication is same as current raw representation", %{
       set_available_2: set_available
     } do
@@ -97,6 +106,16 @@ defmodule Affable.SitesTest do
       {:ok, published_again_site} = Sites.publish(site)
 
       assert Sites.is_published?(published_again_site)
+    end
+
+    test "raw representation copes with one or other images being missing" do
+      expected_url = Assets.to_imgproxy_url("foo")
+
+      assert %{"header_image_url" => nil, "site_logo_url" => ^expected_url} =
+               raw(%Site{site_logo: %Asset{url: "foo"}, header_image: nil, items: []})
+
+      assert %{"header_image_url" => ^expected_url, "site_logo_url" => nil} =
+               raw(%Site{header_image: %Asset{url: "foo"}, site_logo: nil, items: []})
     end
 
     test "get_site!/1 preloads latest publication" do

@@ -7,6 +7,7 @@ defmodule Affable.Sites do
 
   alias Affable.Repo
   alias Affable.Accounts.User
+  alias Affable.Assets.Asset
 
   alias Affable.Sites.{
     Publication,
@@ -30,6 +31,8 @@ defmodule Affable.Sites do
   end
 
   def publish(site) do
+    site = site |> Repo.preload([:header_image, :site_logo])
+
     site
     |> Ecto.build_assoc(:publications, %{data: raw(site)})
     |> Repo.insert()
@@ -37,13 +40,14 @@ defmodule Affable.Sites do
     {
       :ok,
       site
-      |> preload_latest_publication()
       |> broadcast()
     }
   end
 
   def is_published?(site) do
-    case preload_latest_publication(site).latest_publication do
+    site = preload_latest_publication(site)
+
+    case site.latest_publication do
       nil ->
         false
 
@@ -87,7 +91,7 @@ defmodule Affable.Sites do
 
   defp site_query(id) do
     base_site_query(id)
-    |> preload([], [:domains, :members])
+    |> preload([], [:assets, :domains, :members])
   end
 
   defp base_site_query(id) do
@@ -104,7 +108,11 @@ defmodule Affable.Sites do
   end
 
   defp preload_latest_publication(site) do
-    Repo.preload(site, latest_publication: from(p in Publication, order_by: [desc: p.id]))
+    Repo.preload(site,
+      header_image: [],
+      site_logo: [],
+      latest_publication: from(p in Publication, order_by: [desc: p.id])
+    )
   end
 
   @impl true
@@ -151,7 +159,7 @@ defmodule Affable.Sites do
     end
   end
 
-  def create_site_multi(user, attrs) do
+  defp create_site_multi_first(user, attrs) do
     Multi.new()
     |> Multi.insert(
       :site,
@@ -174,11 +182,65 @@ defmodule Affable.Sites do
     |> Multi.merge(fn %{site: site} ->
       add_attribute_definition_multi(site)
     end)
+  end
+
+  def create_site_multi(
+        user,
+        %{site_logo_url: site_logo_url, header_image_url: header_image_url} = attrs
+      ) do
+    create_site_multi_first(user, attrs)
+    |> Multi.insert(:site_logo, fn %{site: site} ->
+      %Asset{}
+      |> Asset.changeset(%{
+        site_id: site.id,
+        url: site_logo_url,
+        name: "Logo"
+      })
+    end)
+    |> Multi.insert(:header_image, fn %{site: site} ->
+      %Asset{}
+      |> Asset.changeset(%{
+        site_id: site.id,
+        url: header_image_url,
+        name: "Header"
+      })
+    end)
+    |> Multi.update(:site_with_assets, fn %{
+                                            header_image: header_image,
+                                            site_logo: site_logo,
+                                            site: site
+                                          } ->
+      site
+      |> Site.changeset(%{
+        site_logo_id: site_logo.id,
+        header_image_id: header_image.id
+      })
+    end)
+    |> Multi.insert(
+      :publish,
+      fn %{site_with_assets: site} ->
+        Ecto.build_assoc(site, :publications, %{
+          data:
+            raw(
+              site
+              |> Repo.preload(site_logo: [], header_image: [], items: [attributes: :definition])
+            )
+        })
+      end
+    )
+  end
+
+  def create_site_multi(user, attrs) do
+    create_site_multi_first(user, attrs)
     |> Multi.insert(
       :publish,
       fn %{site: site} ->
         Ecto.build_assoc(site, :publications, %{
-          data: raw(site |> Repo.preload(items: [attributes: :definition]))
+          data:
+            raw(
+              site
+              |> Repo.preload(site_logo: [], header_image: [], items: [attributes: :definition])
+            )
         })
       end
     )
@@ -300,7 +362,22 @@ defmodule Affable.Sites do
   end
 
   def delete_site(%Site{} = site) do
+    remove_logo_and_header(site)
     Repo.delete(site)
+  end
+
+  def remove_logo_and_header(%Site{} = site) do
+    site = site |> Repo.preload([:header_image, :site_logo])
+
+    site |> change_site(%{header_image_id: nil, site_logo_id: nil}) |> Repo.update!()
+
+    if site.header_image do
+      Repo.delete(site.header_image)
+    end
+
+    if site.site_logo do
+      Repo.delete(site.site_logo)
+    end
   end
 
   def change_site(%Site{} = site, attrs \\ %{}) do
@@ -582,10 +659,8 @@ defmodule Affable.Sites do
   end
 
   def broadcast(%Site{} = site) do
-    :ok =
-      site
-      |> preload_latest_publication()
-      |> (&broadcaster().broadcast(&1)).()
+    site = site |> preload_latest_publication()
+    :ok = site |> (&broadcaster().broadcast(&1)).()
 
     site
   end
