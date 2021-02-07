@@ -60,13 +60,13 @@ defmodule AffableWeb.AssetsLive do
           assign_vars(socket, %{
             user
             | sites:
-                Enum.reduce_while(user.sites, [], fn site, acc ->
+                for site <- user.sites do
                   if "#{site.id}" == site_id do
-                    {:halt, acc ++ [%{site | assets: [new_asset | site.assets]}]}
+                    %{site | assets: [new_asset | site.assets]}
                   else
-                    {:cont, acc}
+                    site
                   end
-                end)
+                end
           })
         }
 

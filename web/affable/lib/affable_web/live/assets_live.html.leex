@@ -68,7 +68,7 @@
 
 <ul class="container w-full resources">
   <%= for site <- @sites do %>
-    <li class="">
+    <li id="resources-site<%= site.id %>">
       <h2 class="mt-4 mb-4 text-xl"><%= site.name %></h2>
       <%= if site.assets |> Enum.empty? do %>
         No assets have been uploaded for this site yet.

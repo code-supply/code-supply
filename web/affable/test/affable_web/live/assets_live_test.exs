@@ -32,11 +32,15 @@ defmodule AffableWeb.AssetsLiveTest do
 
   test "can upload an image for one of the user's sites", %{
     conn: conn,
-    user: %User{sites: [site | _]}
+    user: %User{sites: [site1 | _]} = user
   } do
+    {:ok, site2} = Affable.Sites.create_site(user, %{name: "site2"})
+
     {:ok, view, _html} = live(conn, path(conn))
 
     refute view |> has_element?(".resources img")
+    assert view |> has_element?("option", site1.name)
+    assert view |> has_element?("option", site2.name)
 
     content = File.read!("test/support/fixtures/tiny.png")
 
@@ -56,22 +60,29 @@ defmodule AffableWeb.AssetsLiveTest do
     |> element("#asset-form")
     |> render_submit(%{
       "asset" => %{
-        "site_id" => "#{site.id}",
+        "site_id" => "#{site1.id}",
         "name" => "Cool image"
       }
     })
 
     bucket = Application.fetch_env!(:affable, :bucket_name)
 
-    assert view
-           |> element(".resources > :first-child img")
+    site1_resources = view |> element("#resources-site#{site1.id}")
+    site2_resources = view |> element("#resources-site#{site2.id}")
+
+    assert site1_resources
            |> render() =~
              ~r(src="https://images.affable.app/nosignature/fill/[0-9]+/[0-9]+/sm/0/plain/gs://#{
                bucket
              }/.+")
 
-    refute view
-           |> element(".resources")
+    refute site1_resources
            |> render() =~ "No assets have been uploaded"
+
+    assert site2_resources
+           |> render() =~ "No assets have been uploaded"
+
+    assert view |> has_element?("option", site1.name)
+    assert view |> has_element?("option", site2.name)
   end
 end
