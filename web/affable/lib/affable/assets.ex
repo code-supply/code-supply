@@ -13,7 +13,7 @@ defmodule Affable.Assets do
       ) do
     if member_of_site?(user, site_id) do
       Asset.changeset(
-        %Asset{url: "https://storage.cloud.google.com/#{bucket_name}/#{key}"},
+        %Asset{url: "gs://#{bucket_name}/#{key}"},
         params
       )
       |> Repo.insert()
@@ -28,10 +28,6 @@ defmodule Affable.Assets do
 
   def to_imgproxy_url(%Asset{url: url}) do
     to_imgproxy_url(url)
-  end
-
-  def to_imgproxy_url(<<"https://storage.cloud.google.com/", bucket_and_key::binary>>) do
-    to_imgproxy_url("gs://#{bucket_and_key}")
   end
 
   def to_imgproxy_url(source_url) do

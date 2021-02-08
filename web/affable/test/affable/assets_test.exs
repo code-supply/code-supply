@@ -4,15 +4,16 @@ defmodule Affable.AssetsTest do
   import Affable.AccountsFixtures
 
   alias Affable.Assets
+  alias Affable.Assets.Asset
   alias Affable.Accounts.User
 
   describe "assets" do
-    test "can get an imgproxy URL for a GCS URL" do
-      assert Assets.to_imgproxy_url("https://storage.cloud.google.com/somebucket/some/key") ==
-               "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/gs://somebucket/some/key"
+    test "can get an imgproxy URL for an Asset" do
+      assert Assets.to_imgproxy_url(%Asset{url: "https://example.com/some-image.jpeg"}) ==
+               "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/https://example.com/some-image.jpeg"
     end
 
-    test "can get an imgproxy URL for a different URL" do
+    test "can get an imgproxy URL for a URL" do
       assert Assets.to_imgproxy_url("https://example.com/some-image.jpeg") ==
                "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/https://example.com/some-image.jpeg"
     end
@@ -32,7 +33,7 @@ defmodule Affable.AssetsTest do
         )
 
       assert asset.name == "My asset"
-      assert asset.url == "https://storage.cloud.google.com/some-bucket/my-key"
+      assert asset.url == "gs://some-bucket/my-key"
     end
 
     test "cannot create an asset without a name" do
