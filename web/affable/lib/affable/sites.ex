@@ -159,8 +159,50 @@ defmodule Affable.Sites do
     end
   end
 
-  defp create_site_multi_first(user, attrs) do
+  def create_site(%User{} = user, attrs \\ %{}) do
+    case create_site_multi(user, attrs)
+         |> Repo.transaction() do
+      {:ok, %{site_with_internal_name: site}} ->
+        {
+          :ok,
+          site
+          |> Repo.preload([:domains, [items: :attributes]])
+          |> preload_latest_publication()
+        }
+
+      {:error, :site, site, %{} = _domain} ->
+        {:error, site}
+    end
+  end
+
+  def create_site_multi(
+        user,
+        %{site_logo_url: site_logo_url, header_image_url: header_image_url} = attrs
+      ) do
     Multi.new()
+    |> site_with_name_multi(user, attrs)
+    |> default_assets_multi(site_logo_url, header_image_url)
+    |> Multi.insert(:publish, &build_publication(&1.site_with_default_assets))
+  end
+
+  def create_site_multi(user, attrs) do
+    Multi.new()
+    |> site_with_name_multi(user, attrs)
+    |> Multi.insert(:publish, &build_publication(&1.site))
+  end
+
+  defp build_publication(site) do
+    Ecto.build_assoc(site, :publications, %{
+      data:
+        raw(
+          site
+          |> Repo.preload(site_logo: [], header_image: [], items: [attributes: :definition])
+        )
+    })
+  end
+
+  defp site_with_name_multi(%Multi{} = multi, user, attrs) do
+    multi
     |> Multi.insert(
       :site,
       %Site{}
@@ -184,11 +226,8 @@ defmodule Affable.Sites do
     end)
   end
 
-  def create_site_multi(
-        user,
-        %{site_logo_url: site_logo_url, header_image_url: header_image_url} = attrs
-      ) do
-    create_site_multi_first(user, attrs)
+  defp default_assets_multi(%Multi{} = multi, site_logo_url, header_image_url) do
+    multi
     |> Multi.insert(:site_logo, fn %{site: site} ->
       %Asset{}
       |> Asset.changeset(%{
@@ -205,61 +244,17 @@ defmodule Affable.Sites do
         name: "Header"
       })
     end)
-    |> Multi.update(:site_with_assets, fn %{
-                                            header_image: header_image,
-                                            site_logo: site_logo,
-                                            site: site
-                                          } ->
+    |> Multi.update(:site_with_default_assets, fn %{
+                                                    header_image: header_image,
+                                                    site_logo: site_logo,
+                                                    site: site
+                                                  } ->
       site
       |> Site.changeset(%{
         site_logo_id: site_logo.id,
         header_image_id: header_image.id
       })
     end)
-    |> Multi.insert(
-      :publish,
-      fn %{site_with_assets: site} ->
-        Ecto.build_assoc(site, :publications, %{
-          data:
-            raw(
-              site
-              |> Repo.preload(site_logo: [], header_image: [], items: [attributes: :definition])
-            )
-        })
-      end
-    )
-  end
-
-  def create_site_multi(user, attrs) do
-    create_site_multi_first(user, attrs)
-    |> Multi.insert(
-      :publish,
-      fn %{site: site} ->
-        Ecto.build_assoc(site, :publications, %{
-          data:
-            raw(
-              site
-              |> Repo.preload(site_logo: [], header_image: [], items: [attributes: :definition])
-            )
-        })
-      end
-    )
-  end
-
-  def create_site(%User{} = user, attrs \\ %{}) do
-    case create_site_multi(user, attrs)
-         |> Repo.transaction() do
-      {:ok, %{site_with_internal_name: site}} ->
-        {
-          :ok,
-          site
-          |> Repo.preload([:domains, [items: :attributes]])
-          |> preload_latest_publication()
-        }
-
-      {:error, :site, site, %{} = _domain} ->
-        {:error, site}
-    end
   end
 
   defp default_items do
