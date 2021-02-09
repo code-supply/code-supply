@@ -228,22 +228,8 @@ defmodule Affable.Sites do
 
   defp default_assets_multi(%Multi{} = multi, site_logo_url, header_image_url) do
     multi
-    |> Multi.insert(:site_logo, fn %{site: site} ->
-      %Asset{}
-      |> Asset.changeset(%{
-        site_id: site.id,
-        url: site_logo_url,
-        name: "Logo"
-      })
-    end)
-    |> Multi.insert(:header_image, fn %{site: site} ->
-      %Asset{}
-      |> Asset.changeset(%{
-        site_id: site.id,
-        url: header_image_url,
-        name: "Header"
-      })
-    end)
+    |> asset_multi(:site_logo, "Logo", site_logo_url)
+    |> asset_multi(:header_image, "Header", header_image_url)
     |> Multi.update(:site_with_default_assets, fn %{
                                                     header_image: header_image,
                                                     site_logo: site_logo,
@@ -255,6 +241,10 @@ defmodule Affable.Sites do
         header_image_id: header_image.id
       })
     end)
+  end
+
+  defp asset_multi(%Multi{} = multi, identifier, name, url) do
+    Multi.insert(multi, identifier, &%Asset{site_id: &1.site.id, url: url, name: name})
   end
 
   defp default_items do
