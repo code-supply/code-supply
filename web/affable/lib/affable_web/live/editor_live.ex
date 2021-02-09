@@ -7,6 +7,8 @@ defmodule AffableWeb.EditorLive do
   alias Affable.Sites
   alias Affable.Sites.Site
 
+  import Affable.Assets, only: [to_imgproxy_url: 1]
+
   def mount(%{"id" => id}, %{"user_token" => token}, socket) do
     user = Accounts.get_user_by_session_token(token)
     {:ok, retrieve_state(user, socket, id)}

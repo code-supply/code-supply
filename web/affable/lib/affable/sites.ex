@@ -143,7 +143,11 @@ defmodule Affable.Sites do
 
   defp items_query do
     attributes_q = from(a in Attribute, order_by: [desc: a.definition_id])
-    from(i in Item, order_by: i.position, preload: ^[attributes: {attributes_q, [:definition]}])
+
+    from(i in Item,
+      order_by: i.position,
+      preload: ^[image: [], attributes: {attributes_q, [:definition]}]
+    )
   end
 
   defp definitions_query do
@@ -159,13 +163,44 @@ defmodule Affable.Sites do
     end
   end
 
+  def create_bare_site(%User{} = user, attrs \\ %{}) do
+    create_bare_site_multi(user, attrs)
+    |> Repo.transaction()
+    |> handle_create_site_multi(:site)
+  end
+
   def create_site(%User{} = user, attrs \\ %{}) do
-    case create_site_multi(user, attrs)
-         |> Repo.transaction() do
-      {:ok, %{site_with_internal_name: site}} ->
+    create_site_multi(user, attrs)
+    |> Repo.transaction()
+    |> handle_create_site_multi(:site_with_default_assets)
+  end
+
+  def create_bare_site_multi(user, attrs) do
+    Multi.new()
+    |> site_with_name_multi(user, attrs)
+    |> Multi.insert(:publish, &build_publication(&1.site))
+  end
+
+  def create_site_multi(user, attrs) do
+    Multi.new()
+    |> site_with_name_multi(user, attrs)
+    |> default_assets_multi(
+      "gs://affable-uploads/default-logo.png",
+      "gs://affable-uploads/default-header.png"
+    )
+    |> Multi.merge(fn %{site: site} ->
+      add_attribute_definition_multi(site)
+    end)
+    |> default_items_multi()
+    |> Multi.insert(:publish, &build_publication(&1.site_with_default_assets))
+  end
+
+  defp handle_create_site_multi(result, site_multi_key) do
+    case result do
+      {:ok, multis} ->
         {
           :ok,
-          site
+          multis[site_multi_key]
           |> Repo.preload([:domains, [items: :attributes]])
           |> preload_latest_publication()
         }
@@ -175,20 +210,21 @@ defmodule Affable.Sites do
     end
   end
 
-  def create_site_multi(
-        user,
-        %{site_logo_url: site_logo_url, header_image_url: header_image_url} = attrs
-      ) do
-    Multi.new()
-    |> site_with_name_multi(user, attrs)
-    |> default_assets_multi(site_logo_url, header_image_url)
-    |> Multi.insert(:publish, &build_publication(&1.site_with_default_assets))
-  end
-
-  def create_site_multi(user, attrs) do
-    Multi.new()
-    |> site_with_name_multi(user, attrs)
-    |> Multi.insert(:publish, &build_publication(&1.site))
+  defp default_items_multi(%Multi{} = multi) do
+    Enum.reduce(default_items(), multi, fn {identifier, item}, multi ->
+      Multi.insert(
+        multi,
+        "item#{item.position}",
+        fn %{site: site, definition: definition} = previous_multis ->
+          %{
+            item
+            | site_id: site.id,
+              image_id: previous_multis[identifier].id,
+              attributes: [%Attribute{value: "1.23", definition_id: definition.id}]
+          }
+        end
+      )
+    end)
   end
 
   defp build_publication(site) do
@@ -209,31 +245,77 @@ defmodule Affable.Sites do
       |> Site.changeset(attrs)
       |> Site.change_internal_name("pending")
       |> Ecto.Changeset.put_assoc(:members, [Ecto.build_assoc(user, :site_members)])
-      |> Ecto.Changeset.put_assoc(:items, default_items())
     )
     |> Multi.update(:site_with_internal_name, fn %{site: site} ->
       site
       |> Site.change_internal_name(Affable.ID.site_name_from_id(site.id))
     end)
     |> Multi.insert(
-      :domain,
+      :site_with_domain,
       fn %{site_with_internal_name: site} ->
         Ecto.build_assoc(site, :domains, %{name: "#{site.internal_name}.affable.app"})
       end
     )
-    |> Multi.merge(fn %{site: site} ->
-      add_attribute_definition_multi(site)
-    end)
   end
 
   defp default_assets_multi(%Multi{} = multi, site_logo_url, header_image_url) do
     multi
     |> asset_multi(:site_logo, "Logo", site_logo_url)
     |> asset_multi(:header_image, "Header", header_image_url)
+    |> asset_multi(
+      :golden_delicious,
+      "Golden Delicious",
+      "gs://affable-uploads/Mele_golden.jpg"
+    )
+    |> asset_multi(
+      :gala,
+      "Gala",
+      "gs://affable-uploads/gala.jpg"
+    )
+    |> asset_multi(
+      :bramley,
+      "Bramley",
+      "gs://affable-uploads/bramley.jpg"
+    )
+    |> asset_multi(
+      :red_prince,
+      "Red Prince",
+      "gs://affable-uploads/Red_Prince_Aepfel.jpg"
+    )
+    |> asset_multi(
+      :greensleeves,
+      "Greensleeves",
+      "gs://affable-uploads/greensleeves.jpg"
+    )
+    |> asset_multi(
+      :red_delicious,
+      "Red Delicious",
+      "gs://affable-uploads/Red_Delicious_apples.jpg"
+    )
+    |> asset_multi(
+      :pink_lady,
+      "Pink Lady",
+      "gs://affable-uploads/pink_lady.jpg"
+    )
+    |> asset_multi(
+      :discovery,
+      "Discovery",
+      "gs://affable-uploads/Discovery_apples.jpg"
+    )
+    |> asset_multi(
+      :braeburn,
+      "Braeburn",
+      "gs://affable-uploads/braeburn.jpg"
+    )
+    |> asset_multi(
+      :coxs_orange_pippin,
+      "Cox's Orange Pippin",
+      "gs://affable-uploads/Cox_orange_renette2.JPG"
+    )
     |> Multi.update(:site_with_default_assets, fn %{
                                                     header_image: header_image,
                                                     site_logo: site_logo,
-                                                    site: site
+                                                    site_with_internal_name: site
                                                   } ->
       site
       |> Site.changeset(%{
@@ -249,84 +331,69 @@ defmodule Affable.Sites do
 
   defp default_items do
     [
-      %Item{
+      golden_delicious: %Item{
         position: 1,
         name: "Golden Delicious",
         description: "Yellow. Nothing like Red Delicious.",
-        image_url: "https://upload.wikimedia.org/wikipedia/commons/0/09/Mele_golden.jpg",
         url: "https://commons.wikimedia.org/wiki/File:Mele_golden.jpg"
       },
-      %Item{
+      gala: %Item{
         position: 2,
         name: "Gala",
         description: "Red. Offspring of Red D and Kidd's Orange.",
-        image_url:
-          "https://upload.wikimedia.org/wikipedia/commons/a/ab/2015-02-xx_Gala_%28apple%29.jpg",
         url: "https://commons.wikimedia.org/wiki/File:2015-02-xx_Gala_(apple).jpg"
       },
-      %Item{
+      bramley: %Item{
         position: 3,
         name: "Bramley",
         description: "Nice in a pie.",
-        image_url:
-          "https://upload.wikimedia.org/wikipedia/commons/5/52/Bramley%27s_Seedling_Apples.jpg",
         url: "https://commons.wikimedia.org/wiki/File:Bramley%27s_Seedling_Apples.jpg"
       },
-      %Item{
+      red_prince: %Item{
         position: 4,
         name: "Red Prince",
         description: "Holland made an apple. It's kinda red.",
-        image_url: "https://upload.wikimedia.org/wikipedia/commons/e/e8/Red_Prince_Aepfel.jpg",
         url: "https://commons.wikimedia.org/wiki/File:Red_Prince_Aepfel.jpg"
       },
-      %Item{
+      greensleeves: %Item{
         position: 5,
         name: "Greensleeves",
         description: "Parents are Golden D and James Grieve. That naughty James.",
-        image_url:
-          "https://upload.wikimedia.org/wikipedia/commons/d/d1/Greensleeves_on_tree%2C_National_Fruit_Collection_%28acc._1980-077%29.jpg",
         url:
           "https://commons.wikimedia.org/wiki/File:Greensleeves_on_tree,_National_Fruit_Collection_(acc._1980-077).jpg"
       },
-      %Item{
+      red_delicious: %Item{
         position: 6,
         name: "Red Delicious",
         description: "Dark Red. Popular in the states. Don't cook with it.",
-        image_url: "https://upload.wikimedia.org/wikipedia/commons/6/6d/Red_Delicious_apples.jpg",
         url: "https://commons.wikimedia.org/wiki/File:Red_Delicious_apples.jpg"
       },
-      %Item{
+      pink_lady: %Item{
         position: 7,
         name: "Pink Lady",
         description: "From the 70's. Light red / pink. Tasty.",
-        image_url:
-          "https://upload.wikimedia.org/wikipedia/commons/b/b8/Pink_lady_apples%2C_Thulimbah%2C_Granite_Belt%2C_Queensland%2C_2015_02.jpg",
         url:
           "https://commons.wikimedia.org/wiki/File:Pink_lady_apples,_Thulimbah,_Granite_Belt,_Queensland,_2015_02.jpg"
       },
-      %Item{
+      discovery: %Item{
         position: 8,
         name: "Discovery",
         description: "Sweet flavour. English.",
-        image_url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Discovery_apples.jpg",
         url: "https://commons.wikimedia.org/wiki/File:Discovery_apples.jpg"
       },
-      %Item{
+      braeburn: %Item{
         position: 9,
         name: "Braeburn",
         description: "Common in the UK supermarkets. Pretty good!",
-        image_url: "https://upload.wikimedia.org/wikipedia/commons/f/fc/Braeburn2008.jpg",
         url: "https://commons.wikimedia.org/wiki/File:Braeburn2008.jpg"
       },
-      %Item{
+      coxs_orange_pippin: %Item{
         position: 10,
         name: "Cox's Orange Pippin",
         description: "Kind of a big deal in the UK.",
-        image_url: "https://upload.wikimedia.org/wikipedia/commons/e/ed/Cox_orange_renette2.JPG",
         url: "https://commons.wikimedia.org/wiki/File:Cox_orange_renette2.JPG"
       }
     ]
-    |> Enum.map(&Item.changeset(&1, %{}))
   end
 
   def update_site(%Site{} = site, attrs) do
@@ -347,22 +414,27 @@ defmodule Affable.Sites do
   end
 
   def delete_site(%Site{} = site) do
-    remove_logo_and_header(site)
-    Repo.delete(site)
+    site
+    |> delete_items()
+    |> delete_assets()
+    |> Repo.delete()
   end
 
-  def remove_logo_and_header(%Site{} = site) do
-    site = site |> Repo.preload([:header_image, :site_logo])
+  defp delete_items(%Site{} = site) do
+    Repo.delete_all(from(Item, where: [site_id: ^site.id]))
 
-    site |> change_site(%{header_image_id: nil, site_logo_id: nil}) |> Repo.update!()
+    site
+  end
 
-    if site.header_image do
-      Repo.delete(site.header_image)
-    end
+  def delete_assets(%Site{} = site) do
+    site =
+      site
+      |> change_site(%{header_image_id: nil, site_logo_id: nil})
+      |> Repo.update!()
 
-    if site.site_logo do
-      Repo.delete(site.site_logo)
-    end
+    Repo.delete_all(from(Asset, where: [site_id: ^site.id]))
+
+    site
   end
 
   def change_site(%Site{} = site, attrs \\ %{}) do
@@ -450,7 +522,7 @@ defmodule Affable.Sites do
         |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
       )
 
-    site.items
+    (site |> Repo.preload(:items)).items
     |> Enum.reduce(multi, fn item, multi ->
       multi
       |> Multi.insert("item#{item.id}", fn %{definition: definition} ->
@@ -549,7 +621,7 @@ defmodule Affable.Sites do
       {
         :ok,
         %{site | items: site.items ++ [item]}
-        |> Repo.preload(items: [attributes: :definition])
+        |> Repo.preload(items: [image: [], attributes: :definition])
         |> broadcast()
       }
     else

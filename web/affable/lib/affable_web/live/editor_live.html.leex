@@ -118,7 +118,7 @@
         </p>
 
         <div class="image">
-          <img src="<%= f.data.image_url %>" alt=""/>
+          <img src="<%= f.data.image |> to_imgproxy_url() %>" alt=""/>
         </div>
 
         <%= hidden_inputs_for f %>

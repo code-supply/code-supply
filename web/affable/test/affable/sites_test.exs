@@ -9,7 +9,7 @@ defmodule Affable.SitesTest do
   alias Affable.Assets
   alias Affable.Assets.Asset
   alias Affable.Sites
-  alias Affable.Sites.{Site, SiteMember, Item, Attribute, AttributeDefinition}
+  alias Affable.Sites.{Site, SiteMember, Item, AttributeDefinition}
   alias Affable.Domains.Domain
 
   setup :verify_on_exit!
@@ -194,13 +194,7 @@ defmodule Affable.SitesTest do
 
       [first_item | _] = Sites.get_site!(user, site.id).items
 
-      assert [
-               %Attribute{
-                 definition_id: ^definition_id,
-                 value: _
-               }
-               | _
-             ] = first_item.attributes
+      assert definition_id in (first_item.attributes |> Enum.map(& &1.definition_id))
 
       {:error, _} = Sites.delete_attribute_definition(site.id, definition.id, wrong_user)
       assert [definition | _] = Sites.get_site!(user, site.id).attribute_definitions
@@ -381,8 +375,7 @@ defmodule Affable.SitesTest do
     end
 
     test "delete_site/1 deletes the site" do
-      user = user_fixture()
-      site = site_fixture(user)
+      %User{sites: [site]} = user = user_fixture()
       assert {:ok, %Site{}} = Sites.delete_site(site)
       assert_raise Ecto.NoResultsError, fn -> Sites.get_site!(user, site.id) end
     end

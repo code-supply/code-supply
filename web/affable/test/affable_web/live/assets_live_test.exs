@@ -15,9 +15,9 @@ defmodule AffableWeb.AssetsLiveTest do
 
   test "shows message when there are no assets for a site", %{
     conn: conn,
-    user: %User{sites: [site]}
+    user: %User{} = user
   } do
-    Sites.remove_logo_and_header(site)
+    {:ok, _site} = Sites.create_bare_site(user, %{name: "site2"})
 
     {:ok, view, _html} = live(conn, path(conn))
 
@@ -40,7 +40,7 @@ defmodule AffableWeb.AssetsLiveTest do
     conn: conn,
     user: %User{sites: [site1 | _]} = user
   } do
-    {:ok, site2} = Affable.Sites.create_site(user, %{name: "site2"})
+    {:ok, site2} = Affable.Sites.create_bare_site(user, %{name: "site2"})
 
     {:ok, view, _html} = live(conn, path(conn))
 

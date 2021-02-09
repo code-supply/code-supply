@@ -1,6 +1,6 @@
 %{
   "preview" => %{
-    "header_image_url" => nil,
+    "header_image_url" => "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/https://www.theblacktruffle.com.au/tbtwp/wp-content/uploads/2017/07/group-of-apples.jpg",
     "id" => 1,
     "items" => [
       %{
@@ -87,11 +87,11 @@
     "made_available_at" => nil,
     "name" => "Top 10 Apples",
     "page_subtitle" => "Initial subtitle",
-    "site_logo_url" => nil,
+    "site_logo_url" => "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/https://fontmeme.com/permalink/201007/1dc0c470f4a553f8c24eb121aff0b7b6.png",
     "text" => nil
   },
   "published" => %{
-    "header_image_url" => nil,
+    "header_image_url" => "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/https://www.theblacktruffle.com.au/tbtwp/wp-content/uploads/2017/07/group-of-apples.jpg",
     "id" => 1,
     "items" => [
       %{
@@ -178,7 +178,7 @@
     "made_available_at" => nil,
     "name" => "Top 10 Apples",
     "page_subtitle" => "Initial subtitle",
-    "site_logo_url" => nil,
+    "site_logo_url" => "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/https://fontmeme.com/permalink/201007/1dc0c470f4a553f8c24eb121aff0b7b6.png",
     "text" => nil
   }
 }
