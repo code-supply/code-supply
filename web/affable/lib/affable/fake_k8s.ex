@@ -7,12 +7,14 @@ defmodule Affable.FakeK8s do
 
   @impl true
   def deploy(resource) do
-    IO.puts("FakeK8s: would have deployed #{inspect(resource)}")
+    msg = "FakeK8s: would have deployed #{inspect(resource)}"
+    {IO.puts(msg), msg}
   end
 
   @impl true
   def undeploy(resource) do
-    IO.puts("FakeK8s: would have undeployed #{inspect(resource)}")
+    msg = "FakeK8s: would have undeployed #{inspect(resource)}"
+    {IO.puts(msg), msg}
   end
 
   def ready() do
