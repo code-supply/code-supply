@@ -184,10 +184,7 @@ defmodule Affable.Sites do
   def create_site_multi(user, attrs) do
     Multi.new()
     |> site_with_name_multi(user, attrs)
-    |> default_assets_multi(
-      "gs://affable-uploads/default-logo.png",
-      "gs://affable-uploads/default-header.png"
-    )
+    |> default_assets_multi()
     |> Multi.merge(fn %{site: site} ->
       add_attribute_definition_multi(site)
     end)
@@ -258,10 +255,10 @@ defmodule Affable.Sites do
     )
   end
 
-  defp default_assets_multi(%Multi{} = multi, site_logo_url, header_image_url) do
+  defp default_assets_multi(%Multi{} = multi) do
     multi
-    |> asset_multi(:site_logo, "Logo", site_logo_url)
-    |> asset_multi(:header_image, "Header", header_image_url)
+    |> asset_multi(:site_logo, "Logo", "gs://affable-uploads/default-logo.png")
+    |> asset_multi(:header_image, "Header", "gs://affable-uploads/default-header.png")
     |> asset_multi(
       :golden_delicious,
       "Golden Delicious",
