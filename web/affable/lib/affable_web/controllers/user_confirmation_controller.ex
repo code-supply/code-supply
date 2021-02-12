@@ -1,6 +1,8 @@
 defmodule AffableWeb.UserConfirmationController do
   use AffableWeb, :controller
 
+  require Logger
+
   alias Affable.Accounts
   alias Affable.Accounts.User
   alias Affable.Domains.Domain
@@ -42,13 +44,25 @@ defmodule AffableWeb.UserConfirmationController do
            }
          ]
        }} ->
-        k8s().deploy(K8sFactories.affiliate_site(internal_name, [domain_name]))
+        case k8s().deploy(K8sFactories.affiliate_site(internal_name, [domain_name])) do
+          {:ok, _} ->
+            Logger.info("Deployed site #{internal_name} for the first time")
 
-        conn
-        |> put_flash(
-          :info,
-          "Account confirmed successfully. We're busy building your first site. It should be ready in a few seconds."
-        )
+            conn
+            |> put_flash(
+              :info,
+              "Account confirmed successfully. We're busy building your first site. It should be ready in a few seconds."
+            )
+
+          {:error, msg} ->
+            Logger.error("Failed to deploy #{internal_name}: #{msg}")
+
+            conn
+            |> put_flash(
+              :info,
+              "Account confirmed successfully. We're busy building your first site. Please get in touch if it's not ready soon!"
+            )
+        end
         |> redirect(to: Routes.sites_path(conn, :index))
 
       :error ->
