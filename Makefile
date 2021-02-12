@@ -63,6 +63,8 @@ web/affable/VERSION:
 	git rev-parse --short HEAD > $@
 
 web/affable/VERSION_BUILT: web/affable/VERSION
+	mix dialyzer
+	mix test
 	docker build -t eu.gcr.io/code-supply/affable:$$(cat $<) web/affable
 	cat $< > $@
 
