@@ -8,7 +8,7 @@ defmodule Affable.RealK8s do
         result
 
       {:error, e} ->
-        {:error, "#{e}"}
+        {:error, "#{inspect(e)}"}
     end
   end
 
