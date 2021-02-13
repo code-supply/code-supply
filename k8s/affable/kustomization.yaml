@@ -23,7 +23,7 @@ commonLabels:
 images:
 - name: affable
   newName: eu.gcr.io/code-supply/affable
-  newTag: e53d9cd
+  newTag: 37c1009
 patchesStrategicMerge:
 - version.yaml
 - istio-proxy-resources.yaml
