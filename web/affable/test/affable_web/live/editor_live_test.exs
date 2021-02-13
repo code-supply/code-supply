@@ -4,6 +4,7 @@ defmodule AffableWeb.EditorLiveTest do
   import Affable.SitesFixtures
   import Hammox
 
+  alias Affable.Assets.Asset
   alias Affable.{Repo, Accounts, Sites}
   alias Affable.Sites.{Site, Item, Attribute}
 
@@ -160,9 +161,21 @@ defmodule AffableWeb.EditorLiveTest do
 
       [first_item | _] = site.items
 
+      first_image_url = first_item.image.url
+
+      assert first_image_url =~ "gs://"
+
       assert html =~ first_item.description
 
-      expect_broadcast(fn %Site{items: [%Item{description: "My new description!"} | _]} ->
+      expect_broadcast(fn %Site{
+                            items: [
+                              %Item{
+                                description: "My new description!",
+                                image: %Asset{url: ^first_image_url}
+                              }
+                              | _
+                            ]
+                          } ->
         nil
       end)
 

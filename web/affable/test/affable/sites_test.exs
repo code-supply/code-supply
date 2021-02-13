@@ -115,6 +115,17 @@ defmodule Affable.SitesTest do
                raw(%Site{header_image: %Asset{url: "foo"}, site_logo: nil, items: []})
     end
 
+    test "raw representation includes item image URLs" do
+      %{"items" => [%{"image_url" => raw_image_url}]} =
+        raw(%Site{
+          site_logo: nil,
+          header_image: nil,
+          items: [%Item{attributes: [], image: %Asset{url: "gs://some-bucket/image.jpg"}}]
+        })
+
+      assert raw_image_url =~ "https://images.affable.app"
+    end
+
     test "get_site!/1 preloads latest publication" do
       site = site_fixture()
       assert Sites.get_site!(site.id).latest_publication.data

@@ -15,10 +15,10 @@ defmodule Affable.Sites.Raw do
     }
   end
 
-  def raw(%Item{} = item) do
+  def raw(%Item{image: image} = item) do
     %{
       "description" => item.description,
-      "image_url" => item.image_url,
+      "image_url" => image |> Assets.to_imgproxy_url(),
       "name" => item.name,
       "position" => item.position,
       "url" => item.url,
