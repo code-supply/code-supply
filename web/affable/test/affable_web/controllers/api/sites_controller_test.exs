@@ -4,6 +4,7 @@ defmodule AffableWeb.Api.SitesControllerTest do
   import Affable.SitesFixtures
 
   alias Affable.Sites
+  alias Affable.Sites.Site
 
   setup do
     published = site_fixture()
@@ -26,6 +27,19 @@ defmodule AffableWeb.Api.SitesControllerTest do
 
     assert Sites.get_site!(site_id).made_available_at
     assert Sites.get_site!(site_id).made_available_at <= DateTime.utc_now()
+  end
+
+  test "providing published state broadcasts that the site is available", %{
+    conn: conn,
+    published: site
+  } do
+    Phoenix.PubSub.subscribe(:affable, site.internal_name)
+
+    get(conn, Routes.api_sites_path(conn, :show, site.internal_name))
+
+    expected_name = site.internal_name
+
+    assert_received %Site{internal_name: ^expected_name, made_available_at: %DateTime{}}
   end
 
   test "can provide preview state as JSON", %{

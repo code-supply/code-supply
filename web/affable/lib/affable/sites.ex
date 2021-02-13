@@ -3,8 +3,7 @@ defmodule Affable.Sites do
 
   import Ecto.Query, warn: false
 
-  import Affable.Sites.Raw
-
+  alias Affable.Sites.Raw
   alias Affable.Repo
   alias Affable.Accounts.User
   alias Affable.Assets.Asset
@@ -44,16 +43,25 @@ defmodule Affable.Sites do
     }
   end
 
-  def is_published?(site) do
-    site = preload_latest_publication(site)
+  def is_published?(%Site{id: id} = site) do
+    latest_publication =
+      from(p in Publication, where: [site_id: ^id], order_by: [desc: p.id], limit: 1)
+      |> Repo.one!()
 
-    case site.latest_publication do
+    case latest_publication do
       nil ->
         false
 
       latest ->
-        latest.data == raw(site)
+        latest.data ==
+          raw(site)
     end
+  end
+
+  defp raw(%Site{} = site) do
+    site
+    |> with_items()
+    |> Raw.raw()
   end
 
   def canonical_url(%Site{domains: [%Domain{name: name}]}) do
@@ -75,6 +83,7 @@ defmodule Affable.Sites do
     |> join(:inner, [s], m in SiteMember, on: s.id == m.site_id)
     |> where([s, m], m.user_id == ^user.id)
     |> Repo.one!()
+    |> with_items()
   end
 
   @impl true
@@ -86,12 +95,13 @@ defmodule Affable.Sites do
   def get_site!(id) do
     site_query(id)
     |> Repo.one!()
+    |> with_items()
     |> preload_latest_publication()
   end
 
   defp site_query(id) do
     base_site_query(id)
-    |> preload([], [:assets, :domains, :members])
+    |> preload([], [:site_logo, :header_image, :assets, :domains, :members])
   end
 
   defp base_site_query(id) do
@@ -120,6 +130,7 @@ defmodule Affable.Sites do
     site =
       from(s in Site, where: s.id == ^id)
       |> Repo.one()
+      |> preload_latest_publication()
 
     if site.made_available_at do
       {:ok, site}
@@ -139,6 +150,7 @@ defmodule Affable.Sites do
       ],
       attrs
     )
+    |> Repo.preload(items: [image: [], attributes: :definition])
   end
 
   defp items_query do
@@ -146,7 +158,7 @@ defmodule Affable.Sites do
 
     from(i in Item,
       order_by: i.position,
-      preload: ^[image: [], attributes: {attributes_q, [:definition]}]
+      preload: ^[image: [], attributes: attributes_q]
     )
   end
 
@@ -198,7 +210,8 @@ defmodule Affable.Sites do
         {
           :ok,
           multis[site_multi_key]
-          |> Repo.preload([:domains, [items: :attributes]])
+          |> with_items()
+          |> Repo.preload(:domains)
           |> preload_latest_publication()
         }
 
@@ -229,7 +242,8 @@ defmodule Affable.Sites do
       data:
         raw(
           site
-          |> Repo.preload(site_logo: [], header_image: [], items: [attributes: :definition])
+          |> with_items()
+          |> Repo.preload(site_logo: [], header_image: [])
         )
     })
   end
@@ -618,7 +632,7 @@ defmodule Affable.Sites do
       {
         :ok,
         %{site | items: site.items ++ [item]}
-        |> Repo.preload(items: [image: [], attributes: :definition])
+        |> with_items()
         |> broadcast()
       }
     else
@@ -713,7 +727,7 @@ defmodule Affable.Sites do
   end
 
   def broadcast(%Site{} = site) do
-    site = site |> preload_latest_publication()
+    site = site |> with_items() |> preload_latest_publication()
     :ok = site |> (&broadcaster().broadcast(&1)).()
 
     site

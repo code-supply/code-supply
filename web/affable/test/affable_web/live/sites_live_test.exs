@@ -3,8 +3,6 @@ defmodule AffableWeb.SitesLiveTest do
   import Phoenix.LiveViewTest
 
   alias Affable.Accounts.User
-  alias Affable.Messages.WholeSite
-  alias Affable.Sites.Raw
 
   setup context do
     {:ok, register_and_log_in_user(context)}
@@ -15,17 +13,12 @@ defmodule AffableWeb.SitesLiveTest do
 
     assert view |> has_element?(".pending")
 
-    raw_site =
+    made_available_at = DateTime.utc_now()
+
+    Phoenix.PubSub.broadcast(:affable, site.internal_name, %{
       site
-      |> Affable.Repo.preload(header_image: [], site_logo: [], items: [attributes: :definition])
-      |> Raw.raw()
-      |> Map.put("made_available_at", DateTime.utc_now())
-
-    message =
-      %WholeSite{preview: raw_site, published: raw_site}
-      |> Map.from_struct()
-
-    Phoenix.PubSub.broadcast(:affable, site.internal_name, message)
+      | made_available_at: made_available_at
+    })
 
     refute view |> has_element?(".pending")
     assert view |> has_element?(".available")

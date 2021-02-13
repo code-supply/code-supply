@@ -2,7 +2,7 @@ defmodule AffableWeb.SitesLive do
   use AffableWeb, :live_view
 
   alias Affable.Accounts
-
+  alias Affable.Sites.Site
   import Affable.Sites, only: [canonical_url: 1, status: 1]
 
   @impl true
@@ -21,12 +21,15 @@ defmodule AffableWeb.SitesLive do
   end
 
   @impl true
-  def handle_info(%{preview: preview}, %{assigns: %{sites: sites}} = socket) do
+  def handle_info(
+        %Site{} = received_site,
+        %{assigns: %{sites: sites}} = socket
+      ) do
     updated_sites =
       sites
       |> Enum.map(fn site ->
-        if site.id == preview["id"] do
-          %{site | made_available_at: preview["made_available_at"]}
+        if site.id == received_site.id do
+          received_site
         else
           site
         end

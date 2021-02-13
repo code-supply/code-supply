@@ -85,12 +85,9 @@ defmodule Affable.SitesTest do
     test "site is published when latest publication is same as current raw representation", %{
       set_available_2: set_available
     } do
-      user = user_fixture()
-      site = site_fixture(user)
+      %User{sites: [site]} = user_fixture()
 
       {:ok, site} = set_available.(site.id, DateTime.from_unix!(0))
-
-      site = site |> Repo.preload(items: [attributes: :definition])
 
       refute Sites.is_published?(site)
 

@@ -23,8 +23,8 @@ defmodule Affable.FakeK8s do
 
       PubSub.broadcast(
         :affable,
-        Application.get_env(:affable, :pubsub_topic_requests),
-        site.internal_name
+        site.internal_name,
+        :site_ready
       )
     end
   end
