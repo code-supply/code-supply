@@ -1,6 +1,8 @@
 defmodule AffableWeb.SitesLive do
   use AffableWeb, :live_view
 
+  require Logger
+
   alias Affable.Accounts
   alias Affable.Sites.Site
   import Affable.Sites, only: [canonical_url: 1, status: 1]
@@ -25,6 +27,12 @@ defmodule AffableWeb.SitesLive do
         %Site{} = received_site,
         %{assigns: %{sites: sites}} = socket
       ) do
+    Logger.info(
+      "Received site #{received_site.internal_name} made available at #{
+        received_site.made_available_at
+      }"
+    )
+
     updated_sites =
       sites
       |> Enum.map(fn site ->
