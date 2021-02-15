@@ -22,17 +22,17 @@ defmodule Affable.Assets do
     end
   end
 
-  def to_imgproxy_url(nil) do
+  def to_imgproxy_url(resource, attrs \\ [width: 300, height: 300])
+
+  def to_imgproxy_url(nil, _attrs) do
     nil
   end
 
-  def to_imgproxy_url(%Asset{url: url}) do
-    to_imgproxy_url(url)
+  def to_imgproxy_url(%Asset{url: url}, attrs) do
+    to_imgproxy_url(url, attrs)
   end
 
-  def to_imgproxy_url(source_url) do
-    width = 300
-    height = 300
+  def to_imgproxy_url(source_url, width: width, height: height) do
     gravity = "sm"
     enlarge = 0
 

@@ -6,9 +6,9 @@ defmodule Affable.Sites.Raw do
     %{
       "id" => site.id,
       "name" => site.name,
-      "site_logo_url" => site_logo |> Assets.to_imgproxy_url(),
+      "site_logo_url" => site_logo |> Assets.to_imgproxy_url(width: 530, height: 80),
       "page_subtitle" => site.page_subtitle,
-      "header_image_url" => header_image |> Assets.to_imgproxy_url(),
+      "header_image_url" => header_image |> Assets.to_imgproxy_url(width: 567, height: 341),
       "text" => site.text,
       "made_available_at" => format_datetime(site.made_available_at),
       "items" => site.items |> Enum.map(&raw/1)

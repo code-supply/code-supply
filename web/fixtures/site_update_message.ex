@@ -1,6 +1,6 @@
 %{
   "preview" => %{
-    "header_image_url" => "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/gs://affable-uploads/default-header.png",
+    "header_image_url" => "https://images.affable.app/nosignature/fill/567/341/sm/0/plain/gs://affable-uploads/default-header.png",
     "id" => 1,
     "items" => [
       %{
@@ -87,11 +87,11 @@
     "made_available_at" => nil,
     "name" => "Top 10 Apples",
     "page_subtitle" => "Initial subtitle",
-    "site_logo_url" => "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/gs://affable-uploads/default-logo.png",
+    "site_logo_url" => "https://images.affable.app/nosignature/fill/530/80/sm/0/plain/gs://affable-uploads/default-logo.png",
     "text" => nil
   },
   "published" => %{
-    "header_image_url" => "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/gs://affable-uploads/default-header.png",
+    "header_image_url" => "https://images.affable.app/nosignature/fill/567/341/sm/0/plain/gs://affable-uploads/default-header.png",
     "id" => 1,
     "items" => [
       %{
@@ -178,7 +178,7 @@
     "made_available_at" => nil,
     "name" => "Top 10 Apples",
     "page_subtitle" => "Initial subtitle",
-    "site_logo_url" => "https://images.affable.app/nosignature/fill/300/300/sm/0/plain/gs://affable-uploads/default-logo.png",
+    "site_logo_url" => "https://images.affable.app/nosignature/fill/530/80/sm/0/plain/gs://affable-uploads/default-logo.png",
     "text" => nil
   }
 }
