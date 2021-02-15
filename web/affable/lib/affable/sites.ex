@@ -131,6 +131,7 @@ defmodule Affable.Sites do
       from(s in Site, where: s.id == ^id)
       |> Repo.one()
       |> preload_latest_publication()
+      |> Repo.preload(:domains)
 
     if site.made_available_at do
       {:ok, site}

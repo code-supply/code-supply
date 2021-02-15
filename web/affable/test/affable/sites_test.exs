@@ -75,6 +75,18 @@ defmodule Affable.SitesTest do
       assert site.made_available_at == first_made_available_at
     end
 
+    test "setting as available preloads domains, so the live sites view can render them", %{
+      set_available_2: set_available
+    } do
+      site = site_fixture()
+
+      first_made_available_at = DateTime.from_unix!(0)
+
+      {:ok, site} = set_available.(site.id, first_made_available_at)
+
+      assert site.domains |> length == 1
+    end
+
     test "sites start with a publication" do
       %{sites: [%Site{header_image: %Asset{url: header_image_url}, publications: [publication]}]} =
         user_fixture() |> Repo.preload(sites: [:header_image, :publications])
