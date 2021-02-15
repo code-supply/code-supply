@@ -29263,7 +29263,7 @@ spec:
         sidecar.istio.io/proxyCPULimit: 500m
       labels:
         app: affable
-        version: 4ce8049
+        version: e297e7a
     spec:
       containers:
       - env:
@@ -29280,7 +29280,7 @@ spec:
         envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:4ce8049
+        image: eu.gcr.io/code-supply/affable:e297e7a
         name: affable
         ports:
         - containerPort: 4000

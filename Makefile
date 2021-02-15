@@ -77,7 +77,7 @@ k8s/affable/version.yaml: web/affable/VERSION_PUSHED
 		kustomize edit set image affable=eu.gcr.io/code-supply/affable:$$(cat ../../$<)
 	> $@
 	echo "apiVersion: apps/v1" >> $@
-	echo "kind: StatefulSet" >> $@
+	echo "kind: Deployment" >> $@
 	echo "metadata:" >> $@
 	echo "  name: affable" >> $@
 	echo "spec:" >> $@
