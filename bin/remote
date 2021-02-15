@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-kubectl exec -it -n affable affable-0 -c affable -- bin/affable remote
+kubectl exec -it -n affable deploy/affable -c affable -- bin/affable remote
