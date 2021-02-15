@@ -10,7 +10,7 @@ defmodule AffableWeb.Api.SitesController do
     site_id = ID.id_from_site_name(site_name)
     {:ok, site} = Sites.set_available(site_id, DateTime.utc_now())
 
-    Phoenix.PubSub.broadcast(:affable, site.internal_name, site)
+    Phoenix.PubSub.broadcast!(:affable, site.internal_name, site)
 
     json(conn, site.latest_publication.data)
   end
