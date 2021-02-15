@@ -2,4 +2,4 @@
 
 cmd="${1:-"bin/affable remote"}"
 
-kubectl exec -it -n affable deploy/affable -c affable -- "$cmd"
+kubectl exec -it -n affable deploy/affable -c affable -- $cmd
