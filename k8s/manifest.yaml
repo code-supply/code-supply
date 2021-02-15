@@ -29248,6 +29248,91 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    app: affable
+  name: affable
+  namespace: affable
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: affable
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/proxyCPU: 5m
+        sidecar.istio.io/proxyCPULimit: 500m
+      labels:
+        app: affable
+        version: 4ce8049
+    spec:
+      containers:
+      - env:
+        - name: ELIXIR_ERL_OPTIONS
+          value: -kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: RELEASE_NODE
+          value: affable@$(POD_IP)
+        - name: RELEASE_DISTRIBUTION
+          value: name
+        envFrom:
+        - secretRef:
+            name: affable
+        image: eu.gcr.io/code-supply/affable:4ce8049
+        name: affable
+        ports:
+        - containerPort: 4000
+          name: http
+        - containerPort: 5555
+          name: tcp-erlang
+        - containerPort: 4369
+          name: tcp-epmd
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 20
+        resources:
+          limits:
+            cpu: 200m
+            memory: 250Mi
+          requests:
+            cpu: 2m
+            memory: 55Mi
+      - command:
+        - /cloud_sql_proxy
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /secrets/cloudsql/key.json
+        - name: INSTANCES
+          value: code-supply:europe-west1:shared-belgium=tcp:5432
+        image: eu.gcr.io/cloudsql-docker/gce-proxy:1.19.1
+        name: cloudsql-proxy
+        resources:
+          limits:
+            cpu: 20m
+            memory: 48Mi
+          requests:
+            cpu: 1m
+            memory: 8Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - mountPath: /secrets/cloudsql
+          name: google-credentials
+          readOnly: true
+      serviceAccountName: affable
+      volumes:
+      - name: google-credentials
+        secret:
+          secretName: google-credentials
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
     app: imgproxy
   name: imgproxy
   namespace: affable
@@ -29548,92 +29633,6 @@ spec:
         runAsNonRoot: true
         runAsUser: 65534
       serviceAccountName: prometheus-operator
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  labels:
-    app: affable
-  name: affable
-  namespace: affable
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: affable
-  serviceName: affable
-  template:
-    metadata:
-      annotations:
-        sidecar.istio.io/proxyCPU: 5m
-        sidecar.istio.io/proxyCPULimit: 500m
-      labels:
-        app: affable
-        version: 4ce8049
-    spec:
-      containers:
-      - env:
-        - name: ELIXIR_ERL_OPTIONS
-          value: -kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        - name: RELEASE_NODE
-          value: affable@$(POD_IP)
-        - name: RELEASE_DISTRIBUTION
-          value: name
-        envFrom:
-        - secretRef:
-            name: affable
-        image: eu.gcr.io/code-supply/affable:4ce8049
-        name: affable
-        ports:
-        - containerPort: 4000
-          name: http
-        - containerPort: 5555
-          name: tcp-erlang
-        - containerPort: 4369
-          name: tcp-epmd
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
-          initialDelaySeconds: 20
-        resources:
-          limits:
-            cpu: 200m
-            memory: 250Mi
-          requests:
-            cpu: 2m
-            memory: 55Mi
-      - command:
-        - /cloud_sql_proxy
-        env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /secrets/cloudsql/key.json
-        - name: INSTANCES
-          value: code-supply:europe-west1:shared-belgium=tcp:5432
-        image: eu.gcr.io/cloudsql-docker/gce-proxy:1.19.1
-        name: cloudsql-proxy
-        resources:
-          limits:
-            cpu: 20m
-            memory: 48Mi
-          requests:
-            cpu: 1m
-            memory: 8Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-        volumeMounts:
-        - mountPath: /secrets/cloudsql
-          name: google-credentials
-          readOnly: true
-      serviceAccountName: affable
-      volumes:
-      - name: google-credentials
-        secret:
-          secretName: google-credentials
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate

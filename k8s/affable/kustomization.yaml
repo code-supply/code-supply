@@ -5,7 +5,7 @@ resources:
 - namespace.yaml
 - service-account.yaml
 - service.yaml
-- stateful-set.yaml
+- deployment.yaml
 - gateway.yaml
 - virtual-service.yaml
 - cloud-sql-egress.yaml
