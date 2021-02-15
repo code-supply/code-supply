@@ -29177,6 +29177,26 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
+    app: affable
+  name: affable-headless
+  namespace: affable
+spec:
+  clusterIP: None
+  ports:
+  - name: tcp-erlang
+    port: 5555
+    targetPort: tcp-erlang
+  - name: tcp-epmd
+    port: 4369
+    targetPort: tcp-epmd
+  selector:
+    app: affable
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
     app: imgproxy
   name: imgproxy
   namespace: affable
