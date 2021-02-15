@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-kubectl exec -it -n affable deploy/affable -c affable -- bin/affable remote
+cmd="${1:-"bin/affable remote"}"
+
+kubectl exec -it -n affable deploy/affable -c affable -- "$cmd"
