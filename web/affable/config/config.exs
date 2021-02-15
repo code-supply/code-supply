@@ -26,6 +26,8 @@ config :affable, AffableWeb.Endpoint,
   pubsub_server: :affable,
   live_view: [signing_salt: "SOJjYeds"]
 
+config :libcluster, topologies: []
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

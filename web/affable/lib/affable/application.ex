@@ -15,7 +15,12 @@ defmodule Affable.Application do
         # Start the PubSub system
         {Phoenix.PubSub, name: :affable},
         # Start the Endpoint (http/https)
-        AffableWeb.Endpoint
+        AffableWeb.Endpoint,
+        {Cluster.Supervisor,
+         [
+           Application.fetch_env!(:libcluster, :topologies),
+           [name: Affiliate.ClusterSupervisor]
+         ]}
         # Start a worker by calling: Affable.Worker.start_link(arg)
         # {Affable.Worker, arg}
       ] ++ Application.get_env(:affable, :children)

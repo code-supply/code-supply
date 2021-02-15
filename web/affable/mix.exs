@@ -57,7 +57,8 @@ defmodule Affable.MixProject do
       {:bamboo, "~> 1.6"},
       {:hashids, "~> 2.0"},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:libcluster, "~> 3.2"}
     ]
   end
 
