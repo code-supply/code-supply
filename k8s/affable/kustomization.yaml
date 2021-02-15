@@ -6,6 +6,7 @@ resources:
 - service-account.yaml
 - service.yaml
 - deployment.yaml
+- headless-service.yaml
 - gateway.yaml
 - virtual-service.yaml
 - cloud-sql-egress.yaml
