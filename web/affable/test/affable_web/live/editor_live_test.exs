@@ -167,20 +167,23 @@ defmodule AffableWeb.EditorLiveTest do
 
       assert html =~ first_item.description
 
+      copied_asset_id = site.header_image_id
+
       expect_broadcast(fn %Site{
                             items: [
                               %Item{
                                 description: "My new description!",
-                                image: %Asset{url: ^first_image_url}
+                                image: %Asset{id: received_asset_id}
                               }
                               | _
                             ]
                           } ->
-        nil
+        assert received_asset_id == copied_asset_id
       end)
 
       assert render_first_item_change(view, site.items, %{
-               "description" => "My new description!"
+               "description" => "My new description!",
+               "image_id" => "#{copied_asset_id}"
              }) =~ "My new description!"
     end
 

@@ -413,21 +413,18 @@ defmodule Affable.SitesTest do
 
     @valid_attrs %{
       description: "some description",
-      image_url: "some image_url",
       name: "some name",
       position: 42,
       url: "some url"
     }
     @update_attrs %{
       description: "some updated description",
-      image_url: "some updated image_url",
       name: "some updated name",
       position: 43,
       url: "some updated url"
     }
     @invalid_attrs %{
       description: nil,
-      image_url: nil,
       name: nil,
       position: nil,
       price: nil,
@@ -457,8 +454,8 @@ defmodule Affable.SitesTest do
 
     test "create_item/2 with valid data creates a item" do
       assert {:ok, %Item{} = item} = Sites.create_item(site_fixture(), @valid_attrs)
+
       assert item.description == "some description"
-      assert item.image_url == "some image_url"
       assert item.name == "some name"
       assert item.position == 42
       assert item.url == "some url"
@@ -492,7 +489,6 @@ defmodule Affable.SitesTest do
       item = item_fixture()
       assert {:ok, %Item{} = item} = Sites.update_item(item, @update_attrs)
       assert item.description == "some updated description"
-      assert item.image_url == "some updated image_url"
       assert item.name == "some updated name"
       assert item.position == 43
       assert item.url == "some updated url"

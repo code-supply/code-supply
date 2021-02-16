@@ -7,7 +7,6 @@ defmodule Affable.Sites.Item do
 
   schema "items" do
     field :description, :string
-    field :image_url, :string
     field :name, :string
     field :position, :integer
     field :url, :string
@@ -21,7 +20,7 @@ defmodule Affable.Sites.Item do
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:name, :description, :url, :image_url, :position])
+    |> cast(attrs, [:name, :description, :url, :image_id, :position])
     |> cast_assoc(:attributes, with: &Attribute.changeset/2)
     |> validate_required([:name, :position])
   end

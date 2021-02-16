@@ -92,7 +92,7 @@ defmodule AffableWeb.EditorLive do
     assign(socket,
       user: user,
       site_id: id,
-      assets: site.assets,
+      asset_pairs: Enum.map(site.assets, &{&1.name, &1.id}),
       changeset: Site.changeset(site, %{}),
       published: Sites.is_published?(site),
       preview_url: "#{Sites.canonical_url(site)}preview"
