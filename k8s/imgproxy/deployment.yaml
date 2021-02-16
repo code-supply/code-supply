@@ -17,9 +17,13 @@ spec:
         env:
         - name: IMGPROXY_USE_GCS
           value: "true"
+        - name: IMGPROXY_PROMETHEUS_BIND
+          value: "0.0.0.0:9000"
         ports:
         - name: http
           containerPort: 8080
+        - name: http-prometheus
+          containerPort: 9000
 
         resources:
           requests:

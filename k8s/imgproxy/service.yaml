@@ -8,3 +8,5 @@ spec:
   - port: 80
     name: http
     targetPort: http
+  - port: 9000
+    name: http-prometheus

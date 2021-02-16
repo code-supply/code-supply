@@ -29205,6 +29205,8 @@ spec:
   - name: http
     port: 80
     targetPort: http
+  - name: http-prometheus
+    port: 9000
   selector:
     app: imgproxy
   type: ClusterIP
@@ -29379,11 +29381,15 @@ spec:
       - env:
         - name: IMGPROXY_USE_GCS
           value: "true"
+        - name: IMGPROXY_PROMETHEUS_BIND
+          value: 0.0.0.0:9000
         image: darthsim/imgproxy:latest@sha256:5c844ddaf98ca33bf70072a0b66f94cf14bb2c68787adbfa73e076d69d9d1a89
         name: imgproxy
         ports:
         - containerPort: 8080
           name: http
+        - containerPort: 9000
+          name: http-prometheus
         resources:
           limits:
             cpu: 1
