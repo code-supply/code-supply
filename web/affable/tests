@@ -1,6 +1,17 @@
-MIX_TEST_PARTITION=1 mix test --partitions 5 &
-MIX_TEST_PARTITION=2 mix test --partitions 5 &
-MIX_TEST_PARTITION=3 mix test --partitions 5 &
-MIX_TEST_PARTITION=4 mix test --partitions 5 &
-MIX_TEST_PARTITION=5 mix test --partitions 5
-wait
+#!/usr/bin/env bash
+
+pids=""
+for n in {1..5}
+do
+    MIX_TEST_PARTITION=$n mix test --partitions 5 &
+    pids+=" $!"
+done
+
+for p in $pids
+do
+    if ! wait $p
+    then
+        echo "Some tests failed"
+        exit 1
+    fi
+done
