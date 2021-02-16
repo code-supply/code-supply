@@ -35,6 +35,8 @@ spec:
     route:
     - destination:
         host: imgproxy
+        port:
+          number: 80
       headers:
         request:
           set:

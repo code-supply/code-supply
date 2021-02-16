@@ -29365,7 +29365,7 @@ metadata:
   name: imgproxy
   namespace: affable
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: imgproxy
@@ -30104,6 +30104,8 @@ spec:
     route:
     - destination:
         host: imgproxy
+        port:
+          number: 80
       headers:
         request:
           set:

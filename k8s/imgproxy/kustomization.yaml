@@ -9,5 +9,5 @@ resources:
 commonLabels:
   app: imgproxy
 replicas:
-- count: 1
+- count: 2
   name: imgproxy
