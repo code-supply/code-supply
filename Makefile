@@ -64,7 +64,7 @@ web/affable/VERSION:
 
 web/affable/VERSION_BUILT: web/affable/VERSION
 	cd web/affable; mix dialyzer
-	cd web/affable; mix test
+	cd web/affable; ./tests
 	docker build -t eu.gcr.io/code-supply/affable:$$(cat $<) web/affable
 	cat $< > $@
 
