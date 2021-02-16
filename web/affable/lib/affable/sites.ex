@@ -117,12 +117,14 @@ defmodule Affable.Sites do
     )
   end
 
+  defp preload_base_assets(site, opts \\ []) do
+    Repo.preload(site, [:header_image, :site_logo], opts)
+  end
+
   defp preload_latest_publication(site) do
-    Repo.preload(site,
-      header_image: [],
-      site_logo: [],
-      latest_publication: from(p in Publication, order_by: [desc: p.id])
-    )
+    site
+    |> preload_base_assets
+    |> Repo.preload(latest_publication: from(p in Publication, order_by: [desc: p.id]))
   end
 
   @impl true
@@ -416,6 +418,7 @@ defmodule Affable.Sites do
         {
           :ok,
           site
+          |> preload_base_assets(force: true)
           |> with_items(force: true)
           |> broadcast()
         }

@@ -366,14 +366,26 @@ defmodule Affable.SitesTest do
     end
 
     test "update_site/2 with valid data updates the site" do
-      {_, site} = user_and_site_with_items()
+      {user, site} = user_and_site_with_items()
+      site = site |> Repo.preload(:header_image)
+
+      expected_asset_url = site.header_image.url
+
+      expect_broadcast(fn %Site{
+                            name: "some updated name",
+                            site_logo: %Asset{url: broadcast_asset_url}
+                          } ->
+        assert broadcast_asset_url == expected_asset_url
+      end)
+
       [definition] = site.attribute_definitions
 
-      expect_broadcast(fn %Site{name: "some updated name"} -> nil end)
+      site_as_live_view = Sites.get_site!(user, site.id)
 
-      assert {:ok, %Site{} = site} =
-               Sites.update_site(site, %{
+      assert {:ok, %Site{} = updated_site} =
+               Sites.update_site(site_as_live_view, %{
                  name: "some updated name",
+                 site_logo_id: site.header_image_id,
                  attribute_definitions: %{
                    "0" => %{
                      "id" => "#{definition.id}",
@@ -382,12 +394,12 @@ defmodule Affable.SitesTest do
                  }
                })
 
-      assert site.name == "some updated name"
+      assert updated_site.name == "some updated name"
 
-      [definition] = site.attribute_definitions
+      [definition] = updated_site.attribute_definitions
       assert definition.name == "some updated attribute name"
 
-      [item | _] = site.items
+      [item | _] = updated_site.items
       [attribute | _] = item.attributes
       assert attribute.definition.name == "some updated attribute name"
     end
