@@ -12,7 +12,7 @@ resource "google_compute_firewall" "permit_istio_master" {
 
   allow {
     protocol = "tcp"
-    ports    = ["15017"]
+    ports    = ["8080", "15000", "15017"]
   }
 
   source_ranges = [var.cluster_cidr_block]
