@@ -29376,6 +29376,7 @@ spec:
         sidecar.istio.io/proxyCPULimit: 500m
       labels:
         app: imgproxy
+        version: 5c844dd
     spec:
       containers:
       - env:

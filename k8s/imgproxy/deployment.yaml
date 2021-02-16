@@ -8,6 +8,8 @@ spec:
       annotations:
         sidecar.istio.io/proxyCPU: 5m
         sidecar.istio.io/proxyCPULimit: 500m
+      labels:
+        version: 5c844dd
     spec:
       serviceAccountName: imgproxy
 
