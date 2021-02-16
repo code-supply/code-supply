@@ -11,7 +11,7 @@ spec:
     accessible_namespaces: ['**']
     ingress_enabled: false
   kubernetes_config:
-    cache_enabled: false
+    cache_enabled: true
   istio_component_namespaces:
     prometheus: prometheus
   external_services:

@@ -29775,7 +29775,7 @@ spec:
   istio_component_namespaces:
     prometheus: prometheus
   kubernetes_config:
-    cache_enabled: false
+    cache_enabled: true
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
