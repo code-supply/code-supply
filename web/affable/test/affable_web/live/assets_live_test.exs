@@ -77,7 +77,7 @@ defmodule AffableWeb.AssetsLiveTest do
 
     assert site1_resources
            |> render() =~
-             ~r(src="https://images.affable.app/nosignature/fill/[0-9]+/[0-9]+/sm/0/plain/gs://#{
+             ~r(src="https://images.affable.app/nosignature/auto/[0-9]+/[0-9]+/sm/0/plain/gs://#{
                bucket
              }/.+")
 

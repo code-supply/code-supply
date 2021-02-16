@@ -36,7 +36,7 @@ defmodule Affable.Assets do
     gravity = "sm"
     enlarge = 0
 
-    "https://images.affable.app/nosignature/fill/#{width}/#{height}/#{gravity}/#{enlarge}/plain/#{
+    "https://images.affable.app/nosignature/auto/#{width}/#{height}/#{gravity}/#{enlarge}/plain/#{
       source_url
     }"
   end
