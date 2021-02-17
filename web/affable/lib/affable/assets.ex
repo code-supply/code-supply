@@ -1,9 +1,14 @@
 defmodule Affable.Assets do
   import Ecto.Query, warn: false
+  import Affable.Sites, only: [member_of_site?: 2]
 
   alias Affable.Repo
+  alias Affable.Accounts.User
   alias Affable.Assets.Asset
-  alias Affable.Sites.SiteMember
+
+  def default_query() do
+    from(a in Asset, order_by: [desc: a.updated_at])
+  end
 
   def create_uploaded(
         user: user,
@@ -11,7 +16,7 @@ defmodule Affable.Assets do
         key: key,
         params: %{"site_id" => site_id} = params
       ) do
-    if member_of_site?(user, site_id) do
+    if user |> member_of_site?(site_id) do
       Asset.changeset(
         %Asset{url: "gs://#{bucket_name}/#{key}"},
         params
@@ -41,7 +46,13 @@ defmodule Affable.Assets do
     }"
   end
 
-  defp member_of_site?(user, site_id) do
-    Repo.exists?(from(SiteMember, where: [user_id: ^user.id, site_id: ^site_id]))
+  def delete(%User{} = user, asset_id) do
+    asset = Repo.get!(Asset, asset_id)
+
+    if user |> member_of_site?(asset.site_id) do
+      Repo.delete(asset)
+    else
+      {:error, "Not a member of the site"}
+    end
   end
 end

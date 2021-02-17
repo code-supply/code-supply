@@ -6,6 +6,7 @@ defmodule Affable.Sites do
   alias Affable.Sites.Raw
   alias Affable.Repo
   alias Affable.Accounts.User
+  alias Affable.Assets
   alias Affable.Assets.Asset
 
   alias Affable.Sites.{
@@ -100,21 +101,25 @@ defmodule Affable.Sites do
   end
 
   defp site_query(id) do
-    base_site_query(id)
-    |> preload([], [:site_logo, :header_image, :assets, :domains, :members])
-  end
-
-  defp base_site_query(id) do
     items_q = items_query()
     definitions_q = definitions_query()
 
     from(s in Site,
       where: s.id == ^id,
       preload: [
+        assets: [],
+        domains: [],
+        header_image: [],
+        members: [],
+        site_logo: [],
         items: ^items_q,
         attribute_definitions: ^definitions_q
       ]
     )
+  end
+
+  def reload_assets(%Site{} = site) do
+    Repo.preload(site, [assets: Assets.default_query()], force: true)
   end
 
   defp preload_base_assets(site, opts \\ []) do
@@ -457,7 +462,7 @@ defmodule Affable.Sites do
   end
 
   def promote_item(user, site, item_id) do
-    if site |> has_user?(user) do
+    if user |> member_of_site?(site) do
       move_item(site, item_id, &(&1 - 1))
     else
       {:error, :unauthorized}
@@ -465,7 +470,7 @@ defmodule Affable.Sites do
   end
 
   def demote_item(user, site, item_id) do
-    if site |> has_user?(user) do
+    if user |> member_of_site?(site) do
       move_item(site, item_id, &(&1 + 1))
     else
       {:error, :unauthorized}
@@ -547,7 +552,7 @@ defmodule Affable.Sites do
   end
 
   def add_attribute_definition(%Site{} = site, %User{} = user) do
-    if site |> has_user?(user) do
+    if user |> member_of_site?(site) do
       {:ok, _} =
         add_attribute_definition_multi(site)
         |> Repo.transaction()
@@ -558,8 +563,12 @@ defmodule Affable.Sites do
     end
   end
 
-  defp has_user?(site, user) do
-    Repo.exists?(from(SiteMember, where: [user_id: ^user.id, site_id: ^site.id]))
+  def member_of_site?(user, %Site{id: site_id}) do
+    member_of_site?(user, site_id)
+  end
+
+  def member_of_site?(user, site_id) do
+    Repo.exists?(from(SiteMember, where: [user_id: ^user.id, site_id: ^site_id]))
   end
 
   def delete_attribute_definition(site_id, definition_id, %User{} = user) do
@@ -619,7 +628,7 @@ defmodule Affable.Sites do
   end
 
   def append_item(site, user) do
-    if site |> has_user?(user) do
+    if user |> member_of_site?(site) do
       {:ok, %Item{} = item} =
         create_item(site, %{
           name: "New item",

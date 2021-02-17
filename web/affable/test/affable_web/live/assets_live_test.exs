@@ -3,7 +3,9 @@ defmodule AffableWeb.AssetsLiveTest do
   import Phoenix.LiveViewTest
 
   alias Affable.Accounts.User
+  alias Affable.Assets.Asset
   alias Affable.Sites
+  alias Affable.Repo
 
   setup context do
     {:ok, register_and_log_in_user(context)}
@@ -36,16 +38,25 @@ defmodule AffableWeb.AssetsLiveTest do
     assert view |> has_element?(".invalid-feedback", "can't be blank")
   end
 
-  test "can upload an image for one of the user's sites", %{
+  defp assert_sites_selectable(view, sites) do
+    for site <- sites do
+      assert view |> has_element?("option", site.name)
+    end
+  end
+
+  test "can upload and delete an image for one of the user's sites", %{
     conn: conn,
     user: %User{sites: [site1 | _]} = user
   } do
     {:ok, site2} = Affable.Sites.create_bare_site(user, %{name: "site2"})
-
     {:ok, view, _html} = live(conn, path(conn))
 
-    assert view |> has_element?("option", site1.name)
-    assert view |> has_element?("option", site2.name)
+    site1_resources = view |> element("#resources-site#{site1.id}")
+    site2_resources = view |> element("#resources-site#{site2.id}")
+
+    refute site1_resources |> render() =~ dev_bucket_uploaded_pattern()
+
+    view |> assert_sites_selectable([site1, site2])
 
     content = File.read!("test/support/fixtures/tiny.png")
 
@@ -70,24 +81,33 @@ defmodule AffableWeb.AssetsLiveTest do
       }
     })
 
-    bucket = Application.fetch_env!(:affable, :bucket_name)
+    assert site1_resources |> render() =~ dev_bucket_uploaded_pattern()
+    refute site1_resources |> render() =~ no_images_uploaded_pattern()
+    assert site2_resources |> render() =~ no_images_uploaded_pattern()
 
-    site1_resources = view |> element("#resources-site#{site1.id}")
-    site2_resources = view |> element("#resources-site#{site2.id}")
+    view |> assert_sites_selectable([site1, site2])
 
-    assert site1_resources
-           |> render() =~
-             ~r(src="https://images.affable.app/nosignature/auto/[0-9]+/[0-9]+/sm/0/plain/gs://#{
-               bucket
-             }/.+")
+    %Asset{} =
+      asset =
+      (site1 |> Repo.preload(:assets)).assets
+      |> Enum.find(fn a ->
+        a.name == "Cool image"
+      end)
 
-    refute site1_resources
-           |> render() =~ "No assets have been uploaded"
+    view
+    |> element("#delete-asset-#{asset.id}")
+    |> render_click()
 
-    assert site2_resources
-           |> render() =~ "No assets have been uploaded"
+    refute site1_resources |> render() =~ dev_bucket_uploaded_pattern()
+  end
 
-    assert view |> has_element?("option", site1.name)
-    assert view |> has_element?("option", site2.name)
+  defp dev_bucket_uploaded_pattern() do
+    ~r(src="https://images.affable.app/nosignature/auto/[0-9]+/[0-9]+/sm/0/plain/gs://#{
+      Application.fetch_env!(:affable, :bucket_name)
+    }/.+")
+  end
+
+  defp no_images_uploaded_pattern() do
+    "No assets have been uploaded"
   end
 end

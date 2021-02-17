@@ -6,6 +6,7 @@ defmodule Affable.AssetsTest do
   alias Affable.Assets
   alias Affable.Assets.Asset
   alias Affable.Accounts.User
+  alias Affable.Sites.Site
 
   describe "assets" do
     test "can get an imgproxy URL for an Asset" do
@@ -62,6 +63,47 @@ defmodule Affable.AssetsTest do
                    "name" => "My asset"
                  }
                )
+    end
+
+    test "can delete an asset" do
+      %User{sites: [%Site{} = site | _]} = user = user_fixture()
+
+      {:ok, asset} =
+        Assets.create_uploaded(
+          user: user,
+          bucket_name: "foo",
+          key: "bar",
+          params: %{"site_id" => site.id, "name" => "new asset"}
+        )
+
+      count_before_delete =
+        Repo.aggregate(from(a in Asset, where: [site_id: ^site.id]), :count, :id)
+
+      {:ok, _} = Assets.delete(user, "#{asset.id}")
+
+      assert Repo.aggregate(from(a in Asset, where: [site_id: ^site.id]), :count, :id) ==
+               count_before_delete - 1
+    end
+
+    test "cannot delete an asset when I'm not a team member" do
+      %User{sites: [%Site{} = site | _]} = user = user_fixture()
+      wrong_user = user_fixture()
+
+      {:ok, asset} =
+        Assets.create_uploaded(
+          user: user,
+          bucket_name: "foo",
+          key: "bar",
+          params: %{"site_id" => site.id, "name" => "new asset"}
+        )
+
+      count_before_delete =
+        Repo.aggregate(from(a in Asset, where: [site_id: ^site.id]), :count, :id)
+
+      {:error, _} = Assets.delete(wrong_user, "#{asset.id}")
+
+      assert Repo.aggregate(from(a in Asset, where: [site_id: ^site.id]), :count, :id) ==
+               count_before_delete
     end
   end
 end

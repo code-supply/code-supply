@@ -3,6 +3,7 @@ defmodule AffableWeb.AssetsLive do
 
   alias Affable.{Accounts, Assets}
   alias Affable.Assets.Asset
+  alias Affable.Sites
   alias Affable.Uploads
   alias Affable.Uploads.UploadRequest
   alias Phoenix.LiveView.UploadEntry
@@ -73,6 +74,20 @@ defmodule AffableWeb.AssetsLive do
       {:error, changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}
     end
+  end
+
+  @impl true
+  def handle_event("delete-asset", %{"id" => id}, %{assigns: %{user: user}} = socket) do
+    {:ok, _} = Assets.delete(user, id)
+
+    {:noreply,
+     update(
+       socket,
+       :sites,
+       &for site <- &1 do
+         Sites.reload_assets(site)
+       end
+     )}
   end
 
   @impl true
