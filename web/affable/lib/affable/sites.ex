@@ -31,7 +31,7 @@ defmodule Affable.Sites do
   end
 
   def publish(site) do
-    site = site |> Repo.preload([:header_image, :site_logo])
+    site = site |> preload_base_assets()
 
     site
     |> Ecto.build_assoc(:publications, %{data: raw(site)})
