@@ -17,14 +17,14 @@ defmodule Affable.Assets do
         key: key,
         params: %{"site_id" => site_id} = params
       ) do
+    changeset =
+      %Asset{}
+      |> Asset.changeset(params |> Map.put("url", "gs://#{bucket_name}/#{key}"))
+
     if user |> member_of_site?(site_id) do
-      Asset.changeset(
-        %Asset{url: "gs://#{bucket_name}/#{key}"},
-        params
-      )
-      |> Repo.insert()
+      Repo.insert(changeset)
     else
-      {:error, Asset.changeset(%Asset{}, params)}
+      {:error, changeset}
     end
   end
 

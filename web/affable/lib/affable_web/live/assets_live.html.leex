@@ -45,6 +45,7 @@
       </div>
 
       <%= if @uploads.asset.entries |> Enum.empty? do %>
+        <%= error_tag f, :url %>
         <p class="pt-2 text-gray-800">
           (or drag a file into this box)
         </p>

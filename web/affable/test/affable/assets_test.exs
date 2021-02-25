@@ -82,6 +82,18 @@ defmodule Affable.AssetsTest do
                )
     end
 
+    test "cannot create a Google Storage asset without a key" do
+      %User{sites: [site | _]} = user = user_fixture()
+
+      assert {:error, %Ecto.Changeset{}} =
+               Assets.create_uploaded(
+                 user: user,
+                 bucket_name: "some-bucket",
+                 key: "",
+                 params: %{"name" => "some name", "site_id" => site.id}
+               )
+    end
+
     test "can delete an asset" do
       %User{sites: [%Site{} = site | _]} = user = user_fixture()
 

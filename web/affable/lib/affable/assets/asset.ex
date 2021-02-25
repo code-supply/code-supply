@@ -17,5 +17,6 @@ defmodule Affable.Assets.Asset do
     asset
     |> cast(attrs, [:name, :site_id, :url])
     |> validate_required([:name])
+    |> validate_format(:url, ~r|gs://[a-z0-9-]+/.+|, message: "must choose a file")
   end
 end
