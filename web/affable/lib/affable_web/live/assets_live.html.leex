@@ -77,12 +77,16 @@
         <%= for asset <- site.assets do %>
           <li class="mb-8 mr-8">
             <%= asset.name %>
-            <a id="delete-asset-<%= asset.id %>"
-               href="#"
-               class="block float-right w-8 h-12 m-auto bg-center bg-no-repeat bg-contain trash"
-               phx-click="delete-asset"
-               phx-value-id="<%= asset.id %>"
-            ></a>
+            <%= if Assets.in_use?(asset, site) do %>
+              <span id="asset-in-use-<%= asset.id %>" class="float-right px-4 bg-gray-300">In use</span>
+            <% else %>
+              <a id="delete-asset-<%= asset.id %>"
+                 href="#"
+                 class="block float-right w-8 h-12 m-auto bg-center bg-no-repeat bg-contain trash"
+                 phx-click="delete-asset"
+                 phx-value-id="<%= asset.id %>"
+                 ></a>
+            <% end %>
             <img width="300" height="300" src="<%= asset.url |> to_imgproxy_url() %>" />
           </li>
         <% end %>

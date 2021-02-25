@@ -12,7 +12,7 @@ defmodule Affable.Accounts do
 
   def preload_for_assets(%User{} = user) do
     user
-    |> Affable.Repo.preload(sites: [assets: Assets.default_query()])
+    |> Affable.Repo.preload(sites: [items: [], assets: Assets.default_query()])
   end
 
   ## Database getters

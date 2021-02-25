@@ -5,14 +5,11 @@ defmodule AffableWeb.AssetsLiveTest do
   alias Affable.Accounts.User
   alias Affable.Assets.Asset
   alias Affable.Sites
+  alias Affable.Sites.Site
   alias Affable.Repo
 
   setup context do
     {:ok, register_and_log_in_user(context)}
-  end
-
-  defp path(conn) do
-    Routes.assets_path(conn, :index)
   end
 
   test "shows message when there are no assets for a site", %{
@@ -99,6 +96,22 @@ defmodule AffableWeb.AssetsLiveTest do
     |> render_click()
 
     refute site1_resources |> render() =~ dev_bucket_uploaded_pattern()
+  end
+
+  test "informs the user when an asset is in use", %{conn: conn, user: user} do
+    {:ok, view, _html} = live(conn, path(conn))
+
+    %User{sites: [%Site{header_image_id: asset_id}]} = user
+
+    refute view
+           |> has_element?("#delete-asset-#{asset_id}")
+
+    assert view
+           |> has_element?("#asset-in-use-#{asset_id}")
+  end
+
+  defp path(conn) do
+    Routes.assets_path(conn, :index)
   end
 
   defp dev_bucket_uploaded_pattern() do
