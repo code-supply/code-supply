@@ -6,7 +6,7 @@ defmodule Affable.Sites.Raw do
     %{
       "id" => site.id,
       "name" => site.name,
-      "site_logo_url" => site_logo |> Assets.to_imgproxy_url(width: 500, height: 256),
+      "site_logo_url" => site_logo |> Assets.to_imgproxy_url(width: 600, height: 176),
       "page_subtitle" => site.page_subtitle,
       "header_image_url" =>
         header_image |> Assets.to_imgproxy_url(width: 567, height: 341, resizing_type: "fill"),
