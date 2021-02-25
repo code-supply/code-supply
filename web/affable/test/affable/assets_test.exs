@@ -19,12 +19,21 @@ defmodule Affable.AssetsTest do
 
     test "can get an imgproxy URL for an Asset" do
       assert Assets.to_imgproxy_url(%Asset{url: "https://example.com/some-image.jpeg"}) ==
-               "https://images.affable.app/nosignature/auto/300/300/sm/0/plain/https://example.com/some-image.jpeg"
+               "https://images.affable.app/nosignature/fit/300/300/sm/0/plain/https://example.com/some-image.jpeg"
+    end
+
+    test "can specify resizing type" do
+      assert Assets.to_imgproxy_url(%Asset{url: "https://example.com/some-image.jpeg"},
+               width: 300,
+               height: 300,
+               resizing_type: "fit"
+             ) ==
+               "https://images.affable.app/nosignature/fit/300/300/sm/0/plain/https://example.com/some-image.jpeg"
     end
 
     test "can get an imgproxy URL for a URL" do
       assert Assets.to_imgproxy_url("https://example.com/some-image.jpeg", width: 400, height: 100) ==
-               "https://images.affable.app/nosignature/auto/400/100/sm/0/plain/https://example.com/some-image.jpeg"
+               "https://images.affable.app/nosignature/fit/400/100/sm/0/plain/https://example.com/some-image.jpeg"
     end
 
     test "creates uploaded asset with source URL when name and site are given" do

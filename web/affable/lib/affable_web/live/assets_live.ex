@@ -8,7 +8,7 @@ defmodule AffableWeb.AssetsLive do
   alias Affable.Uploads.UploadRequest
   alias Phoenix.LiveView.UploadEntry
 
-  import Affable.Assets, only: [to_imgproxy_url: 1]
+  import Affable.Assets, only: [to_imgproxy_url: 2]
 
   @impl true
   def mount(_params, %{"user_token" => token}, socket) do

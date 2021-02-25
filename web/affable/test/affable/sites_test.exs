@@ -92,7 +92,11 @@ defmodule Affable.SitesTest do
         user_fixture() |> Repo.preload(sites: [:header_image, :publications])
 
       assert publication.data["header_image_url"] ==
-               Assets.to_imgproxy_url(header_image_url, width: 567, height: 341)
+               Assets.to_imgproxy_url(header_image_url,
+                 width: 567,
+                 height: 341,
+                 resizing_type: "fill"
+               )
     end
 
     test "site is published when latest publication is same as current raw representation", %{
@@ -120,7 +124,9 @@ defmodule Affable.SitesTest do
 
     test "raw representation copes with one or other images being missing" do
       expected_logo_url = Assets.to_imgproxy_url("foo", width: 530, height: 80)
-      expected_header_image_url = Assets.to_imgproxy_url("foo", width: 567, height: 341)
+
+      expected_header_image_url =
+        Assets.to_imgproxy_url("foo", width: 567, height: 341, resizing_type: "fill")
 
       assert %{"header_image_url" => nil, "site_logo_url" => ^expected_logo_url} =
                raw(%Site{site_logo: %Asset{url: "foo"}, header_image: nil, items: []})

@@ -87,7 +87,7 @@
                  phx-value-id="<%= asset.id %>"
                  ></a>
             <% end %>
-            <img width="300" height="300" src="<%= asset.url |> to_imgproxy_url() %>" />
+            <img width="300" height="300" src="<%= asset |> to_imgproxy_url(width: 300, height: 300, resizing_type: "fill") %>" />
           </li>
         <% end %>
       </ul>

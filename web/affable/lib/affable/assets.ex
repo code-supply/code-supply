@@ -38,13 +38,24 @@ defmodule Affable.Assets do
     to_imgproxy_url(url, attrs)
   end
 
-  def to_imgproxy_url(source_url, width: width, height: height) do
+  def to_imgproxy_url(source_url,
+        width: width,
+        height: height
+      ) do
+    to_imgproxy_url(source_url, width: width, height: height, resizing_type: "fit")
+  end
+
+  def to_imgproxy_url(source_url,
+        width: width,
+        height: height,
+        resizing_type: resizing_type
+      ) do
     gravity = "sm"
     enlarge = 0
 
-    "https://images.affable.app/nosignature/auto/#{width}/#{height}/#{gravity}/#{enlarge}/plain/#{
-      source_url
-    }"
+    "https://images.affable.app/nosignature/#{resizing_type}/#{width}/#{height}/#{gravity}/#{
+      enlarge
+    }/plain/#{source_url}"
   end
 
   def delete(%User{} = user, asset_id) do
