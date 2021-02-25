@@ -9,7 +9,6 @@ defmodule Affable.Accounts do
   alias Affable.{Email, Mailer, Repo, Sites}
   alias Affable.Accounts.{User, UserToken, UserNotifier}
   alias Affable.Assets
-  alias Affable.Assets.Asset
 
   def preload_for_assets(%User{} = user) do
     user
