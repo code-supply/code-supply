@@ -13,15 +13,6 @@
 
   <div class="p-8 text-white bg-blue-300 border-8 border-blue-100 border-double rounded-xl">
 
-    <%= live_file_input @uploads.asset,
-        class: "shadow-md bg-blue-600 #{@uploads.asset.entries |> Enum.any? && "invisible absolute top-0"}" %>
-
-    <%= if @uploads.asset.entries |> Enum.empty? do %>
-      <p class="pt-4 text-xl font-bold">
-        or drag into this box!
-      </p>
-    <% end %>
-
     <div class="mt-4">
       <%= for entry <- @uploads.asset.entries do %>
         <ul class="px-6 py-2 text-black bg-white rounded-md">
@@ -48,6 +39,17 @@
     </div>
 
     <div class="px-6 py-2 mt-4 text-black bg-white rounded-md">
+      <div class="mt-6">
+        <%= live_file_input @uploads.asset,
+            class: "shadow-sm bg-blue-200 #{@uploads.asset.entries |> Enum.any? && "invisible absolute top-0"}" %>
+      </div>
+
+      <%= if @uploads.asset.entries |> Enum.empty? do %>
+        <p class="pt-2 text-gray-800">
+          (or drag a file into this box)
+        </p>
+      <% end %>
+
       <div class="field">
         <%= label f, :site_id %>
         <%= select f, :site_id, Enum.map(@sites, &{&1.name, &1.id}) %>
@@ -56,7 +58,7 @@
 
       <div class="field">
         <%= label f, :name, "Asset name" %>
-        <%= text_input f, :name %>
+        <%= text_input f, :name, placeholder: "ACME wonderduster" %>
         <%= error_tag f, :name %>
       </div>
 
