@@ -123,7 +123,7 @@ defmodule Affable.SitesTest do
     end
 
     test "raw representation copes with one or other images being missing" do
-      expected_logo_url = Assets.to_imgproxy_url("foo", width: 530, height: 80)
+      expected_logo_url = Assets.to_imgproxy_url("foo", width: 500, height: 256)
 
       expected_header_image_url =
         Assets.to_imgproxy_url("foo", width: 567, height: 341, resizing_type: "fill")

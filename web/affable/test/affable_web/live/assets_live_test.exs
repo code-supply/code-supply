@@ -115,7 +115,7 @@ defmodule AffableWeb.AssetsLiveTest do
   end
 
   defp dev_bucket_uploaded_pattern() do
-    ~r(src="https://images.affable.app/nosignature/fill/[0-9]+/[0-9]+/sm/0/plain/gs://#{
+    ~r(src="https://images.affable.app/nosignature/fill/[0-9]+/[0-9]+/ce/0/plain/gs://#{
       Application.fetch_env!(:affable, :bucket_name)
     }/.+")
   end

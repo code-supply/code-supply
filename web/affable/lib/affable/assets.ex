@@ -50,7 +50,7 @@ defmodule Affable.Assets do
         height: height,
         resizing_type: resizing_type
       ) do
-    gravity = "sm"
+    gravity = "ce"
     enlarge = 0
 
     "https://images.affable.app/nosignature/#{resizing_type}/#{width}/#{height}/#{gravity}/#{
