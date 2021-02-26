@@ -260,7 +260,8 @@ defmodule SiteOperator.K8s.Conversions do
       name: site.name,
       domains: site.domains,
       image: affiliate_site_image(),
-      secret_key_base: generate_secret_key()
+      secret_key_base: generate_secret_key(),
+      live_view_signing_salt: generate_secret_key()
     }
   end
 

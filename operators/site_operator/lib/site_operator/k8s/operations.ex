@@ -24,7 +24,8 @@ defmodule SiteOperator.K8s.Operations do
   def inner_ns_creations(
         %PhoenixSite{
           name: namespace,
-          secret_key_base: secret_key_base
+          secret_key_base: secret_key_base,
+          live_view_signing_salt: live_view_signing_salt
         } = phoenix_site
       ) do
     name = "app"
@@ -36,7 +37,8 @@ defmodule SiteOperator.K8s.Operations do
         name: name,
         namespace: namespace,
         data: %{
-          "SECRET_KEY_BASE" => secret_key_base
+          "SECRET_KEY_BASE" => secret_key_base,
+          "LIVE_VIEW_SIGNING_SALT" => live_view_signing_salt
         }
       },
       %AuthorizationPolicy{

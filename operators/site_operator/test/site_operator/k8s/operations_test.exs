@@ -10,7 +10,8 @@ defmodule SiteOperator.K8s.OperationsTest do
       name: "my-namespace",
       image: "my-image",
       domains: ["host1.affable.app"],
-      secret_key_base: "some-secret"
+      secret_key_base: "some-secret",
+      live_view_signing_salt: "live-view-salt"
     }
 
     %{
@@ -114,11 +115,13 @@ defmodule SiteOperator.K8s.OperationsTest do
         },
         "type" => "Opaque",
         "data" => %{
-          "SECRET_KEY_BASE" => secret_key_encoded
+          "SECRET_KEY_BASE" => secret_key_encoded,
+          "LIVE_VIEW_SIGNING_SALT" => live_view_signing_salt_encoded
         }
       } = creations |> find_kind("Secret")
 
       assert {:ok, "some-secret"} = Base.decode64(secret_key_encoded)
+      assert {:ok, "live-view-salt"} = Base.decode64(live_view_signing_salt_encoded)
     end
 
     test "sets the fetch URLs in the deployment", %{inner_creations: creations} do
