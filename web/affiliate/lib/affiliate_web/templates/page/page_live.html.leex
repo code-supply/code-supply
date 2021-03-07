@@ -17,31 +17,49 @@
         <img class="w-full col-span-2" src="<%= @header_image_url %>" />
       </header>
 
-      <section class="px-2 md:px-8">
-        <ol id="items">
-          <%= for item <- @items do %>
-            <li id="item<%= item["position"] %>" class="py-1 pl-2 pr-0 mt-6 border-2 border-gray-300 border-solid rounded-md md:pl-6 md:py-4">
-              <h1 class="mb-4">
-                <span class="font-bold"><%= item["position"] %></span>
-                <span class="ml-4 text-gray-800"><%= item["name"] %></span>
-              </h1>
-              <div class="font-black text-gray-800 grid grid-cols-8 divide-x divide-gray-300">
-                <div class="block h-16 mr-2">
-                  <img class="max-h-full" src="<%= item["image_url"] %>">
-                </div>
-                <p class="px-2 col-span-3 md:px-8">
-                <%= item["description"] %>
-                </p>
+      <section>
+        <table id="items" class="w-11/12 px-2 mx-auto mt-4 md:px-8">
+          <thead>
+            <tr class="h-10">
+              <th id="th-position"></th>
+              <th id="th-image"></th>
+              <th id="th-description"></th>
+              <%= for attribute <- (@items |> List.first())["attributes"] do %>
+                <th class="font-bold"><%= attribute["name"] %></th>
+              <% end %>
+              <th id="th-cta" class="w-32"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= for item <- @items do %>
+              <tr id="item<%= item["position"] %>"
+              class="border-t-2 border-gray-300">
+                <td class="px-4 pb-4 mb-4 text-xl font-bold text-gray-600 item-position">
+                  <span class="font-bold"><%= item["position"] %></span>
+                </td>
+                <td class="w-48 py-3 mb-4 ml-4 font-bold text-gray-800 align-top item-image">
+                  <img class="max-h-full px-6 pb-2 mx-auto" src="<%= item["image_url"] %>">
+                </td>
+                <td class="pt-2 align-top item-description">
+                  <p class="font-bold"><%= item["name"] %></p>
+                  <p class="pb-2">
+                  <%= item["description"] %>
+                  </p>
+                </td>
                 <%= for attribute <- item["attributes"] do %>
-                  <p class="px-2 text-xl font-extrabold text-center col-span-2 md:px-8 md:py-4"><%= attribute["value"] %></p>
+                  <td class="px-8 text-xl font-extrabold text-center">
+                    <%= attribute["value"] %>
+                  </td>
                 <% end %>
-                <p class="px-2 col-span-2 md:px-4">
-                <a class="block py-4 text-lg text-center text-white bg-green-600 rounded-full hover:bg-green-700" href="<%= item["url"] %>">Go</a>
-                </p>
-              </div>
-            </li>
-          <% end %>
-        </ol>
+                <td class="item-cta">
+                    <p class="p-2">
+                    <a class="block py-4 text-lg text-center text-white bg-green-600 rounded-full hover:bg-green-700" href="<%= item["url"] %>">Go</a>
+                    </p>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </section>
     </main>
   </div>
