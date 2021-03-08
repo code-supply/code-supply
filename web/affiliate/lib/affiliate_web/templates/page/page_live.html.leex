@@ -33,7 +33,7 @@
           <tbody>
             <%= for item <- @items do %>
               <tr id="item<%= item["position"] %>"
-              class="border-2 border-gray-300">
+              class="border-2 border-gray-300 h-52">
                 <td class="px-3 py-4 mb-4 text-2xl font-bold text-gray-400 align-top item-position">
                   <%= if item["position"] == 1 do %>
                     <span class="px-3 py-1 text-white bg-blue-500 rounded-full"><%= item["position"] %></span>
@@ -41,8 +41,8 @@
                     <span class="px-3 py-1"><%= item["position"] %></span>
                   <% end %>
                 </td>
-                <td class="w-48 py-3 mb-4 ml-4 font-bold text-gray-800 align-top item-image">
-                  <img class="max-h-full px-6 pb-2 mx-auto" src="<%= item["image_url"] %>">
+                <td class="px-4 py-3 mb-4 ml-4 font-bold text-gray-800 align-top item-image">
+                  <img class="mx-auto rounded" src="<%= item["image_url"] %>">
                 </td>
                 <td class="pt-2 align-top item-description">
                   <p class="font-bold"><%= item["name"] %></p>
