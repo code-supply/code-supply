@@ -42,16 +42,16 @@
                   <% end %>
                 </td>
                 <td class="w-32 px-4 py-3 mb-4 ml-4 font-bold text-gray-800 align-top lg:w-64 item-image">
-                  <img class="mx-auto rounded" src="<%= item["image_url"] %>">
+                  <img class="w-16 mx-auto rounded md:w-32 lg:w-auto max-w-none" src="<%= item["image_url"] %>">
                 </td>
                 <td class="pt-2 align-top item-description">
                   <p class="font-bold"><%= item["name"] %></p>
-                  <p class="pb-2">
+                  <p class="w-32 h-32 pb-2 overflow-auto lg:w-64 xl:w-auto">
                   <%= item["description"] %>
                   </p>
                 </td>
                 <%= for attribute <- item["attributes"] do %>
-                  <td class="px-8 text-xl font-extrabold text-center">
+                  <td class="px-2 font-extrabold text-center lg:px-8 md:px-4 lg:text-xl">
                     <%= attribute["value"] %>
                   </td>
                 <% end %>
