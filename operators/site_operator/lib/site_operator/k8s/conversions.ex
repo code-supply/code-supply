@@ -110,6 +110,11 @@ defmodule SiteOperator.K8s.Conversions do
                     "port" => "http"
                   }
                 },
+                "readinessProbe" => %{
+                  "tcpSocket" => %{
+                    "port" => "http"
+                  }
+                },
                 "resources" => %{
                   "limits" => %{
                     "cpu" => "250m",
