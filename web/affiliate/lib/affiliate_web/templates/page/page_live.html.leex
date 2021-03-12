@@ -9,7 +9,7 @@
         <div class="pr-4 col-span-3">
           <h1 class="text-3xl font-extrabold"><%= @subtitle %></h1>
 
-          <div class="max-w-3xl mt-4 text-lg">
+          <div class="max-w-3xl pr-4 mt-4 overflow-hidden text-lg">
             <%= text_to_html (@text || "") %>
           </div>
         </div>
@@ -25,7 +25,7 @@
               <th id="th-image"></th>
               <th id="th-description"></th>
               <%= for attribute <- (@items |> List.first())["attributes"] do %>
-                <th class="font-bold"><%= attribute["name"] %></th>
+                <th class="font-bold truncate lg:px-4 xl:px-8"><%= attribute["name"] %></th>
               <% end %>
               <th id="th-cta" class="w-32"></th>
             </tr>
@@ -34,15 +34,17 @@
             <%= for item <- @items do %>
               <tr id="item<%= item["position"] %>"
               class="border-2 border-gray-300 h-52">
-                <td class="px-3 py-4 mb-4 text-2xl font-bold text-gray-400 align-top item-position">
+                <td class="py-3 pl-2 mb-4 text-2xl font-bold text-gray-400 align-top item-position">
                   <%= if item["position"] == 1 do %>
                     <span class="px-3 py-1 text-white bg-blue-500 rounded-full"><%= item["position"] %></span>
                   <% else %>
                     <span class="px-3 py-1"><%= item["position"] %></span>
                   <% end %>
                 </td>
-                <td class="w-32 px-4 py-3 mb-4 ml-4 font-bold text-gray-800 align-top lg:w-64 item-image">
+                <td class="w-32 py-3 pr-4 mb-4 ml-4 font-bold text-gray-800 align-top lg:w-64 item-image">
+                  <%= if item["image_url"] do %>
                   <img class="w-16 mx-auto rounded md:w-32 lg:w-auto max-w-none" src="<%= item["image_url"] %>">
+                  <% end %>
                 </td>
                 <td class="pt-2 align-top item-description">
                   <p class="font-bold"><%= item["name"] %></p>
@@ -51,14 +53,14 @@
                   </p>
                 </td>
                 <%= for attribute <- item["attributes"] do %>
-                  <td class="px-2 font-extrabold text-center lg:px-8 md:px-4 lg:text-xl">
+                  <td class="px-2 font-extrabold text-center md:px-4 lg:text-xl">
                     <%= attribute["value"] %>
                   </td>
                 <% end %>
                 <td class="item-cta">
-                    <p class="p-2">
-                    <a class="block py-4 text-lg text-center text-white bg-green-600 rounded-full hover:bg-green-700" href="<%= item["url"] %>">Go</a>
-                    </p>
+                  <p class="p-2 pr-4">
+                    <a class="block p-4 text-lg text-center text-white bg-green-600 rounded-full hover:bg-green-700" href="<%= item["url"] %>">Go</a>
+                  </p>
                 </td>
               </tr>
             <% end %>
