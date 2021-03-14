@@ -5,16 +5,13 @@
     </header>
 
     <main role="main">
-      <header class="px-4 pt-4 pb-12 text-white bg-blue-600 grid grid-cols-5 md:p-8">
-        <div class="pr-4 col-span-3">
-          <h1 class="text-2xl font-extrabold"><%= @subtitle %></h1>
+      <header class="px-4 pt-4 pb-12 overflow-hidden text-white bg-blue-600 md:p-8">
+        <img class="float-right w-5/12 pb-8 pl-4 md:pl-8" src="<%= @header_image_url %>" />
 
-          <div class="max-w-3xl pr-4 mt-4 overflow-hidden">
-            <%= text_to_html (@text || "") %>
-          </div>
+        <div class="float-none">
+          <h1 class="pb-4 pr-8 text-2xl font-extrabold"><%= @subtitle %></h1>
+          <%= text_to_html (@text || "") %>
         </div>
-
-        <img class="w-full col-span-2" src="<%= @header_image_url %>" />
       </header>
 
       <section class="px-1 lg:px-4">
