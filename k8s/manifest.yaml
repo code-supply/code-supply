@@ -29151,10 +29151,10 @@ subjects:
 ---
 apiVersion: v1
 data:
-  AFFILIATE_SITE_IMAGE: eu.gcr.io/code-supply/affiliate@sha256:757f1491d89d705cafda86c53922e39ce008dc8cfe4451596895383b06129b24
+  AFFILIATE_SITE_IMAGE: eu.gcr.io/code-supply/affiliate@sha256:61df1d2f93845021fb83eb074f81a56ca476946c863c2bb5db96425eda0ef248
 kind: ConfigMap
 metadata:
-  name: site-operator-677fc6dtkf
+  name: site-operator-th5b4k5g84
   namespace: operators
 ---
 apiVersion: v1
@@ -29603,7 +29603,7 @@ spec:
         - secretRef:
             name: site-operator
         - configMapRef:
-            name: site-operator-677fc6dtkf
+            name: site-operator-th5b4k5g84
         image: eu.gcr.io/code-supply/site-operator:b86d435
         name: site-operator
         resources:
