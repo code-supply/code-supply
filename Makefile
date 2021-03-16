@@ -98,6 +98,7 @@ web/affiliate/VERSION:
 	git rev-parse --short HEAD > $@
 
 web/affiliate/VERSION_BUILT: web/affiliate/VERSION
+	cd web/affiliate; mix test
 	docker build -t eu.gcr.io/code-supply/affiliate:$$(cat $<) web/affiliate
 	cat $< > $@
 
