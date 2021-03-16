@@ -26,6 +26,7 @@ operators/site_operator/VERSION:
 	git rev-parse --short HEAD > $@
 
 operators/site_operator/VERSION_BUILT: operators/site_operator/VERSION
+	cd operators/site_operator; mix test
 	docker build -t eu.gcr.io/code-supply/site-operator:$$(cat $<) operators/site_operator
 	cat $< > $@
 
