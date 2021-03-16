@@ -3,6 +3,8 @@ defmodule AffiliateWeb.PageLive do
 
   alias Affiliate.SiteState
 
+  import AffiliateWeb.PageShared
+
   @key :published
 
   @impl true
@@ -24,17 +26,5 @@ defmodule AffiliateWeb.PageLive do
   @impl true
   def handle_info(%{@key => site}, socket) do
     {:noreply, assign_site(socket, site)}
-  end
-
-  defp assign_site(socket, site) do
-    assign(socket,
-      page_title: site["name"],
-      header_image_url: site["header_image_url"],
-      name: site["name"],
-      logo_url: site["site_logo_url"],
-      subtitle: site["page_subtitle"],
-      text: site["text"],
-      items: Map.get(site, "items", [])
-    )
   end
 end

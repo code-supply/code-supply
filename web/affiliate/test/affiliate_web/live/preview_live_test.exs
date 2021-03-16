@@ -37,15 +37,15 @@ defmodule AffiliateWeb.PreviewLiveTest do
     assert render(view) =~ site["name"]
 
     assert view
-           |> element("header h1")
+           |> element("header h2")
            |> render() =~ site["page_subtitle"]
 
     fixture("site_update_message")
-    |> put_in(["preview", "page_subtitle"], "New Name")
+    |> put_in(["preview", "page_subtitle"], "New Subtitle")
     |> Affiliate.SiteState.store()
 
     assert view
-           |> element("header h1")
-           |> render() =~ "New Name"
+           |> element("header h2")
+           |> render() =~ "New Subtitle"
   end
 end

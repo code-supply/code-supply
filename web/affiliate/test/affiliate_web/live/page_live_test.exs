@@ -36,4 +36,36 @@ defmodule AffiliateWeb.PageLiveTest do
 
     assert render(view) =~ site["name"]
   end
+
+  test "shows attribute titles when available", %{conn: conn} do
+    incoming_payload = fixture("site_update_message")
+
+    assert get_in(incoming_payload, [
+             "published",
+             "items",
+             Access.at(0),
+             "attributes",
+             Access.at(0),
+             "name"
+           ]) ==
+             "Price"
+
+    SiteState.store(incoming_payload)
+
+    {:ok, view, _html} = live(conn, "/")
+
+    assert view |> has_element?("th", "Price")
+  end
+
+  test "hides table when no items are available", %{conn: conn} do
+    incoming_payload =
+      fixture("site_update_message")
+      |> put_in(["published", "items"], [])
+
+    SiteState.store(incoming_payload)
+
+    {:ok, view, _html} = live(conn, "/")
+
+    refute view |> has_element?("table")
+  end
 end

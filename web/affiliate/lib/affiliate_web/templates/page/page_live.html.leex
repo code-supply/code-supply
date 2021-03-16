@@ -15,12 +15,13 @@
         </div>
       </header>
 
+      <%= unless Enum.empty?(@items) do %>
       <section class="px-1 lg:px-4">
         <table id="items" class="w-full mx-auto mt-4 md:px-8">
           <thead>
             <tr class="h-10">
               <th id="th-position-image-description"></th>
-              <%= for attribute <- (@items |> List.first())["attributes"] do %>
+              <%= for attribute <- @attributes do %>
                 <th class="px-1 text-sm font-bold truncate md:text-base lg:text-lg lg:px-4 xl:px-8"><%= attribute["name"] %></th>
               <% end %>
               <th id="th-cta"></th>
@@ -63,6 +64,7 @@
           </tbody>
         </table>
       </section>
+      <% end %>
     </main>
   </div>
 </div>
