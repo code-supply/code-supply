@@ -123,7 +123,7 @@ defmodule SiteOperator.K8s.Conversions do
                   },
                   "requests" => %{
                     "cpu" => "3m",
-                    "memory" => "95Mi"
+                    "memory" => "50Mi"
                   }
                 },
                 "envFrom" => [%{"secretRef" => %{"name" => name}}],
