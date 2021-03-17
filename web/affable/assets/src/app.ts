@@ -33,7 +33,7 @@ let liveSocket = new LiveSocket("/live", Socket, {
           let focusEls = el.getElementsByClassName('scrollfocus');
           var focusEl = focusEls[0] as HTMLElement;
           if (focusEl) {
-            focusEl.focus();
+            focusEl.focus({preventScroll: true});
           }
         })
       }

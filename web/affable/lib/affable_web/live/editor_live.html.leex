@@ -17,25 +17,25 @@
 
     <div class="field">
       <label for="page_subtitle">Page subtitle</label>
-      <%= text_input outer_form, :page_subtitle, phx_debounce: 250, cclass: "w-full"%>
+      <%= text_input outer_form, :page_subtitle, phx_debounce: 250, class: "w-full"%>
       <%= error_tag outer_form, :page_subtitle %>
     </div>
 
     <div class="field">
       <label for="site_logo_id">Site logo</label>
-      <%= select outer_form, :site_logo_id, @asset_pairs, prompt: "None", cclass: "w-full" %>
+      <%= select outer_form, :site_logo_id, @asset_pairs, prompt: "None", class: "w-full" %>
       <%= error_tag outer_form, :site_logo_id %>
     </div>
 
     <div class="field">
       <label for="header_image_id">Header image</label>
-      <%= select outer_form, :header_image_id, @asset_pairs, prompt: "None", cclass: "w-full" %>
+      <%= select outer_form, :header_image_id, @asset_pairs, prompt: "None", class: "w-full" %>
       <%= error_tag outer_form, :header_image_id %>
     </div>
 
     <div class="field">
       <label for="text">Text</label>
-      <%= textarea outer_form, :text, phx_debounce: 250, cclass: "w-full" %>
+      <%= textarea outer_form, :text, phx_debounce: 250, class: "w-full" %>
       <%= error_tag outer_form, :text %>
     </div>
   </div>
@@ -124,7 +124,7 @@
         <%= hidden_inputs_for f %>
         <div class="field">
           <%= label f, :name %>
-          <%= text_input f, :name, required: true, phx_debounce: 250, cclass: "scrollfocus" %>
+          <%= text_input f, :name, required: true, phx_debounce: 250, class: "scrollfocus" %>
           <%= error_tag f, :name %>
         </div>
 
