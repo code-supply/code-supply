@@ -17,6 +17,9 @@ defmodule AffiliateWeb.PageShared do
       logo_url: site["site_logo_url"],
       subtitle: site["page_subtitle"],
       text: site["text"],
+      cta_text: site["cta_text"],
+      cta_background_colour: site["cta_background_colour"],
+      cta_text_colour: site["cta_text_colour"],
       items: items,
       attributes: attributes
     )

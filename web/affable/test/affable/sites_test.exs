@@ -17,6 +17,7 @@ defmodule Affable.SitesTest do
   describe "sites" do
     alias Affable.Sites.Site
 
+    @valid_site %Site{name: "hi", cta_text: "Go"}
     @invalid_attrs %{name: nil}
 
     setup do
@@ -35,6 +36,35 @@ defmodule Affable.SitesTest do
         user,
         site |> Sites.with_items()
       }
+    end
+
+    test "colours can be set to valid values" do
+      changeset =
+        @valid_site
+        |> Site.changeset(%{cta_background_colour: "EEFF20", cta_text_colour: "012345"})
+
+      assert changeset.errors == []
+      assert changeset.changes.cta_background_colour == "EEFF20"
+      assert changeset.changes.cta_text_colour == "012345"
+    end
+
+    test "colours can't be set to invalid values" do
+      changeset =
+        @valid_site
+        |> Site.changeset(%{cta_background_colour: "01234", cta_text_colour: "GGGGGG"})
+
+      assert {_, validation: :format} = changeset.errors[:cta_background_colour]
+      assert {_, validation: :format} = changeset.errors[:cta_text_colour]
+    end
+
+    test "CTA attributes can't be blank" do
+      changeset =
+        @valid_site
+        |> Site.changeset(%{cta_text: "", cta_background_colour: "", cta_text_colour: " "})
+
+      assert {_, validation: :required} = changeset.errors[:cta_text]
+      assert {_, validation: :required} = changeset.errors[:cta_background_colour]
+      assert {_, validation: :required} = changeset.errors[:cta_text_colour]
     end
 
     test "status of new site is pending" do
@@ -390,9 +420,11 @@ defmodule Affable.SitesTest do
 
       assert {:ok, %Site{} = updated_site} =
                Sites.update_site(site_as_live_view, %{
-                 name: "some updated name",
-                 site_logo_id: site.header_image_id,
-                 attribute_definitions: %{
+                 "name" => "some updated name",
+                 "site_logo_id" => site.header_image_id,
+                 "cta_text_colour" => "f0f0f0",
+                 "cta_background_colour" => "eEfF01",
+                 "attribute_definitions" => %{
                    "0" => %{
                      "id" => "#{definition.id}",
                      "name" => "some updated attribute name"
@@ -401,6 +433,8 @@ defmodule Affable.SitesTest do
                })
 
       assert updated_site.name == "some updated name"
+      assert updated_site.cta_background_colour == "EEFF01"
+      assert updated_site.cta_text_colour == "F0F0F0"
 
       [definition] = updated_site.attribute_definitions
       assert definition.name == "some updated attribute name"

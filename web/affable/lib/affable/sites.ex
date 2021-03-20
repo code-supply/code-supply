@@ -260,7 +260,7 @@ defmodule Affable.Sites do
     multi
     |> Multi.insert(
       :site,
-      %Site{}
+      %Site{cta_text: "Go", cta_background_colour: "059669", cta_text_colour: "FFFFFF"}
       |> Site.changeset(attrs)
       |> Site.change_internal_name("pending")
       |> Ecto.Changeset.put_assoc(:members, [Ecto.build_assoc(user, :site_members)])

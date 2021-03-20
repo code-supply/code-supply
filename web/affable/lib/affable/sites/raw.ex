@@ -11,6 +11,9 @@ defmodule Affable.Sites.Raw do
       "header_image_url" =>
         header_image |> Assets.to_imgproxy_url(width: 567, height: 341, resizing_type: "fill"),
       "text" => site.text,
+      "cta_text" => site.cta_text,
+      "cta_background_colour" => site.cta_background_colour,
+      "cta_text_colour" => site.cta_text_colour,
       "made_available_at" => format_datetime(site.made_available_at),
       "items" => site.items |> Enum.map(&raw/1)
     }
