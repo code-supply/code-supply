@@ -26,6 +26,9 @@ spec:
         resources:
           requests:
             cpu: 3m
+            memory: 43Mi
+          limits:
+            memory: 100Mi
     ingressGateways:
     - name: istio-ingressgateway
       enabled: true

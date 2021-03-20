@@ -29729,8 +29729,11 @@ spec:
     - enabled: true
       k8s:
         resources:
+          limits:
+            memory: 100Mi
           requests:
             cpu: 3m
+            memory: 43Mi
       name: istio-egressgateway
     ingressGateways:
     - enabled: true
