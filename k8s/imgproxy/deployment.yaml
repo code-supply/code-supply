@@ -21,6 +21,8 @@ spec:
           value: "true"
         - name: IMGPROXY_PROMETHEUS_BIND
           value: "0.0.0.0:9000"
+        - name: IMGPROXY_TTL
+          value: "86400"
         ports:
         - name: http
           containerPort: 8080

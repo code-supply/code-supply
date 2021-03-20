@@ -29384,6 +29384,8 @@ spec:
           value: "true"
         - name: IMGPROXY_PROMETHEUS_BIND
           value: 0.0.0.0:9000
+        - name: IMGPROXY_TTL
+          value: "86400"
         image: darthsim/imgproxy:latest@sha256:5c844ddaf98ca33bf70072a0b66f94cf14bb2c68787adbfa73e076d69d9d1a89
         name: imgproxy
         ports:
