@@ -13,6 +13,7 @@ defmodule Affable.Accounts.User do
     has_many :site_members, SiteMember
     has_many :sites, through: [:site_members, :site]
     has_many :assets, through: [:sites, :assets]
+    has_many :domains, through: [:sites, :domains]
 
     timestamps()
   end

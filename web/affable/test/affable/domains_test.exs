@@ -54,6 +54,12 @@ defmodule Affable.DomainsTest do
       assert {:error, %Ecto.Changeset{}} = Domains.create_domain(site, @invalid_attrs)
     end
 
+    test "create_domain/2 over existing name returns error changeset", %{
+      site: %Site{domains: [domain]} = site
+    } do
+      assert {:error, %Ecto.Changeset{}} = Domains.create_domain(site, %{name: domain.name})
+    end
+
     test "update_domain/2 with valid data updates the domain", %{site: site} do
       domain = domain_fixture(site)
       assert {:ok, %Domain{} = domain} = Domains.update_domain(domain, @update_attrs)

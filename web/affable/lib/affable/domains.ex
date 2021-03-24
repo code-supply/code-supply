@@ -11,12 +11,26 @@ defmodule Affable.Domains do
 
   def get_domain!(%Site{} = site, id) do
     Repo.get_by!(Domain, id: id, site_id: site.id)
+    |> preloads()
   end
 
   def create_domain(%Site{} = site, attrs \\ %{}) do
     Ecto.build_assoc(site, :domains)
     |> Domain.changeset(attrs)
     |> Repo.insert()
+    |> preloads()
+  end
+
+  defp preloads({:ok, domain}) do
+    {:ok, preloads(domain)}
+  end
+
+  defp preloads(%Domain{} = domain) do
+    domain |> Repo.preload(:site)
+  end
+
+  defp preloads(otherwise) do
+    otherwise
   end
 
   @doc """

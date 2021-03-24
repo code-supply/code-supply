@@ -16,10 +16,31 @@ defmodule Affable.Domains.Domain do
     domain
     |> cast(attrs, [:name])
     |> validate_required([:name])
-    |> validate_format(
-      :name,
-      ~r/^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$/,
-      message: "must be a valid domain"
-    )
+    |> validate_format(:name, ~r/^[^.].*$/, message: "cannot begin with a dot")
+    |> validate_format(:name, ~r/^[^ ]+$/, message: "domains don't have spaces")
+    |> validate_domain()
+    |> unique_constraint(:name)
+  end
+
+  defp validate_domain(%Ecto.Changeset{changes: %{name: name}} = changeset) do
+    case URI.parse("//#{name}") do
+      %URI{
+        fragment: nil,
+        path: nil,
+        port: nil,
+        scheme: nil,
+        query: nil,
+        userinfo: nil
+      } ->
+        changeset
+
+      %URI{} ->
+        changeset
+        |> add_error(:name, "must be a valid domain")
+    end
+  end
+
+  defp validate_domain(changeset_without_name_change) do
+    changeset_without_name_change
   end
 end

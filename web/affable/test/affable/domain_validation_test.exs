@@ -3,20 +3,40 @@ defmodule Affable.DomainValidationTest do
 
   alias Affable.Domains.Domain
 
-  test "denies direct UTF-8 special chars" do
-    assert "must be a valid domain" in errors_on(domain("♡.com"), :name)
+  test "multiple subdomains permitted" do
+    assert errors_on(domain("www.a.b.c"), :name) == []
+  end
+
+  test "including scheme is an error" do
+    assert "must be a valid domain" in errors_on(domain("ftp://www.a.b.c"), :name)
+  end
+
+  test "including user is an error" do
+    assert "must be a valid domain" in errors_on(domain("bob@www.a.b.c"), :name)
+  end
+
+  test "including fragment is an error" do
+    assert "must be a valid domain" in errors_on(domain("www.a.b.c/#hi"), :name)
+  end
+
+  test "including port is an error" do
+    assert "must be a valid domain" in errors_on(domain("www.a.b.c:8080"), :name)
+  end
+
+  test "including query is an error" do
+    assert "must be a valid domain" in errors_on(domain("www.a.b.c?hi=there"), :name)
   end
 
   test "denies nil" do
     assert "can't be blank" in errors_on(domain(nil), :name)
   end
 
-  test "denies top level domains" do
-    assert "must be a valid domain" in errors_on(domain("toplevel"), :name)
+  test "denies spaces" do
+    assert "domains don't have spaces" in errors_on(domain("my domain.com"), :name)
   end
 
-  test "denies spaces" do
-    assert "must be a valid domain" in errors_on(domain("my domain.com"), :name)
+  test "denies leading dot" do
+    assert "cannot begin with a dot" in errors_on(domain(".mydomain.com"), :name)
   end
 
   test "permits xn prefix" do
