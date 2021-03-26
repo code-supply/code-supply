@@ -27,6 +27,16 @@ defmodule AffableWeb.DomainsLiveTest do
            |> render_click() =~ "www.pizzas4u.example.com</a>"
   end
 
+  test "cannot delete an affable domain", %{
+    conn: conn,
+    user: %User{sites: [%Site{domains: [domain]}]}
+  } do
+    {:ok, view, _html} = live(conn, path(conn))
+
+    refute view
+           |> has_element?("#delete-domain-#{domain.id}")
+  end
+
   test "validation errors are shown on the fly", %{
     conn: conn,
     user: %User{sites: [%Site{id: site_id}]}

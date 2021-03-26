@@ -8,6 +8,7 @@ defmodule Affable.Sites do
   alias Affable.Accounts.User
   alias Affable.Assets
   alias Affable.Assets.Asset
+  alias Affable.Domains
 
   alias Affable.Sites.{
     Publication,
@@ -73,7 +74,7 @@ defmodule Affable.Sites do
     domain =
       domains
       |> Enum.find(fn d ->
-        !(d.name |> String.ends_with?(".affable.app"))
+        !Domains.affable_domain?(d)
       end)
 
     "//#{domain.name}/"
@@ -272,7 +273,9 @@ defmodule Affable.Sites do
     |> Multi.insert(
       :site_with_domain,
       fn %{site_with_internal_name: site} ->
-        Ecto.build_assoc(site, :domains, %{name: "#{site.internal_name}.affable.app"})
+        Ecto.build_assoc(site, :domains, %{
+          name: "#{site.internal_name}#{Domains.affable_suffix()}"
+        })
       end
     )
   end

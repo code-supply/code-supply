@@ -1,14 +1,18 @@
 defmodule Affable.Domains do
-  @moduledoc """
-  The Domains context.
-  """
-
   import Ecto.Query, warn: false
   alias Affable.Repo
 
   alias Affable.Domains.Domain
   alias Affable.Sites.Site
   alias Affable.Sites.SiteMember
+
+  def affable_suffix() do
+    ".affable.app"
+  end
+
+  def affable_domain?(%Domain{name: name}) do
+    String.ends_with?(name, affable_suffix())
+  end
 
   def get_domain!(%Site{} = site, id) do
     Repo.get_by!(Domain, id: id, site_id: site.id)
@@ -34,18 +38,6 @@ defmodule Affable.Domains do
     otherwise
   end
 
-  @doc """
-  Updates a domain.
-
-  ## Examples
-
-      iex> update_domain(domain, %{field: new_value})
-      {:ok, %Domain{}}
-
-      iex> update_domain(domain, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_domain(%Domain{} = domain, attrs) do
     domain
     |> Domain.changeset(attrs)
@@ -53,29 +45,18 @@ defmodule Affable.Domains do
   end
 
   def delete_domain!(user, domain_id) do
-    domain =
-      Repo.get_by!(
-        from(d in Domain,
-          join: sm in SiteMember,
-          on: sm.site_id == d.site_id,
-          where: sm.user_id == ^user.id
-        ),
-        id: domain_id
-      )
+    affable_name = "%#{affable_suffix()}"
 
-    {domain_id, ""} = Integer.parse(domain_id)
-    Repo.delete!(%Domain{id: domain_id})
+    from(d in Domain,
+      join: sm in SiteMember,
+      on: sm.site_id == d.site_id,
+      where: sm.user_id == ^user.id,
+      where: not like(d.name, ^affable_name)
+    )
+    |> Repo.get_by!(id: domain_id)
+    |> Repo.delete!()
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking domain changes.
-
-  ## Examples
-
-      iex> change_domain(domain)
-      %Ecto.Changeset{data: %Domain{}}
-
-  """
   def change_domain(%Domain{} = domain, attrs \\ %{}) do
     Domain.changeset(domain, attrs)
   end

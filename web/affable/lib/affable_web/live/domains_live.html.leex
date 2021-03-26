@@ -1,40 +1,44 @@
 <div class="container">
   <h1>My Domains</h1>
 
+  <%= f = form_for @changeset, "#", id: "new-domain", phx_change: :validate, phx_submit: :create,
+      class: "xl:w-1/2 lg:w-3/4 w-full" %>
+  <div class="block px-6 pt-5 pb-4 mx-2 overflow-hidden bg-white rounded shadow-lg" href="#">
+    <h2 class="text-3xl align-middle">
+      Add Domain
+    </h2>
+    <p class="pt-4">
+    To use a custom domain, associate it with a site by adding it here.
+    </p>
+    <div class="pr-2 sm:float-left sm:w-5/12 field">
+      <%= label f, :name %>
+      <%= text_input f, :name, placeholder: "www.top10apples.biz" %>
+      <%= error_tag f, :name %>
+    </div>
+    <div class="pr-2 sm:float-left sm:w-5/12 field">
+      <%= label f, :site_id %>
+      <%= select f, :site_id, Enum.map(@sites, &{&1.name, &1.id}) %>
+    </div>
+    <div class="sm:w-2/12 sm:pt-6 sm:float-left">
+      <%= submit "Add", class: "block w-full px-2 py-2 mt-6 text-lg font-bold text-center text-white bg-gradient-to-br from-blue-400 to-blue-600 rounded-md" %>
+    </div>
+  </div>
+  </form>
+
   <ul class="resources">
-    <li class="float-left w-full mt-5 lg:w-1/2">
-      <%= f = form_for @changeset, "#", id: "new-domain", phx_change: :validate, phx_submit: :create %>
-      <div class="block px-6 pt-5 pb-4 mx-2 overflow-hidden bg-white rounded shadow-lg" href="#">
-        <h2 class="text-3xl align-middle">
-          Add Domain
-        </h2>
-        <p class="pt-4">
-        To use a custom domain, associate it with a site by adding it here.
-        </p>
-        <div class="float-left w-5/12 pr-2 field">
-          <%= label f, :name %>
-          <%= text_input f, :name, placeholder: "www.top10apples.biz" %>
-          <%= error_tag f, :name %>
-        </div>
-        <div class="float-left w-5/12 pr-2 field">
-          <%= label f, :site_id %>
-          <%= select f, :site_id, Enum.map(@sites, &{&1.name, &1.id}) %>
-        </div>
-        <div class="float-left w-2/12 pt-6">
-          <%= submit "Add", class: "block w-full px-2 py-2 mt-6 text-lg font-bold text-center text-white bg-gradient-to-br from-blue-400 to-blue-600 rounded-md" %>
-        </div>
-      </div>
-      </form>
-    </li>
     <%= for domain <- @domains do %>
-      <li class="float-left w-full sm:w-1/2 xl:w-1/4">
+      <li class="float-left w-full sm:w-1/2 lg:w-1/4">
         <div class="p-4 mx-2 my-5 overflow-hidden border-8 border-white rounded shadow-lg h-42">
           <h2><a class="block mb-4 text-2xl truncate" href="//<%= domain.name %>/"><%= domain.name %></a></h2>
           <p><a class="truncate" href="<%= Routes.editor_path(@socket, :edit, domain.site_id) %>"><%= domain.site.name %></a></p>
           <ul class="float-right cta">
-            <li class="float-left">
-              <a id="delete-domain-<%= domain.id %>" href="#" phx-click="delete" phx-value-id="<%= domain.id %>">Delete</a>
-            </li>
+              <li class="float-left">
+                <%= if Domains.affable_domain?(domain) do %>
+                  Permanent
+                <% else %>
+                  <a id="delete-domain-<%= domain.id %>" href="#" phx-click="delete" phx-value-id="<%= domain.id %>">Delete</a>
+                <% end %>
+              </li>
           </ul>
         </div>
       </li>

@@ -95,8 +95,8 @@ tbody tr:hover {
     @apply text-lg;
 }
 
-.invalid-feedback {
-    @apply block font-bold text-red-800;
+.field .invalid-feedback {
+    @apply block pt-1 pl-2 font-bold text-red-800;
 }
 
 .field input, .field textarea, .field select {
