@@ -2,7 +2,7 @@
   <h1>My Domains</h1>
 
   <%= f = form_for @changeset, "#", id: "new-domain", phx_change: :validate, phx_submit: :create,
-      class: "xl:w-1/2 lg:w-3/4 w-full" %>
+      class: "xl:w-1/2 w-full" %>
   <div class="block px-6 pt-5 pb-4 mx-2 overflow-hidden bg-white rounded shadow-lg" href="#">
     <h2 class="text-3xl align-middle">
       Add Domain
@@ -27,7 +27,7 @@
 
   <ul class="resources">
     <%= for domain <- @domains do %>
-      <li class="float-left w-full sm:w-1/2 lg:w-1/4">
+      <li class="float-left w-full sm:w-1/2 xl:w-1/4">
         <div class="p-4 mx-2 my-5 overflow-hidden border-8 border-white rounded shadow-lg h-42">
           <h2><a class="block mb-4 text-2xl truncate" href="//<%= domain.name %>/"><%= domain.name %></a></h2>
           <p><a class="truncate" href="<%= Routes.editor_path(@socket, :edit, domain.site_id) %>"><%= domain.site.name %></a></p>
