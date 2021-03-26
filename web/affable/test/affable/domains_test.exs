@@ -16,7 +16,8 @@ defmodule Affable.DomainsTest do
     @invalid_attrs %{name: nil}
 
     setup do
-      %{site: site_fixture(user_fixture())}
+      user = user_fixture()
+      %{user: user, site: site_fixture(user)}
     end
 
     setup :verify_on_exit!
@@ -54,6 +55,12 @@ defmodule Affable.DomainsTest do
       assert {:error, %Ecto.Changeset{}} = Domains.create_domain(site, @invalid_attrs)
     end
 
+    test "create_domain/2 over existing name returns error changeset", %{
+      site: %Site{domains: [domain]} = site
+    } do
+      assert {:error, %Ecto.Changeset{}} = Domains.create_domain(site, %{name: domain.name})
+    end
+
     test "update_domain/2 with valid data updates the domain", %{site: site} do
       domain = domain_fixture(site)
       assert {:ok, %Domain{} = domain} = Domains.update_domain(domain, @update_attrs)
@@ -66,10 +73,18 @@ defmodule Affable.DomainsTest do
       assert domain == Domains.get_domain!(site, domain.id)
     end
 
-    test "delete_domain/1 deletes the domain", %{site: site} do
+    test "delete_domain!/2 deletes the domain", %{site: site, user: user} do
       domain = domain_fixture(site)
-      assert {:ok, %Domain{}} = Domains.delete_domain(domain)
+      assert %Domain{} = Domains.delete_domain!(user, "#{domain.id}")
       assert_raise Ecto.NoResultsError, fn -> Domains.get_domain!(site, domain.id) end
+    end
+
+    test "only site members can delete", %{user: user} do
+      domain = domain_fixture(site_fixture())
+
+      assert_raise(Ecto.NoResultsError, fn ->
+        Domains.delete_domain!(user, "#{domain.id}")
+      end)
     end
 
     test "change_domain/1 returns a domain changeset", %{site: site} do

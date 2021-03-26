@@ -8,15 +8,30 @@ defmodule Affable.Domains do
 
   alias Affable.Domains.Domain
   alias Affable.Sites.Site
+  alias Affable.Sites.SiteMember
 
   def get_domain!(%Site{} = site, id) do
     Repo.get_by!(Domain, id: id, site_id: site.id)
+    |> preloads()
   end
 
   def create_domain(%Site{} = site, attrs \\ %{}) do
     Ecto.build_assoc(site, :domains)
     |> Domain.changeset(attrs)
     |> Repo.insert()
+    |> preloads()
+  end
+
+  defp preloads({:ok, domain}) do
+    {:ok, preloads(domain)}
+  end
+
+  defp preloads(%Domain{} = domain) do
+    domain |> Repo.preload(:site)
+  end
+
+  defp preloads(otherwise) do
+    otherwise
   end
 
   @doc """
@@ -37,20 +52,19 @@ defmodule Affable.Domains do
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a domain.
+  def delete_domain!(user, domain_id) do
+    domain =
+      Repo.get_by!(
+        from(d in Domain,
+          join: sm in SiteMember,
+          on: sm.site_id == d.site_id,
+          where: sm.user_id == ^user.id
+        ),
+        id: domain_id
+      )
 
-  ## Examples
-
-      iex> delete_domain(domain)
-      {:ok, %Domain{}}
-
-      iex> delete_domain(domain)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_domain(%Domain{} = domain) do
-    Repo.delete(domain)
+    {domain_id, ""} = Integer.parse(domain_id)
+    Repo.delete!(%Domain{id: domain_id})
   end
 
   @doc """
