@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+.menu {
+    display: none;
+}
+
+.menu:target {
+    display: block;
+}
+.menu:target + .backdrop {
+    @apply fixed block;
+}
+
+.menu-toggle {
+    @apply bg-center bg-no-repeat;
+    background-image: url("/images/menu.svg");
+}
+
+.menu-close {
+    @apply bg-center bg-no-repeat;
+    background-image: url("/images/x-circle.svg");
+}
+
 .flash {
     @apply w-3/4 max-w-lg m-auto mt-2 text-xl font-semibold text-center text-white;
 }
@@ -16,30 +37,6 @@
 
 .h-body {
     height: calc(100% - 3.5rem);
-}
-
-.pop-out button {
-    @apply border-t-2 border-l-2 border-r-2 border-white rounded-t-lg outline-none;
-}
-.pop-out .menu {
-    @apply hidden rounded-b-lg;
-}
-.pop-out button:focus,
-.pop-out .menu {
-    @apply border-gray-200;
-}
-.pop-out button + .menu:active,
-.pop-out button:focus + .menu {
-    @apply block border-b-2 border-l-2 border-r-2;
-}
-.pop-out .menu li a {
-    @apply p-2 no-underline rounded;
-}
-.pop-out .menu li a:hover {
-    @apply bg-gray-200;
-}
-.pop-out .menu li a:active {
-    @apply outline-none;
 }
 
 body {

@@ -1,36 +1,38 @@
-<div class="mr-5 font-serif text-2xl font-medium leading-9">
-  <a href="/">Affable</a>
-</div>
-
 <%= if @current_user do %>
-  <nav role="navigation" class="flex-1 mt-2">
-    <ul class="inline-flex space-x-4">
-      <li><%= link "Sites", to: Routes.sites_path(@conn, :index) %></li>
-      <li><%= link "Assets", to: Routes.assets_path(@conn, :index) %></li>
-      <li><%= link "Domains", to: Routes.domains_path(@conn, :index) %></li>
-    </ul>
-  </nav>
-  <div class="absolute top-0 right-0 z-50 mt-2 mr-2 overflow-hidden pop-out">
-    <button class="px-4 py-2"><%= @current_user.email %>▼</button>
-    <nav role="navigation"
-    class="px-4 py-2 leading-loose bg-white menu">
-      <ul>
-        <li><%= link to: Routes.user_settings_path(@conn, :edit),
-         tabindex: 1,
-         accesskey: "s" do %>
-         <u>S</u>ettings
-        <% end %></li>
-        <li><%= link to: Routes.user_session_path(@conn, :delete),
-        tabindex: 2,
-        accesskey: "l",
-        method: :delete do %>
-        <u>L</u>og out
-        <% end %></li>
+  <div class="overflow-hidden">
+    <a id="main-menu-toggle" href="#main-menu"
+    class="absolute top-0 left-0 z-0 h-12 w-14 menu-toggle"></a>
+    <nav id="main-menu" role="navigation"
+    class="absolute top-0 left-0 z-50 w-2/3 h-screen px-4 py-2 leading-loose bg-white shadow-2xl menu">
+      <a href="#main-menu-toggle" class="absolute top-0 right-0 block h-12 w-14 menu-close"></a>
+
+      <ul class="text-xl leading-loose">
+        <li><%= link to: Routes.sites_path(@conn, :index), tabindex: 1, accesskey: "s", class: "block w-10/12" do %>
+            <u>S</u>ites
+          <% end %></li>
+        <li><%= link to: Routes.assets_path(@conn, :index), tabindex: 2, accesskey: "a", class: "block" do %>
+            <u>A</u>ssets
+          <% end %></li>
+        <li><%= link to: Routes.domains_path(@conn, :index), tabindex: 3, accesskey: "o", class: "block" do %>
+            D<u>o</u>mains
+          <% end %></li>
+        <li><%= link to: Routes.user_settings_path(@conn, :edit), tabindex: 4, accesskey: "t", class: "block" do %>
+            Se<u>t</u>tings
+          <% end %></li>
+        <li><%= link to: Routes.user_session_path(@conn, :delete), tabindex: 5, accesskey: "l", method: :delete, class: "block" do %>
+            <u>L</u>og out
+          <% end %></li>
       </ul>
     </nav>
+    <a href="#main-menu-toggle" class="z-40 w-screen h-screen bg-black bg-opacity-75 backdrop" hidden></a>
+
+    <div class="mt-2 ml-8 font-serif text-2xl font-medium">
+      <a href="/">Affable</a>
+    </div>
+
   </div>
 <% else %>
-  <div class="flex-auto mt-2 text-right">
+  <div class="pt-3 text-right">
     <nav role="navigation" class="ml-auto">
       <ul>
         <li class="inline-block mr-3"><%= link "Register", to: Routes.user_registration_path(@conn, :new) %></li>

@@ -3,7 +3,7 @@
 
   <ul class="resources">
     <%= for site <- @sites do %>
-      <li class="float-left w-1/3 <%= site |> status() %>">
+      <li class="float-left w-full sm:w-1/3 <%= site |> status() %>">
         <div class="p-4 mb-4 mr-4 overflow-hidden border-8 border-white rounded shadow-lg ">
           <h2 class="mb-4 text-2xl"><%= site.name %></h2>
           <div class="domains pending-invisible">

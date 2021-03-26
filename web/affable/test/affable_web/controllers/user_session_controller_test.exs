@@ -35,7 +35,6 @@ defmodule AffableWeb.UserSessionControllerTest do
       # Now do a logged in request and assert on the menu
       conn = get(conn, "/sites")
       response = html_response(conn, 200)
-      assert response =~ user.email
       assert response =~ "data-to=\"/users/log_out"
     end
 
