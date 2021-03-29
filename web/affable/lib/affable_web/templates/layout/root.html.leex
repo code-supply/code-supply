@@ -10,12 +10,54 @@
     <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
   <body>
-    <header class="fixed w-full">
-      <section class="relative h-12 px-6 mb-6 bg-white shadow-md">
-        <%= render "_user_menu.html", assigns %>
+    <header class="fixed top-0 z-20 w-full">
+      <section class="h-12 px-6 mb-6 bg-white shadow-md">
+      <%= if @current_user do %>
+        <div class="overflow-hidden">
+          <a id="main-menu-toggle" href="#main-menu"
+          class="absolute top-0 left-0 h-12 w-14 menu-toggle"></a>
+          <nav id="main-menu" role="navigation"
+          class="absolute top-0 left-0 z-10 w-2/3 h-screen px-4 py-2 leading-loose bg-white shadow-2xl menu">
+            <a href="#main-menu-toggle" class="absolute top-0 right-0 block h-12 w-14 menu-close"></a>
+
+            <ul class="text-xl leading-loose">
+              <li><%= link to: Routes.sites_path(@conn, :index), tabindex: 1, accesskey: "s", class: "block w-10/12" do %>
+                  <u>S</u>ites
+                <% end %></li>
+              <li><%= link to: Routes.assets_path(@conn, :index), tabindex: 2, accesskey: "a", class: "block" do %>
+                  <u>A</u>ssets
+                <% end %></li>
+              <li><%= link to: Routes.domains_path(@conn, :index), tabindex: 3, accesskey: "o", class: "block" do %>
+                  D<u>o</u>mains
+                <% end %></li>
+              <li><%= link to: Routes.user_settings_path(@conn, :edit), tabindex: 4, accesskey: "t", class: "block" do %>
+                  Se<u>t</u>tings
+                <% end %></li>
+              <li><%= link to: Routes.user_session_path(@conn, :delete), tabindex: 5, accesskey: "l", method: :delete, class: "block" do %>
+                  <u>L</u>og out
+                <% end %></li>
+            </ul>
+          </nav>
+          <a href="#main-menu-toggle" class="w-screen h-screen bg-black bg-opacity-75 backdrop" hidden></a>
+
+          <div class="mt-2 ml-8 font-serif text-2xl font-medium">
+            <a href="/">Affable</a>
+          </div>
+
+        </div>
+      <% else %>
+        <div class="pt-3 text-right">
+          <nav role="navigation" class="ml-auto">
+            <ul>
+              <li class="inline-block mr-3"><%= link "Register", to: Routes.user_registration_path(@conn, :new) %></li>
+              <li class="inline-block"><%= link "Log in", to: Routes.user_session_path(@conn, :new) %></li>
+            </ul>
+          </nav>
+        </div>
+      <% end %>
       </section>
     </header>
-    <div class="pt-14">
+    <div class="pt-12">
       <%= @inner_content %>
     </div>
   </body>
