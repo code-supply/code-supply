@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.menu {
-    display: none;
-}
-
 .menu:target {
     display: block;
 }
