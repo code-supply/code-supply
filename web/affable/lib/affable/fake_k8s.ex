@@ -18,8 +18,8 @@ defmodule Affable.FakeK8s do
   end
 
   @impl true
-  def update(resource) do
-    msg = "FakeK8s: would have updated #{inspect(resource)}"
+  def patch(resource) do
+    msg = "FakeK8s: would have patched #{inspect(resource)}"
     {IO.puts(msg), msg}
   end
 

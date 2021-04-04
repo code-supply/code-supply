@@ -21,14 +21,14 @@ defmodule AffableWeb.DomainsLiveTest do
   } do
     {:ok, view, _html} = live(conn, path(conn))
 
-    expect(MockK8s, :update, fn %{
-                                  "apiVersion" => "site-operator.code.supply/v1",
-                                  "kind" => "AffiliateSite",
-                                  "metadata" => %{"name" => ^internal_name},
-                                  "spec" => %{
-                                    "domains" => ["www.pizzas4u.example.com" | _original_domain]
-                                  }
-                                } ->
+    expect(MockK8s, :patch, fn %{
+                                 "apiVersion" => "site-operator.code.supply/v1",
+                                 "kind" => "AffiliateSite",
+                                 "metadata" => %{"name" => ^internal_name},
+                                 "spec" => %{
+                                   "domains" => ["www.pizzas4u.example.com" | _original_domain]
+                                 }
+                               } ->
       {:ok, ""}
     end)
 
@@ -38,12 +38,12 @@ defmodule AffableWeb.DomainsLiveTest do
 
     %Site{domains: [_default_domain | [new_domain | _]]} = Sites.get_site!(site_id)
 
-    expect(MockK8s, :update, fn %{
-                                  "metadata" => %{"name" => ^internal_name},
-                                  "spec" => %{
-                                    "domains" => [_original_domain]
-                                  }
-                                } ->
+    expect(MockK8s, :patch, fn %{
+                                 "metadata" => %{"name" => ^internal_name},
+                                 "spec" => %{
+                                   "domains" => [_original_domain]
+                                 }
+                               } ->
       {:ok, ""}
     end)
 
@@ -52,13 +52,13 @@ defmodule AffableWeb.DomainsLiveTest do
            |> render_click() =~ "www.pizzas4u.example.com</a>"
   end
 
-  test "site update errors are logged", %{
+  test "site patch errors are logged", %{
     conn: conn,
     user: %User{sites: [%Site{id: site_id}]}
   } do
     {:ok, view, _html} = live(conn, path(conn))
 
-    stub(MockK8s, :update, fn %{} ->
+    stub(MockK8s, :patch, fn %{} ->
       {:error, "Bad stuff happened"}
     end)
 

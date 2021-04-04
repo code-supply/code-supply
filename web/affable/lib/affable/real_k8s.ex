@@ -12,8 +12,8 @@ defmodule Affable.RealK8s do
   end
 
   @impl true
-  def update(resource) do
-    run(K8s.Client.update(resource))
+  def patch(resource) do
+    run(K8s.Client.patch(resource))
   end
 
   defp run(operation) do

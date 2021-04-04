@@ -52,7 +52,7 @@ defmodule AffableWeb.DomainsLive do
       {:ok, new_domain} ->
         case site
              |> K8sFactories.affiliate_site(new_name)
-             |> k8s().update() do
+             |> k8s().patch() do
           {:ok, _} ->
             Logger.info("Successfully added #{new_name} to site #{site_id}")
 
@@ -77,7 +77,7 @@ defmodule AffableWeb.DomainsLive do
 
     Sites.get_site!(user, domain.site_id)
     |> K8sFactories.affiliate_site()
-    |> k8s().update()
+    |> k8s().patch()
 
     {:noreply,
      update(socket, :domains, fn domains ->
