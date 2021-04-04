@@ -3,13 +3,7 @@ defmodule Affable.RealK8s do
 
   @impl true
   def deploy(resource) do
-    case run(K8s.Client.create(resource)) do
-      {:ok, _} = result ->
-        result
-
-      {:error, e} ->
-        {:error, "#{inspect(e)}"}
-    end
+    run(K8s.Client.create(resource))
   end
 
   @impl true
@@ -24,6 +18,13 @@ defmodule Affable.RealK8s do
 
   defp run(operation) do
     {:ok, conn} = K8s.Conn.lookup(:default)
-    K8s.Client.run(operation, conn)
+
+    case K8s.Client.run(operation, conn) do
+      {:ok, _} = result ->
+        result
+
+      {:error, e} ->
+        {:error, "#{inspect(e)}"}
+    end
   end
 end
