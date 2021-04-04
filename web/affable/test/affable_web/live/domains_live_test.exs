@@ -2,6 +2,7 @@ defmodule AffableWeb.DomainsLiveTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
   import Hammox
+  import ExUnit.CaptureLog
 
   alias Affable.Accounts.User
   alias Affable.Sites.Site
@@ -49,6 +50,23 @@ defmodule AffableWeb.DomainsLiveTest do
     refute view
            |> element("#delete-domain-#{new_domain.id}")
            |> render_click() =~ "www.pizzas4u.example.com</a>"
+  end
+
+  test "site update errors are logged", %{
+    conn: conn,
+    user: %User{sites: [%Site{id: site_id}]}
+  } do
+    {:ok, view, _html} = live(conn, path(conn))
+
+    stub(MockK8s, :update, fn %{} ->
+      {:error, "Bad stuff happened"}
+    end)
+
+    assert capture_log(fn ->
+             view
+             |> form("#new-domain", domain: %{name: "www.example.com", site_id: site_id})
+             |> render_submit()
+           end) =~ "Bad stuff happened"
   end
 
   test "cannot delete an affable domain", %{

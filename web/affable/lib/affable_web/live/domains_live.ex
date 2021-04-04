@@ -1,5 +1,6 @@
 defmodule AffableWeb.DomainsLive do
   use AffableWeb, :live_view
+  require Logger
 
   alias Affable.Accounts
   alias Affable.Domains
@@ -49,9 +50,15 @@ defmodule AffableWeb.DomainsLive do
 
     case Domains.create_domain(site, %{name: new_name}) do
       {:ok, new_domain} ->
-        site
-        |> K8sFactories.affiliate_site(new_name)
-        |> k8s().update()
+        case site
+             |> K8sFactories.affiliate_site(new_name)
+             |> k8s().update() do
+          {:ok, _} ->
+            Logger.info("Successfully added #{new_name} to site #{site_id}")
+
+          {:error, msg} ->
+            Logger.error("Failed to add #{new_name} to site #{site_id}: #{msg}")
+        end
 
         {:noreply, update(socket, :domains, &Domains.list_insert(&1, new_domain))}
 
