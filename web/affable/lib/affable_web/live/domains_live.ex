@@ -69,7 +69,7 @@ defmodule AffableWeb.DomainsLive do
          if "#{domain.id}" == id do
            acc
          else
-           [domain | acc]
+           acc ++ [domain]
          end
        end)
      end)}
