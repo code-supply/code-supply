@@ -17,6 +17,11 @@ defmodule Affable.RealK8s do
     run(K8s.Client.delete(resource))
   end
 
+  @impl true
+  def update(resource) do
+    run(K8s.Client.update(resource))
+  end
+
   defp run(operation) do
     {:ok, conn} = K8s.Conn.lookup(:default)
     K8s.Client.run(operation, conn)

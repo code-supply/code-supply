@@ -5,6 +5,7 @@ defmodule AffableWeb.DomainsLive do
   alias Affable.Domains
   alias Affable.Domains.Domain
   alias Affable.Sites
+  alias Affable.K8sFactories
 
   import Ecto.Query, only: [from: 2]
 
@@ -41,13 +42,17 @@ defmodule AffableWeb.DomainsLive do
   @impl true
   def handle_event(
         "create",
-        %{"domain" => %{"site_id" => site_id, "name" => name}},
+        %{"domain" => %{"site_id" => site_id, "name" => new_name}},
         %{assigns: %{user: user}} = socket
       ) do
     site = Sites.get_site!(user, site_id)
 
-    case Domains.create_domain(site, %{name: name}) do
+    case Domains.create_domain(site, %{name: new_name}) do
       {:ok, new_domain} ->
+        site
+        |> K8sFactories.affiliate_site(new_name)
+        |> k8s().update()
+
         {:noreply, update(socket, :domains, &Domains.list_insert(&1, new_domain))}
 
       {:error, changeset} ->
@@ -61,7 +66,11 @@ defmodule AffableWeb.DomainsLive do
         %{"id" => id},
         %{assigns: %{user: user}} = socket
       ) do
-    Domains.delete_domain!(user, id)
+    domain = Domains.delete_domain!(user, id)
+
+    Sites.get_site!(user, domain.site_id)
+    |> K8sFactories.affiliate_site()
+    |> k8s().update()
 
     {:noreply,
      update(socket, :domains, fn domains ->
@@ -73,5 +82,9 @@ defmodule AffableWeb.DomainsLive do
          end
        end)
      end)}
+  end
+
+  defp k8s() do
+    Application.get_env(:affable, :k8s)
   end
 end

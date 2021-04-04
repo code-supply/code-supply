@@ -17,6 +17,12 @@ defmodule Affable.FakeK8s do
     {IO.puts(msg), msg}
   end
 
+  @impl true
+  def update(resource) do
+    msg = "FakeK8s: would have updated #{inspect(resource)}"
+    {IO.puts(msg), msg}
+  end
+
   def ready() do
     for site <- Site |> Repo.all() do
       IO.puts("FakeK8s: broadcasting for site #{site.internal_name}")
