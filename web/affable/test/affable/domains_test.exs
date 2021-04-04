@@ -33,6 +33,21 @@ defmodule Affable.DomainsTest do
       domain
     end
 
+    test "can insert a domain into a list prior to first domain with same site" do
+      assert [
+               %Domain{site_id: 1, name: "site_a_initial"},
+               %Domain{site_id: 2, name: "site_b_initial_1"},
+               %Domain{site_id: 2, name: "site_b_initial_2"}
+             ]
+             |> Domains.list_insert(%Domain{site_id: 2, name: "site_b_new"})
+             |> Enum.map(& &1.name) == [
+               "site_a_initial",
+               "site_b_new",
+               "site_b_initial_1",
+               "site_b_initial_2"
+             ]
+    end
+
     test "get_domain!/2 returns the domain with given id", %{site: site} do
       domain = domain_fixture(site)
       assert Domains.get_domain!(site, domain.id) == domain

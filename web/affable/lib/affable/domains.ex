@@ -14,6 +14,18 @@ defmodule Affable.Domains do
     String.ends_with?(name, affable_suffix())
   end
 
+  def list_insert(domains, %Domain{site_id: new_site_id} = new) do
+    List.insert_at(
+      domains,
+      find_index_with_site_id(domains, new_site_id),
+      new
+    )
+  end
+
+  defp find_index_with_site_id(domains, site_id) do
+    Enum.find_index(domains, &(&1.site_id == site_id))
+  end
+
   def get_domain!(%Site{} = site, id) do
     Repo.get_by!(Domain, id: id, site_id: site.id)
     |> preloads()

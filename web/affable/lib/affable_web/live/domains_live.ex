@@ -47,8 +47,8 @@ defmodule AffableWeb.DomainsLive do
     site = Sites.get_site!(user, site_id)
 
     case Domains.create_domain(site, %{name: name}) do
-      {:ok, domain} ->
-        {:noreply, update(socket, :domains, fn domains -> [domain | domains] end)}
+      {:ok, new_domain} ->
+        {:noreply, update(socket, :domains, &Domains.list_insert(&1, new_domain))}
 
       {:error, changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
