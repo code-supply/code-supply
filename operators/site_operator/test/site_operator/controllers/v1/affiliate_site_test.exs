@@ -7,8 +7,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
   import Hammox
 
   alias SiteOperator.Controller
-  alias SiteOperator.K8s.{AffiliateSite, Operations}
-  alias SiteOperator.PhoenixSites.PhoenixSite
+  alias SiteOperator.K8s.AffiliateSite
   alias SiteOperator.MockSiteMaker
 
   setup :verify_on_exit!
@@ -40,23 +39,12 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
     end
 
     test "creates the site", %{add: add} do
-      expected_image = Application.get_env(:site_operator, :affiliate_site_image)
-
-      site = %PhoenixSite{
+      site = %AffiliateSite{
         name: "justatest",
-        image: expected_image,
-        domains: ["www.example.com"],
-        secret_key_base: Application.get_env(:site_operator, :secret_key_generator),
-        live_view_signing_salt: Application.get_env(:site_operator, :secret_key_generator)
+        domains: ["www.example.com"]
       }
 
-      expected_batches = [
-        Operations.initial_creations(site),
-        Operations.inner_ns_creations(site)
-      ]
-
-      expect(MockSiteMaker, :create, fn batches ->
-        assert batches == expected_batches
+      expect(MockSiteMaker, :create, fn ^site ->
         {:ok, "some message"}
       end)
 

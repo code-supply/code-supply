@@ -13,19 +13,16 @@ defmodule SiteOperator.K8sSiteMaker do
   import SiteOperator.K8s.Conversions
 
   @impl SiteOperator.SiteMaker
-  def create([batch | batches]) do
-    case execute(batch) do
-      {:ok, _} ->
-        create(batches)
-
-      {:error, _} = res ->
-        res
-    end
-  end
-
-  @impl SiteOperator.SiteMaker
-  def create([]) do
-    {:ok, "Site created"}
+  def create(%AffiliateSite{} = site) do
+    site
+    |> from_k8s
+    |> Operations.creations()
+    |> Enum.find_value({:ok, "Site created"}, fn batch ->
+      case execute(batch) do
+        {:ok, _} -> false
+        failure -> failure
+      end
+    end)
   end
 
   @impl SiteOperator.SiteMaker

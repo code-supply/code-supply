@@ -16,6 +16,10 @@ defmodule SiteOperator.K8s.Operations do
 
   import SiteOperator.K8s.Conversions
 
+  def creations(phoenix_site) do
+    [initial_creations(phoenix_site), inner_ns_creations(phoenix_site)]
+  end
+
   def initial_creations(%PhoenixSite{name: name, domains: domains}) do
     initial_resources(name, domains)
     |> Enum.map(&create/1)

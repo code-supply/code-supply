@@ -64,9 +64,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   use Bonny.Controller
   require Logger
 
-  alias SiteOperator.K8s.{AffiliateSite, Operations}
-
-  import SiteOperator.K8s.Conversions
+  alias SiteOperator.K8s.AffiliateSite
 
   # @group "your-operator.your-domain.com"
   # @version "v1"
@@ -103,17 +101,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
       }) do
     log_metadata = [action: "add", name: name, domains: domains]
 
-    phoenix_site =
-      %AffiliateSite{
-        name: name,
-        domains: domains
-      }
-      |> from_k8s()
-
-    case site_maker().create([
-           Operations.initial_creations(phoenix_site),
-           Operations.inner_ns_creations(phoenix_site)
-         ]) do
+    case site_maker().create(%AffiliateSite{name: name, domains: domains}) do
       {:ok, _} ->
         Logger.info("created", log_metadata)
         :ok

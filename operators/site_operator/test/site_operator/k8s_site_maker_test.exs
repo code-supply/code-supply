@@ -5,9 +5,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
   alias SiteOperator.K8s.{
     AffiliateSite,
-    Certificate,
     Namespace,
-    Service,
     Operation,
     Operations,
     VirtualService
@@ -40,23 +38,20 @@ defmodule SiteOperator.K8sSiteMakerTest do
   describe "creation" do
     test "executes operation batches in order",
          %{create_1: create} do
-      ns = Operations.create(%Namespace{name: @namespace})
-      cert = Operations.create(%Certificate{name: @namespace, domains: @domains})
+      site = affiliate_site_no_custom_domain(name: @namespace)
 
-      service = Operations.create(%Service{name: "please", namespace: @namespace})
-
-      batch_1 = [ns, cert]
-      batch_2 = [service]
+      batch_1 = Operations.initial_creations(site |> from_k8s())
+      batch_2 = Operations.inner_ns_creations(site |> from_k8s())
 
       MockK8s
-      |> expect(:execute, fn [^ns, ^cert] ->
+      |> expect(:execute, fn ^batch_1 ->
         {:ok, []}
       end)
-      |> expect(:execute, fn [^service] ->
+      |> expect(:execute, fn ^batch_2 ->
         {:ok, []}
       end)
 
-      {:ok, _} = create.([batch_1, batch_2])
+      {:ok, _} = create.(site)
     end
 
     test "returns error when we get a k8s error", %{create_1: create} do
@@ -65,7 +60,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
         {:error, ["Bad news"]}
       end)
 
-      result = create.([[Operations.create(%Namespace{name: @namespace})]])
+      result = create.(affiliate_site_no_custom_domain(name: @namespace))
 
       assert elem(result, 0) == :error
       assert elem(result, 1) == ["Bad news"]
