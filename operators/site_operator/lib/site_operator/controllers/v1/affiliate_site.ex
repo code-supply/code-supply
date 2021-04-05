@@ -114,9 +114,13 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
 
   @spec modify(map()) :: :ok | :error
   @impl Bonny.Controller
-  def modify(%{}) do
-    Logger.info("modify", action: "modify")
-    :ok
+  def modify(%{
+        "metadata" => %{"name" => name},
+        "spec" => %{"domains" => domains}
+      }) do
+    %AffiliateSite{name: name, domains: domains}
+    |> site_maker().reconcile()
+    |> handle_reconciliation(action: "modify", name: name, domains: domains)
   end
 
   @spec delete(map()) :: :ok | :error
@@ -149,9 +153,17 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
         "metadata" => %{"name" => name},
         "spec" => %{"domains" => domains}
       }) do
-    log_metadata = [action: "reconcile", name: name, domains: domains]
+    %AffiliateSite{name: name, domains: domains}
+    |> site_maker().reconcile()
+    |> handle_reconciliation(
+      action: "reconcile",
+      name: name,
+      domains: domains
+    )
+  end
 
-    case site_maker().reconcile(%AffiliateSite{name: name, domains: domains}) do
+  defp handle_reconciliation(res, log_metadata) do
+    case res do
       {:ok, :nothing_to_do} ->
         Logger.info("nothing to do", log_metadata)
         :ok

@@ -63,10 +63,41 @@ defmodule SiteOperator.Controller.V1.AffiliateSiteTest do
   end
 
   describe "modify/1" do
-    test "returns :ok" do
-      event = %{}
-      result = Controller.V1.AffiliateSite.modify(event)
-      assert result == :ok
+    setup do
+      site = %AffiliateSite{
+        name: "justatest",
+        domains: ["www.example.com", "site0xd3adb33f.affable.app"]
+      }
+
+      %{
+        site: site,
+        modify: fn ->
+          Controller.V1.AffiliateSite.modify(%{
+            "apiVersion" => "site-operator.code.supply/v1alpha1",
+            "kind" => "AffiliateSite",
+            "metadata" => %{"name" => site.name},
+            "spec" => %{
+              "domains" => site.domains
+            }
+          })
+        end
+      }
+    end
+
+    test "returns :ok on successful modification", %{site: site, modify: modify} do
+      expect(MockSiteMaker, :reconcile, fn ^site ->
+        {:ok, :nothing_to_do}
+      end)
+
+      assert modify.() == :ok
+    end
+
+    test "logs successful modification", %{modify: modify} do
+      stub(MockSiteMaker, :reconcile, fn _ ->
+        {:ok, :nothing_to_do}
+      end)
+
+      assert capture_log(modify) =~ "nothing to do"
     end
   end
 
