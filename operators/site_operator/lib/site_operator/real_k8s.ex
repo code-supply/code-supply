@@ -26,7 +26,21 @@ defmodule SiteOperator.RealK8s do
     results = K8s.Client.parallel(third_party_ops, cluster_name(), [])
 
     if Enum.all?(results, &match?({:ok, _}, &1)) do
-      {:ok, results |> Enum.map(fn {:ok, body} -> handle_body(body) end)}
+      {:ok,
+       results
+       |> Enum.reduce(%{}, fn {:ok, body}, acc ->
+         case body do
+           %{"details" => _} ->
+             acc
+
+           %{"metadata" => _} = body ->
+             res = from_k8s(body)
+
+             Map.update(acc, res.__struct__, [res], fn existing ->
+               existing ++ [res]
+             end)
+         end
+       end)}
     else
       handle_errors(error_pairs(operations, results))
     end
@@ -55,14 +69,6 @@ defmodule SiteOperator.RealK8s do
     |> Enum.map(fn {%SiteOperator.K8s.Operation{resource: resource}, _result} ->
       from_k8s(resource)
     end)
-  end
-
-  defp handle_body(%{"details" => _}) do
-    ""
-  end
-
-  defp handle_body(%{"metadata" => _} = body) do
-    from_k8s(body)
   end
 
   defp cluster_name do

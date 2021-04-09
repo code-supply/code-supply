@@ -33,7 +33,7 @@ defmodule SiteOperator.K8sSiteMaker do
   @impl SiteOperator.SiteMaker
   def reconcile(%AffiliateSite{} = site) do
     case site |> Operations.checks() |> execute() do
-      {:ok, [_, _, current_deployment]} ->
+      {:ok, %{Deployment => [current_deployment]}} ->
         proposed_deployment = site |> from_k8s() |> Operations.deployment()
 
         if current_deployment != proposed_deployment do

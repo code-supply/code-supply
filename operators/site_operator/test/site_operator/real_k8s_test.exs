@@ -39,6 +39,10 @@ defmodule SiteOperator.RealK8sTest do
       name: "test-name"
     }
 
+    namespace_2 = %Namespace{
+      name: "test-name2"
+    }
+
     service = %Service{
       name: "test-name",
       namespace: "test-name"
@@ -54,7 +58,8 @@ defmodule SiteOperator.RealK8sTest do
     on_exit(fn ->
       SiteOperator.RealK8s.execute([
         Operations.delete(certificate),
-        Operations.delete(namespace)
+        Operations.delete(namespace),
+        Operations.delete(namespace_2)
       ])
     end)
 
@@ -63,6 +68,7 @@ defmodule SiteOperator.RealK8sTest do
       deployment: deployment,
       gateway: gateway,
       namespace: namespace,
+      namespace_2: namespace_2,
       service: service,
       virtual_service: virtual_service
     }
@@ -81,12 +87,14 @@ defmodule SiteOperator.RealK8sTest do
     deployment: deployment,
     gateway: gateway,
     namespace: namespace,
+    namespace_2: namespace_2,
     service: service,
     virtual_service: virtual_service
   } do
     {:ok, _} =
       execute.([
-        Operations.create(namespace)
+        Operations.create(namespace),
+        Operations.create(namespace_2)
       ])
 
     {:error, _errors} =
@@ -103,45 +111,49 @@ defmodule SiteOperator.RealK8sTest do
         Operations.create(virtual_service)
       ])
 
-    assert execute.([
-             Operations.get(certificate),
-             Operations.get(deployment),
-             Operations.get(gateway),
-             Operations.get(namespace),
-             Operations.get(service),
-             Operations.get(virtual_service)
-           ]) ==
-             {:ok,
-              [
-                certificate,
-                deployment,
-                gateway,
-                namespace,
-                service,
-                virtual_service
-              ]}
+    assert {:ok,
+            %{
+              Certificate => [certificate],
+              Deployment => [deployment],
+              Gateway => [gateway],
+              Namespace => [namespace, namespace_2],
+              Service => [service],
+              VirtualService => [virtual_service]
+            }} ==
+             execute.([
+               Operations.get(certificate),
+               Operations.get(deployment),
+               Operations.get(gateway),
+               Operations.get(namespace),
+               Operations.get(namespace_2),
+               Operations.get(service),
+               Operations.get(virtual_service)
+             ])
 
     missing_namespace = %Namespace{name: "bogus"}
 
-    assert execute.([
-             Operations.get(certificate),
-             Operations.get(missing_namespace)
-           ]) ==
-             {:error, some_resources_missing: [missing_namespace]}
+    assert {:error, some_resources_missing: [missing_namespace]} ==
+             execute.([
+               Operations.get(certificate),
+               Operations.get(missing_namespace)
+             ])
 
     # no change
-    assert execute.([
-             Operations.update(deployment)
-           ]) == {:ok, [deployment]}
+    assert {:ok, %{Deployment => [deployment]}} ==
+             execute.([
+               Operations.update(deployment)
+             ])
 
     # change the image
-    assert execute.([
-             Operations.update(%{deployment | image: "alpine"})
-           ]) == {:ok, [%{deployment | image: "alpine"}]}
+    assert {:ok, %{Deployment => [%{deployment | image: "alpine"}]}} ==
+             execute.([
+               Operations.update(%{deployment | image: "alpine"})
+             ])
 
     # change affects gets
-    assert execute.([
-             Operations.get(deployment)
-           ]) == {:ok, [%{deployment | image: "alpine"}]}
+    assert {:ok, %{Deployment => [%{deployment | image: "alpine"}]}} ==
+             execute.([
+               Operations.get(deployment)
+             ])
   end
 end
