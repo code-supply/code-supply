@@ -1,4 +1,4 @@
-terraform/.terraform/plugins
+terraform/.terraform
 playbook.retry
 TAGS
 service-account.json
