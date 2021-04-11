@@ -29606,7 +29606,7 @@ spec:
             name: site-operator
         - configMapRef:
             name: site-operator-5k5c9mfbhh
-        image: eu.gcr.io/code-supply/site-operator:c52906f
+        image: eu.gcr.io/code-supply/site-operator:51406ed
         name: site-operator
         resources:
           limits:
