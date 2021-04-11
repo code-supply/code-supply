@@ -239,7 +239,7 @@ defmodule SiteOperator.K8s.Conversions do
         "http" => [
           %{
             "match" => [%{"uri" => %{"prefix" => "/"}}],
-            "route" => [%{"destination" => %{"host" => "app.#{name}.svc.cluster.local"}}]
+            "route" => [%{"destination" => %{"host" => "app.#{namespace}.svc.cluster.local"}}]
           }
         ]
       }

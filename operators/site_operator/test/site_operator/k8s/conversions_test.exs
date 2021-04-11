@@ -200,13 +200,7 @@ defmodule SiteOperator.K8s.ConversionsTest do
 
   describe "virtual service" do
     test "is translated correctly in the all-affable domain case" do
-      assert %VirtualService{
-               name: "my-vs",
-               namespace: "my-vs-ns",
-               gateways: ["vs-gateway"],
-               domains: ["foo.affable.app"]
-             }
-             |> to_k8s() == %{
+      assert %{
                "apiVersion" => "networking.istio.io/v1beta1",
                "kind" => "VirtualService",
                "metadata" => %{"name" => "my-vs", "namespace" => "my-vs-ns"},
@@ -217,12 +211,19 @@ defmodule SiteOperator.K8s.ConversionsTest do
                    %{
                      "match" => [%{"uri" => %{"prefix" => "/"}}],
                      "route" => [
-                       %{"destination" => %{"host" => "app.my-vs.svc.cluster.local"}}
+                       %{"destination" => %{"host" => "app.my-vs-ns.svc.cluster.local"}}
                      ]
                    }
                  ]
                }
-             }
+             } ==
+               %VirtualService{
+                 name: "my-vs",
+                 namespace: "my-vs-ns",
+                 gateways: ["vs-gateway"],
+                 domains: ["foo.affable.app"]
+               }
+               |> to_k8s()
     end
 
     test "can be turned back into a struct", %{virtual_service: virtual_service} do

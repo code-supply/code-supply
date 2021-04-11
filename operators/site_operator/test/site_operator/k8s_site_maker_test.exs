@@ -8,8 +8,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
     Deployment,
     Namespace,
     Operation,
-    Operations,
-    VirtualService
+    Operations
   }
 
   import SiteOperator.K8s.Conversions
@@ -99,7 +98,6 @@ defmodule SiteOperator.K8sSiteMakerTest do
       MockK8s
       |> stub(:execute, fn [
                              %Operation{action: :get},
-                             %Operation{action: :get},
                              %Operation{action: :get}
                            ] ->
         {:ok, %{Deployment => [deployment()]}}
@@ -152,7 +150,6 @@ defmodule SiteOperator.K8sSiteMakerTest do
       MockK8s
       |> expect(:execute, fn [
                                %Operation{action: :get, resource: ^ns_k8s},
-                               _,
                                %Operation{action: :get, resource: deployment_resource}
                              ] ->
         assert deployment_resource == deployment_k8s
@@ -182,7 +179,6 @@ defmodule SiteOperator.K8sSiteMakerTest do
       MockK8s
       |> expect(:execute, fn [
                                %Operation{action: :get, resource: ^ns_k8s},
-                               _,
                                %Operation{action: :get, resource: ^deployment_k8s}
                              ] ->
         {:error, some_resources_missing: [ns, deployment]}
@@ -195,28 +191,6 @@ defmodule SiteOperator.K8sSiteMakerTest do
       end)
 
       {:ok, recreated: [^ns, ^deployment]} = reconcile.(site)
-    end
-
-    test "creates missing wildcard virtual service", %{reconcile_1: reconcile} do
-      vs = %VirtualService{
-        name: @namespace,
-        namespace: "affable",
-        gateways: ["affable"],
-        domains: @domains
-      }
-
-      vs_k8s = vs |> to_k8s
-
-      MockK8s
-      |> expect(:execute, fn outer_ops ->
-        assert %Operation{action: :get, resource: vs_k8s} in outer_ops
-        {:error, some_resources_missing: [vs]}
-      end)
-      |> expect(:execute, fn [%Operation{action: :create, resource: ^vs_k8s}] ->
-        {:ok, %{}}
-      end)
-
-      {:ok, recreated: [^vs]} = reconcile.(%AffiliateSite{name: @namespace, domains: @domains})
     end
   end
 end

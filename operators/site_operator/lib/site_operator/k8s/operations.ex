@@ -28,6 +28,7 @@ defmodule SiteOperator.K8s.Operations do
   def inner_ns_creations(
         %PhoenixSite{
           name: namespace,
+          domains: domains,
           secret_key_base: secret_key_base,
           live_view_signing_salt: live_view_signing_salt
         } = phoenix_site
@@ -37,6 +38,12 @@ defmodule SiteOperator.K8s.Operations do
     [
       deployment(phoenix_site),
       %Service{name: name, namespace: namespace},
+      %VirtualService{
+        name: "app",
+        namespace: namespace,
+        gateways: ["affable/affable"],
+        domains: domains
+      },
       %Secret{
         name: name,
         namespace: namespace,
@@ -102,16 +109,10 @@ defmodule SiteOperator.K8s.Operations do
     %Operation{action: :update, resource: resource |> to_k8s()}
   end
 
-  defp initial_resources(name, domains) do
+  defp initial_resources(name, _domains) do
     [
       %Namespace{
         name: name
-      },
-      %VirtualService{
-        name: name,
-        namespace: "affable",
-        gateways: ["affable"],
-        domains: domains
       }
     ]
   end

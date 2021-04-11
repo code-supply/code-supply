@@ -38,29 +38,6 @@ defmodule SiteOperator.K8s.OperationsTest do
     } do
       refute creations |> find_operation("Certificate")
     end
-
-    test "include a virtual service in affable namespace, to make use of affable's wildcard cert",
-         %{
-           initial_creations: creations
-         } do
-      assert creations |> find_kind("VirtualService") == %{
-               "apiVersion" => "networking.istio.io/v1beta1",
-               "kind" => "VirtualService",
-               "metadata" => %{"name" => "my-namespace", "namespace" => "affable"},
-               "spec" => %{
-                 "gateways" => ["affable"],
-                 "hosts" => ["host1.affable.app"],
-                 "http" => [
-                   %{
-                     "match" => [%{"uri" => %{"prefix" => "/"}}],
-                     "route" => [
-                       %{"destination" => %{"host" => "app.my-namespace.svc.cluster.local"}}
-                     ]
-                   }
-                 ]
-               }
-             }
-    end
   end
 
   describe "inner namespace creations" do
@@ -80,6 +57,28 @@ defmodule SiteOperator.K8s.OperationsTest do
         end
 
       assert names |> Enum.uniq() == ["app"]
+    end
+
+    test "include a virtual service that makes use of affable's wildcard cert", %{
+      inner_creations: creations
+    } do
+      assert %{
+               "apiVersion" => "networking.istio.io/v1beta1",
+               "kind" => "VirtualService",
+               "metadata" => %{"name" => "app", "namespace" => "my-namespace"},
+               "spec" => %{
+                 "gateways" => ["affable/affable"],
+                 "hosts" => ["host1.affable.app"],
+                 "http" => [
+                   %{
+                     "match" => [%{"uri" => %{"prefix" => "/"}}],
+                     "route" => [
+                       %{"destination" => %{"host" => "app.my-namespace.svc.cluster.local"}}
+                     ]
+                   }
+                 ]
+               }
+             } == creations |> find_kind("VirtualService")
     end
 
     test "include auth rules for site change access", %{inner_creations: creations} do
