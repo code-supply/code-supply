@@ -210,7 +210,7 @@ defmodule SiteOperator.K8s.Conversions do
             },
             "tls" => %{
               "credentialName" =>
-                if domains |> include_custom_domain? do
+                if domains |> have_no_custom_domains? do
                   "affable-www"
                 else
                   certificate_secret_name(namespace)
@@ -373,7 +373,7 @@ defmodule SiteOperator.K8s.Conversions do
     %VirtualService{name: name, namespace: namespace, gateways: gateways, domains: domains}
   end
 
-  defp include_custom_domain?(domains) do
+  defp have_no_custom_domains?(domains) do
     domains
     |> Enum.all?(&String.ends_with?(&1, ".affable.app"))
   end
