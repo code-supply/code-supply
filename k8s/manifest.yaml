@@ -28885,6 +28885,7 @@ rules:
   verbs:
   - get
   - create
+  - update
   - delete
 - apiGroups:
   - cert-manager.io
@@ -29606,7 +29607,7 @@ spec:
             name: site-operator
         - configMapRef:
             name: site-operator-5k5c9mfbhh
-        image: eu.gcr.io/code-supply/site-operator:bd4db12
+        image: eu.gcr.io/code-supply/site-operator:de28bbe
         name: site-operator
         resources:
           limits:
