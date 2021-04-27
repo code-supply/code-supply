@@ -5,7 +5,6 @@ defmodule SiteOperator.K8s.Operations do
   alias SiteOperator.PhoenixSites.PhoenixSite
 
   alias SiteOperator.K8s.{
-    AffiliateSite,
     AuthorizationPolicy,
     Certificate,
     Deployment,
@@ -31,7 +30,6 @@ defmodule SiteOperator.K8s.Operations do
   def inner_ns_creations(
         %PhoenixSite{
           name: namespace,
-          domains: domains,
           secret_key_base: secret_key_base,
           live_view_signing_salt: live_view_signing_salt
         } = phoenix_site
@@ -41,12 +39,7 @@ defmodule SiteOperator.K8s.Operations do
     [
       deployment(phoenix_site),
       %Service{name: name, namespace: namespace},
-      %VirtualService{
-        name: "app",
-        namespace: namespace,
-        gateways: ["affable/affable"],
-        domains: domains
-      },
+      virtual_service(phoenix_site),
       %Secret{
         name: name,
         namespace: namespace,
@@ -89,17 +82,17 @@ defmodule SiteOperator.K8s.Operations do
     %VirtualService{
       name: "app",
       namespace: namespace,
-      gateways: [],
+      gateways: ["affable/affable"] ++ Enum.map(site_gateways(namespace, domains), & &1.name),
       domains: domains
     }
   end
 
-  def checks(%AffiliateSite{name: namespace, domains: domains} = affiliate_site) do
+  def checks(%PhoenixSite{name: namespace, domains: domains} = site) do
     (initial_resources(namespace) ++
        certificates(namespace, domains) ++
-       gateways(namespace, domains) ++
-       virtual_services(namespace, domains) ++
-       [deployment(affiliate_site |> from_k8s())])
+       site_gateways(namespace, domains) ++
+       [virtual_service(site)] ++
+       [deployment(site)])
     |> Enum.map(&get/1)
   end
 
@@ -110,18 +103,7 @@ defmodule SiteOperator.K8s.Operations do
     end
   end
 
-  defp virtual_services(namespace, all_domains) do
-    [
-      %VirtualService{
-        name: "app",
-        namespace: namespace,
-        gateways: ["affable/affable"],
-        domains: all_domains
-      }
-    ]
-  end
-
-  defp gateways(name, all_domains) do
+  defp site_gateways(name, all_domains) do
     case custom_domains(all_domains) do
       [] -> []
       domains -> [%Gateway{name: "app", namespace: name, domains: domains}]

@@ -17,7 +17,9 @@ defmodule SiteOperator.K8s.OperationsTest do
     %{
       site: site,
       initial_creations: initial_creations(site),
-      inner_creations: inner_ns_creations(site)
+      inner_creations: inner_ns_creations(site),
+      inner_creations_custom_domain:
+        inner_ns_creations(%{site | domains: ["host1.affable.app", "mydomain.example.com"]})
     }
   end
 
@@ -81,6 +83,28 @@ defmodule SiteOperator.K8s.OperationsTest do
                "spec" => %{
                  "gateways" => ["affable/affable"],
                  "hosts" => ["host1.affable.app"],
+                 "http" => [
+                   %{
+                     "match" => [%{"uri" => %{"prefix" => "/"}}],
+                     "route" => [
+                       %{"destination" => %{"host" => "app.my-namespace.svc.cluster.local"}}
+                     ]
+                   }
+                 ]
+               }
+             } == creations |> find_kind("VirtualService")
+    end
+
+    test "virtual service includes own gateway when using custom domain", %{
+      inner_creations_custom_domain: creations
+    } do
+      assert %{
+               "apiVersion" => "networking.istio.io/v1beta1",
+               "kind" => "VirtualService",
+               "metadata" => %{"name" => "app", "namespace" => "my-namespace"},
+               "spec" => %{
+                 "gateways" => ["affable/affable", "app"],
+                 "hosts" => ["host1.affable.app", "mydomain.example.com"],
                  "http" => [
                    %{
                      "match" => [%{"uri" => %{"prefix" => "/"}}],
