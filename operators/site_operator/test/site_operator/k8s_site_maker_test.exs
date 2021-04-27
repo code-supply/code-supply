@@ -190,6 +190,50 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       assert {:ok, upgraded: [virtual_service]} == reconcile.(site)
     end
+
+    test "provides useful info when upgrading virtual service doesn't work", %{
+      reconcile_1: reconcile
+    } do
+      outdated_site = affiliate_site()
+      site = affiliate_site(["acoolcustomdomain.example.com"])
+
+      outdated_virtual_service = outdated_site |> virtual_service()
+
+      virtual_service = site |> virtual_service()
+      virtual_service_k8s = virtual_service |> to_k8s()
+
+      deployment = site |> deployment()
+
+      MockK8s
+      |> expect(:execute, fn [
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get}
+                             ] ->
+        {:ok,
+         %{
+           Deployment => [deployment],
+           VirtualService => [outdated_virtual_service]
+         }}
+      end)
+      |> expect(:execute, fn [
+                               %Operation{
+                                 action: :update,
+                                 resource: ^virtual_service_k8s
+                               }
+                             ] ->
+        {:error, ["bad news"]}
+      end)
+
+      assert {:error,
+              upgrade_failed: [
+                original: outdated_virtual_service,
+                proposed: virtual_service,
+                messages: ["bad news"]
+              ]} == reconcile.(site)
+    end
   end
 
   describe "regular reconciliation" do

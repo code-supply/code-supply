@@ -37,12 +37,15 @@ defmodule SiteOperator.K8sSiteMaker do
   def reconcile(%AffiliateSite{} = proposed_site) do
     case proposed_site |> Operations.checks() |> execute() do
       {:ok, current_resources} ->
-        upgraded_resources = upgrade(proposed_site |> from_k8s(), current_resources)
+        case upgrade(proposed_site |> from_k8s(), current_resources) do
+          {:ok, []} ->
+            {:ok, :nothing_to_do}
 
-        if upgraded_resources |> length == 0 do
-          {:ok, :nothing_to_do}
-        else
-          {:ok, upgraded: upgraded_resources}
+          {:ok, upgraded_resources} ->
+            {:ok, upgraded: upgraded_resources}
+
+          {:error, msgs} ->
+            {:error, upgrade_failed: msgs}
         end
 
       {:error, some_resources_missing: missing_resources} ->
@@ -62,13 +65,21 @@ defmodule SiteOperator.K8sSiteMaker do
       {current_deployment, proposed_phoenix_site |> Operations.deployment()},
       {current_virtual_service, proposed_phoenix_site |> Operations.virtual_service()}
     ]
-    |> Enum.reduce([], fn
-      {current, current}, upgrades ->
-        upgrades
+    |> Enum.reduce({:ok, []}, fn
+      _, {:error, msg} ->
+        {:error, msg}
 
-      {_current, proposed}, upgrades ->
-        {:ok, _} = execute([Operations.update(proposed)])
-        [proposed | upgrades]
+      {current, current}, {:ok, upgrades} ->
+        {:ok, upgrades}
+
+      {current, proposed}, {:ok, upgrades} ->
+        case execute([Operations.update(proposed)]) do
+          {:ok, _} ->
+            {:ok, [proposed | upgrades]}
+
+          {:error, msgs} ->
+            {:error, [original: current, proposed: proposed, messages: msgs]}
+        end
     end)
   end
 
