@@ -9,6 +9,9 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-production
     solvers:
+    - http01:
+        ingress:
+          class: istio
     - dns01:
         cloudDNS:
           project: code-supply
