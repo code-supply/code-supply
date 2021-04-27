@@ -29606,7 +29606,7 @@ spec:
             name: site-operator
         - configMapRef:
             name: site-operator-5k5c9mfbhh
-        image: eu.gcr.io/code-supply/site-operator:51406ed
+        image: eu.gcr.io/code-supply/site-operator:bd4db12
         name: site-operator
         resources:
           limits:
@@ -29695,6 +29695,9 @@ spec:
       name: letsencrypt-production
     server: https://acme-v02.api.letsencrypt.org/directory
     solvers:
+    - http01:
+        ingress:
+          class: istio
     - dns01:
         cloudDNS:
           project: code-supply
@@ -29713,6 +29716,9 @@ spec:
       name: letsencrypt-staging
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     solvers:
+    - http01:
+        ingress:
+          class: istio
     - dns01:
         cloudDNS:
           project: code-supply
