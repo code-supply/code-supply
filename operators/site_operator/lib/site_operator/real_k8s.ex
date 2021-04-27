@@ -19,7 +19,7 @@ defmodule SiteOperator.RealK8s do
             K8s.Client.delete(resource)
 
           %SiteOperator.K8s.Operation{action: :update, resource: resource} ->
-            K8s.Client.update(resource)
+            K8s.Client.patch(resource)
         end
       end)
 
