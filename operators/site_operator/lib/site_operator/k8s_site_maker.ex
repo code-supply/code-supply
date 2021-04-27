@@ -1,10 +1,13 @@
 defmodule SiteOperator.K8sSiteMaker do
   @behaviour SiteOperator.SiteMaker
 
+  alias SiteOperator.PhoenixSites.PhoenixSite
+
   alias SiteOperator.K8s.{
     AffiliateSite,
     Certificate,
     Deployment,
+    Gateway,
     Namespace,
     Operations,
     VirtualService
@@ -27,29 +30,46 @@ defmodule SiteOperator.K8sSiteMaker do
 
   @impl SiteOperator.SiteMaker
   def delete(%AffiliateSite{} = site) do
-    execute(Operations.deletions(site))
+    execute(Operations.deletions(site |> from_k8s()))
   end
 
   @impl SiteOperator.SiteMaker
-  def reconcile(%AffiliateSite{} = site) do
-    case site |> Operations.checks() |> execute() do
-      {:ok, %{Deployment => [current_deployment]}} ->
-        proposed_deployment = site |> from_k8s() |> Operations.deployment()
+  def reconcile(%AffiliateSite{} = proposed_site) do
+    case proposed_site |> Operations.checks() |> execute() do
+      {:ok, current_resources} ->
+        upgraded_resources = upgrade(proposed_site |> from_k8s(), current_resources)
 
-        if current_deployment != proposed_deployment do
-          {:ok, _} = execute([Operations.update(proposed_deployment)])
-          {:ok, upgraded: [proposed_deployment]}
-        else
+        if upgraded_resources |> length == 0 do
           {:ok, :nothing_to_do}
+        else
+          {:ok, upgraded: upgraded_resources}
         end
 
       {:error, some_resources_missing: missing_resources} ->
         for resource <- missing_resources do
-          {:ok, _} = recreate(resource, site)
+          {:ok, _} = recreate(resource, proposed_site)
         end
 
         {:ok, recreated: missing_resources}
     end
+  end
+
+  defp upgrade(%PhoenixSite{} = proposed_phoenix_site, %{
+         Deployment => [current_deployment],
+         VirtualService => [current_virtual_service]
+       }) do
+    [
+      {current_deployment, proposed_phoenix_site |> Operations.deployment()},
+      {current_virtual_service, proposed_phoenix_site |> Operations.virtual_service()}
+    ]
+    |> Enum.reduce([], fn
+      {current, current}, upgrades ->
+        upgrades
+
+      {_current, proposed}, upgrades ->
+        {:ok, _} = execute([Operations.update(proposed)])
+        [proposed | upgrades]
+    end)
   end
 
   defp recreate(%Namespace{} = ns, %AffiliateSite{} = site) do
@@ -67,6 +87,10 @@ defmodule SiteOperator.K8sSiteMaker do
 
   defp recreate(%Certificate{} = cert, _) do
     execute([Operations.create(cert)])
+  end
+
+  defp recreate(%Gateway{} = gateway, _) do
+    execute([Operations.create(gateway)])
   end
 
   defp recreate(%VirtualService{} = vs, _) do

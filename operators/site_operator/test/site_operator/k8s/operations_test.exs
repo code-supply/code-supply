@@ -40,6 +40,18 @@ defmodule SiteOperator.K8s.OperationsTest do
     end
   end
 
+  describe "deletions" do
+    test "include certificates when there are custom domains (they live in a different NS)", %{
+      site: site
+    } do
+      custom_domain_site = %{site | domains: ["host1.affable.app", "something.example.com"]}
+      deletions = deletions(custom_domain_site)
+
+      assert %{"spec" => %{"dnsNames" => ["something.example.com"]}} =
+               deletions |> find_kind("Certificate")
+    end
+  end
+
   describe "inner namespace creations" do
     test "all use the provided namespace", %{inner_creations: creations} do
       namespaces =

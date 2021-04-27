@@ -5,10 +5,13 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
   alias SiteOperator.K8s.{
     AffiliateSite,
+    Certificate,
     Deployment,
+    Gateway,
     Namespace,
     Operation,
-    Operations
+    Operations,
+    VirtualService
   }
 
   import SiteOperator.K8s.Conversions
@@ -16,8 +19,8 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
   import Hammox
 
-  @namespace "generatedname"
-  @domains ["testdomain.example.com"]
+  @namespace "sited3adb33f"
+  @domains ["sited3adb33f.affable.app"]
 
   setup :verify_on_exit!
 
@@ -25,14 +28,19 @@ defmodule SiteOperator.K8sSiteMakerTest do
     Hammox.protect(K8sSiteMaker, SiteMaker)
   end
 
-  defp deployment() do
-    Operations.deployment(
-      %AffiliateSite{
-        name: @namespace,
-        domains: @domains
-      }
-      |> from_k8s()
-    )
+  defp affiliate_site(extra_domains \\ []) do
+    %AffiliateSite{
+      name: @namespace,
+      domains: @domains ++ extra_domains
+    }
+  end
+
+  defp deployment(affiliate_site) do
+    affiliate_site |> from_k8s() |> Operations.deployment()
+  end
+
+  defp virtual_service(affiliate_site) do
+    affiliate_site |> from_k8s() |> Operations.virtual_service()
   end
 
   describe "creation" do
@@ -72,7 +80,10 @@ defmodule SiteOperator.K8sSiteMakerTest do
       MockK8s
       |> expect(:execute, fn operations ->
         assert operations ==
-                 Operations.deletions(affiliate_site_no_custom_domain(name: @namespace))
+                 Operations.deletions(
+                   affiliate_site_no_custom_domain(name: @namespace)
+                   |> from_k8s()
+                 )
 
         {:ok, %{}}
       end)
@@ -90,20 +101,115 @@ defmodule SiteOperator.K8sSiteMakerTest do
     end
   end
 
-  describe "reconciliation" do
+  describe "reconciliation of site with custom domains" do
+    test "creates missing certificates", %{reconcile_1: reconcile} do
+      site = %AffiliateSite{
+        name: @namespace,
+        domains: ["something.affable.app", "acoolcustomdomain.example.com"]
+      }
+
+      expected_certificate = %Certificate{name: "something", domains: site.domains}
+      expected_certificate_k8s = expected_certificate |> to_k8s()
+
+      MockK8s
+      |> expect(:execute, fn [
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get}
+                             ] ->
+        {:error, some_resources_missing: [expected_certificate]}
+      end)
+      |> expect(:execute, fn [%Operation{action: :create, resource: ^expected_certificate_k8s}] ->
+        {:ok, %{}}
+      end)
+
+      assert {:ok, recreated: [expected_certificate]} == reconcile.(site)
+    end
+
+    test "creates missing gateway", %{reconcile_1: reconcile} do
+      site = %AffiliateSite{
+        name: @namespace,
+        domains: ["something.affable.app", "acoolcustomdomain.example.com"]
+      }
+
+      expected_gateway = %Gateway{name: "app", namespace: @namespace, domains: site.domains}
+      expected_gateway_k8s = expected_gateway |> to_k8s()
+
+      MockK8s
+      |> expect(:execute, fn [
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get}
+                             ] ->
+        {:error, some_resources_missing: [expected_gateway]}
+      end)
+      |> expect(:execute, fn [%Operation{action: :create, resource: ^expected_gateway_k8s}] ->
+        {:ok, %{}}
+      end)
+
+      assert {:ok, recreated: [expected_gateway]} == reconcile.(site)
+    end
+
+    test "adds gateway to the virtual service", %{reconcile_1: reconcile} do
+      outdated_site = affiliate_site()
+      site = affiliate_site(["acoolcustomdomain.example.com"])
+
+      outdated_virtual_service = outdated_site |> virtual_service()
+
+      virtual_service = site |> virtual_service()
+      virtual_service_k8s = virtual_service |> to_k8s()
+
+      deployment = site |> deployment()
+
+      MockK8s
+      |> expect(:execute, fn [
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get}
+                             ] ->
+        {:ok,
+         %{
+           Deployment => [deployment],
+           VirtualService => [outdated_virtual_service]
+         }}
+      end)
+      |> expect(:execute, fn [
+                               %Operation{
+                                 action: :update,
+                                 resource: ^virtual_service_k8s
+                               }
+                             ] ->
+        {:ok, %{VirtualService => [virtual_service]}}
+      end)
+
+      assert {:ok, upgraded: [virtual_service]} == reconcile.(site)
+    end
+  end
+
+  describe "regular reconciliation" do
     test "does nothing when the top-level resources are available with insignificant differences",
          %{
            reconcile_1: reconcile
          } do
+      site = affiliate_site()
+
       MockK8s
       |> stub(:execute, fn [
                              %Operation{action: :get},
+                             %Operation{action: :get},
                              %Operation{action: :get}
                            ] ->
-        {:ok, %{Deployment => [deployment()]}}
+        {:ok,
+         %{Deployment => [site |> deployment()], VirtualService => [site |> virtual_service()]}}
       end)
 
-      assert reconcile.(%AffiliateSite{name: @namespace, domains: @domains}) ==
+      assert reconcile.(site) ==
                {:ok, :nothing_to_do}
     end
 
@@ -136,24 +242,27 @@ defmodule SiteOperator.K8sSiteMakerTest do
       ns = %Namespace{name: @namespace}
       ns_k8s = ns |> to_k8s
 
-      deployment = deployment()
+      site = affiliate_site()
 
-      outdated_deployment = %{deployment | image: "old-image"}
-
+      deployment = site |> deployment()
       deployment_k8s = deployment |> to_k8s
 
-      site = %AffiliateSite{
-        name: @namespace,
-        domains: @domains
-      }
+      outdated_deployment = %{deployment | image: "old-image"}
 
       MockK8s
       |> expect(:execute, fn [
                                %Operation{action: :get, resource: ^ns_k8s},
-                               %Operation{action: :get, resource: deployment_resource}
+                               %Operation{action: :get},
+                               %Operation{action: :get, resource: sent_deployment_k8s}
                              ] ->
-        assert deployment_resource == deployment_k8s
-        {:ok, %{Namespace => [ns_k8s], Deployment => [outdated_deployment]}}
+        assert sent_deployment_k8s == deployment_k8s
+
+        {:ok,
+         %{
+           Namespace => [ns_k8s],
+           Deployment => [outdated_deployment],
+           VirtualService => [site |> virtual_service()]
+         }}
       end)
       |> expect(:execute, fn [%Operation{action: :update, resource: ^deployment_k8s}] ->
         {:ok, %{Deployment => [deployment]}}
@@ -166,7 +275,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
       ns = %Namespace{name: @namespace}
       ns_k8s = ns |> to_k8s
 
-      deployment = deployment()
+      deployment = affiliate_site() |> deployment()
       deployment_k8s = deployment |> to_k8s
 
       site = %AffiliateSite{
@@ -179,6 +288,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
       MockK8s
       |> expect(:execute, fn [
                                %Operation{action: :get, resource: ^ns_k8s},
+                               %Operation{action: :get},
                                %Operation{action: :get, resource: ^deployment_k8s}
                              ] ->
         {:error, some_resources_missing: [ns, deployment]}

@@ -1,4 +1,6 @@
 defmodule SiteOperator.K8s.Conversions do
+  alias SiteOperator.Domain
+
   alias SiteOperator.K8s.{
     AffiliateSite,
     AuthorizationPolicy,
@@ -375,7 +377,7 @@ defmodule SiteOperator.K8s.Conversions do
 
   defp have_no_custom_domains?(domains) do
     domains
-    |> Enum.all?(&String.ends_with?(&1, ".affable.app"))
+    |> Enum.all?(&Domain.is_affable?/1)
   end
 
   defp certificate_secret_name(name) do

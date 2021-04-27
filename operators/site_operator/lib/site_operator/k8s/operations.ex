@@ -1,12 +1,15 @@
 defmodule SiteOperator.K8s.Operations do
   import SiteOperator.K8s.Conversions, only: [to_k8s: 1]
 
+  alias SiteOperator.Domain
   alias SiteOperator.PhoenixSites.PhoenixSite
 
   alias SiteOperator.K8s.{
     AffiliateSite,
     AuthorizationPolicy,
+    Certificate,
     Deployment,
+    Gateway,
     Namespace,
     Operation,
     Secret,
@@ -20,8 +23,8 @@ defmodule SiteOperator.K8s.Operations do
     [initial_creations(phoenix_site), inner_ns_creations(phoenix_site)]
   end
 
-  def initial_creations(%PhoenixSite{name: name, domains: domains}) do
-    initial_resources(name, domains)
+  def initial_creations(%PhoenixSite{name: name}) do
+    initial_resources(name)
     |> Enum.map(&create/1)
   end
 
@@ -82,14 +85,63 @@ defmodule SiteOperator.K8s.Operations do
     }
   end
 
+  def virtual_service(%PhoenixSite{name: namespace, domains: domains}) do
+    %VirtualService{
+      name: "app",
+      namespace: namespace,
+      gateways: [],
+      domains: domains
+    }
+  end
+
   def checks(%AffiliateSite{name: namespace, domains: domains} = affiliate_site) do
-    (initial_resources(namespace, domains) ++
+    (initial_resources(namespace) ++
+       certificates(namespace, domains) ++
+       gateways(namespace, domains) ++
+       virtual_services(namespace, domains) ++
        [deployment(affiliate_site |> from_k8s())])
     |> Enum.map(&get/1)
   end
 
-  def deletions(%AffiliateSite{name: name, domains: domains}) do
-    initial_resources(name, domains)
+  defp certificates(name, all_domains) do
+    case custom_domains(all_domains) do
+      [] -> []
+      domains -> [%Certificate{name: name, domains: domains}]
+    end
+  end
+
+  defp virtual_services(namespace, all_domains) do
+    [
+      %VirtualService{
+        name: "app",
+        namespace: namespace,
+        gateways: ["affable/affable"],
+        domains: all_domains
+      }
+    ]
+  end
+
+  defp gateways(name, all_domains) do
+    case custom_domains(all_domains) do
+      [] -> []
+      domains -> [%Gateway{name: "app", namespace: name, domains: domains}]
+    end
+  end
+
+  defp custom_domains(domains) do
+    Enum.reject(domains, &Domain.is_affable?/1)
+  end
+
+  defp initial_resources(name) do
+    [
+      %Namespace{
+        name: name
+      }
+    ]
+  end
+
+  def deletions(%PhoenixSite{name: name, domains: domains}) do
+    (initial_resources(name) ++ certificates(name, domains))
     |> Enum.map(&delete/1)
   end
 
@@ -107,13 +159,5 @@ defmodule SiteOperator.K8s.Operations do
 
   def update(resource) do
     %Operation{action: :update, resource: resource |> to_k8s()}
-  end
-
-  defp initial_resources(name, _domains) do
-    [
-      %Namespace{
-        name: name
-      }
-    ]
   end
 end
