@@ -66,10 +66,18 @@ resource "google_dns_record_set" "ab-root" {
   type         = "A"
 }
 
+resource "google_dns_record_set" "ab-www" {
+  name         = "www.${google_dns_managed_zone.ab.dns_name}"
+  managed_zone = google_dns_managed_zone.ab.name
+  rrdatas      = [google_dns_record_set.ab-root.name]
+  ttl          = 300
+  type         = "CNAME"
+}
+
 resource "google_dns_record_set" "ab-wildcard" {
   name         = "*.${google_dns_managed_zone.ab.dns_name}"
   managed_zone = google_dns_managed_zone.ab.name
-  rrdatas      = [google_compute_address.multi-vhost.address]
+  rrdatas      = ["35.195.27.167"]
   ttl          = 300
   type         = "A"
 }
