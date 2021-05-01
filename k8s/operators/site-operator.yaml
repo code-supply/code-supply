@@ -199,7 +199,7 @@
       "verbs": [
         "create",
         "get",
-        "update",
+        "patch",
         "delete"
       ]
     },

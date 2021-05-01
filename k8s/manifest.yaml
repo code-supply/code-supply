@@ -28875,7 +28875,7 @@ rules:
   verbs:
   - create
   - get
-  - update
+  - patch
   - delete
 - apiGroups:
   - networking.istio.io
