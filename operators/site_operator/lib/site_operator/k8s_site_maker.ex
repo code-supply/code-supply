@@ -78,7 +78,13 @@ defmodule SiteOperator.K8sSiteMaker do
             {:ok, [proposed | upgrades]}
 
           {:error, msgs} ->
-            {:error, [original: current, proposed: proposed, messages: msgs]}
+            {:error,
+             [
+               original: current,
+               proposed: proposed,
+               proposed_phoenix_site: proposed_phoenix_site,
+               messages: msgs
+             ]}
         end
     end)
   end

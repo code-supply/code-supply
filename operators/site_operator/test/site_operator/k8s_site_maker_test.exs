@@ -2,6 +2,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
   use ExUnit.Case, async: true
 
   alias SiteOperator.{K8sSiteMaker, SiteMaker, MockK8s}
+  alias SiteOperator.PhoenixSites.PhoenixSite
 
   alias SiteOperator.K8s.{
     AffiliateSite,
@@ -229,10 +230,11 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       assert {:error,
               upgrade_failed: [
-                original: outdated_virtual_service,
-                proposed: virtual_service,
+                original: ^outdated_virtual_service,
+                proposed: ^virtual_service,
+                proposed_phoenix_site: %PhoenixSite{},
                 messages: ["bad news"]
-              ]} == reconcile.(site)
+              ]} = reconcile.(site)
     end
   end
 
