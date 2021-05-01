@@ -193,7 +193,7 @@ defmodule SiteOperator.K8s.Conversions do
         },
         "servers" => [
           %{
-            "hosts" => domains,
+            "hosts" => namespaced_domains(namespace, domains),
             "port" => %{
               "name" => "http",
               "number" => 80,
@@ -204,7 +204,7 @@ defmodule SiteOperator.K8s.Conversions do
             }
           },
           %{
-            "hosts" => domains,
+            "hosts" => namespaced_domains(namespace, domains),
             "port" => %{
               "name" => "https",
               "number" => 443,
@@ -246,6 +246,12 @@ defmodule SiteOperator.K8s.Conversions do
         ]
       }
     }
+  end
+
+  defp namespaced_domains(namespace, domains) do
+    for domain <- domains do
+      "#{namespace}/#{domain}"
+    end
   end
 
   defp affiliate_site_image do
@@ -362,9 +368,17 @@ defmodule SiteOperator.K8s.Conversions do
   def from_k8s(%{
         "kind" => "Gateway",
         "metadata" => %{"name" => name, "namespace" => namespace},
-        "spec" => %{"servers" => [%{"hosts" => domains} | _]}
+        "spec" => %{"servers" => [%{"hosts" => ns_prefixed_domains} | _]}
       }) do
-    %Gateway{name: name, namespace: namespace, domains: domains}
+    %Gateway{
+      name: name,
+      namespace: namespace,
+      domains:
+        for d <- ns_prefixed_domains do
+          [_ns | [domain | []]] = String.split(d, "/", parts: 2)
+          domain
+        end
+    }
   end
 
   def from_k8s(%{

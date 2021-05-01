@@ -18,6 +18,7 @@ defmodule SiteOperator.K8s.ConversionsTest do
   @name "my-name"
   @namespace "my-namespace"
   @domains ["some-domain.example.com", "another-domain.biz"]
+  @namespaced_domains ["my-namespace/some-domain.example.com", "my-namespace/another-domain.biz"]
   @secret_data %{"my-secret" => "stuff"}
   @image "nginx:1.2.3"
 
@@ -245,40 +246,39 @@ defmodule SiteOperator.K8s.ConversionsTest do
       gateway: gateway,
       certificate: certificate
     } do
-      assert get_in(gateway, ["spec", "servers"]) ==
-               [
-                 %{
-                   "port" => %{
-                     "number" => 80,
-                     "name" => "http",
-                     "protocol" => "HTTP"
-                   },
-                   "hosts" => @domains,
-                   "tls" => %{
-                     "httpsRedirect" => true
-                   }
+      assert [
+               %{
+                 "port" => %{
+                   "number" => 80,
+                   "name" => "http",
+                   "protocol" => "HTTP"
                  },
-                 %{
-                   "port" => %{
-                     "number" => 443,
-                     "name" => "https",
-                     "protocol" => "HTTPS"
-                   },
-                   "hosts" => @domains,
-                   "tls" => %{
-                     "mode" => "SIMPLE",
-                     "credentialName" => certificate |> get_in(["spec", "secretName"])
-                   }
+                 "hosts" => @namespaced_domains,
+                 "tls" => %{
+                   "httpsRedirect" => true
                  }
-               ]
+               },
+               %{
+                 "port" => %{
+                   "number" => 443,
+                   "name" => "https",
+                   "protocol" => "HTTPS"
+                 },
+                 "hosts" => @namespaced_domains,
+                 "tls" => %{
+                   "mode" => "SIMPLE",
+                   "credentialName" => certificate |> get_in(["spec", "secretName"])
+                 }
+               }
+             ] == get_in(gateway, ["spec", "servers"])
     end
 
     test "can be turned back into a struct", %{gateway: gateway} do
-      assert gateway |> from_k8s() == %Gateway{
+      assert %Gateway{
                name: @name,
                namespace: @namespace,
                domains: @domains
-             }
+             } == gateway |> from_k8s()
     end
   end
 
