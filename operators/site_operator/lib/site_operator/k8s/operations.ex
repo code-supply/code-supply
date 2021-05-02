@@ -22,8 +22,8 @@ defmodule SiteOperator.K8s.Operations do
     [initial_creations(phoenix_site), inner_ns_creations(phoenix_site)]
   end
 
-  def initial_creations(%PhoenixSite{name: name}) do
-    initial_resources(name)
+  def initial_creations(%PhoenixSite{} = site) do
+    initial_resources(site)
     |> Enum.map(&create/1)
   end
 
@@ -58,6 +58,18 @@ defmodule SiteOperator.K8s.Operations do
     |> Enum.map(&create/1)
   end
 
+  def upgradable_resources(phoenix_site) do
+    %{
+      Deployment => [deployment(phoenix_site)],
+      Gateway => site_gateways(phoenix_site),
+      VirtualService => [virtual_service(phoenix_site)]
+    }
+  end
+
+  def namespace(%PhoenixSite{name: name}) do
+    %Namespace{name: name}
+  end
+
   def deployment(%PhoenixSite{
         name: namespace,
         image: image,
@@ -88,7 +100,7 @@ defmodule SiteOperator.K8s.Operations do
   end
 
   def checks(%PhoenixSite{name: namespace, domains: domains} = site) do
-    (initial_resources(namespace) ++
+    (initial_resources(site) ++
        certificates(namespace, domains) ++
        site_gateways(namespace, domains) ++
        [virtual_service(site)] ++
@@ -103,6 +115,10 @@ defmodule SiteOperator.K8s.Operations do
     end
   end
 
+  defp site_gateways(%PhoenixSite{name: name, domains: domains}) do
+    site_gateways(name, domains)
+  end
+
   defp site_gateways(name, all_domains) do
     case custom_domains(all_domains) do
       [] -> []
@@ -114,16 +130,12 @@ defmodule SiteOperator.K8s.Operations do
     Enum.reject(domains, &Domain.is_affable?/1)
   end
 
-  defp initial_resources(name) do
-    [
-      %Namespace{
-        name: name
-      }
-    ]
+  defp initial_resources(%PhoenixSite{} = site) do
+    [namespace(site)]
   end
 
-  def deletions(%PhoenixSite{name: name, domains: domains}) do
-    (initial_resources(name) ++ certificates(name, domains))
+  def deletions(%PhoenixSite{name: name, domains: domains} = site) do
+    (initial_resources(site) ++ certificates(name, domains))
     |> Enum.map(&delete/1)
   end
 

@@ -57,22 +57,35 @@ defmodule SiteOperator.K8sSiteMaker do
     end
   end
 
-  defp upgrade(%PhoenixSite{} = proposed_phoenix_site, %{
-         Deployment => [current_deployment],
-         VirtualService => [current_virtual_service]
-       }) do
-    [
-      {current_deployment, proposed_phoenix_site |> Operations.deployment()},
-      {current_virtual_service, proposed_phoenix_site |> Operations.virtual_service()}
-    ]
+  defp current_resources_to_upgraded_resources(current_resources, proposed_resources) do
+    resource_types_to_check =
+      Map.keys(current_resources)
+      |> Enum.reduce([], fn rt, acc ->
+        if proposed_resources |> Map.has_key?(rt) do
+          [rt | acc]
+        else
+          acc
+        end
+      end)
+
+    for resource_type <- resource_types_to_check do
+      {current_resources[resource_type], proposed_resources[resource_type]}
+    end
+  end
+
+  defp upgrade(%PhoenixSite{} = proposed_phoenix_site, current_resources) do
+    current_resources_to_upgraded_resources(
+      current_resources,
+      Operations.upgradable_resources(proposed_phoenix_site)
+    )
     |> Enum.reduce({:ok, []}, fn
       _, {:error, msg} ->
         {:error, msg}
 
-      {current, current}, {:ok, upgrades} ->
+      {[current], [current]}, {:ok, upgrades} ->
         {:ok, upgrades}
 
-      {current, proposed}, {:ok, upgrades} ->
+      {[current], [proposed]}, {:ok, upgrades} ->
         case execute([Operations.update(proposed)]) do
           {:ok, _} ->
             {:ok, [proposed | upgrades]}
