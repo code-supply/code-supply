@@ -226,8 +226,9 @@
         "certificates"
       ],
       "verbs": [
-        "get",
         "create",
+        "get",
+        "patch",
         "delete"
       ]
     },

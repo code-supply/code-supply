@@ -28892,8 +28892,9 @@ rules:
   resources:
   - certificates
   verbs:
-  - get
   - create
+  - get
+  - patch
   - delete
 - apiGroups:
   - security.istio.io

@@ -91,7 +91,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   @rule {"apps", ["deployments"], ["create", "get", "patch", "delete"]}
   @rule {"networking.istio.io", ["gateways", "virtualservices"],
          ["get", "create", "patch", "delete"]}
-  @rule {"cert-manager.io", ["certificates"], ["get", "create", "delete"]}
+  @rule {"cert-manager.io", ["certificates"], ["create", "get", "patch", "delete"]}
   @rule {"security.istio.io", ["authorizationpolicies"], ["get", "create", "delete"]}
 
   @spec add(map()) :: :ok | :error
