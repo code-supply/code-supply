@@ -60,6 +60,7 @@ defmodule SiteOperator.K8s.Operations do
 
   def upgradable_resources(phoenix_site) do
     %{
+      Certificate => certificates(phoenix_site),
       Deployment => [deployment(phoenix_site)],
       Gateway => site_gateways(phoenix_site),
       VirtualService => [virtual_service(phoenix_site)]
@@ -101,14 +102,14 @@ defmodule SiteOperator.K8s.Operations do
 
   def checks(%PhoenixSite{name: namespace, domains: domains} = site) do
     (initial_resources(site) ++
-       certificates(namespace, domains) ++
+       certificates(site) ++
        site_gateways(namespace, domains) ++
        [virtual_service(site)] ++
        [deployment(site)])
     |> Enum.map(&get/1)
   end
 
-  defp certificates(name, all_domains) do
+  defp certificates(%PhoenixSite{name: name, domains: all_domains}) do
     case custom_domains(all_domains) do
       [] -> []
       domains -> [%Certificate{name: name, domains: domains}]
@@ -134,8 +135,8 @@ defmodule SiteOperator.K8s.Operations do
     [namespace(site)]
   end
 
-  def deletions(%PhoenixSite{name: name, domains: domains} = site) do
-    (initial_resources(site) ++ certificates(name, domains))
+  def deletions(%PhoenixSite{} = site) do
+    (initial_resources(site) ++ certificates(site))
     |> Enum.map(&delete/1)
   end
 
