@@ -193,7 +193,7 @@ defmodule SiteOperator.K8s.Conversions do
         },
         "servers" => [
           %{
-            "hosts" => namespaced_domains(namespace, domains),
+            "hosts" => "*",
             "port" => %{
               "name" => "http",
               "number" => 80,
@@ -368,8 +368,12 @@ defmodule SiteOperator.K8s.Conversions do
   def from_k8s(%{
         "kind" => "Gateway",
         "metadata" => %{"name" => name, "namespace" => namespace},
-        "spec" => %{"servers" => [%{"hosts" => ns_prefixed_domains} | _]}
+        "spec" => %{"servers" => servers}
       }) do
+    [%{"hosts" => ns_prefixed_domains} | _] =
+      servers
+      |> Enum.reject(&match?(%{"hosts" => "*"}, &1))
+
     %Gateway{
       name: name,
       namespace: namespace,
