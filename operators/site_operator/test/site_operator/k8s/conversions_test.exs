@@ -253,7 +253,7 @@ defmodule SiteOperator.K8s.ConversionsTest do
                    "name" => "http",
                    "protocol" => "HTTP"
                  },
-                 "hosts" => "*",
+                 "hosts" => ["*"],
                  "tls" => %{
                    "httpsRedirect" => true
                  }

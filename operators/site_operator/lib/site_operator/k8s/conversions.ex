@@ -193,7 +193,7 @@ defmodule SiteOperator.K8s.Conversions do
         },
         "servers" => [
           %{
-            "hosts" => "*",
+            "hosts" => ["*"],
             "port" => %{
               "name" => "http",
               "number" => 80,
@@ -372,7 +372,7 @@ defmodule SiteOperator.K8s.Conversions do
       }) do
     [%{"hosts" => ns_prefixed_domains} | _] =
       servers
-      |> Enum.reject(&match?(%{"hosts" => "*"}, &1))
+      |> Enum.reject(&match?(%{"hosts" => ["*"]}, &1))
 
     %Gateway{
       name: name,
