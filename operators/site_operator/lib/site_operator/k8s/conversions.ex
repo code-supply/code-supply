@@ -83,7 +83,6 @@ defmodule SiteOperator.K8s.Conversions do
       "kind" => "Deployment",
       "metadata" => %{"name" => name, "namespace" => namespace},
       "spec" => %{
-        "replicas" => 2,
         "selector" => %{
           "matchLabels" => %{
             "app" => name
