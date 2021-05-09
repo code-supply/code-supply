@@ -71,13 +71,19 @@ defmodule Affable.Sites do
   end
 
   def canonical_url(%Site{domains: domains}) do
-    domain =
-      domains
-      |> Enum.find(fn d ->
-        !Domains.affable_domain?(d)
-      end)
+    domain = Enum.find(domains, &(!Domains.affable_domain?(&1)))
 
     "//#{domain.name}/"
+  end
+
+  def preview_url(%Site{domains: [%Domain{name: name}]}) do
+    "//#{name}/preview"
+  end
+
+  def preview_url(%Site{domains: domains}) do
+    domain = Enum.find(domains, &Domains.affable_domain?(&1))
+
+    "//#{domain.name}/preview"
   end
 
   def get_site!(user, id) do

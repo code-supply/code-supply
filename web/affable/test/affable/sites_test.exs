@@ -72,21 +72,42 @@ defmodule Affable.SitesTest do
              |> Sites.status() == :pending
     end
 
+    test "preview URL chooses affable domain" do
+      assert "//something.affable.app/preview" ==
+               %Site{
+                 domains: [
+                   %Domain{name: "something.affable.app"},
+                   %Domain{name: "my.domain.example.com"}
+                 ]
+               }
+               |> Sites.preview_url()
+    end
+
+    test "preview URL chooses only domain if there are no affable ones" do
+      assert "//my.domain.example.com/preview" ==
+               %Site{
+                 domains: [
+                   %Domain{name: "my.domain.example.com"}
+                 ]
+               }
+               |> Sites.preview_url()
+    end
+
     test "canonical URL with a single domain uses that domain" do
-      assert %Site{domains: [%Domain{name: "something.affable.app"}]}
-             |> Sites.canonical_url() ==
-               "//something.affable.app/"
+      assert "//something.affable.app/" ==
+               %Site{domains: [%Domain{name: "something.affable.app"}]}
+               |> Sites.canonical_url()
     end
 
     test "canonical URL with a custom domain is the custom domain" do
-      assert %Site{
-               domains: [
-                 %Domain{name: "something.affable.app"},
-                 %Domain{name: "my.domain.example.com"}
-               ]
-             }
-             |> Sites.canonical_url() ==
-               "//my.domain.example.com/"
+      assert "//my.domain.example.com/" ==
+               %Site{
+                 domains: [
+                   %Domain{name: "something.affable.app"},
+                   %Domain{name: "my.domain.example.com"}
+                 ]
+               }
+               |> Sites.canonical_url()
     end
 
     test "status of site that's been made available once is available, and doesn't update date subsequently",
