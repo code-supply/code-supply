@@ -18,9 +18,6 @@ defmodule AffableWeb.DomainsLive do
         domains: from(d in Domain, order_by: [desc: d.id], preload: [:site])
       )
 
-    if connected?(socket) do
-    end
-
     {:ok,
      assign(socket, %{
        user: user,
