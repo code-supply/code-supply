@@ -8,11 +8,6 @@ spec:
     spec:
       serviceAccountName: affable
 
-      volumes:
-      - name: google-credentials
-        secret:
-          secretName: google-credentials
-
       containers:
 
       - name: affable
@@ -64,15 +59,8 @@ spec:
         - /cloud_sql_proxy
 
         env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /secrets/cloudsql/key.json
         - name: INSTANCES
           value: code-supply:europe-west1:shared-belgium=tcp:5432
-
-        volumeMounts:
-        - name: google-credentials
-          mountPath: /secrets/cloudsql
-          readOnly: true
 
         resources:
           requests:

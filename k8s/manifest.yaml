@@ -29334,8 +29334,6 @@ spec:
       - command:
         - /cloud_sql_proxy
         env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /secrets/cloudsql/key.json
         - name: INSTANCES
           value: code-supply:europe-west1:shared-belgium=tcp:5432
         image: eu.gcr.io/cloudsql-docker/gce-proxy:1.19.1
@@ -29349,15 +29347,7 @@ spec:
             memory: 8Mi
         securityContext:
           allowPrivilegeEscalation: false
-        volumeMounts:
-        - mountPath: /secrets/cloudsql
-          name: google-credentials
-          readOnly: true
       serviceAccountName: affable
-      volumes:
-      - name: google-credentials
-        secret:
-          secretName: google-credentials
 ---
 apiVersion: apps/v1
 kind: Deployment
