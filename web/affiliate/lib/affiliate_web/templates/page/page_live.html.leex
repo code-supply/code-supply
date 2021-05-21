@@ -48,9 +48,9 @@
                   <% end %>
                   <div class="mt-1 text-xs lg:float-right lg:w-1/2 md:text-base">
                     <p class="font-bold"><%= item["name"] %></p>
-                    <p class="h-32 pb-2 overflow-auto sm:table-cell">
-                    <%= item["description"] %>
-                    </p>
+                    <div class="prose h-32 pb-2 overflow-auto sm:table-cell">
+                    <%= text_to_html (item["description"] || "") %>
+                    </div>
                   </div>
                 </td>
                 <%= for attribute <- item["attributes"] do %>
