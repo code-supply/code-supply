@@ -26,7 +26,7 @@ defmodule AffableWeb.AssetsLive do
         :asset,
         progress: &handle_progress/3,
         external: &presign_upload/2,
-        accept: ~w(.png .jpeg .jpg),
+        accept: ~w(.gif .png .jpeg .jpg),
         max_entries: 1
       )
     }
