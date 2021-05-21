@@ -28,7 +28,7 @@ defmodule Affable.Assets do
     end
   end
 
-  def to_imgproxy_url(resource, attrs \\ [width: 300, height: 300])
+  def to_imgproxy_url(resource, attrs \\ [width: 600, height: 600])
 
   def to_imgproxy_url(nil, _attrs) do
     nil

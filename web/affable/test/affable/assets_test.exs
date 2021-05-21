@@ -18,8 +18,8 @@ defmodule Affable.AssetsTest do
     end
 
     test "can get an imgproxy URL for an Asset" do
-      assert Assets.to_imgproxy_url(%Asset{url: "https://example.com/some-image.jpeg"}) ==
-               "https://images.affable.app/nosignature/fit/300/300/ce/0/plain/https://example.com/some-image.jpeg"
+      assert Assets.to_imgproxy_url(%Asset{url: "https://example.com/some-image.jpeg"}) =~
+               ~r|https://images\.affable\.app/nosignature/fit/[0-9]+/[0-9]+/ce/0/plain/https://example\.com/some-image\.jpeg|
     end
 
     test "can specify resizing type" do
