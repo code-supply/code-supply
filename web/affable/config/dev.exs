@@ -1,7 +1,7 @@
 use Mix.Config
 
 config :affable,
-  k8s: Affable.FakeK8s,
+  k8s: Affable.FakeK8s
 
 # Configure your database
 config :affable, Affable.Repo,
