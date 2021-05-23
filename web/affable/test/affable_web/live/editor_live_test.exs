@@ -89,7 +89,7 @@ defmodule AffableWeb.EditorLiveTest do
       } = Sites.get_site!(user, site.id)
 
       assert view
-             |> has_element?("#site_attribute_definitions_0_name[value=Price]")
+             |> has_element?("#item-edit_attribute_definitions_0_name[value=Price]")
 
       view
       |> render_change(:save, %{
@@ -105,7 +105,7 @@ defmodule AffableWeb.EditorLiveTest do
       })
 
       assert view
-             |> has_element?("#site_attribute_definitions_0_name[value='Mattress Size']")
+             |> has_element?("#item-edit_attribute_definitions_0_name[value='Mattress Size']")
 
       view
       |> render_first_item_change(items, %{
@@ -115,7 +115,7 @@ defmodule AffableWeb.EditorLiveTest do
       })
 
       assert view
-             |> has_element?("#site_items_0_attributes_0_value[value=King]")
+             |> has_element?("#item-edit_items_0_attributes_0_value[value=King]")
     end
 
     test "can create / delete new item", %{conn: conn, site: site} do
@@ -196,7 +196,7 @@ defmodule AffableWeb.EditorLiveTest do
           "name" => ""
         })
 
-      assert result =~ "phx-feedback-for=\"site_items_0_name"
+      assert result =~ "phx-feedback-for=\"item-edit_items_0_name"
     end
 
     test "can delete an item", %{conn: conn, site: site} do
