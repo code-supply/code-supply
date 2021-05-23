@@ -101,7 +101,6 @@ defmodule AffableWeb.AssetsLive do
       access_key_id: access_key_id(),
       bucket_name: bucket_name(),
       key: uuid,
-      google_service_account_json: google_service_account_json(),
       now: DateTime.now!("Etc/UTC")
     }
 
@@ -146,10 +145,5 @@ defmodule AffableWeb.AssetsLive do
 
   defp bucket_name do
     Application.fetch_env!(:affable, :bucket_name)
-  end
-
-  defp google_service_account_json do
-    Application.fetch_env!(:affable, :google_service_account_json)
-    |> Jason.decode!()
   end
 end

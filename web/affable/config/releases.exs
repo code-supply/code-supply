@@ -31,7 +31,6 @@ config :affable,
       """),
   live_view: [signing_salt: System.fetch_env!("LIVE_VIEW_SIGNING_SALT")],
   bucket_name: System.fetch_env!("BUCKET_NAME"),
-  google_service_account_json: System.fetch_env!("GOOGLE_SERVICE_ACCOUNT_JSON"),
   access_key_id: System.fetch_env!("ACCESS_KEY_ID")
 
 config :affable, AffableWeb.Endpoint,

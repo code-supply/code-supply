@@ -14,6 +14,16 @@ defmodule Affable.Application do
         AffableWeb.Telemetry,
         # Start the PubSub system
         {Phoenix.PubSub, name: :affable},
+        {Goth,
+         name: Affable.Goth,
+         source:
+           case System.fetch_env("GOOGLE_SERVICE_ACCOUNT_JSON") do
+             {:ok, config} ->
+               {:service_account, Jason.decode!(config), []}
+
+             {:error, _} ->
+               {:metadata, []}
+           end},
         # Start the Endpoint (http/https)
         AffableWeb.Endpoint,
         {Cluster.Supervisor,

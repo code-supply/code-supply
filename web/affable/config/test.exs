@@ -6,8 +6,7 @@ config :bcrypt_elixir, :log_rounds, 1
 config :affable,
   k8s: Affable.MockK8s,
   http: Affable.MockHTTP,
-  broadcaster: Affable.MockBroadcaster,
-  google_service_account_json: System.fetch_env!("GOOGLE_SERVICE_ACCOUNT_JSON")
+  broadcaster: Affable.MockBroadcaster
 
 # Configure your database
 #

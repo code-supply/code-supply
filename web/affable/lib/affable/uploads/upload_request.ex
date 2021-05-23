@@ -4,7 +4,6 @@ defmodule Affable.Uploads.UploadRequest do
     :bucket_name,
     :key,
     :access_key_id,
-    :google_service_account_json,
     :now
   ]
   defstruct @enforce_keys

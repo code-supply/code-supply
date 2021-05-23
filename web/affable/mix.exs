@@ -58,7 +58,9 @@ defmodule Affable.MixProject do
       {:hashids, "~> 2.0"},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:libcluster, "~> 3.2"}
+      {:libcluster, "~> 3.2"},
+      {:goth, "~> 1.3-rc"},
+      {:hackney, "~> 1.17"}
     ]
   end
 

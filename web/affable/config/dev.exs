@@ -2,7 +2,6 @@ use Mix.Config
 
 config :affable,
   k8s: Affable.FakeK8s,
-  google_service_account_json: System.fetch_env!("GOOGLE_SERVICE_ACCOUNT_JSON")
 
 # Configure your database
 config :affable, Affable.Repo,

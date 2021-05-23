@@ -10,8 +10,7 @@ defmodule Affable.Uploads do
         bucket_name: bucket_name,
         key: key,
         access_key_id: access_key_id,
-        now: now,
-        google_service_account_json: google_service_account_json
+        now: now
       }) do
     valid_from = now |> GcsSignedUrl.ISODateTime.generate()
     credential_scope = "#{valid_from.date}/auto/storage/goog4_request"
@@ -31,17 +30,23 @@ defmodule Affable.Uploads do
       |> Jason.encode!()
       |> Base.encode64()
 
-    client = GcsSignedUrl.Client.load(google_service_account_json)
-    signature = GcsSignedUrl.Crypto.sign(policy_json_64, client)
-
-    %SignedUpload{
-      key: key,
-      policy: policy_json_64,
-      algorithm: algorithm,
-      credential: "#{access_key_id}/#{credential_scope}",
-      date: valid_from.datetime,
-      signature: signature |> Base.encode16()
-    }
+    with {:ok, %{token: token}} <-
+           Goth.Token.for_scope("https://www.googleapis.com/auth/cloud-platform"),
+         oauth_config <- %GcsSignedUrl.SignBlob.OAuthConfig{
+           service_account: access_key_id,
+           access_token: token
+         },
+         {:ok, signature_64} <- GcsSignedUrl.Crypto.sign(policy_json_64, oauth_config),
+         {:ok, signature} <- Base.decode64(signature_64) do
+      %SignedUpload{
+        key: key,
+        policy: policy_json_64,
+        algorithm: algorithm,
+        credential: "#{access_key_id}/#{credential_scope}",
+        date: valid_from.datetime,
+        signature: signature |> Base.encode16()
+      }
+    end
   end
 
   defp expiration(now) do
