@@ -47435,6 +47435,7 @@ spec:
   - .
   hosts:
   - compute.googleapis.com
+  - iamcredentials.googleapis.com
   - www.googleapis.com
   location: MESH_EXTERNAL
   ports:
