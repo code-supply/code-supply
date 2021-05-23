@@ -21,7 +21,7 @@ defmodule Affable.Application do
              {:ok, config} ->
                {:service_account, Jason.decode!(config), []}
 
-             {:error, _} ->
+             :error ->
                {:metadata, []}
            end},
         # Start the Endpoint (http/https)
