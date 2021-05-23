@@ -87,14 +87,6 @@ k8s/affable/version.yaml: web/affable/VERSION_PUSHED
 	echo "      labels:" >> $@
 	echo "        version: \"$$(cat $<)\"" >> $@
 
-.PHONY: affable_rotate_sql_credentials
-affable_rotate_sql_credentials:
-	bin/rotate-google-service-account-key \
-		affable \
-		google-credentials \
-		key.json \
-		sql-shared-affable@code-supply.iam.gserviceaccount.com
-
 web/affiliate/VERSION:
 	git rev-parse --short HEAD > $@
 

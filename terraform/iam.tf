@@ -3,6 +3,14 @@ resource "google_service_account" "dns-cert-manager" {
   display_name = "DNS modifier for Cert Manager"
 }
 
+resource "google_service_account_iam_binding" "dns-cert-manager-workload-identity" {
+  service_account_id = google_service_account.dns-cert-manager.name
+  role               = "roles/iam.workloadIdentityUser"
+  members = [
+    "serviceAccount:${data.google_project.project.project_id}.svc.id.goog[cert-manager/cert-manager]",
+  ]
+}
+
 resource "google_project_iam_binding" "dns-cert-manager" {
   project = data.google_project.project.id
   role    = "roles/dns.admin"

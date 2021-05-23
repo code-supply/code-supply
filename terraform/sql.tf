@@ -29,18 +29,6 @@ resource "google_sql_database_instance" "shared_belgium" {
   }
 }
 
-resource "google_service_account" "sql_shared_affable" {
-  account_id   = "sql-shared-affable"
-  display_name = "sql-shared-affable"
-}
-
-resource "google_project_iam_member" "sql_shared_affable" {
-  project = "code-supply"
-  role    = "roles/cloudsql.client"
-
-  member = "serviceAccount:${google_service_account.sql_shared_affable.email}"
-}
-
 output "sql_shared_public_ip" {
   value = google_sql_database_instance.shared_belgium.public_ip_address
 }

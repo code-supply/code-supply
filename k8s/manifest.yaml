@@ -45525,6 +45525,8 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  annotations:
+    iam.gke.io/gcp-service-account: dns-cert-manager@code-supply.iam.gserviceaccount.com
   labels:
     app: cert-manager
     app.kubernetes.io/component: controller
@@ -47164,9 +47166,6 @@ spec:
     - dns01:
         cloudDNS:
           project: code-supply
-          serviceAccountSecretRef:
-            key: key.json
-            name: dns-key
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -47185,9 +47184,6 @@ spec:
     - dns01:
         cloudDNS:
           project: code-supply
-          serviceAccountSecretRef:
-            key: key.json
-            name: dns-key
 ---
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
