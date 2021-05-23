@@ -6,7 +6,7 @@ defmodule Affable.RealHTTP do
     HTTPoison.start()
 
     case HTTPoison.head(url) do
-      {:ok, %HTTPoison.Response{headers: headers, status_code: code}} when code in 200..299 ->
+      {:ok, %HTTPoison.Response{status_code: code}} when code in 200..299 ->
         :ok
 
       {:error, %HTTPoison.Error{reason: reason}} ->
