@@ -41,7 +41,7 @@ defmodule Affable.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_live_view, "~> 0.15.4"},
       {:floki, ">= 0.0.0", only: :test},
-      {:gcs_signed_url, "~> 0.4"},
+      {:gcs_signed_url, github: "alexandrubagu/gcs_signed_url", ref: "56b3c0c531151c2b69ee54b3cc12957b6d7ab732"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.3", only: :dev},
       {:phoenix_live_dashboard, "~> 0.4.0"},
