@@ -17,12 +17,18 @@ defmodule Affable.Application do
         {Goth,
          name: Affable.Goth,
          source:
-           case System.fetch_env("GOOGLE_SERVICE_ACCOUNT_JSON") do
-             {:ok, config} ->
-               {:service_account, Jason.decode!(config), []}
+           case Application.fetch_env(:goth, :source) do
+             {:ok, source} ->
+               source
 
              :error ->
-               {:metadata, []}
+               {
+                 :refresh_token,
+                 (System.user_home!() <> "/.config/gcloud/application_default_credentials.json")
+                 |> File.read!()
+                 |> Jason.decode!(),
+                 []
+               }
            end},
         # Start the Endpoint (http/https)
         AffableWeb.Endpoint,
