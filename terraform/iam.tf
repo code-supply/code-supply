@@ -17,6 +17,12 @@ resource "google_service_account" "affable" {
   display_name = "Affable application"
 }
 
+resource "google_project_iam_member" "affable-signblob" {
+  project = data.google_project.project.id
+  role    = "roles/iam.serviceAccountTokenCreator"
+  member  = "serviceAccount:${google_service_account.affable.email}"
+}
+
 resource "google_project_iam_member" "affable-cloud-sql" {
   project = data.google_project.project.id
   role    = "roles/cloudsql.client"
@@ -26,6 +32,12 @@ resource "google_project_iam_member" "affable-cloud-sql" {
 resource "google_service_account" "affable-dev" {
   account_id   = "affable-dev"
   display_name = "Affable application in development"
+}
+
+resource "google_project_iam_member" "affable-dev-signblob" {
+  project = data.google_project.project.id
+  role    = "roles/iam.serviceAccountTokenCreator"
+  member  = "serviceAccount:${google_service_account.affable-dev.email}"
 }
 
 resource "google_service_account_iam_binding" "affable-workload-identity" {
