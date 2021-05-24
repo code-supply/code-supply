@@ -30,8 +30,7 @@ defmodule Affable.Uploads do
       |> Jason.encode!()
       |> Base.encode64()
 
-    with {:ok, %{token: token}} <-
-           Goth.Token.for_scope("https://www.googleapis.com/auth/cloud-platform"),
+    with {:ok, %{token: token}} <- Goth.fetch(Affable.Goth),
          oauth_config <- %GcsSignedUrl.SignBlob.OAuthConfig{
            service_account: access_key_id,
            access_token: token
