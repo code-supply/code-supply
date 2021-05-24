@@ -3,10 +3,10 @@ defmodule AffableWeb.AssetsLiveTest do
   import Phoenix.LiveViewTest
 
   alias Affable.Accounts.User
-  alias Affable.Assets.Asset
   alias Affable.Sites
   alias Affable.Sites.Site
-  alias Affable.Repo
+
+  @content File.read!("test/support/fixtures/tiny.png")
 
   setup context do
     {:ok, register_and_log_in_user(context)}
@@ -41,7 +41,7 @@ defmodule AffableWeb.AssetsLiveTest do
     end
   end
 
-  test "can upload and delete an image for one of the user's sites", %{
+  test "can upload and delete images", %{
     conn: conn,
     user: %User{sites: [site1 | _]} = user
   } do
@@ -55,47 +55,55 @@ defmodule AffableWeb.AssetsLiveTest do
 
     view |> assert_sites_selectable([site1, site2])
 
-    content = File.read!("test/support/fixtures/tiny.png")
+    assert view
+           |> asset_input_for("someimage.png")
+           |> render_upload("someimage.png") =~ "100%"
 
-    asset =
-      file_input(view, "#asset-form", :asset, [
-        %{
-          name: "someimage.png",
-          content: content,
-          size: content |> :erlang.byte_size(),
-          type: "image/png"
-        }
-      ])
+    view |> render_asset_submit(site1, "Upload One")
 
-    assert render_upload(asset, "someimage.png") =~ "100%"
+    assert site1_resources |> render() =~ successful_upload_pattern()
+    assert site2_resources |> render() =~ no_images_uploaded_pattern()
 
+    refute site1_resources |> render() =~ no_images_uploaded_pattern()
+
+    view |> assert_sites_selectable([site1, site2])
+
+    view
+    |> element("#resources-site#{site1.id} .trash")
+    |> render_click()
+
+    site1_resources_html = site1_resources |> render()
+    refute site1_resources_html =~ successful_upload_pattern()
+    refute site1_resources_html =~ "Upload One"
+
+    assert view
+           |> asset_input_for("someotherimage.png")
+           |> render_upload("someotherimage.png") =~ "100%"
+
+    refute view
+           |> render_asset_submit(site1, "Upload Two") =~ "Upload One"
+  end
+
+  defp render_asset_submit(view, site, name) do
     view
     |> element("#asset-form")
     |> render_submit(%{
       "asset" => %{
-        "site_id" => "#{site1.id}",
-        "name" => "Cool image"
+        "site_id" => "#{site.id}",
+        "name" => name
       }
     })
+  end
 
-    assert site1_resources |> render() =~ successful_upload_pattern()
-    refute site1_resources |> render() =~ no_images_uploaded_pattern()
-    assert site2_resources |> render() =~ no_images_uploaded_pattern()
-
-    view |> assert_sites_selectable([site1, site2])
-
-    %Asset{} =
-      asset =
-      (site1 |> Repo.preload(:assets)).assets
-      |> Enum.find(fn a ->
-        a.name == "Cool image"
-      end)
-
-    view
-    |> element("#delete-asset-#{asset.id}")
-    |> render_click()
-
-    refute site1_resources |> render() =~ successful_upload_pattern()
+  defp asset_input_for(view, name) do
+    file_input(view, "#asset-form", :asset, [
+      %{
+        name: name,
+        content: @content,
+        size: @content |> :erlang.byte_size(),
+        type: "image/png"
+      }
+    ])
   end
 
   test "informs the user when an asset is in use", %{conn: conn, user: user} do

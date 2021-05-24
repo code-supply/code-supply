@@ -16,9 +16,6 @@ defmodule AffableWeb.AssetsLive do
       Accounts.get_user_by_session_token(token)
       |> Accounts.preload_for_assets()
 
-    if connected?(socket) do
-    end
-
     {
       :ok,
       assign_vars(socket, user)
@@ -81,13 +78,13 @@ defmodule AffableWeb.AssetsLive do
     {:ok, _} = Assets.delete(user, id)
 
     {:noreply,
-     update(
-       socket,
-       :sites,
-       &for site <- &1 do
-         Sites.reload_assets(site)
-       end
-     )}
+     assign_vars(socket, %{
+       user
+       | sites:
+           for site <- user.sites do
+             Sites.reload_assets(site)
+           end
+     })}
   end
 
   @impl true
