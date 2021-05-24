@@ -51,7 +51,7 @@ defmodule AffableWeb.AssetsLiveTest do
     site1_resources = view |> element("#resources-site#{site1.id}")
     site2_resources = view |> element("#resources-site#{site2.id}")
 
-    refute site1_resources |> render() =~ dev_bucket_uploaded_pattern()
+    refute site1_resources |> render() =~ successful_upload_pattern()
 
     view |> assert_sites_selectable([site1, site2])
 
@@ -78,7 +78,7 @@ defmodule AffableWeb.AssetsLiveTest do
       }
     })
 
-    assert site1_resources |> render() =~ dev_bucket_uploaded_pattern()
+    assert site1_resources |> render() =~ successful_upload_pattern()
     refute site1_resources |> render() =~ no_images_uploaded_pattern()
     assert site2_resources |> render() =~ no_images_uploaded_pattern()
 
@@ -95,7 +95,7 @@ defmodule AffableWeb.AssetsLiveTest do
     |> element("#delete-asset-#{asset.id}")
     |> render_click()
 
-    refute site1_resources |> render() =~ dev_bucket_uploaded_pattern()
+    refute site1_resources |> render() =~ successful_upload_pattern()
   end
 
   test "informs the user when an asset is in use", %{conn: conn, user: user} do
@@ -114,7 +114,7 @@ defmodule AffableWeb.AssetsLiveTest do
     Routes.assets_path(conn, :index)
   end
 
-  defp dev_bucket_uploaded_pattern() do
+  defp successful_upload_pattern() do
     ~r(src="https://images.affable.app/nosignature/fill/[0-9]+/[0-9]+/ce/0/plain/gs://#{
       Application.fetch_env!(:affable, :bucket_name)
     }/.+")
