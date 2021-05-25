@@ -46809,7 +46809,7 @@ spec:
         env:
         - name: INSTANCES
           value: code-supply:europe-west1:shared-belgium=tcp:5432
-        image: eu.gcr.io/cloudsql-docker/gce-proxy:1.19.1
+        image: eu.gcr.io/cloudsql-docker/gce-proxy:1.22.0
         name: cloudsql-proxy
         resources:
           limits:

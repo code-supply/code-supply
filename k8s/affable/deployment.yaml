@@ -51,7 +51,7 @@ spec:
             memory: 250Mi
 
       - name: cloudsql-proxy
-        image: eu.gcr.io/cloudsql-docker/gce-proxy:1.19.1
+        image: eu.gcr.io/cloudsql-docker/gce-proxy:1.22.0
         securityContext:
           allowPrivilegeEscalation: false
 
