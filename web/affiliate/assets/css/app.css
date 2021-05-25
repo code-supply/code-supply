@@ -12,3 +12,7 @@
 .prose p {
     @apply my-2 xl:text-xl;
 }
+
+.subhead {
+    @apply font-extrabold xl:text-xl;
+}
