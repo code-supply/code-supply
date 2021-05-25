@@ -12,7 +12,7 @@
 
         <div class="float-none">
           <h1 class="pb-4 pr-8 text-3xl font-semibold"><%= @name %></h1>
-          <h2 class="pr-8 text-lg font-extrabold"><%= @subtitle %></h2>
+          <h2 class="pr-8 text-lg font-extrabold xl:text-xl"><%= @subtitle %></h2>
           <div class="prose">
             <%= text_to_html (@text || "") %>
           </div>
@@ -48,7 +48,7 @@
                   <% end %>
                   <div class="mt-1 text-xs lg:float-right lg:w-1/2 md:text-base">
                     <p class="font-bold"><%= item["name"] %></p>
-                    <div class="prose h-32 pb-2 overflow-auto sm:table-cell">
+                    <div class="h-32 pb-2 overflow-auto prose sm:table-cell">
                     <%= text_to_html (item["description"] || "") %>
                     </div>
                   </div>

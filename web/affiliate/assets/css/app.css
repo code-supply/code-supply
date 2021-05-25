@@ -10,5 +10,5 @@
 }
 
 .prose p {
-    @apply my-2;
+    @apply my-2 xl:text-xl;
 }
