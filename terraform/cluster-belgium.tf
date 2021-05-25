@@ -55,13 +55,13 @@ resource "google_container_node_pool" "waffles" {
   location = "europe-west1-b"
   cluster  = google_container_cluster.belgium_pink.name
 
-  node_count = 2
+  node_count = 1
 
   node_config {
     preemptible  = true
     disk_size_gb = 10
 
-    machine_type = "e2-small"
+    machine_type = "e2-medium"
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/compute",
@@ -85,7 +85,7 @@ resource "google_container_node_pool" "peas" {
   name       = "peas"
   location   = "europe-west1-b"
   cluster    = google_container_cluster.belgium_pink.name
-  node_count = 2
+  node_count = 1
 
   node_locations = ["europe-west1-c"]
 
@@ -93,7 +93,7 @@ resource "google_container_node_pool" "peas" {
     preemptible  = true
     disk_size_gb = 10
 
-    machine_type = "e2-small"
+    machine_type = "e2-medium"
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/compute",
