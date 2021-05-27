@@ -1,7 +1,7 @@
 kind: ClusterIssuer
 apiVersion: cert-manager.io/v1
 metadata:
-  name: letsencrypt-production
+  name: letsencrypt-production-dns
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
@@ -9,6 +9,6 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-production
     solvers:
-    - http01:
-        ingress:
-          class: istio
+    - dns01:
+        cloudDNS:
+          project: code-supply

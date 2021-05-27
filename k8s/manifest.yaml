@@ -47146,7 +47146,7 @@ spec:
   - affable.app
   issuerRef:
     kind: ClusterIssuer
-    name: letsencrypt-production
+    name: letsencrypt-production-dns
   secretName: affable-www
 ---
 apiVersion: cert-manager.io/v1
@@ -47163,6 +47163,18 @@ spec:
     - http01:
         ingress:
           class: istio
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-production-dns
+spec:
+  acme:
+    email: tech@code.supply
+    privateKeySecretRef:
+      name: letsencrypt-production
+    server: https://acme-v02.api.letsencrypt.org/directory
+    solvers:
     - dns01:
         cloudDNS:
           project: code-supply

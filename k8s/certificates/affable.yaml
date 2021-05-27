@@ -5,7 +5,7 @@ metadata:
 spec:
   secretName: affable-www
   issuerRef:
-    name: letsencrypt-production
+    name: letsencrypt-production-dns
     kind: ClusterIssuer
   commonName: "*.affable.app"
   dnsNames:
