@@ -1,3 +1,7 @@
+variable "cluster-ingress-address" {
+  default = "35.195.27.167"
+}
+
 resource "google_dns_managed_zone" "root" {
   name     = "root-zone"
   dns_name = "code.supply."
@@ -77,7 +81,7 @@ resource "google_dns_record_set" "ab-www" {
 resource "google_dns_record_set" "ab-wildcard" {
   name         = "*.${google_dns_managed_zone.ab.dns_name}"
   managed_zone = google_dns_managed_zone.ab.name
-  rrdatas      = ["35.195.27.167"]
+  rrdatas      = [var.cluster-ingress-address]
   ttl          = 300
   type         = "A"
 }
