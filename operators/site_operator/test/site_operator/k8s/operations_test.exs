@@ -85,7 +85,7 @@ defmodule SiteOperator.K8s.OperationsTest do
                  "hosts" => ["host1.affable.app"],
                  "http" => [
                    %{
-                     "match" => [%{"uri" => %{"prefix" => "/"}}],
+                     "match" => [%{"uri" => %{"regex" => "/[^.]?.*"}}],
                      "route" => [
                        %{"destination" => %{"host" => "app.my-namespace.svc.cluster.local"}}
                      ]
@@ -107,7 +107,7 @@ defmodule SiteOperator.K8s.OperationsTest do
                  "hosts" => ["host1.affable.app", "mydomain.example.com"],
                  "http" => [
                    %{
-                     "match" => [%{"uri" => %{"prefix" => "/"}}],
+                     "match" => [%{"uri" => %{"regex" => "/[^.]?.*"}}],
                      "route" => [
                        %{"destination" => %{"host" => "app.my-namespace.svc.cluster.local"}}
                      ]

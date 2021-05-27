@@ -197,9 +197,6 @@ defmodule SiteOperator.K8s.Conversions do
               "name" => "http",
               "number" => 80,
               "protocol" => "HTTP"
-            },
-            "tls" => %{
-              "httpsRedirect" => true
             }
           },
           %{
@@ -230,6 +227,8 @@ defmodule SiteOperator.K8s.Conversions do
         gateways: gateways,
         domains: domains
       }) do
+    avoid_letsencrypt_verification = "/[^.]?.*"
+
     %{
       "apiVersion" => "networking.istio.io/v1beta1",
       "kind" => "VirtualService",
@@ -239,7 +238,7 @@ defmodule SiteOperator.K8s.Conversions do
         "hosts" => domains,
         "http" => [
           %{
-            "match" => [%{"uri" => %{"prefix" => "/"}}],
+            "match" => [%{"uri" => %{"regex" => avoid_letsencrypt_verification}}],
             "route" => [%{"destination" => %{"host" => "app.#{namespace}.svc.cluster.local"}}]
           }
         ]

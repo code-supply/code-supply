@@ -210,7 +210,7 @@ defmodule SiteOperator.K8s.ConversionsTest do
                  "hosts" => ["foo.affable.app"],
                  "http" => [
                    %{
-                     "match" => [%{"uri" => %{"prefix" => "/"}}],
+                     "match" => [%{"uri" => %{"regex" => "/[^.]?.*"}}],
                      "route" => [
                        %{"destination" => %{"host" => "app.my-vs-ns.svc.cluster.local"}}
                      ]
@@ -253,10 +253,7 @@ defmodule SiteOperator.K8s.ConversionsTest do
                    "name" => "http",
                    "protocol" => "HTTP"
                  },
-                 "hosts" => ["*"],
-                 "tls" => %{
-                   "httpsRedirect" => true
-                 }
+                 "hosts" => ["*"]
                },
                %{
                  "port" => %{
