@@ -95,7 +95,8 @@ defmodule AffableWeb.EditorLive do
       asset_pairs: Enum.map(site.assets, &{&1.name, &1.id}),
       changeset: Site.changeset(site, %{}),
       published: Sites.is_published?(site),
-      preview_url: Sites.preview_url(site)
+      preview_url: Sites.preview_url(site),
+      canonical_url: Sites.canonical_url(site)
     )
   end
 

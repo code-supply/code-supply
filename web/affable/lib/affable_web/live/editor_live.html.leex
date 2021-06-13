@@ -1,8 +1,9 @@
-<%= unless @published do %>
-  <div class="fixed top-0 right-0 z-10 mt-12 mr-4">
-    <button id="publish" phx-click="publish" class="shadow-md btn">Publish</button>
-  </div>
-<% end %>
+<div class="fixed top-0 right-0 z-10 p-4 mt-12 mr-4 bg-white rounded shadow-md bg-opacity-50">
+  <%= unless @published do %>
+    <button id="publish" phx-click="publish" class="mb-4 shadow-md btn">Publish</button>
+  <% end %>
+  <a class="mx-auto shadow-md btn-2nd" target="affable-published" href="<%= @canonical_url %>">Visit</a>
+</div>
 
 <%= outer_form = form_for @changeset, "#", id: "item-edit",
     class: "z-0 h-body top-12 mt-1 fixed w-1/3 overflow-y-scroll px-4", csrf_token: false, phx_change: :save, phx_submit: :save %>

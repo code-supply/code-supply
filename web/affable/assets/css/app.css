@@ -119,17 +119,34 @@ tbody tr:hover {
     @apply mt-6 mb-4 mr-4;
 }
 
+.btn-2nd {
+    @apply block w-32 px-1 py-2 text-lg font-bold text-center text-white bg-gradient-to-br from-gray-300 to-gray-500 rounded-md;
+}
+
 .btn:hover,
 .btn:focus {
     @apply text-gray-300 outline-none ring;
+}
+
+.btn-2nd:hover,
+.btn-2nd:focus {
+    @apply text-gray-100 outline-none ring-gray-300;
 }
 
 .btn:hover {
     @apply from-blue-500 to-blue-700
 }
 
+.btn-2nd:hover {
+    @apply from-gray-400 to-gray-600
+}
+
 .btn:active {
     @apply text-gray-200 from-blue-300 to-blue-400
+}
+
+.btn-2nd:active {
+    @apply text-gray-200 from-gray-300 to-gray-400
 }
 
 .pending .pending-spinner {
