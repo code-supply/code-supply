@@ -6,7 +6,7 @@
 </div>
 
 <%= outer_form = form_for @changeset, "#", id: "item-edit",
-    class: "z-0 h-body top-12 mt-1 fixed w-1/3 overflow-y-scroll px-4", csrf_token: false, phx_change: :save, phx_submit: :save %>
+    class: "lg:z-0 h-body top-12 mt-1 lg:fixed lg:w-1/3 lg:overflow-y-scroll px-4", csrf_token: false, phx_change: :save, phx_submit: :save %>
   <div>
     <div class="py-6">
       <h2 class="text-lg font-bold">General</h2>
@@ -186,4 +186,4 @@
     <a href="#" id="new-item-bottom" class="btn btn-spaced" phx-hook="Scroll" phx-click="new-item">New Item</a>
   <% end %>
 </form>
-<iframe class="fixed w-2/3 mt-1 overflow-scroll h-body top-12 left-1/3" src="<%= @preview_url %>">
+<iframe class="fixed hidden w-2/3 mt-1 overflow-scroll lg:block h-body top-12 left-1/3" src="<%= @preview_url %>">
