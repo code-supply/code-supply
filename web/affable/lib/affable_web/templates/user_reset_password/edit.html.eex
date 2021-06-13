@@ -20,7 +20,7 @@
   </div>
 
   <div>
-    <%= submit "Reset password", class: "btn" %>
+    <%= submit "Reset password", class: "btn btn-spaced" %>
   </div>
 <% end %>
 

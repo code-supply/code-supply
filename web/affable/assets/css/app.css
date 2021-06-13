@@ -113,7 +113,10 @@ tbody tr:hover {
 }
 
 .btn {
-    @apply block w-48 px-2 py-3 mt-6 mb-4 mr-4 text-xl font-bold text-center text-white bg-gradient-to-br from-blue-400 to-blue-600 rounded-md;
+    @apply block w-48 px-2 py-3 text-xl font-bold text-center text-white bg-gradient-to-br from-blue-400 to-blue-600 rounded-md;
+}
+.btn-spaced {
+    @apply mt-6 mb-4 mr-4;
 }
 
 .btn:hover,

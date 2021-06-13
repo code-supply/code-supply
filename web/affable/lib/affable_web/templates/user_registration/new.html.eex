@@ -20,7 +20,7 @@
   </div>
 
   <div>
-    <%= submit "Register", class: "btn" %>
+    <%= submit "Register", class: "btn btn-spaced" %>
   </div>
 <% end %>
 

@@ -23,7 +23,7 @@
   </div>
 
   <div>
-    <%= submit "Change e-mail", class: "btn" %>
+    <%= submit "Change e-mail", class: "btn btn-spaced" %>
   </div>
 <% end %>
 
@@ -55,10 +55,10 @@
   </div>
 
   <div>
-    <%= submit "Change password", class: "btn" %>
+    <%= submit "Change password", class: "btn btn-spaced" %>
   </div>
 <% end %>
 
 <h2 class="h2">Delete account</h2>
 
-<%= button "Yes, delete my account", to: Routes.user_settings_path(@conn, :delete_account), method: :delete, class: "btn" %>
+<%= button "Yes, delete my account", to: Routes.user_settings_path(@conn, :delete_account), method: :delete, class: "btn btn-spaced" %>
