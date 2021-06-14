@@ -30,10 +30,3 @@ config :affiliate,
        System.get_env("PUBLISHED_URL") || raise("Must set PUBLISHED_URL")
      }}
   ]
-
-config :affiliate, AffiliateWeb.Endpoint,
-  force_ssl: [
-    hsts: true,
-    rewrite_on: [:x_forwarded_proto],
-    exclude: [System.fetch_env!("TLS_REDIRECT_EXCLUDE_HOST")]
-  ]
