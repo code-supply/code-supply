@@ -183,6 +183,25 @@ defmodule SiteOperator.K8s.OperationsTest do
              } in (creations |> find_kind("Deployment") |> env_vars())
     end
 
+    test "sets the URL_HOST, so that PUTs don't trigger 307s to default phoenix example.com", %{
+      site: site
+    } do
+      multiple_domains =
+        inner_ns_creations(%{site | domains: ["host1.affable.app", "www.custom-domain.com"]})
+
+      single_domain = inner_ns_creations(%{site | domains: ["anything.com"]})
+
+      assert %{
+               "name" => "URL_HOST",
+               "value" => "host1.affable.app"
+             } in (multiple_domains |> find_kind("Deployment") |> env_vars())
+
+      assert %{
+               "name" => "URL_HOST",
+               "value" => "anything.com"
+             } in (single_domain |> find_kind("Deployment") |> env_vars())
+    end
+
     defp env_vars(k8s_deployment) do
       %{
         "kind" => "Deployment",

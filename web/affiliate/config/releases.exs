@@ -19,7 +19,8 @@ config :affiliate, AffiliateWeb.Endpoint,
   ],
   live_view: [signing_salt: System.fetch_env!("LIVE_VIEW_SIGNING_SALT")],
   secret_key_base: secret_key_base,
-  server: true
+  server: true,
+  url: [host: System.fetch_env!("URL_HOST")]
 
 config :affiliate,
   children: [

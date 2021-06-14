@@ -86,9 +86,18 @@ defmodule SiteOperator.K8s.Operations do
           |> Enum.map(fn domain -> "https://#{domain}" end)
           |> Enum.join(" "),
         "PREVIEW_URL" => "http://affable.affable/api/sites/#{namespace}/preview",
-        "PUBLISHED_URL" => "http://affable.affable/api/sites/#{namespace}"
+        "PUBLISHED_URL" => "http://affable.affable/api/sites/#{namespace}",
+        "URL_HOST" => url_host_from_domains(domains)
       }
     }
+  end
+
+  defp url_host_from_domains([domain]) do
+    domain
+  end
+
+  defp url_host_from_domains(domains) do
+    Enum.find(domains, &Domain.is_affable?(&1))
   end
 
   def virtual_service(%PhoenixSite{name: namespace, domains: domains}) do
