@@ -45,7 +45,11 @@ config :logger, level: :info
 # We also recommend setting `force_ssl` in your endpoint, ensuring
 # no data is ever sent via http, always redirecting to https:
 #
-# (see releases.exs)
+config :affiliate, AffiliateWeb.Endpoint,
+  force_ssl: [
+    hsts: true,
+    rewrite_on: [:x_forwarded_proto],
+    exclude: {AffiliateWeb.Endpoint, :tls_redirect_excluded_host?, []}
+  ]
 
-#
 # Check `Plug.SSL` for all available options in `force_ssl`.
