@@ -35,11 +35,5 @@ config :affiliate, AffiliateWeb.Endpoint,
   force_ssl: [
     hsts: true,
     rewrite_on: [:x_forwarded_proto],
-    exclude: {__MODULE__, :internal_request?, []}
+    exclude: [System.fetch_env!("TLS_REDIRECT_EXCLUDE_HOST")]
   ]
-
-def internal_request?(host) do
-  url_host = System.fetch_env!("URL_HOST")
-  host_without_suffix = String.replace_suffix(url_host, ".affable.app", "")
-  "app.#{host_without_suffix}" == host
-end

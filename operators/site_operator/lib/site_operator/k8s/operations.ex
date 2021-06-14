@@ -87,6 +87,7 @@ defmodule SiteOperator.K8s.Operations do
           |> Enum.join(" "),
         "PREVIEW_URL" => "http://affable.affable/api/sites/#{namespace}/preview",
         "PUBLISHED_URL" => "http://affable.affable/api/sites/#{namespace}",
+        "TLS_REDIRECT_EXCLUDE_HOST" => internal_hostname_from_domains(domains),
         "URL_HOST" => url_host_from_domains(domains)
       }
     }
@@ -97,7 +98,14 @@ defmodule SiteOperator.K8s.Operations do
   end
 
   defp url_host_from_domains(domains) do
-    Enum.find(domains, &Domain.is_affable?(&1))
+    Enum.find(domains, &(!Domain.is_affable?(&1)))
+  end
+
+  defp internal_hostname_from_domains(domains) do
+    case Enum.find(domains, &Domain.is_affable?(&1)) do
+      nil -> "could-not-find-affable-domain"
+      domain -> Domain.internal_hostname(domain)
+    end
   end
 
   def virtual_service(%PhoenixSite{name: namespace, domains: domains}) do

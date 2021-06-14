@@ -183,7 +183,7 @@ defmodule SiteOperator.K8s.OperationsTest do
              } in (creations |> find_kind("Deployment") |> env_vars())
     end
 
-    test "sets the URL_HOST, so that PUTs don't trigger 307s to default phoenix example.com", %{
+    test "sets the URL_HOST, so that links are generated correctly", %{
       site: site
     } do
       multiple_domains =
@@ -193,12 +193,32 @@ defmodule SiteOperator.K8s.OperationsTest do
 
       assert %{
                "name" => "URL_HOST",
-               "value" => "host1.affable.app"
+               "value" => "www.custom-domain.com"
              } in (multiple_domains |> find_kind("Deployment") |> env_vars())
 
       assert %{
                "name" => "URL_HOST",
                "value" => "anything.com"
+             } in (single_domain |> find_kind("Deployment") |> env_vars())
+    end
+
+    test "sets the TLS_REDIRECT_EXCLUDE_HOST, so that internal HTTP requests aren't redirected",
+         %{
+           site: site
+         } do
+      multiple_domains =
+        inner_ns_creations(%{site | domains: ["host1.affable.app", "www.custom-domain.com"]})
+
+      single_domain = inner_ns_creations(%{site | domains: ["anything.affable.app"]})
+
+      assert %{
+               "name" => "TLS_REDIRECT_EXCLUDE_HOST",
+               "value" => "app.host1"
+             } in (multiple_domains |> find_kind("Deployment") |> env_vars())
+
+      assert %{
+               "name" => "TLS_REDIRECT_EXCLUDE_HOST",
+               "value" => "app.anything"
              } in (single_domain |> find_kind("Deployment") |> env_vars())
     end
 
