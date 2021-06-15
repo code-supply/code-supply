@@ -17,7 +17,12 @@ defmodule Affable.SitesTest do
   describe "sites" do
     alias Affable.Sites.Site
 
-    @valid_site %Site{name: "hi", cta_text: "Go"}
+    @valid_site %Site{
+      name: "hi",
+      cta_text: "Go",
+      cta_text_colour: "FFFFFF",
+      cta_background_colour: "000000"
+    }
     @invalid_attrs %{name: nil}
 
     setup do
