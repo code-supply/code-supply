@@ -40,6 +40,12 @@
         <%= textarea outer_form, :text, phx_debounce: 250 %>
         <%= error_tag outer_form, :text %>
       </div>
+
+      <div class="field">
+        <%= label outer_form, :custom_head_html, "Custom <head> HTML" %>
+        <%= textarea outer_form, :custom_head_html, phx_debounce: 250 %>
+        <%= error_tag outer_form, :custom_head_html %>
+      </div>
     </div>
 
     <div class="py-6 overflow-hidden cta">

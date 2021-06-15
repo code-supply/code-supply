@@ -20,6 +20,7 @@ defmodule Affable.Sites.Site do
     field :cta_text, :string
     field :cta_background_colour, :string
     field :cta_text_colour, :string
+    field :custom_head_html, :string, default: ""
     has_many :assets, Asset
     has_many :members, SiteMember
     has_many :users, through: [:members, :user]
@@ -47,7 +48,8 @@ defmodule Affable.Sites.Site do
         :text,
         :cta_text,
         :cta_text_colour,
-        :cta_background_colour
+        :cta_background_colour,
+        :custom_head_html
       ]
     )
     |> cast_assoc(:items, with: &Item.changeset/2)

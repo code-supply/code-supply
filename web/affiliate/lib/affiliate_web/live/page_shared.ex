@@ -12,6 +12,7 @@ defmodule AffiliateWeb.PageShared do
 
     assign(socket,
       page_title: site["name"],
+      custom_head_html: site["custom_head_html"],
       header_image_url: site["header_image_url"],
       name: site["name"],
       logo_url: site["site_logo_url"],
