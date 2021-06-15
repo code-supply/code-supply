@@ -43,7 +43,7 @@
 
       <div class="field">
         <%= label outer_form, :custom_head_html, "Custom <head> HTML" %>
-        <%= textarea outer_form, :custom_head_html, phx_debounce: 250 %>
+        <%= textarea outer_form, :custom_head_html, phx_debounce: 250, class: "font-mono" %>
         <%= error_tag outer_form, :custom_head_html %>
       </div>
     </div>
