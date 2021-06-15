@@ -30,6 +30,19 @@ spec:
           limits:
             memory: 100Mi
     ingressGateways:
+    - name: istio-ingressgateway-nodeport
+      enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 5m
+            memory: 43Mi
+          limits:
+            memory: 100Mi
+        service:
+          type: NodePort
+        serviceAnnotations:
+          cloud.google.com/neg: '{"exposed_ports": {"80":{}}}'
     - name: istio-ingressgateway
       enabled: true
       k8s:

@@ -1,25 +1,24 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: affable
+  name: health
 spec:
   selector:
     istio: ingressgateway
+    service.istio.io/canonical-name: istio-ingressgateway-nodeport
   servers:
   - port:
       number: 80
       name: http
       protocol: HTTP
     hosts:
-    - affable.app
-    - "*.affable.app"
+    - "*"
   - port:
       number: 443
       name: https
       protocol: HTTPS
     hosts:
-    - affable.app
-    - "*.affable.app"
+    - "*"
     tls:
       mode: SIMPLE
       credentialName: affable-www

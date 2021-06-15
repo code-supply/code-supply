@@ -7,3 +7,6 @@ resources:
 - peer-authentication.yaml
 - kiali.yaml
 - istio-service-monitors.yaml
+- load-balancer-affable.yaml
+- gateway-load-balancer-healthchecks.yaml
+- virtual-service-load-balancer-healthchecks.yaml

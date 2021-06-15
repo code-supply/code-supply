@@ -47223,6 +47223,19 @@ spec:
           requests:
             cpu: 5m
             memory: 43Mi
+        service:
+          type: NodePort
+        serviceAnnotations:
+          cloud.google.com/neg: '{"exposed_ports": {"80":{}}}'
+      name: istio-ingressgateway-nodeport
+    - enabled: true
+      k8s:
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 5m
+            memory: 43Mi
       name: istio-ingressgateway
     pilot:
       k8s:
@@ -47382,11 +47395,35 @@ spec:
       name: http
       number: 80
       protocol: HTTP
-    tls:
-      httpsRedirect: true
   - hosts:
     - affable.app
     - '*.affable.app'
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: affable-www
+      mode: SIMPLE
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: health
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+    service.istio.io/canonical-name: istio-ingressgateway-nodeport
+  servers:
+  - hosts:
+    - '*'
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+  - hosts:
+    - '*'
     port:
       name: https
       number: 443
@@ -47596,6 +47633,52 @@ spec:
         request:
           set:
             x-envoy-retriable-status-codes: "404"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: health
+  namespace: istio-system
+spec:
+  gateways:
+  - health
+  hosts:
+  - '*'
+  http:
+  - match:
+    - headers:
+        user-agent:
+          prefix: GoogleHC
+      method:
+        exact: GET
+      uri:
+        exact: /
+    rewrite:
+      authority: istio-ingressgateway-nodeport.istio-system.svc.cluster.local:15021
+      uri: /healthz/ready
+    route:
+    - destination:
+        host: istio-ingressgateway-nodeport.istio-system.svc.cluster.local
+        port:
+          number: 15021
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.class: gce
+    kubernetes.io/ingress.global-static-ip-name: affable
+  name: load-balancer-affable
+  namespace: istio-system
+spec:
+  defaultBackend:
+    service:
+      name: istio-ingressgateway-nodeport
+      port:
+        number: 80
+  tls:
+  - secretName: affable-www
 ---
 apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
