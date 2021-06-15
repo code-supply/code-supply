@@ -62,7 +62,6 @@ config :k8s,
 # We also recommend setting `force_ssl` in your endpoint, ensuring
 # no data is ever sent via http, always redirecting to https:
 #
-#     config :affable, AffableWeb.Endpoint,
-#       force_ssl: [hsts: true]
-#
+config :affable, AffableWeb.Endpoint, force_ssl: [hsts: true, rewrite_on: [:x_forwarded_proto]]
+
 # Check `Plug.SSL` for all available options in `force_ssl`.
