@@ -38,8 +38,7 @@ spec:
 
         readinessProbe:
           initialDelaySeconds: 20
-          httpGet:
-            path: /
+          tcpSocket:
             port: http
 
         resources:
