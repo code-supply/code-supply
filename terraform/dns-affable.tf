@@ -11,7 +11,7 @@ resource "google_dns_record_set" "affable-root" {
   type         = "A"
 }
 
-resource "google_dns_record_set" "wildcard" {
+resource "google_dns_record_set" "affable-wildcard" {
   name         = "*.${google_dns_managed_zone.affable.dns_name}"
   managed_zone = google_dns_managed_zone.affable.name
   rrdatas      = [var.cluster-ingress-address]
