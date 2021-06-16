@@ -18,3 +18,11 @@ resource "google_dns_record_set" "affable-wildcard" {
   ttl          = 1800
   type         = "A"
 }
+
+resource "google_dns_record_set" "affable-images" {
+  name         = "images.${google_dns_managed_zone.affable.dns_name}"
+  managed_zone = google_dns_managed_zone.affable.name
+  rrdatas      = [google_compute_global_address.affable.address]
+  ttl          = 1800
+  type         = "A"
+}
