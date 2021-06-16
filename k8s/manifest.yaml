@@ -47196,6 +47196,19 @@ spec:
         cloudDNS:
           project: code-supply
 ---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: cdn-enabled
+  namespace: istio-system
+spec:
+  cdn:
+    cachePolicy:
+      includeHost: true
+      includeProtocol: true
+      includeQueryString: true
+    enabled: true
+---
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 metadata:
@@ -47225,6 +47238,7 @@ spec:
         service:
           type: NodePort
         serviceAnnotations:
+          cloud.google.com/backend-config: '{"ports": {"80": "cdn-enabled"}}'
           cloud.google.com/neg: '{"exposed_ports": {"80":{}}}'
       name: istio-ingressgateway-nodeport
     - enabled: true

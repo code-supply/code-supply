@@ -10,3 +10,4 @@ resources:
 - load-balancer-affable.yaml
 - gateway-load-balancer-healthchecks.yaml
 - virtual-service-load-balancer-healthchecks.yaml
+- backend-config-cdn-enabled.yaml

@@ -42,6 +42,7 @@ spec:
         service:
           type: NodePort
         serviceAnnotations:
+          cloud.google.com/backend-config: '{"ports": {"80": "cdn-enabled"}}'
           cloud.google.com/neg: '{"exposed_ports": {"80":{}}}'
     - name: istio-ingressgateway
       enabled: true
