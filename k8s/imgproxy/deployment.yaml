@@ -15,7 +15,7 @@ spec:
 
       containers:
       - name: imgproxy
-        image: darthsim/imgproxy:latest@sha256:5c844ddaf98ca33bf70072a0b66f94cf14bb2c68787adbfa73e076d69d9d1a89
+        image: darthsim/imgproxy:v2.16.4@sha256:160db382092e9d00d84337d4569e09031138d2cadc62b8571d0714d36211ec1a
         env:
         - name: IMGPROXY_USE_GCS
           value: "true"
