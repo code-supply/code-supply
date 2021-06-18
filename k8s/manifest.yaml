@@ -47208,6 +47208,7 @@ spec:
       includeProtocol: true
       includeQueryString: true
     enabled: true
+  timeoutSec: 3600
 ---
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
