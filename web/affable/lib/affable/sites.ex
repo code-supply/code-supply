@@ -193,7 +193,7 @@ defmodule Affable.Sites do
   def create_bare_site(%User{} = user, attrs \\ %{}) do
     create_bare_site_multi(user, attrs)
     |> Repo.transaction()
-    |> handle_create_site_multi(:site)
+    |> handle_create_site_multi(:site_with_internal_name)
   end
 
   def create_site(%User{} = user, attrs \\ %{}) do

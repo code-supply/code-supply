@@ -9,6 +9,15 @@ defmodule Affable.Accounts do
   alias Affable.{Email, Mailer, Repo, Sites}
   alias Affable.Accounts.{User, UserToken, UserNotifier}
   alias Affable.Assets
+  alias Affable.Sites.SiteMember
+
+  def preload_for_sites(%User{} = user) do
+    user
+    |> Affable.Repo.preload(
+      sites: :domains,
+      site_members: from(sm in SiteMember, order_by: [desc: sm.site_id])
+    )
+  end
 
   def preload_for_assets(%User{} = user) do
     user
