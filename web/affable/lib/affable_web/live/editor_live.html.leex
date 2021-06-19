@@ -37,13 +37,13 @@
 
       <div class="field">
         <%= label outer_form, :text %>
-        <%= textarea outer_form, :text, phx_debounce: 250 %>
+        <%= editor_textarea outer_form, :text %>
         <%= error_tag outer_form, :text %>
       </div>
 
       <div class="field">
         <%= label outer_form, :custom_head_html, "Custom <head> HTML" %>
-        <%= textarea outer_form, :custom_head_html, phx_debounce: 250, class: "font-mono" %>
+        <%= editor_textarea outer_form, :custom_head_html, class: "font-mono" %>
         <%= error_tag outer_form, :custom_head_html %>
       </div>
     </div>
@@ -181,7 +181,7 @@
 
         <div class="field">
           <%= label f, :description %>
-          <%= textarea f, :description, phx_debounce: 250 %>
+          <%= editor_textarea f, :description %>
           <%= error_tag f, :description %>
         </div>
       </li>

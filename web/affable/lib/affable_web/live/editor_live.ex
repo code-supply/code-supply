@@ -86,6 +86,14 @@ defmodule AffableWeb.EditorLive do
     |> reset_site(socket)
   end
 
+  def editor_textarea(form, field, opts \\ []) do
+    textarea(
+      form,
+      field,
+      opts ++ [phx_debounce: 250, phx_hook: "MaintainAttrs", data_attrs: "style"]
+    )
+  end
+
   defp retrieve_state(user, socket, id) do
     site = Sites.get_site!(user, id)
 
