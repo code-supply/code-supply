@@ -62,23 +62,27 @@ defmodule AffableWeb.SitesLive do
         %{"site" => attrs},
         %{assigns: %{user: user}} = socket
       ) do
-    {:ok,
-     %Site{
-       internal_name: internal_name,
-       domains: [%Domain{name: domain_name}]
-     } = site} = Sites.create_bare_site(user, attrs)
+    case Sites.create_bare_site(user, attrs) do
+      {:ok,
+       %Site{
+         internal_name: internal_name,
+         domains: [%Domain{name: domain_name}]
+       } = site} ->
+        case k8s().deploy(K8sFactories.affiliate_site(internal_name, [domain_name])) do
+          {:ok, _} ->
+            Logger.info("Deployed site #{internal_name} for the first time")
 
-    case k8s().deploy(K8sFactories.affiliate_site(internal_name, [domain_name])) do
-      {:ok, _} ->
-        Logger.info("Deployed site #{internal_name} for the first time")
+          {:error, msg} ->
+            Logger.error("Failed to deploy #{internal_name}: #{msg}")
+        end
 
-      {:error, msg} ->
-        Logger.error("Failed to deploy #{internal_name}: #{msg}")
+        Phoenix.PubSub.subscribe(:affable, internal_name)
+
+        {:noreply, update(socket, :sites, fn sites -> [site | sites] end)}
+
+      {:error, changeset} ->
+        {:noreply, assign(socket, :changeset, changeset)}
     end
-
-    Phoenix.PubSub.subscribe(:affable, internal_name)
-
-    {:noreply, update(socket, :sites, fn sites -> [site | sites] end)}
   end
 
   defp k8s() do

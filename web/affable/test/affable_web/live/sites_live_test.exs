@@ -51,6 +51,14 @@ defmodule AffableWeb.SitesLiveTest do
     refute view |> has_element?(".pending")
   end
 
+  test "entering an empty name shows error", %{conn: conn} do
+    {:ok, view, _html} = live(conn, path(conn))
+
+    assert view
+           |> form("#new-site", site: %{name: " "})
+           |> render_submit() =~ "can&apos;t be blank"
+  end
+
   defp all_sites_become_available() do
     made_available_at = DateTime.utc_now()
 
