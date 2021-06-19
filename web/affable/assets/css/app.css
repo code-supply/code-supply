@@ -150,13 +150,17 @@ tbody tr:hover {
 }
 
 .pending .pending-spinner {
-    @apply bg-center bg-no-repeat animate-spin;
+    @apply w-4 h-4 p-3 bg-no-repeat animate-spin;
     animation-duration: 4s;
     background-image: url("/images/loader.svg");
 }
 
 .pending .pending-invisible {
     @apply invisible;
+}
+
+.pending .pending-hidden {
+    @apply hidden;
 }
 
 .feather {

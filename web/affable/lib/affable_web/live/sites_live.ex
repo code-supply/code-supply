@@ -85,6 +85,28 @@ defmodule AffableWeb.SitesLive do
     end
   end
 
+  @impl true
+  def handle_event(
+        "delete",
+        %{"id" => site_id},
+        %{assigns: %{user: user}} = socket
+      ) do
+    site = Sites.get_site!(user, site_id)
+    Sites.delete_site(site)
+
+    k8s().undeploy(
+      K8sFactories.affiliate_site(
+        site.internal_name,
+        site.domains |> Enum.map(fn domain -> domain.name end)
+      )
+    )
+
+    {:noreply,
+     update(socket, :sites, fn sites ->
+       Enum.reject(sites, fn %Site{id: id} -> "#{id}" == site_id end)
+     end)}
+  end
+
   defp k8s() do
     Application.get_env(:affable, :k8s)
   end

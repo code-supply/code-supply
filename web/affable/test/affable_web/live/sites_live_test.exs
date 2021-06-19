@@ -8,7 +8,7 @@ defmodule AffableWeb.SitesLiveTest do
   alias Affable.Accounts.User
   alias Affable.Sites.Site
 
-  require Ecto.Query
+  import Ecto.Query, only: [from: 2]
 
   setup :verify_on_exit!
 
@@ -59,19 +59,37 @@ defmodule AffableWeb.SitesLiveTest do
            |> render_submit() =~ "can&apos;t be blank"
   end
 
+  test "can delete sites", %{conn: conn, user: %User{sites: [site]}} do
+    {:ok, view, html} = live(conn, path(conn))
+
+    assert html =~ site.name
+
+    expect(MockK8s, :undeploy, fn %{"kind" => "AffiliateSite", "metadata" => %{"name" => name}} ->
+      assert name == site.internal_name
+      {:ok, ""}
+    end)
+
+    refute view
+           |> element("#delete-site-#{site.id}")
+           |> render_click() =~ site.name
+
+    assert 0 == from(Site, select: count()) |> Affable.Repo.one()
+  end
+
   defp all_sites_become_available() do
     made_available_at = DateTime.utc_now()
 
-    sites =
-      Ecto.Query.from(Site, preload: [:domains])
-      |> Affable.Repo.all()
-
-    for site <- sites do
+    for site <- all_sites() do
       Phoenix.PubSub.broadcast(:affable, site.internal_name, %{
         site
         | made_available_at: made_available_at
       })
     end
+  end
+
+  defp all_sites() do
+    from(Site, preload: [:domains])
+    |> Affable.Repo.all()
   end
 
   defp path(conn) do

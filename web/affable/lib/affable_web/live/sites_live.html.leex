@@ -30,14 +30,18 @@
               <% end %>
             </ul>
           </div>
-          <ul class="float-right cta">
-            <li class="float-left mr-4 pending-spinner">
-              <a target="_blank" rel="noopener" class="pending-invisible" href="<%= site |> canonical_url() %>">Visit</a>
+          <ul class="float-right pending-hidden">
+            <li class="float-left mr-4">
+              <a target="_blank" rel="noopener" href="<%= site |> canonical_url() %>">Visit</a>
             </li>
-            <li class="float-left">
+            <li class="float-left mr-4">
               <a href="<%= Routes.editor_path(@socket, :edit, site.id) %>">Edit</a>
             </li>
+            <li class="float-left">
+              <a class="pending-invisible" id="delete-site-<%= site.id %>" href="#" phx-click="delete" phx-value-id="<%= site.id %>">Delete</a>
+            </li>
           </ul>
+          <div class="float-right pending-spinner" />
         </div>
       </li>
     <% end %>
