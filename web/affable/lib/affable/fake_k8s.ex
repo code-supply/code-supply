@@ -1,10 +1,6 @@
 defmodule Affable.FakeK8s do
   @behaviour Affable.K8s
 
-  alias Affable.Repo
-  alias Affable.Sites.Site
-  alias Phoenix.PubSub
-
   @impl true
   def deploy(resource) do
     msg = "FakeK8s: would have deployed #{inspect(resource)}"
