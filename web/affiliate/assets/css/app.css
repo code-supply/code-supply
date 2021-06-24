@@ -9,8 +9,20 @@
     rgba(255,255,255,0.1) 100%);
 }
 
+.prose {
+    @apply text-xl;
+}
+
 .prose p {
-    @apply my-2 xl:text-xl;
+    @apply my-2;
+}
+
+.prose ul {
+    @apply list-disc ml-8;
+}
+
+.prose a {
+    @apply underline;
 }
 
 .subhead {
