@@ -11,7 +11,7 @@ resource "google_dns_record_set" "root" {
   name         = google_dns_managed_zone.root.dns_name
   managed_zone = google_dns_managed_zone.root.name
   rrdatas      = [var.cluster-ingress-address]
-  ttl          = 1800
+  ttl          = 60
   type         = "A"
 }
 
