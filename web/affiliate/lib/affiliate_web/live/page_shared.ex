@@ -21,6 +21,8 @@ defmodule AffiliateWeb.PageShared do
       cta_text: site["cta_text"],
       cta_background_colour: site["cta_background_colour"],
       cta_text_colour: site["cta_text_colour"],
+      header_background_colour: site["header_background_colour"],
+      header_text_colour: site["header_text_colour"],
       items: items,
       attributes: attributes
     )

@@ -18,10 +18,7 @@ defmodule Affable.SitesTest do
     alias Affable.Sites.Site
 
     @valid_site %Site{
-      name: "hi",
-      cta_text: "Go",
-      cta_text_colour: "FFFFFF",
-      cta_background_colour: "000000"
+      name: "hi"
     }
     @invalid_attrs %{name: nil}
 
@@ -43,14 +40,21 @@ defmodule Affable.SitesTest do
       }
     end
 
-    test "colours can be set to valid values" do
+    test "colours can be set to valid values and get uppercased automatically" do
       changeset =
         @valid_site
-        |> Site.changeset(%{cta_background_colour: "EEFF20", cta_text_colour: "012345"})
+        |> Site.changeset(%{
+          "cta_background_colour" => "eEFF20",
+          "cta_text_colour" => "012345",
+          "header_background_colour" => "fF0000",
+          "header_text_colour" => "00f000"
+        })
 
       assert changeset.errors == []
       assert changeset.changes.cta_background_colour == "EEFF20"
       assert changeset.changes.cta_text_colour == "012345"
+      assert changeset.changes.header_background_colour == "FF0000"
+      assert changeset.changes.header_text_colour == "00F000"
     end
 
     test "colours can't be set to invalid values" do
@@ -60,16 +64,6 @@ defmodule Affable.SitesTest do
 
       assert {_, validation: :format} = changeset.errors[:cta_background_colour]
       assert {_, validation: :format} = changeset.errors[:cta_text_colour]
-    end
-
-    test "CTA attributes can't be blank" do
-      changeset =
-        @valid_site
-        |> Site.changeset(%{cta_text: "", cta_background_colour: "", cta_text_colour: " "})
-
-      assert {_, validation: :required} = changeset.errors[:cta_text]
-      assert {_, validation: :required} = changeset.errors[:cta_background_colour]
-      assert {_, validation: :required} = changeset.errors[:cta_text_colour]
     end
 
     test "status of new site is pending" do

@@ -17,9 +17,11 @@ defmodule Affable.Sites.Site do
     field :internal_name, :string
     field :internal_hostname, :string
     field :made_available_at, :utc_datetime
-    field :cta_text, :string
-    field :cta_background_colour, :string
-    field :cta_text_colour, :string
+    field :cta_text, :string, default: "Go"
+    field :cta_background_colour, :string, default: "059669"
+    field :cta_text_colour, :string, default: "FFFFFF"
+    field :header_background_colour, :string, default: "3B82F6"
+    field :header_text_colour, :string, default: "FFFFFF"
     field :custom_head_html, :string, default: ""
     has_many :assets, Asset
     has_many :members, SiteMember
@@ -39,7 +41,9 @@ defmodule Affable.Sites.Site do
     |> cast(
       attrs
       |> coerce_uppercase("cta_text_colour")
-      |> coerce_uppercase("cta_background_colour"),
+      |> coerce_uppercase("cta_background_colour")
+      |> coerce_uppercase("header_text_colour")
+      |> coerce_uppercase("header_background_colour"),
       [
         :name,
         :site_logo_id,
@@ -49,14 +53,25 @@ defmodule Affable.Sites.Site do
         :cta_text,
         :cta_text_colour,
         :cta_background_colour,
+        :header_background_colour,
+        :header_text_colour,
         :custom_head_html
       ]
     )
     |> cast_assoc(:items, with: &Item.changeset/2)
     |> cast_assoc(:attribute_definitions, with: &AttributeDefinition.changeset/2)
-    |> validate_required([:name, :cta_text, :cta_text_colour, :cta_background_colour])
+    |> validate_required([
+      :name,
+      :cta_text,
+      :cta_text_colour,
+      :cta_background_colour,
+      :header_background_colour,
+      :header_text_colour
+    ])
     |> validate_format(:cta_text_colour, @colour_format)
     |> validate_format(:cta_background_colour, @colour_format)
+    |> validate_format(:header_background_colour, @colour_format)
+    |> validate_format(:header_text_colour, @colour_format)
   end
 
   def change_internal_name(site, internal_name) do
@@ -75,7 +90,11 @@ defmodule Affable.Sites.Site do
   end
 
   defp coerce_uppercase(attrs, key) do
-    uppercased = Map.get(attrs, key, "") |> String.upcase()
-    Map.replace(attrs, key, uppercased)
+    if attrs[key] do
+      attrs
+      |> Map.put(key, attrs |> Map.get(key, "") |> String.upcase())
+    else
+      attrs
+    end
   end
 end

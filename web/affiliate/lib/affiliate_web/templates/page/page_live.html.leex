@@ -7,7 +7,8 @@
     <% end %>
 
     <main role="main">
-      <header class="px-4 pt-4 pb-12 overflow-hidden text-white bg-blue-600 md:p-8">
+      <header class="px-4 pt-4 pb-12 overflow-hidden md:p-8"
+              style="background-color: #<%= @header_background_colour %>; color: #<%= @header_text_colour %>">
         <img class="float-right w-5/12 pb-8 pl-4 md:pl-8" src="<%= @header_image_url %>" />
 
         <div class="float-none">

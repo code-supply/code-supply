@@ -4,7 +4,9 @@
     "cta_text" => "Go",
     "cta_text_colour" => "FFFFFF",
     "custom_head_html" => "",
+    "header_background_colour" => "3B82F6",
     "header_image_url" => "https://images.affable.app/nosignature/fill/567/341/ce/0/plain/gs://affable-uploads/default-header.png",
+    "header_text_colour" => "FFFFFF",
     "id" => 1,
     "items" => [
       %{
@@ -99,7 +101,9 @@
     "cta_text" => "Go",
     "cta_text_colour" => "FFFFFF",
     "custom_head_html" => "",
+    "header_background_colour" => "3B82F6",
     "header_image_url" => "https://images.affable.app/nosignature/fill/567/341/ce/0/plain/gs://affable-uploads/default-header.png",
+    "header_text_colour" => "FFFFFF",
     "id" => 1,
     "items" => [
       %{

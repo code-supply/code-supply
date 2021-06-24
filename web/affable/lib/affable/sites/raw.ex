@@ -14,6 +14,8 @@ defmodule Affable.Sites.Raw do
       "cta_text" => site.cta_text,
       "cta_background_colour" => site.cta_background_colour,
       "cta_text_colour" => site.cta_text_colour,
+      "header_background_colour" => site.header_background_colour,
+      "header_text_colour" => site.header_text_colour,
       "custom_head_html" => site.custom_head_html,
       "made_available_at" => format_datetime(site.made_available_at),
       "items" => site.items |> Enum.map(&raw/1)
