@@ -7,3 +7,7 @@ resource "google_compute_address" "multi-vhost" {
 resource "google_compute_global_address" "affable" {
   name = "affable"
 }
+
+output "load-balancer-address" {
+  value = google_compute_global_address.affable.address
+}
