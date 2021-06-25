@@ -10,7 +10,7 @@ resource "google_dns_managed_zone" "root" {
 resource "google_dns_record_set" "root" {
   name         = google_dns_managed_zone.root.dns_name
   managed_zone = google_dns_managed_zone.root.name
-  rrdatas      = [var.cluster-ingress-address]
+  rrdatas      = [google_compute_global_address.affable.address]
   ttl          = 60
   type         = "A"
 }

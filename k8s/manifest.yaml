@@ -47693,6 +47693,7 @@ spec:
         number: 80
   tls:
   - secretName: affable-www
+  - secretName: tls-site5xzn
 ---
 apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication

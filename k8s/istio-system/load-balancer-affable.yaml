@@ -10,7 +10,7 @@ metadata:
 spec:
   tls:
   - secretName: affable-www
-
+  - secretName: tls-site5xzn
   defaultBackend:
     service:
       name: istio-ingressgateway-nodeport
