@@ -23,6 +23,7 @@ defmodule Affable.Sites.Site do
     field :header_background_colour, :string, default: "3B82F6"
     field :header_text_colour, :string, default: "FFFFFF"
     field :custom_head_html, :string, default: ""
+    field :load_balancer_index, :integer
     has_many :assets, Asset
     has_many :members, SiteMember
     has_many :users, through: [:members, :user]
@@ -72,6 +73,11 @@ defmodule Affable.Sites.Site do
     |> validate_format(:cta_background_colour, @colour_format)
     |> validate_format(:header_background_colour, @colour_format)
     |> validate_format(:header_text_colour, @colour_format)
+  end
+
+  def change_load_balancer(site, index) do
+    site
+    |> cast(%{load_balancer_index: index}, [:load_balancer_index])
   end
 
   def change_internal_name(site, internal_name) do

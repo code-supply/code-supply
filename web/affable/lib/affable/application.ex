@@ -14,22 +14,22 @@ defmodule Affable.Application do
         AffableWeb.Telemetry,
         # Start the PubSub system
         {Phoenix.PubSub, name: :affable},
-        {Goth,
-         name: Affable.Goth,
-         source:
-           case Application.fetch_env(:goth, :source) do
-             {:ok, source} ->
-               source
+        # {Goth,
+        #  name: Affable.Goth,
+        #  source:
+        #    case Application.fetch_env(:goth, :source) do
+        #      {:ok, source} ->
+        #        source
 
-             :error ->
-               {
-                 :refresh_token,
-                 (System.user_home!() <> "/.config/gcloud/application_default_credentials.json")
-                 |> File.read!()
-                 |> Jason.decode!(),
-                 []
-               }
-           end},
+        #      :error ->
+        #        {
+        #          :refresh_token,
+        #          (System.user_home!() <> "/.config/gcloud/application_default_credentials.json")
+        #          |> File.read!()
+        #          |> Jason.decode!(),
+        #          []
+        #        }
+        #    end},
         # Start the Endpoint (http/https)
         AffableWeb.Endpoint,
         {Cluster.Supervisor,

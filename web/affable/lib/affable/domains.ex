@@ -1,7 +1,8 @@
 defmodule Affable.Domains do
   import Ecto.Query, warn: false
-  alias Affable.Repo
 
+  alias Ecto.Multi
+  alias Affable.Repo
   alias Affable.Domains.Domain
   alias Affable.Sites.Site
   alias Affable.Sites.SiteMember
@@ -32,10 +33,46 @@ defmodule Affable.Domains do
   end
 
   def create_domain(%Site{} = site, attrs \\ %{}) do
-    Ecto.build_assoc(site, :domains)
-    |> Domain.changeset(attrs)
-    |> Repo.insert()
-    |> preloads()
+    case Multi.new()
+         |> Multi.update(:assign_lb, Site.change_load_balancer(site, load_balancer_for(site)))
+         |> Multi.insert(:create_domain, fn %{assign_lb: lb_site} ->
+           Ecto.build_assoc(lb_site, :domains)
+           |> Domain.changeset(attrs)
+         end)
+         |> Repo.transaction() do
+      {:ok, %{create_domain: domain}} ->
+        {:ok, preloads(domain)}
+    end
+  end
+
+  defp load_balancer_for(site) do
+    groups = Repo.all(Site) |> Enum.group_by(fn s -> s.load_balancer_index end)
+
+    case Enum.find(groups, fn
+           {idx, sites} ->
+             case(idx) do
+               nil ->
+                 false
+
+               0 ->
+                 length(sites) < certificates_per_load_balancer() - 1
+
+               _ ->
+                 length(sites) < certificates_per_load_balancer()
+             end
+         end) do
+      nil ->
+        case Map.keys(groups) do
+          [nil | [n | counts]] ->
+            Enum.max([n | counts]) + 1
+
+          _ ->
+            0
+        end
+
+      {lb_idx, _} ->
+        lb_idx |> IO.inspect()
+    end
   end
 
   defp preloads({:ok, domain}) do
@@ -71,5 +108,9 @@ defmodule Affable.Domains do
 
   def change_domain(%Domain{} = domain, attrs \\ %{}) do
     Domain.changeset(domain, attrs)
+  end
+
+  defp certificates_per_load_balancer() do
+    Application.get_env(:affable, :certificates_per_load_balancer)
   end
 end

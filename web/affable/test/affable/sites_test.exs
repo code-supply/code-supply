@@ -10,6 +10,7 @@ defmodule Affable.SitesTest do
   alias Affable.Assets.Asset
   alias Affable.Sites
   alias Affable.Sites.{Site, SiteMember, Item, AttributeDefinition}
+  alias Affable.Domains
   alias Affable.Domains.Domain
 
   setup :verify_on_exit!
@@ -39,6 +40,31 @@ defmodule Affable.SitesTest do
         site |> Sites.with_items()
       }
     end
+
+    test "first load balancer has limit minus 1 (accommodate affable cert) sites" do
+      Application.put_env(Affable.Application, :certificates_per_load_balancer, 2)
+      {:ok, site1} = Sites.create_bare_site(user_fixture(), %{name: "foo"})
+      {:ok, site2} = Sites.create_bare_site(user_fixture(), %{name: "bar"})
+
+      assert nil == site1.load_balancer_index
+      assert nil == site2.load_balancer_index
+
+      {:ok, %Domain{site: new_site1}} =
+        site1
+        |> Domains.create_domain(%{name: "foo.example.com"})
+
+      {:ok, %Domain{site: new_site2}} =
+        site2
+        |> Domains.create_domain(%{name: "bar.example.com"})
+
+      assert 0 == new_site1.load_balancer_index
+      assert 1 == new_site2.load_balancer_index
+    end
+
+    test "consecutive load balancers each have number of sites configured in the limit" do
+    end
+
+    test "deleted sites free up space in load balancers for new sites"
 
     test "colours can be set to valid values and get uppercased automatically" do
       changeset =
