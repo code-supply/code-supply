@@ -50,11 +50,35 @@ resource "google_dns_record_set" "protonmail_dkim" {
   managed_zone = google_dns_managed_zone.root.name
 
   rrdatas = [
-    "\"v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCkvOv9oUqMfFIpZ/iazzFhDRY+g+pwgIdY7cjHHFRY2tXGCNJ+FttIxSKoKOK/8JJ0CtF6GrotboAnYgz+OuwKgNgnYuDqrVjehogEN83pAY4BxTut+vLUZEjYcQsanHdY6mW7hnefbBQ6yyl7pJwWqsgXG8ebHgBwXpNCEMKdnwIDAQAB\"",
+    "protonmail.domainkey.dkhjnoxzm5gjd5wewoi5ay2shiaebhpqelfgvs4aiyr4tttpetjtq.domains.proton.ch.",
   ]
 
   ttl  = 21600
-  type = "TXT"
+  type = "CNAME"
+}
+
+resource "google_dns_record_set" "protonmail_dkim2" {
+  name         = "protonmail2._domainkey.${google_dns_managed_zone.root.dns_name}"
+  managed_zone = google_dns_managed_zone.root.name
+
+  rrdatas = [
+    "protonmail2.domainkey.dkhjnoxzm5gjd5wewoi5ay2shiaebhpqelfgvs4aiyr4tttpetjtq.domains.proton.ch.",
+  ]
+
+  ttl  = 21600
+  type = "CNAME"
+}
+
+resource "google_dns_record_set" "protonmail_dkim3" {
+  name         = "protonmail3._domainkey.${google_dns_managed_zone.root.dns_name}"
+  managed_zone = google_dns_managed_zone.root.name
+
+  rrdatas = [
+    "protonmail3.domainkey.dkhjnoxzm5gjd5wewoi5ay2shiaebhpqelfgvs4aiyr4tttpetjtq.domains.proton.ch.",
+  ]
+
+  ttl  = 60
+  type = "CNAME"
 }
 
 resource "google_dns_managed_zone" "ab" {
@@ -112,11 +136,35 @@ resource "google_dns_record_set" "ab-dkim" {
   managed_zone = google_dns_managed_zone.ab.name
 
   rrdatas = [
-    "\"v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFDjL8rc21ICQcjH+4rWBfCT8JO91/ejkcAFAfJPVSZtXCaADWs1Ft5d/o3G2/iFNklHh0piTRIBXcyTCTWsLS7+1/xRLtUH09ixGmgW8nD25PmMPkjYlFkW4vlR+oknHTvJpDVoO7w+uAM2SUoSTFVvNYc9NzS1Dd1zb24qxK7QIDAQAB\"",
+    "protonmail.domainkey.d52vvvwhtejhbugd3xqtpjghcqs5dv2qyptt7rbsbqykex7dob4xa.domains.proton.ch.",
   ]
 
   ttl  = 21600
-  type = "TXT"
+  type = "CNAME"
+}
+
+resource "google_dns_record_set" "ab-dkim2" {
+  name         = "protonmail2._domainkey.${google_dns_managed_zone.ab.dns_name}"
+  managed_zone = google_dns_managed_zone.ab.name
+
+  rrdatas = [
+    "protonmail2.domainkey.d52vvvwhtejhbugd3xqtpjghcqs5dv2qyptt7rbsbqykex7dob4xa.domains.proton.ch.",
+  ]
+
+  ttl  = 21600
+  type = "CNAME"
+}
+
+resource "google_dns_record_set" "ab-dkim3" {
+  name         = "protonmail3._domainkey.${google_dns_managed_zone.ab.dns_name}"
+  managed_zone = google_dns_managed_zone.ab.name
+
+  rrdatas = [
+    "protonmail3.domainkey.d52vvvwhtejhbugd3xqtpjghcqs5dv2qyptt7rbsbqykex7dob4xa.domains.proton.ch.",
+  ]
+
+  ttl  = 21600
+  type = "CNAME"
 }
 
 resource "google_dns_record_set" "ab-rdale" {
