@@ -46,11 +46,23 @@ defmodule SiteOperator.K8s.OperationsTest do
     test "include certificates when there are custom domains (they live in a different NS)", %{
       site: site
     } do
-      custom_domain_site = %{site | domains: ["host1.affable.app", "something.example.com"]}
+      custom_domain_site = %{
+        site
+        | domains: ["host1.affable.app", "something.example.com", "www.example.com"]
+      }
+
       deletions = deletions(custom_domain_site)
 
-      assert %{"spec" => %{"dnsNames" => ["something.example.com"]}} =
-               deletions |> find_kind("Certificate")
+      assert %{
+               "spec" => %{
+                 "dnsNames" => [
+                   "www.example.com",
+                   "example.com",
+                   "something.example.com",
+                   "www.something.example.com"
+                 ]
+               }
+             } = deletions |> find_kind("Certificate")
     end
   end
 

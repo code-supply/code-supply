@@ -145,7 +145,17 @@ defmodule SiteOperator.K8s.Operations do
   end
 
   defp custom_domains(domains) do
-    Enum.reject(domains, &Domain.is_affable?/1)
+    for domain <- Enum.reject(domains, &Domain.is_affable?/1), reduce: [] do
+      acc -> [domain | [www_flipped(domain) | acc]]
+    end
+  end
+
+  defp www_flipped("www." <> rest) do
+    rest
+  end
+
+  defp www_flipped(domain) do
+    "www." <> domain
   end
 
   defp initial_resources(%PhoenixSite{} = site) do
