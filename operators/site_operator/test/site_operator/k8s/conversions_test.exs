@@ -228,12 +228,25 @@ defmodule SiteOperator.K8s.ConversionsTest do
     end
 
     test "can be turned back into a struct", %{virtual_service: virtual_service} do
-      assert virtual_service |> from_k8s() == %VirtualService{
+      assert %VirtualService{
                name: @name,
                namespace: @namespace,
                gateways: ["virtual-service-gateway"],
                domains: @domains
-             }
+             } ==
+               virtual_service |> from_k8s()
+    end
+
+    test "with custom domains, can do a round-trip" do
+      vs = %VirtualService{
+        name: @name,
+        namespace: @namespace,
+        gateways: ["virtual-service-gateway"],
+        domains: "a.example.com",
+        redirect: {"www.a.example.com", "a.example.com"}
+      }
+
+      assert vs == vs |> to_k8s() |> from_k8s()
     end
   end
 

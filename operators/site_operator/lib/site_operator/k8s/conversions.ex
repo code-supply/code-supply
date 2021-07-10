@@ -225,10 +225,9 @@ defmodule SiteOperator.K8s.Conversions do
         name: name,
         namespace: namespace,
         gateways: gateways,
-        domains: domains
+        domains: domains,
+        redirect: redirect
       }) do
-    avoid_letsencrypt_verification = "/[^.]?.*"
-
     %{
       "apiVersion" => "networking.istio.io/v1beta1",
       "kind" => "VirtualService",
@@ -236,14 +235,33 @@ defmodule SiteOperator.K8s.Conversions do
       "spec" => %{
         "gateways" => gateways,
         "hosts" => domains,
-        "http" => [
-          %{
-            "match" => [%{"uri" => %{"regex" => avoid_letsencrypt_verification}}],
-            "route" => [%{"destination" => %{"host" => "app.#{namespace}.svc.cluster.local"}}]
-          }
-        ]
+        "http" => redirect_http_routes(redirect) ++ http_routes(namespace)
       }
     }
+  end
+
+  defp redirect_http_routes({from, to}) do
+    [
+      %{
+        "match" => [%{"authority" => %{"prefix" => from}}],
+        "redirect" => %{"authority" => to}
+      }
+    ]
+  end
+
+  defp redirect_http_routes(_) do
+    []
+  end
+
+  defp http_routes(namespace) do
+    avoid_letsencrypt_verification = "/[^.]?.*"
+
+    [
+      %{
+        "match" => [%{"uri" => %{"regex" => avoid_letsencrypt_verification}}],
+        "route" => [%{"destination" => %{"host" => "app.#{namespace}.svc.cluster.local"}}]
+      }
+    ]
   end
 
   defp namespaced_domains(namespace, domains) do
@@ -386,9 +404,32 @@ defmodule SiteOperator.K8s.Conversions do
   def from_k8s(%{
         "kind" => "VirtualService",
         "metadata" => %{"name" => name, "namespace" => namespace},
-        "spec" => %{"gateways" => gateways, "hosts" => domains}
+        "spec" => %{
+          "gateways" => gateways,
+          "hosts" => domains,
+          "http" => routes
+        }
       }) do
-    %VirtualService{name: name, namespace: namespace, gateways: gateways, domains: domains}
+    %VirtualService{
+      name: name,
+      namespace: namespace,
+      gateways: gateways,
+      domains: domains,
+      redirect:
+        case routes do
+          [
+            %{
+              "match" => [%{"authority" => %{"prefix" => from}}],
+              "redirect" => %{"authority" => to}
+            }
+            | _
+          ] ->
+            {from, to}
+
+          _ ->
+            nil
+        end
+    }
   end
 
   defp have_no_custom_domains?(domains) do

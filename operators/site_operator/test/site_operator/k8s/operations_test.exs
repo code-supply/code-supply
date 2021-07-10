@@ -123,6 +123,10 @@ defmodule SiteOperator.K8s.OperationsTest do
                  ],
                  "http" => [
                    %{
+                     "match" => [%{"authority" => %{"prefix" => "www.mydomain.example.com"}}],
+                     "redirect" => %{"authority" => "mydomain.example.com"}
+                   },
+                   %{
                      "match" => [%{"uri" => %{"regex" => "/[^.]?.*"}}],
                      "route" => [
                        %{"destination" => %{"host" => "app.my-namespace.svc.cluster.local"}}

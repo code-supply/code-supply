@@ -113,8 +113,21 @@ defmodule SiteOperator.K8s.Operations do
       name: "app",
       namespace: namespace,
       gateways: ["affable/affable"] ++ Enum.map(site_gateways(namespace, domains), & &1.name),
-      domains: affable_domains(domains) ++ custom_domains(domains)
+      domains: affable_domains(domains) ++ custom_domains(domains),
+      redirect: redirect(domains)
     }
+  end
+
+  defp redirect(user_specified_domains) do
+    case user_specified_domains
+         |> custom_domains()
+         |> Enum.split_with(&(!Enum.member?(user_specified_domains, &1))) do
+      {[from], [to]} ->
+        {from, to}
+
+      _ ->
+        nil
+    end
   end
 
   def checks(%PhoenixSite{name: namespace, domains: domains} = site) do

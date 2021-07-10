@@ -52,7 +52,8 @@ defmodule SiteOperator.RealK8sTest do
       name: "test-name",
       namespace: "test-name",
       gateways: ["test-name"],
-      domains: ["testvirtualservice.example.com"]
+      domains: ["testvirtualservice.example.com"],
+      redirect: {"www.testvirtualservice.example.com", "testvirtualservice.example.com"}
     }
 
     on_exit(fn ->
