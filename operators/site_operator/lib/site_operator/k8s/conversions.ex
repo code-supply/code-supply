@@ -192,7 +192,7 @@ defmodule SiteOperator.K8s.Conversions do
         },
         "servers" => [
           %{
-            "hosts" => ["*"],
+            "hosts" => namespaced_domains(namespace, domains),
             "port" => %{
               "name" => "http",
               "number" => 80,

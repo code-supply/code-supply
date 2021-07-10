@@ -116,7 +116,11 @@ defmodule SiteOperator.K8s.OperationsTest do
                "metadata" => %{"name" => "app", "namespace" => "my-namespace"},
                "spec" => %{
                  "gateways" => ["affable/affable", "app"],
-                 "hosts" => ["host1.affable.app", "mydomain.example.com"],
+                 "hosts" => [
+                   "host1.affable.app",
+                   "mydomain.example.com",
+                   "www.mydomain.example.com"
+                 ],
                  "http" => [
                    %{
                      "match" => [%{"uri" => %{"regex" => "/[^.]?.*"}}],

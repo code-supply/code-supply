@@ -113,7 +113,7 @@ defmodule SiteOperator.K8s.Operations do
       name: "app",
       namespace: namespace,
       gateways: ["affable/affable"] ++ Enum.map(site_gateways(namespace, domains), & &1.name),
-      domains: domains
+      domains: affable_domains(domains) ++ custom_domains(domains)
     }
   end
 
@@ -142,6 +142,10 @@ defmodule SiteOperator.K8s.Operations do
       [] -> []
       domains -> [%Gateway{name: "app", namespace: name, domains: domains}]
     end
+  end
+
+  defp affable_domains(domains) do
+    Enum.filter(domains, &Domain.is_affable?/1)
   end
 
   defp custom_domains(domains) do
