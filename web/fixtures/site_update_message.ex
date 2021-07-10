@@ -92,7 +92,6 @@
     ],
     "made_available_at" => nil,
     "name" => "Top 10 Apples",
-    "page_subtitle" => "Initial subtitle",
     "site_logo_url" => "https://images.affable.app/nosignature/fit/600/176/ce/0/plain/gs://affable-uploads/default-logo.png",
     "text" => nil
   },
@@ -189,7 +188,6 @@
     ],
     "made_available_at" => nil,
     "name" => "Top 10 Apples",
-    "page_subtitle" => "Initial subtitle",
     "site_logo_url" => "https://images.affable.app/nosignature/fit/600/176/ce/0/plain/gs://affable-uploads/default-logo.png",
     "text" => nil
   }

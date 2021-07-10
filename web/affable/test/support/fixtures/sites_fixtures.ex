@@ -19,8 +19,7 @@ defmodule Affable.SitesFixtures do
         user,
         attrs
         |> Enum.into(%{
-          name: "Top 10 Apples",
-          page_subtitle: "Initial subtitle"
+          name: "Top 10 Apples"
         })
       )
 

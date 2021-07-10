@@ -12,7 +12,6 @@ defmodule Affable.Sites.Site do
     field :name, :string
     belongs_to :site_logo, Asset
     belongs_to :header_image, Asset
-    field :page_subtitle, :string
     field :text, :string
     field :internal_name, :string
     field :internal_hostname, :string
@@ -48,7 +47,6 @@ defmodule Affable.Sites.Site do
         :name,
         :site_logo_id,
         :header_image_id,
-        :page_subtitle,
         :text,
         :cta_text,
         :cta_text_colour,

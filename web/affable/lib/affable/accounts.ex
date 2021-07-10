@@ -100,7 +100,6 @@ defmodule Affable.Accounts do
          |> Multi.merge(fn %{user: user} ->
            Sites.create_site_multi(user, %{
              name: "Top 10 Apples",
-             page_subtitle: "An apple a day",
              text:
                "The apple is a deciduous tree, generally standing 2 to 4.5 m (6 to 15 ft) tall in cultivation and up to 9 m (30 ft) in the wild. When cultivated, the size, shape and branch density are determined by rootstock selection and trimming method. The leaves are alternately arranged dark green-colored simple ovals with serrated margins and slightly downy undersides."
            })

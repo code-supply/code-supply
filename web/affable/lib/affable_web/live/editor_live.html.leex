@@ -18,12 +18,6 @@
       </div>
 
       <div class="field">
-        <%= label outer_form, :page_subtitle, "Page subtitle" %>
-        <%= text_input outer_form, :page_subtitle, phx_debounce: 250 %>
-        <%= error_tag outer_form, :page_subtitle %>
-      </div>
-
-      <div class="field">
         <%= label outer_form, :site_logo_id %>
         <%= select outer_form, :site_logo_id, @asset_pairs, prompt: "None" %>
         <%= error_tag outer_form, :site_logo_id %>
