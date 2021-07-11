@@ -1,6 +1,7 @@
 defmodule SiteOperator.K8sSiteMaker do
   @behaviour SiteOperator.SiteMaker
 
+  alias SiteOperator.Domain
   alias SiteOperator.PhoenixSites.PhoenixSite
 
   alias SiteOperator.K8s.{
@@ -8,12 +9,18 @@ defmodule SiteOperator.K8sSiteMaker do
     Certificate,
     Deployment,
     Gateway,
+    Ingress,
     Namespace,
     Operations,
     VirtualService
   }
 
   import SiteOperator.K8s.Conversions
+
+  @hardcoded_ingress %Ingress{
+    name: "load-balancer-affable",
+    tls_secret_names: []
+  }
 
   @impl SiteOperator.SiteMaker
   def create(%AffiliateSite{} = site) do
@@ -73,7 +80,26 @@ defmodule SiteOperator.K8sSiteMaker do
     end
   end
 
-  defp upgrade(%PhoenixSite{} = proposed_phoenix_site, current_resources) do
+  defp upgrade(
+         %PhoenixSite{name: site_name, domains: domains} = proposed_phoenix_site,
+         current_resources
+       ) do
+    basic_upgrade_result = upgrade_by_equality(proposed_phoenix_site, current_resources)
+
+    with true <- Domain.any_custom?(domains),
+         {:ok, upgraded_resources} <- basic_upgrade_result,
+         {:ok, %{Ingress => [ingress]}} <- get_ingress(),
+         true <- tls_secret_required?(ingress, site_name),
+         upgraded_ingress <- Ingress.add_secret(ingress, site_name),
+         {:ok, _} <- execute([Operations.update(upgraded_ingress)]) do
+      {:ok, upgraded_resources ++ [upgraded_ingress]}
+    else
+      false -> basic_upgrade_result
+      err -> err
+    end
+  end
+
+  defp upgrade_by_equality(proposed_phoenix_site, current_resources) do
     current_resources_to_upgraded_resources(
       current_resources,
       Operations.upgradable_resources(proposed_phoenix_site)
@@ -100,6 +126,14 @@ defmodule SiteOperator.K8sSiteMaker do
              ]}
         end
     end)
+  end
+
+  defp tls_secret_required?(%Ingress{tls_secret_names: names}, name) do
+    Certificate.secret_name(name) not in names
+  end
+
+  defp get_ingress() do
+    execute([Operations.get(@hardcoded_ingress)])
   end
 
   defp recreate(%Namespace{} = ns, %AffiliateSite{} = site) do

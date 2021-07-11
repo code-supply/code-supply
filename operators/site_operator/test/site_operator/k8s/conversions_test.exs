@@ -9,6 +9,7 @@ defmodule SiteOperator.K8s.ConversionsTest do
     Certificate,
     Deployment,
     Gateway,
+    Ingress,
     Namespace,
     Secret,
     Service,
@@ -314,6 +315,13 @@ defmodule SiteOperator.K8s.ConversionsTest do
 
     test "can be turned back into a struct", %{certificate: certificate} do
       assert certificate |> from_k8s() == %Certificate{name: @namespace, domains: @domains}
+    end
+  end
+
+  describe "ingress" do
+    test "can be round-tripped" do
+      ing = %Ingress{name: "hi-there", tls_secret_names: ["foo", "bar"]}
+      assert ing == ing |> to_k8s() |> from_k8s()
     end
   end
 

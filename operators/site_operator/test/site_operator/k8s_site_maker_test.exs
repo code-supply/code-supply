@@ -9,6 +9,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
     Certificate,
     Deployment,
     Gateway,
+    Ingress,
     Namespace,
     Operation,
     Operations,
@@ -123,6 +124,41 @@ defmodule SiteOperator.K8sSiteMakerTest do
       assert {:ok, recreated: [expected_certificate]} == reconcile.(site)
     end
 
+    test "refers to TLS secret from load balancer", %{reconcile_1: reconcile} do
+      site = %AffiliateSite{
+        name: @namespace,
+        domains: ["something.affable.app", "acoolcustomdomain.example.com"]
+      }
+
+      ingress_for_retrieval = %Ingress{name: "load-balancer-affable", tls_secret_names: []}
+      ingress_for_retrieval_k8s = ingress_for_retrieval |> to_k8s()
+
+      existing_ingress = %{
+        ingress_for_retrieval
+        | tls_secret_names: ["affable-www", "dont-touch"]
+      }
+
+      expected_ingress = %{
+        existing_ingress
+        | tls_secret_names: ["affable-www", "dont-touch", "tls-#{@namespace}"]
+      }
+
+      expected_ingress_k8s = expected_ingress |> to_k8s()
+
+      MockK8s
+      |> expect_custom_domain_checks(fn ->
+        {:ok, %{}}
+      end)
+      |> expect(:execute, fn [%Operation{action: :get, resource: ^ingress_for_retrieval_k8s}] ->
+        {:ok, %{Ingress => [existing_ingress]}}
+      end)
+      |> expect(:execute, fn [%Operation{action: :update, resource: ^expected_ingress_k8s}] ->
+        {:ok, %{}}
+      end)
+
+      assert {:ok, upgraded: [expected_ingress]} == reconcile.(site)
+    end
+
     test "creates missing gateway", %{reconcile_1: reconcile} do
       site = %AffiliateSite{
         name: @namespace,
@@ -154,6 +190,8 @@ defmodule SiteOperator.K8sSiteMakerTest do
 
       deployment = site |> deployment()
 
+      ingress = %Ingress{name: "ignore", tls_secret_names: ["tls-#{@namespace}"]}
+
       MockK8s
       |> expect_custom_domain_checks(fn ->
         {:ok,
@@ -170,8 +208,11 @@ defmodule SiteOperator.K8sSiteMakerTest do
                              ] ->
         {:ok, %{VirtualService => [virtual_service]}}
       end)
+      |> expect(:execute, fn [%Operation{action: :get}] ->
+        {:ok, %{Ingress => [ingress]}}
+      end)
 
-      assert {:ok, upgraded: [virtual_service]} == reconcile.(site)
+      assert {:ok, upgraded: [^virtual_service | _]} = reconcile.(site)
     end
 
     test "provides useful info when upgrading virtual service doesn't work", %{

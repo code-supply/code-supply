@@ -7,6 +7,7 @@ defmodule SiteOperator.K8s.Conversions do
     Certificate,
     Deployment,
     Gateway,
+    Ingress,
     Namespace,
     Secret,
     Service,
@@ -54,12 +55,30 @@ defmodule SiteOperator.K8s.Conversions do
         "namespace" => "istio-system"
       },
       "spec" => %{
-        "secretName" => certificate_secret_name(site_name),
+        "secretName" => Certificate.secret_name(site_name),
         "issuerRef" => %{
           "name" => "letsencrypt-production",
           "kind" => "ClusterIssuer"
         },
         "dnsNames" => domains
+      }
+    }
+  end
+
+  # to be used for get/patch only!
+  def to_k8s(%Ingress{name: name, tls_secret_names: tls_secret_names}) do
+    %{
+      "apiVersion" => "networking.k8s.io/v1",
+      "kind" => "Ingress",
+      "metadata" => %{
+        "name" => name,
+        "namespace" => "istio-system"
+      },
+      "spec" => %{
+        "tls" =>
+          for name <- tls_secret_names do
+            %{"secretName" => name}
+          end
       }
     }
   end
@@ -208,10 +227,10 @@ defmodule SiteOperator.K8s.Conversions do
             },
             "tls" => %{
               "credentialName" =>
-                if domains |> have_no_custom_domains? do
-                  "affable-www"
+                if Domain.any_custom?(domains) do
+                  Certificate.secret_name(namespace)
                 else
-                  certificate_secret_name(namespace)
+                  "affable-www"
                 end,
               "mode" => "SIMPLE"
             }
@@ -363,6 +382,19 @@ defmodule SiteOperator.K8s.Conversions do
   end
 
   def from_k8s(%{
+        "kind" => "Ingress",
+        "metadata" => %{"name" => name},
+        "spec" => %{
+          "tls" => entries
+        }
+      }) do
+    %Ingress{
+      name: name,
+      tls_secret_names: for(%{"secretName" => name} <- entries, do: name)
+    }
+  end
+
+  def from_k8s(%{
         "kind" => "Secret",
         "metadata" => %{"name" => name, "namespace" => namespace},
         "data" => data
@@ -430,14 +462,5 @@ defmodule SiteOperator.K8s.Conversions do
             nil
         end
     }
-  end
-
-  defp have_no_custom_domains?(domains) do
-    domains
-    |> Enum.all?(&Domain.is_affable?/1)
-  end
-
-  defp certificate_secret_name(name) do
-    "tls-#{name}"
   end
 end
