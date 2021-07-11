@@ -205,6 +205,20 @@
     },
     {
       "apiGroups": [
+        "networking.k8s.io"
+      ],
+      "resources": [
+        "ingresses"
+      ],
+      "verbs": [
+        "create",
+        "get",
+        "patch",
+        "delete"
+      ]
+    },
+    {
+      "apiGroups": [
         "networking.istio.io"
       ],
       "resources": [

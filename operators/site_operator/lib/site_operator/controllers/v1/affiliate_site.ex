@@ -89,6 +89,7 @@ defmodule SiteOperator.Controller.V1.AffiliateSite do
   @rule {"", ["namespaces"], ["get"]}
   @rule {"", ["namespaces", "secrets", "services"], ["create", "delete"]}
   @rule {"apps", ["deployments"], ["create", "get", "patch", "delete"]}
+  @rule {"networking.k8s.io", ["ingresses"], ["create", "get", "patch", "delete"]}
   @rule {"networking.istio.io", ["gateways", "virtualservices"],
          ["get", "create", "patch", "delete"]}
   @rule {"cert-manager.io", ["certificates"], ["create", "get", "patch", "delete"]}
