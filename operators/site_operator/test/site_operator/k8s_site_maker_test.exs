@@ -113,13 +113,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
       expected_certificate_k8s = expected_certificate |> to_k8s()
 
       MockK8s
-      |> expect(:execute, fn [
-                               %Operation{action: :get},
-                               %Operation{action: :get},
-                               %Operation{action: :get},
-                               %Operation{action: :get},
-                               %Operation{action: :get}
-                             ] ->
+      |> expect_custom_domain_checks(fn ->
         {:error, some_resources_missing: [expected_certificate]}
       end)
       |> expect(:execute, fn [%Operation{action: :create, resource: ^expected_certificate_k8s}] ->
@@ -139,13 +133,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
       expected_gateway_k8s = expected_gateway |> to_k8s()
 
       MockK8s
-      |> expect(:execute, fn [
-                               %Operation{action: :get},
-                               %Operation{action: :get},
-                               %Operation{action: :get},
-                               %Operation{action: :get},
-                               %Operation{action: :get}
-                             ] ->
+      |> expect_custom_domain_checks(fn ->
         {:error, some_resources_missing: [expected_gateway]}
       end)
       |> expect(:execute, fn [%Operation{action: :create, resource: ^expected_gateway_k8s}] ->
@@ -167,13 +155,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
       deployment = site |> deployment()
 
       MockK8s
-      |> expect(:execute, fn [
-                               %Operation{action: :get},
-                               %Operation{action: :get},
-                               %Operation{action: :get},
-                               %Operation{action: :get},
-                               %Operation{action: :get}
-                             ] ->
+      |> expect_custom_domain_checks(fn ->
         {:ok,
          %{
            Deployment => [deployment],
@@ -206,13 +188,7 @@ defmodule SiteOperator.K8sSiteMakerTest do
       deployment = site |> deployment()
 
       MockK8s
-      |> expect(:execute, fn [
-                               %Operation{action: :get},
-                               %Operation{action: :get},
-                               %Operation{action: :get},
-                               %Operation{action: :get},
-                               %Operation{action: :get}
-                             ] ->
+      |> expect_custom_domain_checks(fn ->
         {:ok,
          %{
            Deployment => [deployment],
@@ -347,6 +323,19 @@ defmodule SiteOperator.K8sSiteMakerTest do
       end)
 
       {:ok, recreated: [^ns, ^deployment]} = reconcile.(site)
+    end
+
+    defp expect_custom_domain_checks(mock_k8s, f) do
+      mock_k8s
+      |> expect(:execute, fn [
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get},
+                               %Operation{action: :get}
+                             ] ->
+        f.()
+      end)
     end
   end
 end
