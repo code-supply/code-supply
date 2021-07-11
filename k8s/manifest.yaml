@@ -47070,7 +47070,7 @@ spec:
             name: site-operator
         - configMapRef:
             name: site-operator-5bm482t6k7
-        image: eu.gcr.io/code-supply/site-operator:a404d1d
+        image: eu.gcr.io/code-supply/site-operator:a10dce1
         name: site-operator
         resources:
           limits:
