@@ -109,7 +109,7 @@ defmodule AffableWeb.AssetsLiveTest do
   test "informs the user when an asset is in use", %{conn: conn, user: user} do
     {:ok, view, _html} = live(conn, path(conn))
 
-    %User{sites: [%Site{header_image_id: asset_id}]} = user
+    %User{sites: [%Site{site_logo_id: asset_id}]} = user
 
     refute view
            |> has_element?("#delete-asset-#{asset_id}")

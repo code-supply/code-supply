@@ -9,7 +9,7 @@ defmodule Affable.SitesTest do
   alias Affable.Assets
   alias Affable.Assets.Asset
   alias Affable.Sites
-  alias Affable.Sites.{Site, SiteMember, Item, AttributeDefinition}
+  alias Affable.Sites.{Page, Site, SiteMember, Item, AttributeDefinition}
   alias Affable.Domains.Domain
 
   setup :verify_on_exit!
@@ -17,9 +17,6 @@ defmodule Affable.SitesTest do
   describe "sites" do
     alias Affable.Sites.Site
 
-    @valid_site %Site{
-      name: "hi"
-    }
     @invalid_attrs %{name: nil}
 
     setup do
@@ -38,32 +35,6 @@ defmodule Affable.SitesTest do
         user,
         site |> Sites.with_items()
       }
-    end
-
-    test "colours can be set to valid values and get uppercased automatically" do
-      changeset =
-        @valid_site
-        |> Site.changeset(%{
-          "cta_background_colour" => "eEFF20",
-          "cta_text_colour" => "012345",
-          "header_background_colour" => "fF0000",
-          "header_text_colour" => "00f000"
-        })
-
-      assert changeset.errors == []
-      assert changeset.changes.cta_background_colour == "EEFF20"
-      assert changeset.changes.cta_text_colour == "012345"
-      assert changeset.changes.header_background_colour == "FF0000"
-      assert changeset.changes.header_text_colour == "00F000"
-    end
-
-    test "colours can't be set to invalid values" do
-      changeset =
-        @valid_site
-        |> Site.changeset(%{cta_background_colour: "01234", cta_text_colour: "GGGGGG"})
-
-      assert {_, validation: :format} = changeset.errors[:cta_background_colour]
-      assert {_, validation: :format} = changeset.errors[:cta_text_colour]
     end
 
     test "status of new site is pending" do
@@ -138,8 +109,16 @@ defmodule Affable.SitesTest do
     end
 
     test "sites start with a publication" do
-      %{sites: [%Site{header_image: %Asset{url: header_image_url}, publications: [publication]}]} =
-        user_fixture() |> Repo.preload(sites: [:header_image, :publications])
+      %{
+        sites: [
+          %Site{
+            pages: [%Page{header_image: %Asset{url: header_image_url}}],
+            publications: [publication]
+          }
+        ]
+      } =
+        user_fixture()
+        |> Repo.preload(sites: [pages: [:header_image], publications: []])
 
       assert publication.data["header_image_url"] ==
                Assets.to_imgproxy_url(header_image_url,
@@ -170,27 +149,39 @@ defmodule Affable.SitesTest do
       {:ok, published_again_site} = Sites.publish(site)
 
       assert Sites.is_published?(published_again_site)
+
+      %{pages: [page]} = published_again_site
+
+      refute Sites.is_published?(%{published_again_site | pages: [%{page | header_text: "hi"}]})
     end
 
-    test "raw representation copes with one or other images being missing" do
+    test "raw representation copes with images being missing" do
       expected_logo_url = Assets.to_imgproxy_url("foo", width: 600, height: 176)
 
       expected_header_image_url =
         Assets.to_imgproxy_url("foo", width: 567, height: 341, resizing_type: "fill")
 
       assert %{"header_image_url" => nil, "site_logo_url" => ^expected_logo_url} =
-               raw(%Site{site_logo: %Asset{url: "foo"}, header_image: nil, items: []})
+               raw(%Site{
+                 site_logo: %Asset{url: "foo"},
+                 items: [],
+                 pages: [%Page{header_image: nil}]
+               })
 
       assert %{"header_image_url" => ^expected_header_image_url, "site_logo_url" => nil} =
-               raw(%Site{header_image: %Asset{url: "foo"}, site_logo: nil, items: []})
+               raw(%Site{
+                 pages: [%Page{header_image: %Asset{url: "foo"}}],
+                 site_logo: nil,
+                 items: []
+               })
     end
 
     test "raw representation includes item image URLs" do
       %{"items" => [%{"image_url" => raw_image_url}]} =
         raw(%Site{
           site_logo: nil,
-          header_image: nil,
-          items: [%Item{attributes: [], image: %Asset{url: "gs://some-bucket/image.jpg"}}]
+          items: [%Item{attributes: [], image: %Asset{url: "gs://some-bucket/image.jpg"}}],
+          pages: []
         })
 
       assert raw_image_url =~ "https://images.affable.app"
@@ -423,9 +414,9 @@ defmodule Affable.SitesTest do
 
     test "update_site/2 with valid data updates the site" do
       {user, site} = user_and_site_with_items()
-      site = site |> Repo.preload(:header_image)
 
-      expected_asset_url = site.header_image.url
+      %Site{pages: [%Page{header_image: %Asset{id: header_image_id, url: expected_asset_url}}]} =
+        site |> Repo.preload(pages: [:header_image])
 
       expect_broadcast(fn %Site{
                             name: "some updated name",
@@ -441,9 +432,7 @@ defmodule Affable.SitesTest do
       assert {:ok, %Site{} = updated_site} =
                Sites.update_site(site_as_live_view, %{
                  "name" => "some updated name",
-                 "site_logo_id" => site.header_image_id,
-                 "cta_text_colour" => "f0f0f0",
-                 "cta_background_colour" => "eEfF01",
+                 "site_logo_id" => header_image_id,
                  "attribute_definitions" => %{
                    "0" => %{
                      "id" => "#{definition.id}",
@@ -453,8 +442,6 @@ defmodule Affable.SitesTest do
                })
 
       assert updated_site.name == "some updated name"
-      assert updated_site.cta_background_colour == "EEFF01"
-      assert updated_site.cta_text_colour == "F0F0F0"
 
       [definition] = updated_site.attribute_definitions
       assert definition.name == "some updated attribute name"

@@ -6,7 +6,7 @@ defmodule AffableWeb.EditorLiveTest do
 
   alias Affable.Assets.Asset
   alias Affable.{Repo, Accounts, Sites}
-  alias Affable.Sites.{Site, Item, Attribute}
+  alias Affable.Sites.{Page, Site, Item, Attribute}
 
   setup :verify_on_exit!
 
@@ -22,8 +22,35 @@ defmodule AffableWeb.EditorLiveTest do
       %{
         conn: conn,
         user: user,
-        site: site |> Sites.with_items()
+        site: site |> Sites.with_items() |> Sites.with_pages()
       }
+    end
+
+    test "can set header properties for first page", %{conn: conn, site: site} do
+      {:ok, view, _html} = live(conn, path(conn, site))
+
+      [%Page{id: first_page_id}] = (site |> Repo.preload(:pages)).pages
+
+      expect_broadcast(fn %Site{pages: [%Page{header_text: header_text} | _]} ->
+        assert "new header text" == header_text
+      end)
+
+      view
+      |> element("#page_#{first_page_id}")
+      |> render_change(%{page: %{header_text: "new header text"}})
+
+      assert view |> has_element?("#publish")
+
+      expect_broadcast(fn %Site{pages: [%Page{header_text: header_text} | _]} ->
+        assert "new header text" == header_text
+      end)
+
+      view
+      |> element("#new-item-top")
+      |> render_click()
+
+      conn = get(conn, path(conn, site))
+      assert conn.resp_body =~ "new header text"
     end
 
     test "can publish the changes", %{
@@ -153,7 +180,10 @@ defmodule AffableWeb.EditorLiveTest do
                ">1<"
     end
 
-    test "can edit an item", %{conn: conn, site: site} do
+    test "can edit an item", %{
+      conn: conn,
+      site: %Site{pages: [%Page{header_image_id: header_image_id}]} = site
+    } do
       conn = get(conn, path(conn, site))
       assert html_response(conn, 200)
 
@@ -167,7 +197,7 @@ defmodule AffableWeb.EditorLiveTest do
 
       assert html =~ first_item.description
 
-      copied_asset_id = site.header_image_id
+      copied_asset_id = header_image_id
 
       expect_broadcast(fn %Site{
                             items: [

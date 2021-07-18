@@ -23,6 +23,6 @@ defmodule Affable.SitesFixtures do
         })
       )
 
-    site |> Affable.Repo.preload(items: [attributes: :definition])
+    site |> Affable.Repo.preload(items: [attributes: :definition], pages: [:header_image])
   end
 end

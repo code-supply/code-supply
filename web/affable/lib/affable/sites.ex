@@ -3,6 +3,7 @@ defmodule Affable.Sites do
 
   import Ecto.Query, warn: false
 
+  alias Affable.Sites.Page
   alias Affable.Sites.Raw
   alias Affable.Repo
   alias Affable.Accounts.User
@@ -22,6 +23,33 @@ defmodule Affable.Sites do
   alias Affable.Domains.Domain
 
   alias Ecto.Multi
+
+  def update_page(page, attrs) do
+    result =
+      page
+      |> Page.changeset(attrs)
+      |> Repo.update()
+
+    get_site!(page.site_id)
+    |> broadcast()
+
+    result
+  end
+
+  def add_page(site, attrs) do
+    {:ok, _page} =
+      site
+      |> Ecto.build_assoc(:pages, attrs)
+      |> Repo.insert()
+
+    site
+  end
+
+  def page_ids(%Site{} = site) do
+    for p <- Repo.all(Ecto.assoc(site, :pages) |> order_by(:id)) do
+      p.id
+    end
+  end
 
   def status(site) do
     if site.made_available_at do
@@ -92,9 +120,9 @@ defmodule Affable.Sites do
     |> where([s, m], m.user_id == ^user.id)
     |> Repo.one!()
     |> with_items()
+    |> with_pages()
   end
 
-  @impl true
   def get_site!(%Site{id: id}) do
     get_site!(id)
   end
@@ -104,6 +132,7 @@ defmodule Affable.Sites do
     site_query(id)
     |> Repo.one!()
     |> with_items()
+    |> with_pages()
     |> preload_latest_publication()
   end
 
@@ -116,7 +145,6 @@ defmodule Affable.Sites do
       preload: [
         assets: [],
         domains: [],
-        header_image: [],
         members: [],
         site_logo: [],
         items: ^items_q,
@@ -130,7 +158,7 @@ defmodule Affable.Sites do
   end
 
   defp preload_base_assets(site, opts \\ []) do
-    Repo.preload(site, [:header_image, :site_logo], opts)
+    Repo.preload(site, [:site_logo], opts)
   end
 
   defp preload_latest_publication(site) do
@@ -144,6 +172,7 @@ defmodule Affable.Sites do
     site =
       from(s in Site, where: s.id == ^id)
       |> Repo.one()
+      |> with_pages()
       |> preload_latest_publication()
       |> Repo.preload(:domains)
 
@@ -154,6 +183,11 @@ defmodule Affable.Sites do
       |> Site.change_made_available_at(at)
       |> Repo.update()
     end
+  end
+
+  def with_pages(site) do
+    site
+    |> Repo.preload(pages: [:header_image])
   end
 
   def with_items(site, attrs \\ []) do
@@ -205,12 +239,20 @@ defmodule Affable.Sites do
   def create_bare_site_multi(user, attrs) do
     Multi.new()
     |> site_with_name_multi(user, attrs)
+    |> add_homepage_multi()
     |> Multi.insert(:publish, &build_publication(&1.site))
   end
 
   def create_site_multi(user, attrs) do
     Multi.new()
     |> site_with_name_multi(user, attrs)
+    |> add_homepage_multi(%{
+      header_text: """
+      # Top 10 Apples
+
+      The apple is a deciduous tree, generally standing 2 to 4.5 m (6 to 15 ft) tall in cultivation and up to 9 m (30 ft) in the wild. When cultivated, the size, shape and branch density are determined by rootstock selection and trimming method. The leaves are alternately arranged dark green-colored simple ovals with serrated margins and slightly downy undersides.
+      """
+    })
     |> default_assets_multi()
     |> Multi.merge(fn %{site: site} ->
       add_attribute_definition_multi(site)
@@ -233,6 +275,12 @@ defmodule Affable.Sites do
       {:error, :site, site, %{} = _domain} ->
         {:error, site}
     end
+  end
+
+  defp add_homepage_multi(%Multi{} = multi, attrs \\ %{}) do
+    Multi.insert(multi, :homepage, fn %{site: site} ->
+      Ecto.build_assoc(site, :pages, Map.merge(%{title: "Home"}, attrs))
+    end)
   end
 
   defp default_items_multi(%Multi{} = multi) do
@@ -258,7 +306,8 @@ defmodule Affable.Sites do
         raw(
           site
           |> with_items()
-          |> Repo.preload(site_logo: [], header_image: [])
+          |> with_pages()
+          |> Repo.preload(site_logo: [])
         )
     })
   end
@@ -340,16 +389,17 @@ defmodule Affable.Sites do
       "Cox's Orange Pippin",
       "gs://affable-uploads/Cox_orange_renette2.JPG"
     )
+    |> Multi.update(:homepage_with_default_assets, fn %{
+                                                        header_image: header_image,
+                                                        homepage: homepage
+                                                      } ->
+      Page.changeset(homepage, %{header_image_id: header_image.id})
+    end)
     |> Multi.update(:site_with_default_assets, fn %{
-                                                    header_image: header_image,
                                                     site_logo: site_logo,
                                                     site_with_internal_name: site
                                                   } ->
-      site
-      |> Site.changeset(%{
-        site_logo_id: site_logo.id,
-        header_image_id: header_image.id
-      })
+      Site.changeset(site, %{site_logo_id: site_logo.id})
     end)
   end
 
@@ -445,8 +495,15 @@ defmodule Affable.Sites do
   def delete_site(%Site{} = site) do
     site
     |> delete_items()
+    |> delete_pages()
     |> delete_assets()
     |> Repo.delete()
+  end
+
+  defp delete_pages(%Site{} = site) do
+    Repo.delete_all(from(Page, where: [site_id: ^site.id]))
+
+    site
   end
 
   defp delete_items(%Site{} = site) do
@@ -458,7 +515,7 @@ defmodule Affable.Sites do
   def delete_assets(%Site{} = site) do
     site =
       site
-      |> change_site(%{header_image_id: nil, site_logo_id: nil})
+      |> change_site(%{site_logo_id: nil})
       |> Repo.update!()
 
     Repo.delete_all(from(Asset, where: [site_id: ^site.id]))

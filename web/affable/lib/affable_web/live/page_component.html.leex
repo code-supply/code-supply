@@ -1,0 +1,36 @@
+<%= f = form_for @changeset, "#",
+id: "page_#{@page.id}",
+csrf_token: false,
+phx_target: @myself,
+phx_change: :save,
+phx_submit: :save %>
+  <div class="float-left w-1/3 pr-2 field">
+    <%= label f, :header_image_id, "Image" %>
+    <%= select f, :header_image_id, @asset_pairs, prompt: "None" %>
+    <%= error_tag f, :header_image_id %>
+  </div>
+
+  <div class="float-left w-1/3 pr-2 field">
+    <%= label f, :header_background_colour, "BG colour" %>
+    <%= text_input f, :header_background_colour, phx_debounce: 250, class: "uppercase" %>
+    <%= error_tag f, :header_background_colour %>
+  </div>
+
+  <div class="float-left w-1/3 pr-2 field">
+    <%= label f, :header_text_colour, "Text colour" %>
+    <%= text_input f, :header_text_colour, phx_debounce: 250, class: "uppercase" %>
+    <%= error_tag f, :header_text_colour %>
+  </div>
+
+  <div class="field">
+    <%= label f, :header_text %>
+    <%= editor_textarea f, :header_text %>
+    <%= error_tag f, :header_text %>
+  </div>
+
+  <div class="field">
+    <%= label f, :text %>
+    <%= editor_textarea f, :text %>
+    <%= error_tag f, :text %>
+  </div>
+</form>

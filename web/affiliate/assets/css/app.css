@@ -13,6 +13,10 @@
     @apply text-xl;
 }
 
+.prose h1 {
+    @apply pb-4 pr-8 text-3xl font-semibold;
+}
+
 .prose p {
     @apply my-2;
 }
