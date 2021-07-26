@@ -2,7 +2,7 @@
   <div class="container mx-auto bg-white">
     <%= if @logo_url do %>
       <header class="flex block bg-white bg-no-repeat bg-cover border-b-8 border-black">
-        <img alt="<%= @name %>" class="max-w-full px-8 my-4" src="<%= @logo_url %>">
+        <img alt="<%= @site_name %>" class="max-w-full px-8 my-4" src="<%= @logo_url %>">
       </header>
     <% end %>
 
@@ -12,12 +12,15 @@
         <img class="float-right w-5/12 pb-8 pl-4 md:pl-8" src="<%= @header_image_url %>" />
 
         <div class="float-none">
-          <h1 class="pb-4 pr-8 text-3xl font-semibold"><%= @name %></h1>
           <div class="prose">
-            <%= raw(Earmark.as_html!((@text || ""))) %>
+            <%= raw(Earmark.as_html!(@header_text)) %>
           </div>
         </div>
       </header>
+
+      <div class="prose pt-8 px-8">
+        <%= raw(Earmark.as_html!(@text)) %>
+      </div>
 
       <%= unless Enum.empty?(@items) do %>
       <section class="px-1 lg:px-4">

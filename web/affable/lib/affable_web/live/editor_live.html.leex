@@ -5,8 +5,8 @@
   <a class="mx-auto shadow-md btn-2nd" target="affable-published" href="<%= @canonical_url %>">Visit</a>
 </div>
 
-<%= outer_form = form_for @changeset, "#", id: "item-edit",
-    class: "lg:z-0 h-body top-12 mt-1 lg:fixed lg:w-1/3 lg:overflow-y-scroll px-4", csrf_token: false, phx_change: :save, phx_submit: :save %>
+<div class="lg:z-0 h-body top-12 mt-1 lg:fixed lg:w-1/3 lg:overflow-y-scroll px-4">
+<%= outer_form = form_for @changeset, "#", id: "item-edit", csrf_token: false, phx_change: :save, phx_submit: :save %>
   <div>
     <div class="py-6">
       <h2 class="text-lg font-bold">General</h2>
@@ -23,60 +23,10 @@
         <%= error_tag outer_form, :site_logo_id %>
       </div>
 
-      <div class="py-6 overflow-hidden">
-        <h2 class="text-lg font-bold">Header</h2>
-
-        <div class="float-left w-1/3 pr-2 field">
-          <%= label outer_form, :header_image_id, "Image" %>
-          <%= select outer_form, :header_image_id, @asset_pairs, prompt: "None" %>
-          <%= error_tag outer_form, :header_image_id %>
-        </div>
-
-        <div class="float-left w-1/3 pr-2 field">
-          <%= label outer_form, :header_background_colour, "BG colour" %>
-          <%= text_input outer_form, :header_background_colour, phx_debounce: 250, class: "uppercase" %>
-          <%= error_tag outer_form, :header_background_colour %>
-        </div>
-
-        <div class="float-left w-1/3 pr-2 field">
-          <%= label outer_form, :header_text_colour, "Text colour" %>
-          <%= text_input outer_form, :header_text_colour, phx_debounce: 250, class: "uppercase" %>
-          <%= error_tag outer_form, :header_text_colour %>
-        </div>
-
-        <div class="clear-left pt-4 field">
-          <%= label outer_form, :text %>
-          <%= editor_textarea outer_form, :text %>
-          <%= error_tag outer_form, :text %>
-        </div>
-      </div>
-
       <div class="field">
         <%= label outer_form, :custom_head_html, "Custom <head> HTML" %>
         <%= editor_textarea outer_form, :custom_head_html, class: "font-mono" %>
         <%= error_tag outer_form, :custom_head_html %>
-      </div>
-    </div>
-
-    <div class="py-6 overflow-hidden cta">
-      <h2 class="text-lg font-bold">Call to action</h2>
-
-      <div class="float-left w-1/3 pr-2 field">
-        <%= label outer_form, :cta_text, "Text" %>
-        <%= text_input outer_form, :cta_text, phx_debounce: 250 %>
-        <%= error_tag outer_form, :cta_text %>
-      </div>
-
-      <div class="float-left w-1/3 pr-2 field">
-        <%= label outer_form, :cta_background_colour, "BG colour" %>
-        <%= text_input outer_form, :cta_background_colour, phx_debounce: 250, class: "uppercase" %>
-        <%= error_tag outer_form, :cta_background_colour %>
-      </div>
-
-      <div class="float-right w-1/3 pr-2 field">
-        <%= label outer_form, :cta_text_colour, "Text colour" %>
-        <%= text_input outer_form, :cta_text_colour, phx_debounce: 250, class: "uppercase" %>
-        <%= error_tag outer_form, :cta_text_colour %>
       </div>
     </div>
   </div>
@@ -202,4 +152,16 @@
     <a href="#" id="new-item-bottom" class="btn btn-spaced" phx-hook="Scroll" phx-click="new-item">New Item</a>
   <% end %>
 </form>
+
+<%= for {page, changeset} <- @pages do %>
+  <%= live_component(
+        AffableWeb.PageComponent,
+        id: page.id,
+        page: page,
+        changeset: changeset,
+        asset_pairs: @asset_pairs
+  ) %>
+<% end %>
+</div>
+
 <iframe class="fixed hidden w-2/3 mt-1 overflow-scroll lg:block h-body top-12 left-1/3" src="<%= @preview_url %>">

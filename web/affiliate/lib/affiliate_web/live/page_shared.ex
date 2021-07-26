@@ -10,13 +10,29 @@ defmodule AffiliateWeb.PageShared do
         {:halt, item["attributes"]}
       end)
 
+    {page_title, header_text, text} =
+      case site["pages"] do
+        [
+          %{
+            "title" => page_title,
+            "header_text" => header_text,
+            "text" => text
+          }
+        ] ->
+          {page_title, header_text, text}
+
+        nil ->
+          {"Waiting for data", "", ""}
+      end
+
     assign(socket,
-      page_title: site["name"],
+      site_name: site["name"],
+      title: page_title,
       custom_head_html: site["custom_head_html"],
       header_image_url: site["header_image_url"],
-      name: site["name"],
+      text: text,
+      header_text: header_text,
       logo_url: site["site_logo_url"],
-      text: site["text"],
       cta_text: site["cta_text"],
       cta_background_colour: site["cta_background_colour"],
       cta_text_colour: site["cta_text_colour"],

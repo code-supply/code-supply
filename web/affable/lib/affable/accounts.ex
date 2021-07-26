@@ -21,7 +21,9 @@ defmodule Affable.Accounts do
 
   def preload_for_assets(%User{} = user) do
     user
-    |> Affable.Repo.preload(sites: [items: [], assets: Assets.default_query()])
+    |> Affable.Repo.preload(
+      sites: [items: [], pages: [:header_image], assets: Assets.default_query()]
+    )
   end
 
   ## Database getters
@@ -99,9 +101,7 @@ defmodule Affable.Accounts do
          )
          |> Multi.merge(fn %{user: user} ->
            Sites.create_site_multi(user, %{
-             name: "Top 10 Apples",
-             text:
-               "The apple is a deciduous tree, generally standing 2 to 4.5 m (6 to 15 ft) tall in cultivation and up to 9 m (30 ft) in the wild. When cultivated, the size, shape and branch density are determined by rootstock selection and trimming method. The leaves are alternately arranged dark green-colored simple ovals with serrated margins and slightly downy undersides."
+             name: "Top 10 Apples"
            })
          end)
          |> Repo.transaction() do

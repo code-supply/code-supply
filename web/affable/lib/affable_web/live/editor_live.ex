@@ -5,13 +5,44 @@ defmodule AffableWeb.EditorLive do
 
   alias Affable.Accounts
   alias Affable.Sites
-  alias Affable.Sites.Site
+  alias Affable.Sites.{Page, Site}
 
   import Affable.Assets, only: [to_imgproxy_url: 1]
+  import AffableWeb.EditorHelpers
 
   def mount(%{"id" => id}, %{"user_token" => token}, socket) do
     user = Accounts.get_user_by_session_token(token)
     {:ok, retrieve_state(user, socket, id)}
+  end
+
+  def handle_info(
+        {:updated_page, %Page{id: id} = updated_page},
+        %{assigns: %{changeset: %{data: site}}} = socket
+      ) do
+    %{
+      site
+      | pages:
+          Enum.map(site.pages, fn
+            %Page{id: ^id} -> updated_page
+            page -> page
+          end)
+    }
+    |> reset_site(socket)
+  end
+
+  def handle_info(
+        {:erroneous_page, %{data: %{id: id}} = erroneous_changeset},
+        %{assigns: %{pages: pages}} = socket
+      ) do
+    {:noreply,
+     assign(
+       socket,
+       :pages,
+       Enum.map(pages, fn
+         {%Page{id: ^id} = page, _} -> {page, erroneous_changeset}
+         pair -> pair
+       end)
+     )}
   end
 
   def handle_event(
@@ -86,20 +117,13 @@ defmodule AffableWeb.EditorLive do
     |> reset_site(socket)
   end
 
-  def editor_textarea(form, field, opts \\ []) do
-    textarea(
-      form,
-      field,
-      opts ++ [phx_debounce: 250, phx_hook: "MaintainAttrs", data_attrs: "style"]
-    )
-  end
-
   defp retrieve_state(user, socket, id) do
     site = Sites.get_site!(user, id)
 
     assign(socket,
       user: user,
       site_id: id,
+      pages: Enum.map(site.pages, fn page -> {page, Page.changeset(page, %{})} end),
       asset_pairs: Enum.map(site.assets, &{&1.name, &1.id}),
       changeset: Site.changeset(site, %{}),
       published: Sites.is_published?(site),
@@ -112,7 +136,11 @@ defmodule AffableWeb.EditorLive do
     {:noreply,
      assign(socket,
        changeset: Site.changeset(site, %{}),
-       published: Sites.is_published?(site)
+       published: Sites.is_published?(site),
+       pages:
+         for page <- site.pages do
+           {page, Page.changeset(page, %{})}
+         end
      )}
   end
 

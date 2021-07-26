@@ -41,11 +41,11 @@ defmodule AffiliateWeb.PreviewLiveTest do
            |> render() =~ site["site_logo_url"]
 
     fixture("site_update_message")
-    |> put_in(["preview", "name"], "New Site Name")
+    |> put_in(["preview", "site_logo_url"], "http://example.com/something.jpeg")
     |> Affiliate.SiteState.store()
 
     assert view
-           |> element("header h1")
-           |> render() =~ "New Site Name"
+           |> element("img[alt=\"#{site["name"]}\"]")
+           |> render() =~ "example.com/something.jpeg"
   end
 end
