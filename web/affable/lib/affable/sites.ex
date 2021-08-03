@@ -652,41 +652,7 @@ defmodule Affable.Sites do
 
   alias Affable.Sites.Item
 
-  @doc """
-  Returns the list of items.
-
-  ## Examples
-
-      iex> list_items()
-      [%Item{}, ...]
-
-  """
-  def list_items do
-    Repo.all(Item)
-  end
-
-  @doc """
-  Gets a single item.
-
-  Raises `Ecto.NoResultsError` if the Item does not exist.
-
-  ## Examples
-
-      iex> get_item!(123)
-      %Item{}
-
-      iex> get_item!(456)
-      ** (Ecto.NoResultsError)
-
-  """
   def get_item!(id), do: Repo.get!(Item, id)
-
-  def create_item(site, attrs \\ %{}) do
-    site
-    |> Ecto.build_assoc(:items)
-    |> Item.changeset(attrs)
-    |> Repo.insert()
-  end
 
   def append_item(site, user) do
     if user |> member_of_site?(site) do
@@ -714,22 +680,11 @@ defmodule Affable.Sites do
     end
   end
 
-  @doc """
-  Updates a item.
-
-  ## Examples
-
-      iex> update_item(item, %{field: new_value})
-      {:ok, %Item{}}
-
-      iex> update_item(item, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_item(%Item{} = item, attrs) do
-    item
+  defp create_item(site, attrs) do
+    site
+    |> Ecto.build_assoc(:items)
     |> Item.changeset(attrs)
-    |> Repo.update()
+    |> Repo.insert()
   end
 
   def delete_item(%Site{} = site, item_id) do
@@ -785,19 +740,6 @@ defmodule Affable.Sites do
           multi
       end
     end)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking item changes.
-
-  ## Examples
-
-      iex> change_item(item)
-      %Ecto.Changeset{data: %Item{}}
-
-  """
-  def change_item(%Item{} = item, attrs \\ %{}) do
-    Item.changeset(item, attrs)
   end
 
   defp broadcast(%Site{} = site) do

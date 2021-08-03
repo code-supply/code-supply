@@ -470,58 +470,14 @@ defmodule Affable.SitesTest do
   describe "items" do
     alias Affable.Sites.Item
 
-    @valid_attrs %{
-      description: "some description",
-      name: "some name",
-      position: 42,
-      url: "some url"
-    }
-    @update_attrs %{
-      description: "some updated description",
-      name: "some updated name",
-      position: 43,
-      url: "some updated url"
-    }
-    @invalid_attrs %{
-      description: nil,
-      name: nil,
-      position: nil,
-      price: nil,
-      url: nil
-    }
+    def item_fixture() do
+      user = user_fixture()
+      site = site_fixture(user)
 
-    def item_fixture(attrs \\ %{}) do
-      {:ok, item} =
-        Sites.create_item(
-          site_fixture(),
-          attrs
-          |> Enum.into(@valid_attrs)
-        )
+      stub_broadcast()
+      {:ok, item} = Sites.append_item(site, user)
 
       item
-    end
-
-    test "list_items/0 returns all items" do
-      item = item_fixture()
-      assert Sites.list_items() |> Enum.member?(item)
-    end
-
-    test "get_item!/1 returns the item with given id" do
-      item = item_fixture()
-      assert Sites.get_item!(item.id) == item
-    end
-
-    test "create_item/2 with valid data creates a item" do
-      assert {:ok, %Item{} = item} = Sites.create_item(site_fixture(), @valid_attrs)
-
-      assert item.description == "some description"
-      assert item.name == "some name"
-      assert item.position == 42
-      assert item.url == "some url"
-    end
-
-    test "create_item/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Sites.create_item(site_fixture(), @invalid_attrs)
     end
 
     test "append_item/2 adds a default item to the end of the items list" do
@@ -542,26 +498,6 @@ defmodule Affable.SitesTest do
       assert appended_item == retrieved_item
       assert retrieved_item.name == "New item"
       assert length(retrieved_item.attributes) > 0
-    end
-
-    test "update_item/2 with valid data updates the item" do
-      item = item_fixture()
-      assert {:ok, %Item{} = item} = Sites.update_item(item, @update_attrs)
-      assert item.description == "some updated description"
-      assert item.name == "some updated name"
-      assert item.position == 43
-      assert item.url == "some updated url"
-    end
-
-    test "update_item/2 with invalid data returns error changeset" do
-      item = item_fixture()
-      assert {:error, %Ecto.Changeset{}} = Sites.update_item(item, @invalid_attrs)
-      assert item == Sites.get_item!(item.id)
-    end
-
-    test "change_item/1 returns a item changeset" do
-      item = item_fixture()
-      assert %Ecto.Changeset{} = Sites.change_item(item)
     end
   end
 end
