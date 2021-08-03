@@ -182,7 +182,7 @@ defmodule Affable.Sites do
 
   def with_pages(site) do
     site
-    |> Repo.preload(pages: [:header_image])
+    |> Repo.preload(pages: [:header_image, :items])
   end
 
   def with_items(site, attrs \\ []) do

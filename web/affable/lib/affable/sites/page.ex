@@ -2,7 +2,7 @@ defmodule Affable.Sites.Page do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Affable.Sites.Site
+  alias Affable.Sites.{Item, Site}
   alias Affable.Assets.Asset
 
   @colour_format ~r/[A-F0-9]{6}/
@@ -10,6 +10,7 @@ defmodule Affable.Sites.Page do
   schema "pages" do
     belongs_to :site, Site
     belongs_to :header_image, Asset
+    has_many :items, Item
 
     field :title, :string
     field :meta_description, :string, default: ""

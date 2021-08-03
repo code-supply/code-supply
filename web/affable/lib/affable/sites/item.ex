@@ -3,7 +3,7 @@ defmodule Affable.Sites.Item do
   import Ecto.Changeset
 
   alias Affable.Assets.Asset
-  alias Affable.Sites.Attribute
+  alias Affable.Sites.{Attribute, Page}
 
   schema "items" do
     field :description, :string
@@ -11,6 +11,7 @@ defmodule Affable.Sites.Item do
     field :position, :integer
     field :url, :string
     field :site_id, :id
+    belongs_to :page, Page
     belongs_to :image, Asset
     has_many :attributes, Attribute
 
