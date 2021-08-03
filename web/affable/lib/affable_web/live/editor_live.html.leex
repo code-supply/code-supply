@@ -157,6 +157,7 @@
   <%= live_component(
         AffableWeb.PageComponent,
         id: page.id,
+        user: @user,
         page: page,
         changeset: changeset,
         asset_pairs: @asset_pairs

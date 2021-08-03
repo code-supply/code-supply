@@ -8,6 +8,7 @@ defmodule AffableWeb.PageComponent do
   def update(assigns, socket) do
     {:ok,
      assign(socket,
+       user: assigns.user,
        asset_pairs: assigns.asset_pairs,
        changeset: assigns.changeset,
        page: assigns.page
