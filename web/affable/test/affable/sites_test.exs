@@ -14,6 +14,10 @@ defmodule Affable.SitesTest do
 
   setup :verify_on_exit!
 
+  setup do
+    %{wrong_user: %User{id: 99999}}
+  end
+
   describe "pages" do
     test "updating a page broadcasts the result" do
       user = user_fixture()
@@ -26,13 +30,12 @@ defmodule Affable.SitesTest do
       assert "my new title" == page.title
     end
 
-    test "updating a page with incorrect user is not allowed" do
-      another_user = user_fixture()
+    test "updating a page with incorrect user is not allowed", %{wrong_user: wrong_user} do
       site = site_fixture()
       [%Page{title: old_title} = page] = site.pages
 
       assert {:error, :unauthorized} =
-               Sites.update_page(page, %{title: "my new title"}, another_user)
+               Sites.update_page(page, %{title: "my new title"}, wrong_user)
 
       assert [%Page{title: ^old_title}] = Sites.get_site!(site.id).pages
     end
@@ -222,12 +225,11 @@ defmodule Affable.SitesTest do
       assert Sites.get_site!(user, site.id).id == site.id
     end
 
-    test "get_site!/2 fails if user is incorrect" do
-      user = user_fixture()
+    test "get_site!/2 fails if user is incorrect", %{wrong_user: wrong_user} do
       site = site_fixture()
 
       assert_raise Ecto.NoResultsError, fn ->
-        Sites.get_site!(user, site.id)
+        Sites.get_site!(wrong_user, site.id)
       end
     end
 
@@ -269,9 +271,8 @@ defmodule Affable.SitesTest do
       assert definition |> has_valid.(:type, "text")
     end
 
-    test "site members can manage attribute definitions" do
+    test "site members can manage attribute definitions", %{wrong_user: wrong_user} do
       {user, site} = user_and_site_with_items()
-      wrong_user = user_fixture()
 
       definitions_before = site.attribute_definitions
 

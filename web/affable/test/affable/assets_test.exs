@@ -8,6 +8,10 @@ defmodule Affable.AssetsTest do
   alias Affable.Accounts.User
   alias Affable.Sites.{Item, Page, Site}
 
+  setup do
+    %{wrong_user: %User{id: 9999}}
+  end
+
   describe "assets" do
     test "can determine if it's in use by the site" do
       refute Assets.in_use?(%Asset{id: 1}, %Site{items: [], pages: []})
@@ -70,9 +74,8 @@ defmodule Affable.AssetsTest do
                )
     end
 
-    test "cannot create asset for site when I'm not a team member" do
+    test "cannot create asset for site when I'm not a team member", %{wrong_user: wrong_user} do
       %User{sites: [site | _]} = user_fixture()
-      wrong_user = user_fixture()
 
       assert {:error, %Ecto.Changeset{}} =
                Assets.create_uploaded(
@@ -118,9 +121,8 @@ defmodule Affable.AssetsTest do
                count_before_delete - 1
     end
 
-    test "cannot delete an asset when I'm not a team member" do
+    test "cannot delete an asset when I'm not a team member", %{wrong_user: wrong_user} do
       %User{sites: [%Site{} = site | _]} = user = user_fixture()
-      wrong_user = user_fixture()
 
       {:ok, asset} =
         Assets.create_uploaded(
