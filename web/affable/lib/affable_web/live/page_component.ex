@@ -15,8 +15,8 @@ defmodule AffableWeb.PageComponent do
      )}
   end
 
-  def handle_event("save", %{"page" => params}, %{assigns: %{page: page}} = socket) do
-    case Sites.update_page(page, params) do
+  def handle_event("save", %{"page" => params}, %{assigns: %{user: user, page: page}} = socket) do
+    case Sites.update_page(page, params, user) do
       {:ok, page} ->
         send(self(), {:updated_page, page})
 

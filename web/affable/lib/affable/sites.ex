@@ -24,11 +24,15 @@ defmodule Affable.Sites do
 
   alias Ecto.Multi
 
-  def update_page(page, attrs) do
-    page
-    |> Page.changeset(attrs)
-    |> Repo.update()
-    |> broadcast()
+  def update_page(%Page{} = page, attrs, %User{} = user) do
+    if user |> site_member?(page) do
+      page
+      |> Page.changeset(attrs)
+      |> Repo.update()
+      |> broadcast()
+    else
+      {:error, :unauthorized}
+    end
   end
 
   def add_page(site, attrs) do
@@ -523,7 +527,7 @@ defmodule Affable.Sites do
   end
 
   def promote_item(user, site, item_id) do
-    if user |> member_of_site?(site) do
+    if user |> site_member?(site) do
       move_item(site, item_id, &(&1 - 1))
     else
       {:error, :unauthorized}
@@ -531,7 +535,7 @@ defmodule Affable.Sites do
   end
 
   def demote_item(user, site, item_id) do
-    if user |> member_of_site?(site) do
+    if user |> site_member?(site) do
       move_item(site, item_id, &(&1 + 1))
     else
       {:error, :unauthorized}
@@ -613,7 +617,7 @@ defmodule Affable.Sites do
   end
 
   def add_attribute_definition(%Site{} = site, %User{} = user) do
-    if user |> member_of_site?(site) do
+    if user |> site_member?(site) do
       {:ok, _} =
         add_attribute_definition_multi(site)
         |> Repo.transaction()
@@ -624,11 +628,15 @@ defmodule Affable.Sites do
     end
   end
 
-  def member_of_site?(user, %Site{id: site_id}) do
-    member_of_site?(user, site_id)
+  def site_member?(user, %Site{id: site_id}) do
+    site_member?(user, site_id)
   end
 
-  def member_of_site?(user, site_id) do
+  def site_member?(user, %Page{site_id: site_id}) do
+    site_member?(user, site_id)
+  end
+
+  def site_member?(user, site_id) do
     Repo.exists?(from(SiteMember, where: [user_id: ^user.id, site_id: ^site_id]))
   end
 
@@ -655,7 +663,7 @@ defmodule Affable.Sites do
   def get_item!(id), do: Repo.get!(Item, id)
 
   def append_item(site, user) do
-    if user |> member_of_site?(site) do
+    if user |> site_member?(site) do
       {:ok, %Item{} = item} =
         create_item(site, %{
           name: "New item",

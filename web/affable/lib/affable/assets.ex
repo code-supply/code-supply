@@ -1,6 +1,6 @@
 defmodule Affable.Assets do
   import Ecto.Query, warn: false
-  import Affable.Sites, only: [member_of_site?: 2]
+  import Affable.Sites, only: [site_member?: 2]
 
   alias Affable.Repo
   alias Affable.Accounts.User
@@ -21,7 +21,7 @@ defmodule Affable.Assets do
       %Asset{}
       |> Asset.changeset(params |> Map.put("url", "gs://#{bucket_name}/#{key}"))
 
-    if user |> member_of_site?(site_id) do
+    if user |> site_member?(site_id) do
       Repo.insert(changeset)
     else
       {:error, changeset}
@@ -61,7 +61,7 @@ defmodule Affable.Assets do
   def delete(%User{} = user, asset_id) do
     asset = Repo.get!(Asset, asset_id)
 
-    if user |> member_of_site?(asset.site_id) do
+    if user |> site_member?(asset.site_id) do
       Repo.delete(asset)
     else
       {:error, "Not a member of the site"}

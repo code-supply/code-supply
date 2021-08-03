@@ -14,6 +14,30 @@ defmodule Affable.SitesTest do
 
   setup :verify_on_exit!
 
+  describe "pages" do
+    test "updating a page broadcasts the result" do
+      user = user_fixture()
+      site = site_fixture(user)
+      [page] = site.pages
+
+      expect_broadcast(fn %Site{pages: [%Page{title: "my new title"}]} -> nil end)
+      {:ok, page} = Sites.update_page(page, %{title: "my new title"}, user)
+
+      assert "my new title" == page.title
+    end
+
+    test "updating a page with incorrect user is not allowed" do
+      another_user = user_fixture()
+      site = site_fixture()
+      [%Page{title: old_title} = page] = site.pages
+
+      assert {:error, :unauthorized} =
+               Sites.update_page(page, %{title: "my new title"}, another_user)
+
+      assert [%Page{title: ^old_title}] = Sites.get_site!(site.id).pages
+    end
+  end
+
   describe "sites" do
     alias Affable.Sites.Site
 
