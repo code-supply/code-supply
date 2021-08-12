@@ -2,6 +2,7 @@ defmodule Affable.SitesFixtures do
   import Affable.AccountsFixtures
 
   alias Affable.Accounts.User
+  alias Affable.Sites
   alias Affable.Sites.Site
   alias Affable.Sites.Publication
 
@@ -23,6 +24,6 @@ defmodule Affable.SitesFixtures do
         })
       )
 
-    site |> Affable.Repo.preload(items: [attributes: :definition], pages: [:header_image])
+    site |> Sites.with_pages() |> Sites.with_items()
   end
 end

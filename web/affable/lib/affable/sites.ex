@@ -184,9 +184,21 @@ defmodule Affable.Sites do
     end
   end
 
-  def with_pages(site) do
+  def with_pages(site, attrs \\ []) do
     site
-    |> Repo.preload(pages: [:header_image, :items])
+    |> Repo.preload(
+      [
+        pages: page_query()
+      ],
+      attrs
+    )
+  end
+
+  defp page_query() do
+    [
+      :header_image,
+      items: items_query()
+    ]
   end
 
   def with_items(site, attrs \\ []) do
@@ -202,7 +214,7 @@ defmodule Affable.Sites do
   end
 
   defp items_query do
-    attributes_q = from(a in Attribute, order_by: [desc: a.definition_id])
+    attributes_q = from(a in Attribute, order_by: [desc: a.definition_id], preload: :definition)
 
     from(i in Item,
       order_by: i.position,
@@ -287,10 +299,10 @@ defmodule Affable.Sites do
       Multi.insert(
         multi,
         "item#{item.position}",
-        fn %{site: site, definition: definition} = previous_multis ->
+        fn %{homepage: homepage, definition: definition} = previous_multis ->
           %{
             item
-            | site_id: site.id,
+            | page_id: homepage.id,
               image_id: previous_multis[identifier].id,
               attributes: [%Attribute{value: "1.23", definition_id: definition.id}]
           }
@@ -483,6 +495,7 @@ defmodule Affable.Sites do
           site
           |> preload_base_assets(force: true)
           |> with_items(force: true)
+          |> with_pages(force: true)
           |> broadcast()
         }
 
@@ -526,37 +539,29 @@ defmodule Affable.Sites do
     Site.changeset(site, attrs)
   end
 
-  def promote_item(user, site, item_id) do
-    if user |> site_member?(site) do
-      move_item(site, item_id, &(&1 - 1))
-    else
-      {:error, :unauthorized}
-    end
+  def promote_item(%Site{} = site, %Page{} = page, item_id) do
+    move_item(site, page, item_id, &(&1 - 1))
   end
 
-  def demote_item(user, site, item_id) do
-    if user |> site_member?(site) do
-      move_item(site, item_id, &(&1 + 1))
-    else
-      {:error, :unauthorized}
-    end
+  def demote_item(%Site{} = site, %Page{} = page, item_id) do
+    move_item(site, page, item_id, &(&1 + 1))
   end
 
-  defp move_item(site, item_id, f) do
+  defp move_item(%Site{} = site, %Page{} = page, item_id, f) do
     {item_id, ""} = Integer.parse(item_id)
 
     demotee_idx =
-      site.items
+      page.items
       |> Enum.find_index(&(&1.id == item_id))
 
-    demotee = site.items |> Enum.at(demotee_idx)
+    demotee = page.items |> Enum.at(demotee_idx)
 
     promotee_idx =
-      site.items
+      page.items
       |> Enum.find_index(&(&1.position == f.(demotee.position)))
 
     if promotee_idx do
-      promotee = site.items |> Enum.at(promotee_idx)
+      promotee = page.items |> Enum.at(promotee_idx)
 
       {:ok, %{promote: promoted_item, demote: demoted_item}} =
         move_item_multi(demotee, promotee, f)
@@ -564,13 +569,24 @@ defmodule Affable.Sites do
 
       {
         :ok,
-        site
-        |> Map.update!(:items, fn items ->
-          items
-          |> List.replace_at(promotee_idx, promoted_item)
-          |> List.replace_at(demotee_idx, demoted_item)
-          |> Enum.sort_by(& &1.position)
-        end)
+        %{
+          site
+          | pages:
+              for p <- site.pages do
+                if p.id == page.id do
+                  %{
+                    p
+                    | items:
+                        p.items
+                        |> List.replace_at(promotee_idx, promoted_item)
+                        |> List.replace_at(demotee_idx, demoted_item)
+                        |> Enum.sort_by(& &1.position)
+                  }
+                else
+                  p
+                end
+              end
+        }
         |> with_items()
         |> broadcast()
       }
@@ -607,9 +623,10 @@ defmodule Affable.Sites do
         |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
       )
 
-    (site |> Repo.preload(:items)).items
-    |> Enum.reduce(multi, fn item, multi ->
-      multi
+    Repo.preload(site, pages: :items).pages
+    |> Enum.flat_map(& &1.items)
+    |> Enum.reduce(multi, fn item, acc_multi ->
+      acc_multi
       |> Multi.insert("item#{item.id}", fn %{definition: definition} ->
         Ecto.build_assoc(item, :attributes, %{definition_id: definition.id, value: "1.23"})
       end)
@@ -662,12 +679,12 @@ defmodule Affable.Sites do
 
   def get_item!(id), do: Repo.get!(Item, id)
 
-  def append_item(site, user) do
-    if user |> site_member?(site) do
+  def append_item(%Site{} = site, %Page{} = page, %User{} = user) do
+    if user |> site_member?(page) do
       {:ok, %Item{} = item} =
-        create_item(site, %{
+        create_item(page, %{
           name: "New item",
-          position: length(site.items) + 1,
+          position: length(page.items) + 1,
           attributes:
             for definition <- site.attribute_definitions do
               %{
@@ -679,49 +696,71 @@ defmodule Affable.Sites do
 
       {
         :ok,
-        %{site | items: site.items ++ [item]}
-        |> with_items()
-        |> broadcast()
+        %{
+          site
+          | pages:
+              for p <- site.pages do
+                if p.id == page.id do
+                  %{page | items: page.items ++ [item]}
+                else
+                  page
+                end
+              end
+        }
+        |> with_pages(force: true)
+        |> broadcast(),
+        item
       }
     else
       {:error, :unauthorized}
     end
   end
 
-  defp create_item(site, attrs) do
-    site
+  defp create_item(page, attrs) do
+    page
     |> Ecto.build_assoc(:items)
     |> Item.changeset(attrs)
     |> Repo.insert()
   end
 
-  def delete_item(%Site{} = site, item_id) do
+  def delete_item(%Site{} = site, %Page{} = page, item_id) do
     item_id_s = "#{item_id}"
 
     {:ok, %{delete: deleted_item}} =
-      site.items
+      page.items
       |> delete_item_multi(item_id_s)
       |> Repo.transaction()
 
     {
       :ok,
-      site
-      |> Map.update!(:items, fn items ->
-        items
-        |> Enum.reverse()
-        |> Enum.reduce([], fn item, acc ->
-          cond do
-            item.id == deleted_item.id ->
-              acc
+      %{
+        site
+        | pages:
+            for p <- site.pages do
+              if p.id == page.id do
+                %{
+                  p
+                  | items:
+                      p.items
+                      |> Enum.reverse()
+                      |> Enum.reduce([], fn item, acc ->
+                        cond do
+                          item.id == deleted_item.id ->
+                            acc
 
-            item.position > deleted_item.position ->
-              [Map.update!(item, :position, &(&1 - 1)) | acc]
+                          item.position > deleted_item.position ->
+                            [Map.update!(item, :position, &(&1 - 1)) | acc]
 
-            true ->
-              [item | acc]
-          end
-        end)
-      end)
+                          true ->
+                            [item | acc]
+                        end
+                      end)
+                }
+              else
+                p
+              end
+            end
+      }
       |> broadcast()
     }
   end
@@ -751,7 +790,7 @@ defmodule Affable.Sites do
   end
 
   defp broadcast(%Site{} = site) do
-    site = site |> with_items() |> preload_latest_publication()
+    site = site |> with_pages() |> preload_latest_publication()
     :ok = site |> (&broadcaster().broadcast(&1)).()
 
     site

@@ -4,6 +4,7 @@ defmodule AffiliateWeb.PageLiveTest do
   import Affiliate.Fixtures
   import Phoenix.LiveViewTest
   import Hammox
+  import Access, only: [at: 1]
 
   alias Affiliate.MockHTTP
   alias Affiliate.SiteState
@@ -42,10 +43,12 @@ defmodule AffiliateWeb.PageLiveTest do
 
     assert get_in(incoming_payload, [
              "published",
+             "pages",
+             at(0),
              "items",
-             Access.at(0),
+             at(0),
              "attributes",
-             Access.at(0),
+             at(0),
              "name"
            ]) ==
              "Price"
@@ -60,7 +63,7 @@ defmodule AffiliateWeb.PageLiveTest do
   test "hides table when no items are available", %{conn: conn} do
     incoming_payload =
       fixture("site_update_message")
-      |> put_in(["published", "items"], [])
+      |> put_in(["published", "pages", at(0), "items"], [])
 
     SiteState.store(incoming_payload)
 

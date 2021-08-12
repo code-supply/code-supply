@@ -23,7 +23,6 @@ defmodule Affable.Sites.Raw do
       "header_text_colour" => page.header_text_colour,
       "custom_head_html" => site.custom_head_html,
       "made_available_at" => format_datetime(site.made_available_at),
-      "items" => site.items |> Enum.map(&raw/1),
       "pages" => site.pages |> Enum.map(&raw/1)
     }
   end
@@ -42,7 +41,8 @@ defmodule Affable.Sites.Raw do
       "text" => page.text,
       "cta_background_colour" => page.cta_background_colour,
       "cta_text_colour" => page.cta_text_colour,
-      "cta_text" => page.cta_text
+      "cta_text" => page.cta_text,
+      "items" => page.items |> Enum.map(&raw/1)
     }
   end
 

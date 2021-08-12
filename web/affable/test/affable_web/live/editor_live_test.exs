@@ -4,7 +4,6 @@ defmodule AffableWeb.EditorLiveTest do
   import Affable.SitesFixtures
   import Hammox
 
-  alias Affable.Assets.Asset
   alias Affable.{Repo, Accounts, Sites}
   alias Affable.Sites.{Page, Site, Item, Attribute}
 
@@ -133,7 +132,12 @@ defmodule AffableWeb.EditorLiveTest do
 
       %Site{
         attribute_definitions: [new_definition],
-        items: [%Item{attributes: [%Attribute{id: first_attribute_id}]} | _] = items
+        pages: [
+          %Page{
+            items:
+              [%Item{attributes: [%Attribute{id: first_attribute_id}]} = first_item | _] = items
+          }
+        ]
       } = Sites.get_site!(user, site.id)
 
       assert view
@@ -163,13 +167,13 @@ defmodule AffableWeb.EditorLiveTest do
       })
 
       assert view
-             |> has_element?("#item-edit_items_0_attributes_0_value[value=King]")
+             |> has_element?("#item-#{first_item.id} [value=King]")
     end
 
-    test "can create / delete new item", %{conn: conn, site: site} do
+    test "can create / delete new item", %{conn: conn, site: %Site{pages: [page]} = site} do
       {:ok, view, _html} = live(conn, path(conn, site))
 
-      num_items = site.items |> length()
+      num_items = page.items |> length()
 
       refute view
              |> has_element?(".item:nth-child(#{num_items + 1})")
@@ -180,20 +184,17 @@ defmodule AffableWeb.EditorLiveTest do
       |> element("#new-item-top")
       |> render_click()
 
-      site = Sites.get_site!(site.id)
-
-      assert site.items
-             |> length() == num_items + 1
-
-      assert view
-             |> has_element?(".item:nth-child(2) .number", "2")
+      %Site{pages: [page]} = Sites.get_site!(site.id)
 
       assert view
              |> has_element?(".item:nth-child(#{num_items + 1})")
 
       view
-      |> element("#delete-item-#{List.last(site.items).id}")
+      |> element("#delete-item-#{List.last(page.items).id}")
       |> render_click()
+
+      refute view
+             |> has_element?(".item:nth-child(#{num_items + 1})")
 
       assert view
              |> element(".item:nth-child(1) .number")
@@ -203,14 +204,14 @@ defmodule AffableWeb.EditorLiveTest do
 
     test "can edit an item", %{
       conn: conn,
-      site: %Site{pages: [%Page{header_image_id: header_image_id}]} = site
+      site: %Site{pages: [%Page{header_image_id: header_image_id, items: items}]} = site
     } do
       conn = get(conn, path(conn, site))
       assert html_response(conn, 200)
 
       {:ok, view, html} = live(conn, path(conn, site))
 
-      [first_item | _] = site.items
+      [first_item | _] = items
 
       first_image_url = first_item.image.url
 
@@ -220,54 +221,37 @@ defmodule AffableWeb.EditorLiveTest do
 
       copied_asset_id = header_image_id
 
-      expect_broadcast(fn %Site{
-                            items: [
-                              %Item{
-                                description: "My new description!",
-                                image: %Asset{id: received_asset_id}
-                              }
-                              | _
-                            ]
-                          } ->
-        assert received_asset_id == copied_asset_id
+      expect_broadcast(fn site ->
+        [page] = site.pages
+        [item | _] = page.items
+        assert copied_asset_id == item.image.id
       end)
 
-      assert render_first_item_change(view, site.items, %{
-               "description" => "My new description!",
-               "image_id" => "#{copied_asset_id}"
-             }) =~ "My new description!"
+      _result_that_sadly_doesnt_show_change =
+        render_first_item_change(view, items, %{
+          "description" => "My new description!",
+          "image_id" => "#{copied_asset_id}"
+        })
+
+      assert get(conn, path(conn, site)).resp_body =~ "My new description!"
     end
 
     @tag :capture_log
-    test "editing an item to be invalid marks the item as invalid", %{conn: conn, site: site} do
+    test "editing an item to be invalid marks the item as invalid", %{
+      conn: conn,
+      site: %Site{pages: [%Page{items: items}]} = site
+    } do
       {:ok, view, _html} = live(conn, path(conn, site))
 
-      result =
-        render_first_item_change(view, site.items, %{
-          "name" => ""
-        })
+      render_first_item_change(view, items, %{"name" => ""})
 
-      assert result =~ "phx-feedback-for=\"item-edit_items_0_name"
+      assert view |> has_element?(".invalid-feedback")
     end
 
-    test "can delete an item", %{conn: conn, site: site} do
+    test "can reorder an item", %{conn: conn, site: %Site{pages: [%Page{items: items}]} = site} do
       {:ok, view, _html} = live(conn, path(conn, site))
 
-      [first_item | _] = site.items
-
-      stub_broadcast()
-
-      view
-      |> element("#delete-item-#{first_item.id}")
-      |> render_click()
-
-      refute view |> has_element?("#delete-item-#{first_item.id}")
-    end
-
-    test "can reorder an item", %{conn: conn, site: site} do
-      {:ok, view, _html} = live(conn, path(conn, site))
-
-      [first_item | _] = site.items
+      [first_item | _] = items
 
       assert view |> has_element?("#item-#{first_item.id} .number", "1")
 
@@ -286,12 +270,15 @@ defmodule AffableWeb.EditorLiveTest do
       assert view |> has_element?("#item-#{first_item.id} .number", "1")
     end
 
-    test "reordering broadcasts the change to the site", %{conn: conn, site: site} do
+    test "reordering broadcasts the change to the site", %{
+      conn: conn,
+      site: %Site{pages: [%Page{items: items}]} = site
+    } do
       {:ok, view, _html} = live(conn, path(conn, site))
 
-      [first_item | _] = site.items
+      [first_item | _] = items
 
-      expect_broadcast(fn %Site{items: [_, new_second_item | _]} ->
+      expect_broadcast(fn %Site{pages: [%Page{items: [_, new_second_item | _]}]} ->
         assert first_item.name == new_second_item.name
       end)
 
@@ -299,7 +286,7 @@ defmodule AffableWeb.EditorLiveTest do
       |> element("#demote-#{first_item.id}")
       |> render_click()
 
-      expect_broadcast(fn %Site{items: [new_first_item | _]} ->
+      expect_broadcast(fn %Site{pages: [%Page{items: [new_first_item | _]}]} ->
         assert first_item.name == new_first_item.name
       end)
 
@@ -330,10 +317,8 @@ defmodule AffableWeb.EditorLiveTest do
     defp render_first_item_change(view, items, attrs) do
       [first_item | other_items] = items
 
-      render_change(view, :save, %{
-        "_method" => "put",
-        "_target" => ["site", "items", "0", "name"],
-        "site" => %{
+      render_change(view |> element("#page_#{first_item.page_id}"), %{
+        "page" => %{
           "items" =>
             Map.merge(
               %{

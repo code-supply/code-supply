@@ -6,15 +6,15 @@ defmodule Affable.AccountsTest do
   alias Affable.Assets.Asset
   alias Affable.Domains
   alias Affable.Sites
-  alias Affable.Sites.Site
+  alias Affable.Sites.{Page, Site}
 
   import Affable.AccountsFixtures
 
   describe "delete_user/1" do
     test "deletes the user, its site, items and domains if it's not been shared" do
-      user = user_fixture() |> Affable.Repo.preload(sites: :items)
+      user = user_fixture() |> Accounts.preload_for_assets()
 
-      [%Sites.Site{items: [item1 | _]} = site] = user.sites
+      [%Sites.Site{pages: [%Page{items: [item1 | _]}]} = site] = user.sites
       [domain] = site.domains
 
       Accounts.delete_user(user)

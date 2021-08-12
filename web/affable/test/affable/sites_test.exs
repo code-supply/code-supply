@@ -60,7 +60,7 @@ defmodule Affable.SitesTest do
 
       {
         user,
-        site |> Sites.with_items()
+        site |> Sites.with_items() |> Sites.with_pages()
       }
     end
 
@@ -192,23 +192,27 @@ defmodule Affable.SitesTest do
                raw(%Site{
                  site_logo: %Asset{url: "foo"},
                  items: [],
-                 pages: [%Page{header_image: nil}]
+                 pages: [%Page{header_image: nil, items: []}]
                })
 
       assert %{"header_image_url" => ^expected_header_image_url, "site_logo_url" => nil} =
                raw(%Site{
-                 pages: [%Page{header_image: %Asset{url: "foo"}}],
+                 pages: [%Page{header_image: %Asset{url: "foo"}, items: []}],
                  site_logo: nil,
                  items: []
                })
     end
 
     test "raw representation includes item image URLs" do
-      %{"items" => [%{"image_url" => raw_image_url}]} =
+      %{"pages" => [%{"items" => [%{"image_url" => raw_image_url}]}]} =
         raw(%Site{
           site_logo: nil,
-          items: [%Item{attributes: [], image: %Asset{url: "gs://some-bucket/image.jpg"}}],
-          pages: []
+          pages: [
+            %Page{
+              header_image: nil,
+              items: [%Item{attributes: [], image: %Asset{url: "gs://some-bucket/image.jpg"}}]
+            }
+          ]
         })
 
       assert raw_image_url =~ "https://images.affable.app"
@@ -235,7 +239,7 @@ defmodule Affable.SitesTest do
 
     test "new sites have batteries-included defaults" do
       user = user_fixture()
-      site = site_fixture(user, %{name: "some name !@#!@#$@#%#$"})
+      %Site{pages: [page]} = site = site_fixture(user, %{name: "some name !@#!@#$@#%#$"})
 
       [%SiteMember{user_id: received_user_id}] = site.members
       [%Domain{name: domain_name}] = site.domains
@@ -246,7 +250,7 @@ defmodule Affable.SitesTest do
       assert domain_name == "#{site.internal_name}.affable.app"
       assert received_user_id == user.id
 
-      assert [%Item{name: "Golden Delicious"} | rest] = site.items
+      assert [%Item{name: "Golden Delicious"} | rest] = page.items
       assert length(rest) == 9
 
       assert Sites.is_published?(site)
@@ -286,7 +290,7 @@ defmodule Affable.SitesTest do
 
       {:error, _} = Sites.add_attribute_definition(site, wrong_user)
 
-      [first_item | _] = Sites.get_site!(user, site.id).items
+      %Site{pages: [%Page{items: [first_item | _]}]} = Sites.get_site!(site.id)
 
       assert definition_id in (first_item.attributes |> Enum.map(& &1.definition_id))
 
@@ -305,77 +309,73 @@ defmodule Affable.SitesTest do
 
     test "can delete an item from start of list" do
       user = user_fixture()
-      site_before = site_fixture(user)
+      %Site{pages: [%Page{items: [item | _]} = page_before]} = site = site_fixture(user)
 
-      expect_broadcast(fn %Site{
-                            items: preview_items,
-                            latest_publication: %{data: %{"items" => published_items}}
-                          } ->
-        assert preview_items |> length() == (published_items |> length()) - 1
+      expect_broadcast(fn site ->
+        [page] = site.pages
+        [published_page] = site.latest_publication.data["pages"]
+        assert length(published_page["items"]) - 1 == length(page.items)
       end)
 
-      {:ok, site_after} = Sites.delete_item(site_before, "#{Enum.at(site_before.items, 1).id}")
+      {:ok, %Site{pages: [page_after]}} = Sites.delete_item(site, page_before, "#{item.id}")
 
       positions_after =
-        site_after.items
+        page_after.items
         |> Enum.map(fn i -> i.position end)
 
-      assert length(site_after.items) ==
-               length(site_before.items) - 1
+      assert length(page_before.items) - 1 == length(page_after.items)
 
-      assert positions_after ==
-               1..length(site_after.items) |> Enum.into([])
+      assert 1..length(page_after.items) |> Enum.into([]) == positions_after
 
-      assert Enum.map(Sites.get_site!(user, site_before.id).items, & &1.id) ==
-               Enum.map(site_after.items, & &1.id)
+      %Site{pages: [page_reloaded]} = Sites.get_site!(site.id)
+
+      assert Enum.map(page_after.items, & &1.id) == Enum.map(page_reloaded.items, & &1.id)
     end
 
     test "can delete an item from end of list" do
       user = user_fixture()
-      site_before = site_fixture(user)
+      %Site{pages: [%Page{items: items} = page_before]} = site = site_fixture(user)
 
-      expect_broadcast(fn %Site{
-                            items: preview_items,
-                            latest_publication: %{data: %{"items" => published_items}}
-                          } ->
-        assert preview_items |> length() == (published_items |> length()) - 1
+      expect_broadcast(fn site ->
+        [page] = site.pages
+        [published_page] = site.latest_publication.data["pages"]
+        assert length(published_page["items"]) - 1 == length(page.items)
       end)
 
-      {:ok, site_after} = Sites.delete_item(site_before, "#{List.last(site_before.items).id}")
+      {:ok, %Site{pages: [page_after]}} =
+        Sites.delete_item(site, page_before, "#{List.last(items).id}")
 
       positions_after =
-        site_after.items
+        page_after.items
         |> Enum.map(fn i -> i.position end)
 
-      assert length(site_after.items) ==
-               length(site_before.items) - 1
+      assert length(page_before.items) - 1 == length(page_after.items)
 
-      assert positions_after ==
-               1..length(site_after.items) |> Enum.into([])
+      assert 1..length(page_after.items) |> Enum.into([]) == positions_after
 
-      assert Enum.map(Sites.get_site!(user, site_before.id).items, & &1.id) ==
-               Enum.map(site_after.items, & &1.id)
+      %Site{pages: [page_reloaded]} = Sites.get_site!(site.id)
+
+      assert Enum.map(page_after.items, & &1.id) == Enum.map(page_reloaded.items, & &1.id)
     end
 
     test "can demote an item" do
-      {user, site} = user_and_site_with_items()
+      %Site{pages: [page]} = site = site_fixture()
 
-      [first_before | rest] = site.items
+      [first_before | rest] = page.items
       [second_before | _] = rest
 
       assert first_before.position == 1
       assert second_before.position == 2
 
-      expect_broadcast(fn %Site{
-                            items: preview_items,
-                            latest_publication: %{data: %{"items" => published_items}}
-                          } ->
-        assert preview_items != published_items
+      expect_broadcast(fn s ->
+        [page] = s.pages
+        [published_page] = s.latest_publication.data["pages"]
+        assert Enum.map(page.items, & &1.name) != Enum.map(published_page["items"], & &1["name"])
       end)
 
-      {:ok, site} = Sites.demote_item(user, site, "#{first_before.id}")
+      {:ok, %Site{pages: [page]}} = Sites.demote_item(site, page, "#{first_before.id}")
 
-      [first_after | rest] = site.items
+      [first_after | rest] = page.items
       [second_after | _] = rest
 
       assert first_after.position == 1
@@ -386,23 +386,23 @@ defmodule Affable.SitesTest do
     end
 
     test "demoting at the last position doesn't increase position number" do
-      {user, site} = user_and_site_with_items()
+      %Site{pages: [page]} = site = site_fixture()
 
-      item = site.items |> List.last()
+      item = page.items |> List.last()
 
       assert item.position == 10
 
-      {:ok, site} = Sites.demote_item(user, site, "#{item.id}")
+      {:ok, %Site{pages: [page]}} = Sites.demote_item(site, page, "#{item.id}")
 
-      item_after = site.items |> List.last()
+      item_after = page.items |> List.last()
 
       assert item_after.position == 10
     end
 
     test "can promote an item" do
-      {user, site} = user_and_site_with_items()
+      %Site{pages: [page]} = site = site_fixture()
 
-      [first_before | rest] = site.items
+      [first_before | rest] = page.items
       [second_before | _] = rest
 
       assert first_before.position == 1
@@ -410,10 +410,9 @@ defmodule Affable.SitesTest do
 
       stub_broadcast()
 
-      {:ok, site} = Sites.promote_item(user, site, "#{second_before.id}")
-      {:error, _} = Sites.promote_item(user_fixture(), site, "#{second_before.id}")
+      {:ok, %Site{pages: [page]}} = Sites.promote_item(site, page, "#{second_before.id}")
 
-      [first_after | rest] = site.items
+      [first_after | rest] = page.items
       [second_after | _] = rest
 
       assert first_after.position == 1
@@ -424,21 +423,21 @@ defmodule Affable.SitesTest do
     end
 
     test "promoting at the first position doesn't decrease position number" do
-      {user, site} = user_and_site_with_items()
+      %Site{pages: [page]} = site = site_fixture()
 
-      [item | _] = site.items
+      [item | _] = page.items
 
       assert item.position == 1
 
-      {:ok, site} = Sites.promote_item(user, site, "#{item.id}")
+      {:ok, %Site{pages: [page]}} = Sites.promote_item(site, page, "#{item.id}")
 
-      [item_after | _] = site.items
+      [item_after | _] = page.items
 
       assert item_after.position == 1
     end
 
     test "update_site/2 with valid data updates the site" do
-      {user, site} = user_and_site_with_items()
+      {_, site} = user_and_site_with_items()
 
       %Site{pages: [%Page{header_image: %Asset{id: header_image_id, url: expected_asset_url}}]} =
         site |> Repo.preload(pages: [:header_image])
@@ -452,10 +451,8 @@ defmodule Affable.SitesTest do
 
       [definition] = site.attribute_definitions
 
-      site_as_live_view = Sites.get_site!(user, site.id)
-
-      assert {:ok, %Site{} = updated_site} =
-               Sites.update_site(site_as_live_view, %{
+      assert {:ok, %Site{pages: [updated_page]} = updated_site} =
+               Sites.update_site(site, %{
                  "name" => "some updated name",
                  "site_logo_id" => header_image_id,
                  "attribute_definitions" => %{
@@ -469,11 +466,11 @@ defmodule Affable.SitesTest do
       assert updated_site.name == "some updated name"
 
       [definition] = updated_site.attribute_definitions
-      assert definition.name == "some updated attribute name"
+      assert "some updated attribute name" == definition.name
 
-      [item | _] = updated_site.items
+      [item | _] = updated_page.items
       [attribute | _] = item.attributes
-      assert attribute.definition.name == "some updated attribute name"
+      assert "some updated attribute name" == attribute.definition.name
     end
 
     test "update_site/2 with invalid data returns error changeset" do
@@ -495,31 +492,24 @@ defmodule Affable.SitesTest do
   describe "items" do
     alias Affable.Sites.Item
 
-    def item_fixture() do
-      user = user_fixture()
-      site = site_fixture(user)
+    test "append_item/2 adds a default item to the end of the items list", %{
+      wrong_user: wrong_user
+    } do
+      {user, %Site{pages: [page]} = site} = user_and_site_with_items()
 
-      stub_broadcast()
-      {:ok, item} = Sites.append_item(site, user)
-
-      item
-    end
-
-    test "append_item/2 adds a default item to the end of the items list" do
-      {user, site} = user_and_site_with_items()
-
-      expect_broadcast(fn %{items: items} ->
+      expect_broadcast(fn %Site{pages: [%Page{items: items}]} ->
         assert %{"name" => "New item"} = raw(items |> List.last())
       end)
 
-      {:ok, appended_site} = Sites.append_item(site, user)
+      {:ok, %Site{pages: [%Page{items: appended_site_items}]}, _appended_item} =
+        Sites.append_item(site, page, user)
 
-      {:error, :unauthorized} = Sites.append_item(site, user_fixture())
+      {:error, :unauthorized} = Sites.append_item(site, page, wrong_user)
 
-      site = Sites.get_site!(site.id)
-      retrieved_item = List.last(site.items)
+      %Site{pages: [%Page{items: items}]} = Sites.get_site!(site.id)
+      retrieved_item = List.last(items)
 
-      appended_item = List.last(appended_site.items)
+      appended_item = List.last(appended_site_items)
       assert appended_item == retrieved_item
       assert retrieved_item.name == "New item"
       assert length(retrieved_item.attributes) > 0

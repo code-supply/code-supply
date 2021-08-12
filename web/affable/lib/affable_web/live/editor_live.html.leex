@@ -74,89 +74,13 @@
       <% end %>
     </ul>
   </div>
-
-  <h2 class="h2">Items</h2>
-
-  <a href="#" id="new-item-top" class="btn btn-spaced" phx-hook="Scroll" phx-click="new-item">New Item</a>
-
-  <ol>
-    <%= for f <- inputs_for(outer_form, :items) do %>
-      <li id="item-<%= f.data.id %>" class="item standard-w">
-        <p class="overflow-hidden position">
-          <span class="number"><%= f.data.position %></span>
-          <a id="delete-item-<%= f.data.id %>"
-             href="#"
-             class="w-8 h-12 mr-16 trash feather"
-             phx-click="delete-item"
-             phx-value-id="<%= f.data.id %>"
-             >
-          </a>
-          <a id="demote-<%= f.data.id %>"
-             href="#"
-             class="w-8 h-12 mr-8 demote feather"
-             phx-click="demote"
-             phx-value-id="<%= f.data.id %>"
-             >
-          </a>
-          <a id="promote-<%= f.data.id %>"
-             href="#"
-             class="w-8 h-12 promote feather"
-             phx-click="promote"
-             phx-value-id="<%= f.data.id %>"
-             >
-          </a>
-        </p>
-
-        <div class="image">
-          <img src="<%= f.data.image |> to_imgproxy_url() %>" alt=""/>
-        </div>
-
-        <%= hidden_inputs_for f %>
-        <div class="field">
-          <%= label f, :name %>
-          <%= text_input f, :name, required: true, phx_debounce: 250, class: "scrollfocus" %>
-          <%= error_tag f, :name %>
-        </div>
-
-        <div class="field">
-          <%= label f, :url, "URL" %>
-          <%= text_input f, :url, phx_debounce: 250 %>
-          <%= error_tag f, :url %>
-        </div>
-
-        <div class="field">
-          <%= label f, :image_id %>
-          <%= select f, :image_id, @asset_pairs, prompt: "None" %>
-          <%= error_tag f, :image_id %>
-        </div>
-
-        <%= for af <- inputs_for(f, :attributes) do %>
-          <%= hidden_inputs_for af %>
-          <div class="field">
-            <%= label af, :value, "#{af.data.definition.name}" %>
-            <%= text_input af, :value, phx_debounce: 250 %>
-            <%= error_tag af, :value %>
-          </div>
-        <% end %>
-
-        <div class="field">
-          <%= label f, :description %>
-          <%= editor_textarea f, :description %>
-          <%= error_tag f, :description %>
-        </div>
-      </li>
-    <% end %>
-  </ol>
-
-  <%= if length(@changeset.data.items) > 0 do %>
-    <a href="#" id="new-item-bottom" class="btn btn-spaced" phx-hook="Scroll" phx-click="new-item">New Item</a>
-  <% end %>
 </form>
 
 <%= for {page, changeset} <- @pages do %>
   <%= live_component(
         AffableWeb.PageComponent,
         id: page.id,
+        site: @changeset.data,
         user: @user,
         page: page,
         changeset: changeset,

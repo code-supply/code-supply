@@ -1,14 +1,10 @@
 defmodule AffiliateWeb.PageShared do
   import Phoenix.LiveView, only: [assign: 2]
+  import Access, only: [at: 1, key: 2]
 
   def assign_site(socket, site) do
-    items = Map.get(site, "items", [])
-
-    attributes =
-      items
-      |> Enum.reduce_while([], fn item, _acc ->
-        {:halt, item["attributes"]}
-      end)
+    items = get_in(site, [key("pages", []), at(0), "items"]) || []
+    attributes = get_in(items, [at(0), "attributes"])
 
     {page_title, header_text, text} =
       case site["pages"] do

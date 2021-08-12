@@ -7,7 +7,6 @@ defmodule AffableWeb.EditorLive do
   alias Affable.Sites
   alias Affable.Sites.{Page, Site}
 
-  import Affable.Assets, only: [to_imgproxy_url: 1]
   import AffableWeb.EditorHelpers
 
   def mount(%{"id" => id}, %{"user_token" => token}, socket) do
@@ -45,6 +44,10 @@ defmodule AffableWeb.EditorLive do
      )}
   end
 
+  def handle_info({:updated_site, site}, socket) do
+    reset_site(site, socket)
+  end
+
   def handle_event(
         "new-attribute-definition",
         %{},
@@ -74,15 +77,6 @@ defmodule AffableWeb.EditorLive do
     |> reset_site(socket)
   end
 
-  def handle_event("new-item", %{}, %{assigns: %{user: user, changeset: %{data: site}}} = socket) do
-    {_, %{assigns: %{changeset: %{data: changed_site}}} = socket} =
-      site
-      |> Sites.append_item(user)
-      |> reset_site(socket)
-
-    {:noreply, push_event(socket, "scroll", %{id: "item-#{List.last(changed_site.items).id}"})}
-  end
-
   def handle_event(
         "save",
         %{"site" => attrs},
@@ -90,16 +84,6 @@ defmodule AffableWeb.EditorLive do
       ) do
     Sites.get_site!(user, id)
     |> Sites.update_site(attrs)
-    |> reset_site(socket)
-  end
-
-  def handle_event(
-        "delete-item",
-        %{"id" => item_id},
-        %{assigns: %{site_id: id, user: user}} = socket
-      ) do
-    Sites.get_site!(user, id)
-    |> Sites.delete_item(item_id)
     |> reset_site(socket)
   end
 

@@ -49,6 +49,7 @@ defmodule Affable.Sites.Page do
         :cta_text
       ]
     )
+    |> cast_assoc(:items, with: &Item.changeset/2)
     |> validate_required([
       :title,
       :header_background_colour,

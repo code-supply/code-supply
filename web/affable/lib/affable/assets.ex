@@ -70,8 +70,10 @@ defmodule Affable.Assets do
 
   def in_use?(%Asset{id: id}, %Site{site_logo_id: id}), do: true
 
-  def in_use?(%Asset{id: id}, %Site{items: items, pages: pages}) do
-    Enum.any?(items, &(&1.image_id == id)) ||
-      Enum.any?(pages, &(&1.header_image_id == id))
+  def in_use?(%Asset{id: id}, %Site{pages: pages}) do
+    Enum.any?(pages, fn page ->
+      page.header_image_id == id ||
+        Enum.any?(page.items, &(&1.image_id == id))
+    end)
   end
 end

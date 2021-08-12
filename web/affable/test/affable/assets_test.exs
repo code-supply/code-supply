@@ -14,15 +14,30 @@ defmodule Affable.AssetsTest do
 
   describe "assets" do
     test "can determine if it's in use by the site" do
-      refute Assets.in_use?(%Asset{id: 1}, %Site{items: [], pages: []})
+      refute Assets.in_use?(
+               %Asset{id: 1},
+               %Site{items: [], pages: []}
+             )
 
-      assert Assets.in_use?(%Asset{id: 1}, %Site{
-               items: [],
-               pages: [%Page{header_image_id: 2}, %Page{header_image_id: 1}]
-             })
+      assert Assets.in_use?(
+               %Asset{id: 1},
+               %Site{
+                 pages: [
+                   %Page{header_image_id: 2, items: []},
+                   %Page{header_image_id: 1, items: []}
+                 ]
+               }
+             )
 
-      assert Assets.in_use?(%Asset{id: 1}, %Site{site_logo_id: 1, pages: []})
-      assert Assets.in_use?(%Asset{id: 1}, %Site{items: [%Item{image_id: 1}]})
+      assert Assets.in_use?(
+               %Asset{id: 1},
+               %Site{site_logo_id: 1, pages: []}
+             )
+
+      assert Assets.in_use?(
+               %Asset{id: 1},
+               %Site{pages: [%Page{items: [%Item{image_id: 1}]}]}
+             )
     end
 
     test "can get an imgproxy URL for an Asset" do
