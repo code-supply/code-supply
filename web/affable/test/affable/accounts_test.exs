@@ -37,7 +37,7 @@ defmodule Affable.AccountsTest do
     end
 
     test "doesn't delete shared sites" do
-      user = user_fixture() |> Affable.Repo.preload(sites: :items)
+      user = user_fixture()
       colleague = user_fixture()
 
       [site] = user.sites

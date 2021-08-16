@@ -136,7 +136,6 @@ defmodule Affable.Sites do
   end
 
   defp site_query(id) do
-    items_q = items_query()
     definitions_q = definitions_query()
 
     from(s in Site,
@@ -146,7 +145,6 @@ defmodule Affable.Sites do
         domains: [],
         members: [],
         site_logo: [],
-        items: ^items_q,
         attribute_definitions: ^definitions_q
       ]
     )
@@ -203,14 +201,7 @@ defmodule Affable.Sites do
 
   def with_items(site, attrs \\ []) do
     site
-    |> Repo.preload(
-      [
-        items: items_query(),
-        attribute_definitions: definitions_query()
-      ],
-      attrs
-    )
-    |> Repo.preload(items: [image: [], attributes: :definition])
+    |> Repo.preload([attribute_definitions: definitions_query()], attrs)
   end
 
   defp items_query do

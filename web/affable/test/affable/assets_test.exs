@@ -16,7 +16,7 @@ defmodule Affable.AssetsTest do
     test "can determine if it's in use by the site" do
       refute Assets.in_use?(
                %Asset{id: 1},
-               %Site{items: [], pages: []}
+               %Site{pages: []}
              )
 
       assert Assets.in_use?(

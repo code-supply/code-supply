@@ -11,7 +11,7 @@ defmodule Affable.SitesFixtures do
   end
 
   def unpersisted_site_fixture() do
-    %Site{items: [], latest_publication: %Publication{}}
+    %Site{latest_publication: %Publication{}}
   end
 
   def site_fixture(%User{} = user, attrs \\ %{}) do

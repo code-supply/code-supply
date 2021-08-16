@@ -191,15 +191,13 @@ defmodule Affable.SitesTest do
       assert %{"header_image_url" => nil, "site_logo_url" => ^expected_logo_url} =
                raw(%Site{
                  site_logo: %Asset{url: "foo"},
-                 items: [],
                  pages: [%Page{header_image: nil, items: []}]
                })
 
       assert %{"header_image_url" => ^expected_header_image_url, "site_logo_url" => nil} =
                raw(%Site{
                  pages: [%Page{header_image: %Asset{url: "foo"}, items: []}],
-                 site_logo: nil,
-                 items: []
+                 site_logo: nil
                })
     end
 

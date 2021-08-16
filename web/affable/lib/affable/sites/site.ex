@@ -4,7 +4,7 @@ defmodule Affable.Sites.Site do
 
   alias Affable.Domains.Domain
   alias Affable.Assets.Asset
-  alias Affable.Sites.{Item, Page, Publication, SiteMember, AttributeDefinition}
+  alias Affable.Sites.{Page, Publication, SiteMember, AttributeDefinition}
 
   schema "sites" do
     field :name, :string
@@ -18,7 +18,6 @@ defmodule Affable.Sites.Site do
     has_many :members, SiteMember
     has_many :users, through: [:members, :user]
     has_many :domains, Domain
-    has_many :items, Item
     has_many :attribute_definitions, AttributeDefinition
     has_many :publications, Publication
     has_one :latest_publication, Publication
@@ -37,7 +36,6 @@ defmodule Affable.Sites.Site do
         :custom_head_html
       ]
     )
-    |> cast_assoc(:items, with: &Item.changeset/2)
     |> cast_assoc(:attribute_definitions, with: &AttributeDefinition.changeset/2)
     |> validate_required([
       :name
