@@ -101,6 +101,7 @@
           }
         ],
         "meta_description" => "",
+        "path" => "/",
         "text" => "",
         "title" => "Home"
       }
@@ -210,6 +211,7 @@
           }
         ],
         "meta_description" => "",
+        "path" => "/",
         "text" => "",
         "title" => "Home"
       }

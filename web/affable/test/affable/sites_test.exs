@@ -39,6 +39,15 @@ defmodule Affable.SitesTest do
 
       assert [%Page{title: ^old_title}] = Sites.get_site!(site.id).pages
     end
+
+    test "raw representation includes path" do
+      assert %{"pages" => [%{"path" => "/contact"}]} =
+               %{
+                 unpersisted_site_fixture()
+                 | pages: [%Page{path: "/contact", header_image: nil, items: []}]
+               }
+               |> raw()
+    end
   end
 
   describe "sites" do

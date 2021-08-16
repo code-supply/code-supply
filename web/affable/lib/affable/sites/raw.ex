@@ -35,6 +35,7 @@ defmodule Affable.Sites.Raw do
     %{
       "title" => page.title,
       "meta_description" => page.meta_description,
+      "path" => page.path,
       "header_text" => page.header_text,
       "header_background_colour" => page.header_background_colour,
       "header_text_colour" => page.header_text_colour,

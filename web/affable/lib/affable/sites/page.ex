@@ -14,6 +14,7 @@ defmodule Affable.Sites.Page do
 
     field :title, :string
     field :meta_description, :string, default: ""
+    field :path, :string
 
     field :text, :string, default: ""
     field :header_text, :string, default: ""
