@@ -76,10 +76,6 @@ tbody tr:hover {
     @apply bg-gray-100;
 }
 
-.item {
-    @apply relative clear-both;
-}
-
 .field {
     @apply mt-4;
 }
@@ -100,10 +96,6 @@ tbody tr:hover {
     @apply w-2/3 max-w-md;
 }
 
-.item .image {
-    @apply float-right w-1/3 pl-2 mt-6 mb-4;
-}
-
 .field input[type="number"] {
     @apply text-right;
 }
@@ -121,6 +113,10 @@ tbody tr:hover {
 
 .btn-2nd {
     @apply block w-32 px-1 py-2 text-lg font-bold text-center text-white bg-gradient-to-br from-gray-300 to-gray-500 rounded-md;
+}
+
+.btn.sm {
+    @apply w-48 px-2 py-3 text-base;
 }
 
 .btn:hover,
@@ -181,23 +177,6 @@ tbody tr:hover {
 
 .position {
     @apply w-full clear-left;
-}
-
-.position .number {
-    @apply block float-left w-16 mt-2 text-xl font-bold text-center text-white bg-gray-800 rounded-r-md rounded-l-md;
-}
-
-.position a {
-    @apply absolute top-0 right-0 block bg-no-repeat bg-contain;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-}
-
-.position a.promote {
-    background-image: url("/images/arrow-up-circle.svg");
-}
-
-.position a.demote {
-    background-image: url("/images/arrow-down-circle.svg");
 }
 
 li:first-child .promote, li:last-child .demote {
