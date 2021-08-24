@@ -38,6 +38,19 @@ defmodule AffiliateWeb.PageLiveTest do
     assert render(view) =~ site["name"]
   end
 
+  test "serves preview", %{conn: conn} do
+    incoming_payload = fixture("site_update_message")
+    site = incoming_payload["preview"]
+
+    {:ok, view, html} = live(conn, "/preview")
+
+    refute html =~ site["name"]
+
+    SiteState.store(incoming_payload)
+
+    assert render(view) =~ site["name"]
+  end
+
   test "shows attribute titles when available", %{conn: conn} do
     incoming_payload = fixture("site_update_message")
 

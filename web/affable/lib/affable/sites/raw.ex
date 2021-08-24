@@ -5,22 +5,13 @@ defmodule Affable.Sites.Raw do
   def raw(
         %Site{
           site_logo: site_logo,
-          pages: [%Page{} = page]
+          pages: pages
         } = site
       ) do
     %{
       "id" => site.id,
       "name" => site.name,
       "site_logo_url" => site_logo |> Assets.to_imgproxy_url(width: 600, height: 176),
-      "header_image_url" =>
-        page.header_image
-        |> Assets.to_imgproxy_url(width: 567, height: 341, resizing_type: "fill"),
-      "text" => page.text,
-      "cta_text" => page.cta_text,
-      "cta_background_colour" => page.cta_background_colour,
-      "cta_text_colour" => page.cta_text_colour,
-      "header_background_colour" => page.header_background_colour,
-      "header_text_colour" => page.header_text_colour,
       "custom_head_html" => site.custom_head_html,
       "made_available_at" => format_datetime(site.made_available_at),
       "pages" => site.pages |> Enum.map(&raw/1)
@@ -39,6 +30,9 @@ defmodule Affable.Sites.Raw do
       "header_text" => page.header_text,
       "header_background_colour" => page.header_background_colour,
       "header_text_colour" => page.header_text_colour,
+      "header_image_url" =>
+        page.header_image
+        |> Assets.to_imgproxy_url(width: 567, height: 341, resizing_type: "fill"),
       "text" => page.text,
       "cta_background_colour" => page.cta_background_colour,
       "cta_text_colour" => page.cta_text_colour,

@@ -13,6 +13,7 @@ defmodule AffableWeb.PageComponent do
        user: assigns.user,
        asset_pairs: assigns.asset_pairs,
        changeset: assigns.changeset,
+       checked: assigns.checked,
        page: assigns.page
      )}
   end

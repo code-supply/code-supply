@@ -59,6 +59,18 @@ defmodule AffableWeb.EditorLive do
   end
 
   def handle_event(
+        "new-page",
+        %{},
+        %{assigns: %{changeset: %{data: site}, user: user}} = socket
+      ) do
+    {:ok, page} = site |> Sites.add_page(user)
+
+    %{site | pages: site.pages ++ [page]}
+    |> Sites.with_pages()
+    |> reset_site(socket)
+  end
+
+  def handle_event(
         "publish",
         _params,
         %{assigns: %{user: user, site_id: site_id}} = socket
@@ -105,6 +117,7 @@ defmodule AffableWeb.EditorLive do
     site = Sites.get_site!(user, id)
 
     assign(socket,
+      checked: true,
       user: user,
       site_id: id,
       pages: Enum.map(site.pages, fn page -> {page, Page.changeset(page, %{})} end),

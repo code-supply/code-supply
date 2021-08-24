@@ -1,3 +1,14 @@
+<input id="page-choice-<%= @page.id %>"
+       type="radio"
+       class="page-choice"
+       name="page-choice"
+       value="<%= @page.id %>"
+       <%= if @checked do %>
+         checked
+       <% end %>
+       />
+<label for="page-choice-<%= @page.id %>"> <%= @page.title %></label>
+
 <%= f = form_for @changeset, "#",
 id: "page_#{@page.id}",
 csrf_token: false,

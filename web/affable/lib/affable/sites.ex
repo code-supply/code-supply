@@ -35,13 +35,17 @@ defmodule Affable.Sites do
     end
   end
 
-  def add_page(site, attrs) do
-    {:ok, _page} =
-      site
-      |> Ecto.build_assoc(:pages, attrs)
-      |> Repo.insert()
+  def add_page(site, user) do
+    if user |> site_member?(site) do
+      {:ok, page} =
+        site
+        |> Ecto.build_assoc(:pages, %{title: "New page"})
+        |> Repo.insert()
 
-    site
+      {:ok, page |> Repo.preload(page_preloads())}
+    else
+      {:error, :unauthorized}
+    end
   end
 
   def page_ids(%Site{} = site) do
@@ -193,10 +197,11 @@ defmodule Affable.Sites do
   end
 
   defp page_query() do
-    from(p in Page,
-      order_by: p.id,
-      preload: ^[:header_image, items: items_query()]
-    )
+    from p in Page, order_by: p.id, preload: ^page_preloads()
+  end
+
+  defp page_preloads() do
+    [items: items_query(), header_image: []]
   end
 
   def with_items(site, attrs \\ []) do

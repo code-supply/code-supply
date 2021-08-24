@@ -3,6 +3,7 @@ defmodule Affable.SitesTest do
 
   import Affable.{AccountsFixtures, SitesFixtures}
   import Affable.Sites.Raw
+  import Access, only: [at: 1]
   import Hammox
 
   alias Affable.Accounts.User
@@ -14,11 +15,16 @@ defmodule Affable.SitesTest do
 
   setup :verify_on_exit!
 
-  setup do
-    %{wrong_user: %User{id: 99999}}
-  end
-
   describe "pages" do
+    test "adding a page requires correct user" do
+      user = user_fixture()
+      site = site_fixture(user)
+
+      assert {:error, :unauthorized} = Sites.add_page(site, wrong_user())
+      assert {:ok, %Page{title: "New page"}} = Sites.add_page(site, user)
+      assert [%Page{} | [%Page{title: "New page"}]] = Sites.get_site!(site.id).pages
+    end
+
     test "updating a page broadcasts the result" do
       user = user_fixture()
       site = site_fixture(user)
@@ -30,12 +36,12 @@ defmodule Affable.SitesTest do
       assert "my new title" == page.title
     end
 
-    test "updating a page with incorrect user is not allowed", %{wrong_user: wrong_user} do
+    test "updating a page with incorrect user is not allowed" do
       site = site_fixture()
       [%Page{title: old_title} = page] = site.pages
 
       assert {:error, :unauthorized} =
-               Sites.update_page(page, %{title: "my new title"}, wrong_user)
+               Sites.update_page(page, %{title: "my new title"}, wrong_user())
 
       assert [%Page{title: ^old_title}] = Sites.get_site!(site.id).pages
     end
@@ -156,12 +162,11 @@ defmodule Affable.SitesTest do
         user_fixture()
         |> Repo.preload(sites: [pages: [:header_image], publications: []])
 
-      assert publication.data["header_image_url"] ==
-               Assets.to_imgproxy_url(header_image_url,
-                 width: 567,
-                 height: 341,
-                 resizing_type: "fill"
-               )
+      assert Assets.to_imgproxy_url(header_image_url,
+               width: 567,
+               height: 341,
+               resizing_type: "fill"
+             ) == get_in(publication.data, ["pages", at(0), "header_image_url"])
     end
 
     test "site is published when latest publication is same as current raw representation", %{
@@ -197,13 +202,19 @@ defmodule Affable.SitesTest do
       expected_header_image_url =
         Assets.to_imgproxy_url("foo", width: 567, height: 341, resizing_type: "fill")
 
-      assert %{"header_image_url" => nil, "site_logo_url" => ^expected_logo_url} =
+      assert %{
+               "pages" => [%{"header_image_url" => nil}],
+               "site_logo_url" => ^expected_logo_url
+             } =
                raw(%Site{
                  site_logo: %Asset{url: "foo"},
                  pages: [%Page{header_image: nil, items: []}]
                })
 
-      assert %{"header_image_url" => ^expected_header_image_url, "site_logo_url" => nil} =
+      assert %{
+               "pages" => [%{"header_image_url" => ^expected_header_image_url}],
+               "site_logo_url" => nil
+             } =
                raw(%Site{
                  pages: [%Page{header_image: %Asset{url: "foo"}, items: []}],
                  site_logo: nil
@@ -236,11 +247,11 @@ defmodule Affable.SitesTest do
       assert Sites.get_site!(user, site.id).id == site.id
     end
 
-    test "get_site!/2 fails if user is incorrect", %{wrong_user: wrong_user} do
+    test "get_site!/2 fails if user is incorrect" do
       site = site_fixture()
 
       assert_raise Ecto.NoResultsError, fn ->
-        Sites.get_site!(wrong_user, site.id)
+        Sites.get_site!(wrong_user(), site.id)
       end
     end
 
@@ -282,7 +293,7 @@ defmodule Affable.SitesTest do
       assert definition |> has_valid.(:type, "text")
     end
 
-    test "site members can manage attribute definitions", %{wrong_user: wrong_user} do
+    test "site members can manage attribute definitions" do
       {user, site} = user_and_site_with_items()
 
       definitions_before = site.attribute_definitions
@@ -295,13 +306,13 @@ defmodule Affable.SitesTest do
        %Site{attribute_definitions: [%AttributeDefinition{id: definition_id} = definition | _]}} =
         Sites.add_attribute_definition(site, user)
 
-      {:error, _} = Sites.add_attribute_definition(site, wrong_user)
+      {:error, _} = Sites.add_attribute_definition(site, wrong_user())
 
       %Site{pages: [%Page{items: [first_item | _]}]} = Sites.get_site!(site.id)
 
       assert definition_id in (first_item.attributes |> Enum.map(& &1.definition_id))
 
-      {:error, _} = Sites.delete_attribute_definition(site.id, definition.id, wrong_user)
+      {:error, _} = Sites.delete_attribute_definition(site.id, definition.id, wrong_user())
       assert [definition | _] = Sites.get_site!(user, site.id).attribute_definitions
 
       expect_broadcast(fn %Site{attribute_definitions: definitions} ->
@@ -499,9 +510,7 @@ defmodule Affable.SitesTest do
   describe "items" do
     alias Affable.Sites.Item
 
-    test "append_item/2 adds a default item to the end of the items list", %{
-      wrong_user: wrong_user
-    } do
+    test "append_item/2 adds a default item to the end of the items list" do
       {user, %Site{pages: [page]} = site} = user_and_site_with_items()
 
       expect_broadcast(fn %Site{pages: [%Page{items: items}]} ->
@@ -511,7 +520,7 @@ defmodule Affable.SitesTest do
       {:ok, %Site{pages: [%Page{items: appended_site_items}]}, _appended_item} =
         Sites.append_item(site, page, user)
 
-      {:error, :unauthorized} = Sites.append_item(site, page, wrong_user)
+      {:error, :unauthorized} = Sites.append_item(site, page, wrong_user())
 
       %Site{pages: [%Page{items: items}]} = Sites.get_site!(site.id)
       retrieved_item = List.last(items)
@@ -521,5 +530,9 @@ defmodule Affable.SitesTest do
       assert retrieved_item.name == "New item"
       assert length(retrieved_item.attributes) > 0
     end
+  end
+
+  defp wrong_user do
+    %User{id: 99999}
   end
 end

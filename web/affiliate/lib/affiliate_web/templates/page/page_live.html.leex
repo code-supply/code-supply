@@ -1,3 +1,6 @@
+<%= if @waiting do %>
+  Waiting for data
+<% else %>
 <div class="bg-gray-300">
   <div class="container mx-auto bg-white">
     <%= if @logo_url do %>
@@ -18,7 +21,7 @@
         </div>
       </header>
 
-      <div class="prose pt-8 px-8">
+      <div class="px-8 pt-8 prose">
         <%= raw(Earmark.as_html!(@text)) %>
       </div>
 
@@ -78,3 +81,4 @@
     </main>
   </div>
 </div>
+<% end %>

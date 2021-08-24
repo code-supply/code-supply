@@ -2,10 +2,12 @@ defmodule Affable.SiteUpdaterTest do
   use Affable.DataCase, async: true
 
   import Hammox
+  import Affable.AccountsFixtures
   import Affable.SitesFixtures
 
   alias Affable.MockHTTP
-  alias Affable.{Broadcaster, SiteUpdater}
+  alias Affable.{Broadcaster, Sites, SiteUpdater}
+  alias Affable.Sites.Page
 
   setup :verify_on_exit!
 
@@ -14,7 +16,12 @@ defmodule Affable.SiteUpdaterTest do
   end
 
   test "can broadcast full site on demand", %{broadcast_1: broadcast} do
-    site = %{site_fixture() | id: 1}
+    user = user_fixture()
+    site = site_fixture(user)
+    {:ok, %Page{}} = Sites.add_page(site, user)
+    site = Sites.get_site!(site.id)
+    site = %{site | id: 1}
+
     expected_name = site.name
 
     expected_url = "http://#{site.internal_hostname}/"
