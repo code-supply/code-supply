@@ -108,29 +108,6 @@ defmodule AffableWeb.PageItemsTest do
 
     assert view |> has_element?("#item-#{first_item.id} .number", "1")
 
-    stub_broadcast()
-
-    view
-    |> element("#demote-#{first_item.id}")
-    |> render_click()
-
-    assert view |> has_element?("#item-#{first_item.id} .number", "2")
-
-    view
-    |> element("#promote-#{first_item.id}")
-    |> render_click()
-
-    assert view |> has_element?("#item-#{first_item.id} .number", "1")
-  end
-
-  test "reordering broadcasts the change to the site", %{
-    conn: conn,
-    site: %Site{pages: [%Page{items: items}]} = site
-  } do
-    {:ok, view, _html} = live(conn, path(conn, site))
-
-    [first_item | _] = items
-
     expect_broadcast(fn %Site{pages: [%Page{items: [_, new_second_item | _]}]} ->
       assert first_item.name == new_second_item.name
     end)
@@ -139,6 +116,8 @@ defmodule AffableWeb.PageItemsTest do
     |> element("#demote-#{first_item.id}")
     |> render_click()
 
+    assert view |> has_element?("#item-#{first_item.id} .number", "2")
+
     expect_broadcast(fn %Site{pages: [%Page{items: [new_first_item | _]}]} ->
       assert first_item.name == new_first_item.name
     end)
@@ -146,6 +125,8 @@ defmodule AffableWeb.PageItemsTest do
     view
     |> element("#promote-#{first_item.id}")
     |> render_click()
+
+    assert view |> has_element?("#item-#{first_item.id} .number", "1")
   end
 
   defp render_first_item_change(view, items, attrs) do
