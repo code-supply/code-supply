@@ -193,10 +193,10 @@ defmodule Affable.Sites do
   end
 
   defp page_query() do
-    [
-      :header_image,
-      items: items_query()
-    ]
+    from(p in Page,
+      order_by: p.id,
+      preload: ^[:header_image, items: items_query()]
+    )
   end
 
   def with_items(site, attrs \\ []) do
