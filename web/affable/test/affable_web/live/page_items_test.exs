@@ -80,11 +80,16 @@ defmodule AffableWeb.PageItemsTest do
       assert copied_asset_id == item.image.id
     end)
 
-    _result_that_sadly_doesnt_show_change =
-      render_first_item_change(view, items, %{
-        "description" => "My new description!",
-        "image_id" => "#{copied_asset_id}"
-      })
+    refute view
+           |> has_element?("#publish")
+
+    render_first_item_change(view, items, %{
+      "description" => "My new description!",
+      "image_id" => "#{copied_asset_id}"
+    })
+
+    assert view
+           |> has_element?("#publish")
 
     assert get(conn, path(conn, site)).resp_body =~ "My new description!"
   end
