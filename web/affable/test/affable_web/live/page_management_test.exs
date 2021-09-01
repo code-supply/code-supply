@@ -27,13 +27,13 @@ defmodule AffableWeb.PageManagementTest do
     {:ok, view, _html} = live(conn, path(conn, site))
 
     refute view
-           |> has_element?("label", "New page")
+           |> has_element?("label", "Untitled page")
 
     view
     |> element("#new-page")
     |> render_click()
 
     assert view
-           |> has_element?("label", "New page")
+           |> has_element?("label", "Untitled page")
   end
 end

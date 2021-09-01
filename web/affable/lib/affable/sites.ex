@@ -39,7 +39,7 @@ defmodule Affable.Sites do
     if user |> site_member?(site) do
       {:ok, page} =
         site
-        |> Ecto.build_assoc(:pages, %{title: "New page"})
+        |> Ecto.build_assoc(:pages, %{title: "Untitled page"})
         |> Repo.insert()
 
       {:ok, page |> Repo.preload(page_preloads())}

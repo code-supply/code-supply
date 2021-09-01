@@ -21,8 +21,8 @@ defmodule Affable.SitesTest do
       site = site_fixture(user)
 
       assert {:error, :unauthorized} = Sites.add_page(site, wrong_user())
-      assert {:ok, %Page{title: "New page"}} = Sites.add_page(site, user)
-      assert [%Page{} | [%Page{title: "New page"}]] = Sites.get_site!(site.id).pages
+      assert {:ok, %Page{title: "Untitled page"}} = Sites.add_page(site, user)
+      assert [%Page{} | [%Page{title: "Untitled page"}]] = Sites.get_site!(site.id).pages
     end
 
     test "updating a page broadcasts the result" do

@@ -112,7 +112,7 @@
         "meta_description" => "",
         "path" => "/",
         "text" => "",
-        "title" => "New page"
+        "title" => "Untitled page"
       }
     ],
     "site_logo_url" => "https://images.affable.app/nosignature/fit/600/176/ce/0/plain/gs://affable-uploads/default-logo.png"
