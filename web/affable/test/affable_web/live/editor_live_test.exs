@@ -35,7 +35,7 @@ defmodule AffableWeb.EditorLiveTest do
       end)
 
       view
-      |> element("#page_#{first_page_id}")
+      |> element("#page-#{first_page_id}")
       |> render_change(%{page: %{header_text: "new header text"}})
 
       assert view |> has_element?("#publish")
@@ -58,7 +58,7 @@ defmodule AffableWeb.EditorLiveTest do
       [%Page{id: first_page_id}] = (site |> Repo.preload(:pages)).pages
 
       view
-      |> element("#page_#{first_page_id}")
+      |> element("#page-#{first_page_id}")
       |> render_change(%{page: %{cta_background_colour: "FF"}})
 
       refute view |> has_element?("#publish")
@@ -67,7 +67,7 @@ defmodule AffableWeb.EditorLiveTest do
       stub_broadcast()
 
       view
-      |> element("#page_#{first_page_id}")
+      |> element("#page-#{first_page_id}")
       |> render_change(%{page: %{cta_background_colour: "FF0000"}})
 
       refute view |> has_element?(".invalid-feedback")
@@ -141,7 +141,7 @@ defmodule AffableWeb.EditorLiveTest do
       } = Sites.get_site!(user, site.id)
 
       assert view
-             |> has_element?("#item-edit_attribute_definitions_0_name[value=Price]")
+             |> has_element?("#site_attribute_definitions_0_name[value=Price]")
 
       view
       |> render_change(:save, %{
@@ -157,7 +157,7 @@ defmodule AffableWeb.EditorLiveTest do
       })
 
       assert view
-             |> has_element?("#item-edit_attribute_definitions_0_name[value='Mattress Size']")
+             |> has_element?("#site_attribute_definitions_0_name[value='Mattress Size']")
 
       view
       |> render_first_item_change(items, %{
@@ -192,7 +192,7 @@ defmodule AffableWeb.EditorLiveTest do
     defp render_first_item_change(view, items, attrs) do
       [first_item | other_items] = items
 
-      render_change(view |> element("#page_#{first_item.page_id}"), %{
+      render_change(view |> element("#page-#{first_item.page_id}"), %{
         "page" => %{
           "items" =>
             Map.merge(

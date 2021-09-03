@@ -23,7 +23,7 @@ defmodule AffableWeb.PageManagementTest do
     }
   end
 
-  test "can create a page and navigate to it", %{conn: conn, site: %Site{} = site} do
+  test "can create a page and delete it", %{conn: conn, site: %Site{} = site} do
     {:ok, view, _html} = live(conn, path(conn, site))
 
     refute view
@@ -34,6 +34,15 @@ defmodule AffableWeb.PageManagementTest do
     |> render_click()
 
     assert view
+           |> has_element?("label", "Untitled page")
+
+    id = List.last(Sites.page_ids(site))
+
+    view
+    |> element("#delete-page-#{id}")
+    |> render_click()
+
+    refute view
            |> has_element?("label", "Untitled page")
   end
 end

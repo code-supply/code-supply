@@ -48,6 +48,14 @@ defmodule Affable.Sites do
     end
   end
 
+  def delete_page(id, user) do
+    %Page{} = page = Repo.get(Page, id)
+
+    if user |> site_member?(page) do
+      page |> Repo.delete()
+    end
+  end
+
   def page_ids(%Site{} = site) do
     for p <- Repo.all(Ecto.assoc(site, :pages) |> order_by(:id)) do
       p.id

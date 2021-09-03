@@ -13,7 +13,6 @@ defmodule AffableWeb.PageComponent do
        user: assigns.user,
        asset_pairs: assigns.asset_pairs,
        changeset: assigns.changeset,
-       checked: assigns.checked,
        page: assigns.page
      )}
   end
@@ -27,6 +26,12 @@ defmodule AffableWeb.PageComponent do
         send(self(), {:erroneous_page, changeset})
     end
 
+    {:noreply, socket}
+  end
+
+  def handle_event("delete", %{"id" => id}, %{assigns: %{user: user}} = socket) do
+    {:ok, page} = Sites.delete_page(id, user)
+    send(self(), {:deleted_page, page})
     {:noreply, socket}
   end
 

@@ -1,22 +1,18 @@
-<input id="page-choice-<%= @page.id %>"
-       type="radio"
-       class="page-choice"
-       name="page-choice"
-       value="<%= @page.id %>"
-       <%= if @checked do %>
-         checked
-       <% end %>
-       />
-<label for="page-choice-<%= @page.id %>"> <%= @page.title %></label>
-
 <%= f = form_for @changeset, "#",
-id: "page_#{@page.id}",
+id: "page-#{@page.id}",
+class: "hidden clear-left",
 csrf_token: false,
 phx_target: @myself,
 phx_change: :save,
 phx_submit: :save %>
   <div class="py-4 border-t-2">
-    <h2 class="sticky top-0 text-xl font-bold bg-gray-100"><%= @page.title %>: General</h2>
+    <h2 class="text-xl font-bold bg-gray-100">General</h2>
+
+    <div class="field">
+      <%= label f, :title %>
+      <%= text_input f, :title, phx_debounce: 50 %>
+      <%= error_tag f, :title %>
+    </div>
 
     <div class="field">
       <%= label f, :path %>
@@ -32,7 +28,7 @@ phx_submit: :save %>
   </div>
 
   <div class="py-4 border-t-2 clear-left">
-    <h2 class="sticky top-0 text-xl font-bold bg-gray-100"><%= @page.title %>: Header</h2>
+    <h2 class="text-xl font-bold bg-gray-100">Header</h2>
 
     <div class="float-left w-1/3 pr-2 field">
       <%= label f, :header_image_id, "Image" %>
@@ -60,7 +56,7 @@ phx_submit: :save %>
   </div>
 
   <div class="py-4 border-t-2 clear-left">
-    <h2 class="sticky top-0 text-xl font-bold bg-gray-100"><%= @page.title %>: Body</h2>
+    <h2 class="text-xl font-bold bg-gray-100">Body</h2>
 
     <div class="field">
       <%= label f, :text %>
@@ -70,7 +66,7 @@ phx_submit: :save %>
   </div>
 
   <div class="py-4 overflow-hidden border-t-2 cta">
-    <h2 class="text-xl font-bold"><%= @page.title %>: Call to action</h2>
+    <h2 class="text-xl font-bold">Call to action</h2>
 
     <div class="float-left w-1/3 pr-2 field">
       <%= label f, :cta_text, "Text" %>
@@ -91,8 +87,8 @@ phx_submit: :save %>
     </div>
   </div>
 
-  <div class="sticky top-0 bg-gray-100">
-    <h2 class="text-xl font-bold"><%= @page.title %>: Items</h2>
+  <div class="bg-gray-100">
+    <h2 class="text-xl font-bold">Items</h2>
 
     <a href="#"
        id="new-item-top"
@@ -174,4 +170,14 @@ phx_submit: :save %>
       </li>
     <% end %>
   </ol>
+
+  <p class="pb-4">
+  <a id="delete-page-<%= @page.id %>"
+     class="btn"
+     phx-target="<%= @myself %>"
+     phx-click="delete"
+     phx-value-id="<%= @page.id %>"
+     href="#"
+     >Delete page</a>
+  </p>
 </form>

@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+.tab:checked + label {
+    @apply text-white bg-gray-400 rounded-t;
+}
 .menu:target {
     display: block;
 }

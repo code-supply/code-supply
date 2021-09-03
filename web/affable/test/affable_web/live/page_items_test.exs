@@ -137,7 +137,7 @@ defmodule AffableWeb.PageItemsTest do
   defp render_first_item_change(view, items, attrs) do
     [first_item | other_items] = items
 
-    render_change(view |> element("#page_#{first_item.page_id}"), %{
+    render_change(view |> element("#page-#{first_item.page_id}"), %{
       "page" => %{
         "items" =>
           Map.merge(

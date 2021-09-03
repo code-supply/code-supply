@@ -30,6 +30,17 @@ defmodule AffableWeb.EditorLive do
   end
 
   def handle_info(
+        {:deleted_page, %Page{id: id}},
+        %{assigns: %{changeset: %{data: site}}} = socket
+      ) do
+    %{
+      site
+      | pages: Enum.filter(site.pages, &(&1.id != id))
+    }
+    |> reset_site(socket)
+  end
+
+  def handle_info(
         {:erroneous_page, %{data: %{id: id}} = erroneous_changeset},
         %{assigns: %{pages: pages}} = socket
       ) do
