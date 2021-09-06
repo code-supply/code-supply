@@ -110,7 +110,7 @@
         "header_text_colour" => "FFFFFF",
         "items" => [],
         "meta_description" => "",
-        "path" => "/",
+        "path" => "/untitled-page",
         "text" => "",
         "title" => "Untitled page"
       }

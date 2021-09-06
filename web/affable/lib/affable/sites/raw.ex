@@ -14,7 +14,7 @@ defmodule Affable.Sites.Raw do
       "site_logo_url" => site_logo |> Assets.to_imgproxy_url(width: 600, height: 176),
       "custom_head_html" => site.custom_head_html,
       "made_available_at" => format_datetime(site.made_available_at),
-      "pages" => site.pages |> Enum.map(&raw/1)
+      "pages" => pages |> Enum.map(&raw/1)
     }
   end
 

@@ -5,7 +5,8 @@ defmodule Affable.Sites.Page do
   alias Affable.Sites.{Item, Site}
   alias Affable.Assets.Asset
 
-  @colour_format ~r/[A-F0-9]{6}/
+  @path_format ~r/^\/[a-z0-9-_\+]*$/
+  @colour_format ~r/^[A-F0-9]{6}$/
 
   schema "pages" do
     belongs_to(:site, Site)
@@ -14,7 +15,7 @@ defmodule Affable.Sites.Page do
 
     field(:title, :string)
     field(:meta_description, :string, default: "")
-    field(:path, :string)
+    field(:path, :string, default: "/")
 
     field(:text, :string, default: "")
     field(:header_text, :string, default: "")
@@ -54,12 +55,15 @@ defmodule Affable.Sites.Page do
     |> cast_assoc(:items, with: &Item.changeset/2)
     |> validate_required([
       :title,
+      :path,
       :header_background_colour,
       :header_text_colour,
       :cta_background_colour,
       :cta_text_colour,
       :cta_text
     ])
+    |> unique_constraint(:path, name: :pages_site_id_path_index)
+    |> validate_format(:path, @path_format)
     |> validate_format(:cta_text_colour, @colour_format)
     |> validate_format(:cta_background_colour, @colour_format)
     |> validate_format(:header_background_colour, @colour_format)

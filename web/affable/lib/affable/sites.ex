@@ -3,8 +3,7 @@ defmodule Affable.Sites do
 
   import Ecto.Query, warn: false
 
-  alias Affable.Sites.Page
-  alias Affable.Sites.Raw
+  alias Affable.Sites.{Page, PageTitleUtils, Raw}
   alias Affable.Repo
   alias Affable.Accounts.User
   alias Affable.Assets
@@ -37,9 +36,14 @@ defmodule Affable.Sites do
 
   def add_page(site, user) do
     if user |> site_member?(site) do
+      page_title = PageTitleUtils.generate(site.pages |> Enum.map(& &1.title))
+
       {:ok, page} =
         site
-        |> Ecto.build_assoc(:pages, %{title: "Untitled page"})
+        |> Ecto.build_assoc(:pages, %{
+          title: page_title,
+          path: PageTitleUtils.to_path(page_title)
+        })
         |> Repo.insert()
 
       {:ok, page |> Repo.preload(page_preloads())}
