@@ -335,7 +335,7 @@ defmodule Affable.SitesTest do
         assert length(published_page["items"]) - 1 == length(page.items)
       end)
 
-      {:ok, %Site{pages: [page_after]}} = Sites.delete_item(site, page_before, "#{item.id}")
+      {:ok, %Page{} = page_after} = Sites.delete_item(site, page_before, "#{item.id}")
 
       positions_after =
         page_after.items
@@ -360,8 +360,7 @@ defmodule Affable.SitesTest do
         assert length(published_page["items"]) - 1 == length(page.items)
       end)
 
-      {:ok, %Site{pages: [page_after]}} =
-        Sites.delete_item(site, page_before, "#{List.last(items).id}")
+      {:ok, %Page{} = page_after} = Sites.delete_item(site, page_before, "#{List.last(items).id}")
 
       positions_after =
         page_after.items

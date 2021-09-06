@@ -25,52 +25,14 @@ defmodule AffableWeb.EditorLiveTest do
       }
     end
 
-    test "can set header properties for first page", %{conn: conn, site: site} do
+    test "can navigate back to site editing", %{conn: conn, site: site} do
       {:ok, view, _html} = live(conn, path(conn, site))
 
-      [%Page{id: first_page_id}] = (site |> Repo.preload(:pages)).pages
-
-      expect_broadcast(fn %Site{pages: [%Page{header_text: header_text} | _]} ->
-        assert "new header text" == header_text
-      end)
-
       view
-      |> element("#page-#{first_page_id}")
-      |> render_change(%{page: %{header_text: "new header text"}})
-
-      assert view |> has_element?("#publish")
-
-      expect_broadcast(fn %Site{pages: [%Page{header_text: header_text} | _]} ->
-        assert "new header text" == header_text
-      end)
-
-      view
-      |> element("#new-item-top")
+      |> element("#site-choice a")
       |> render_click()
 
-      conn = get(conn, path(conn, site))
-      assert conn.resp_body =~ "new header text"
-    end
-
-    test "invalid page attributes cause errors to be shown / cleared", %{conn: conn, site: site} do
-      {:ok, view, _html} = live(conn, path(conn, site))
-
-      [%Page{id: first_page_id}] = (site |> Repo.preload(:pages)).pages
-
-      view
-      |> element("#page-#{first_page_id}")
-      |> render_change(%{page: %{cta_background_colour: "FF"}})
-
-      refute view |> has_element?("#publish")
-      assert view |> has_element?(".invalid-feedback")
-
-      stub_broadcast()
-
-      view
-      |> element("#page-#{first_page_id}")
-      |> render_change(%{page: %{cta_background_colour: "FF0000"}})
-
-      refute view |> has_element?(".invalid-feedback")
+      assert view |> has_element?(~s{label[for="site_name"]})
     end
 
     test "can publish the changes", %{
@@ -191,6 +153,10 @@ defmodule AffableWeb.EditorLiveTest do
 
     defp render_first_item_change(view, items, attrs) do
       [first_item | other_items] = items
+
+      view
+      |> element("#page-choice-#{first_item.page_id} a")
+      |> render_click()
 
       render_change(view |> element("#page-#{first_item.page_id}"), %{
         "page" => %{

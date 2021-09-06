@@ -8,8 +8,8 @@ defmodule AffableWeb.PageItemsTest do
 
   setup :verify_on_exit!
 
-  defp path(conn, site) do
-    Routes.editor_path(conn, :edit, site.id)
+  defp path(conn, %Site{pages: [page | _]} = site) do
+    Routes.editor_path(conn, :edit, site.id, page.id)
   end
 
   setup context do

@@ -14,6 +14,27 @@ defmodule AffableWeb.EditorLive do
     {:ok, retrieve_state(user, socket, id)}
   end
 
+  def handle_params(
+        %{"id" => _id, "page_id" => page_id},
+        _path,
+        %{assigns: %{pages: pages}} = socket
+      ) do
+    {page, changeset} =
+      Enum.find(pages, fn {p, _cs} ->
+        "#{page_id}" == "#{p.id}"
+      end)
+
+    {:noreply, assign(socket, %{page: page, page_changeset: changeset})}
+  end
+
+  def handle_params(
+        %{"id" => _id},
+        _path,
+        socket
+      ) do
+    {:noreply, assign(socket, :page, nil)}
+  end
+
   def handle_info(
         {:updated_page, %Page{id: id} = updated_page},
         %{assigns: %{changeset: %{data: site}}} = socket
@@ -26,7 +47,9 @@ defmodule AffableWeb.EditorLive do
             page -> page
           end)
     }
-    |> reset_site(socket)
+    |> reset_site(
+      assign(socket, page: updated_page, page_changeset: Page.changeset(updated_page, %{}))
+    )
   end
 
   def handle_info(
@@ -37,7 +60,11 @@ defmodule AffableWeb.EditorLive do
       site
       | pages: Enum.filter(site.pages, &(&1.id != id))
     }
-    |> reset_site(socket)
+    |> reset_site(
+      socket
+      |> assign(page: nil, page_changeset: nil)
+      |> push_patch(to: Routes.editor_path(socket, :edit, site.id))
+    )
   end
 
   def handle_info(
@@ -47,11 +74,12 @@ defmodule AffableWeb.EditorLive do
     {:noreply,
      assign(
        socket,
-       :pages,
-       Enum.map(pages, fn
-         {%Page{id: ^id} = page, _} -> {page, erroneous_changeset}
-         pair -> pair
-       end)
+       pages:
+         Enum.map(pages, fn
+           {%Page{id: ^id} = page, _} -> {page, erroneous_changeset}
+           pair -> pair
+         end),
+       page_changeset: erroneous_changeset
      )}
   end
 
@@ -78,7 +106,7 @@ defmodule AffableWeb.EditorLive do
 
     %{site | pages: site.pages ++ [page]}
     |> Sites.with_pages()
-    |> reset_site(socket)
+    |> reset_site(push_patch(socket, to: Routes.editor_path(socket, :edit, site.id, page.id)))
   end
 
   def handle_event(

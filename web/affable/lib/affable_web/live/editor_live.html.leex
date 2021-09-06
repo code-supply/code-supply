@@ -5,55 +5,50 @@
   <a class="mx-auto shadow-md btn-2nd" target="affable-published" href="<%= @canonical_url %>">Visit</a>
 </div>
 
-<div class="relative w-full px-4 mt-1 overflow-y-scroll clear-left lg:z-0 h-body lg:w-1/3">
-<input id="site-choice"
-       type="radio"
-       class="sr-only tab"
-       name="page-choice"
-       value="site"
-       checked
-       />
-<label class="float-left cursor-pointer"
-       for="site-choice"
-       ><span class="block p-4"
-         >Site</span></label>
+<div class="fixed px-4 mt-1 overflow-y-scroll top-12 h-body lg:z-0 lg:w-1/3">
+  <nav id="page-nav" class="pt-4">
+    <ul>
+      <li id="site-choice"
+          class="rounded-t-md float-left border-b-2 <%= if @page, do: "border-gray-100", else: "border-gray-400" %>">
+        <%= live_patch "Site", to: Routes.editor_path(@socket, :edit, @changeset.data.id),
+      class: "focus:outline-none bg-gradient-to-t from-gray-100 to-gray-100 focus:to-white block p-3" %>
+      </li>
+      <%= for {page, _} <- @pages do %>
+        <li id="page-choice-<%= page.id %>"
+            class="rounded-t-md float-left border-b-2 <%= if @page == page, do: "border-gray-400", else: "border-gray-100" %>"
+            >
+            <%= live_patch page.title, to: Routes.editor_path(@socket, :edit, @changeset.data.id, page.id),
+          class: "focus:outline-none overflow-ellipsis overflow-hidden max-w-xs whitespace-nowrap bg-gradient-to-t from-gray-100 to-gray-100 focus:to-white block p-3" %>
+        </li>
+      <% end %>
+      <li class="float-left rounded-t-md">
+        <a id="new-page"
+           class="block p-3"
+           href="#"
+           phx-click="new-page"
+           >+ Add</a>
+      </li>
+    </ul>
+  </nav>
 
-<style>
-#site-choice:checked ~ #site {
-  display: block;
-}
-<%= for {page, _} <- @pages do %>
-#page-choice-<%= page.id %>:checked ~ #page-<%= page.id %> {
-  display: block;
-}
-<% end %>
-</style>
+<%= if @page do %>
 
-<%= for {page, _} <- @pages do %>
-<input id="page-choice-<%= page.id %>"
-       type="radio"
-       class="sr-only tab"
-       name="page-choice"
-       value="<%= page.id %>"
-       />
-<label class="float-left cursor-pointer"
-       for="page-choice-<%= page.id %>"
-       ><span class="block p-4"
-         ><%= page.title %></span></label>
-<% end %>
+<%= live_component(
+AffableWeb.PageComponent,
+id: @page.id,
+site: @changeset.data,
+user: @user,
+page: @page,
+changeset: @page_changeset,
+asset_pairs: @asset_pairs
+) %>
 
-<p class="absolute top-0 right-0 pb-4">
-  <a id="new-page"
-     class="btn-2nd"
-     href="#"
-     phx-click="new-page"
-     >Add page</a>
-</p>
+<% else %>
 
 <%= outer_form = form_for @changeset, "#", id: "site", csrf_token: false, phx_change: :save, phx_submit: :save,
-   class: "hidden clear-left" %>
+   class: "clear-left" %>
   <div>
-    <div class="py-4 border-t-2">
+    <div class="py-4">
       <h2 class="text-xl font-bold bg-gray-100">Site</h2>
 
       <div class="field">
@@ -125,18 +120,6 @@
     </ul>
   </div>
 </form>
-
-<%= for {page, changeset} <- @pages do %>
-  <%= live_component(
-        AffableWeb.PageComponent,
-        id: page.id,
-        site: @changeset.data,
-        user: @user,
-        page: page,
-        pages: @pages,
-        changeset: changeset,
-        asset_pairs: @asset_pairs
-  ) %>
 <% end %>
 
 </div>

@@ -8,22 +8,22 @@ defmodule Affable.Sites.Page do
   @colour_format ~r/[A-F0-9]{6}/
 
   schema "pages" do
-    belongs_to :site, Site
-    belongs_to :header_image, Asset
-    has_many :items, Item
+    belongs_to(:site, Site)
+    belongs_to(:header_image, Asset)
+    has_many(:items, Item)
 
-    field :title, :string
-    field :meta_description, :string, default: ""
-    field :path, :string
+    field(:title, :string)
+    field(:meta_description, :string, default: "")
+    field(:path, :string)
 
-    field :text, :string, default: ""
-    field :header_text, :string, default: ""
-    field :cta_text, :string, default: "Go"
+    field(:text, :string, default: "")
+    field(:header_text, :string, default: "")
+    field(:cta_text, :string, default: "Go")
 
-    field :cta_background_colour, :string, default: "059669"
-    field :cta_text_colour, :string, default: "FFFFFF"
-    field :header_background_colour, :string, default: "3B82F6"
-    field :header_text_colour, :string, default: "FFFFFF"
+    field(:cta_background_colour, :string, default: "059669")
+    field(:cta_text_colour, :string, default: "FFFFFF")
+    field(:header_background_colour, :string, default: "3B82F6")
+    field(:header_text_colour, :string, default: "FFFFFF")
 
     timestamps()
   end
@@ -40,6 +40,7 @@ defmodule Affable.Sites.Page do
       [
         :title,
         :meta_description,
+        :path,
         :header_image_id,
         :header_text,
         :header_background_colour,

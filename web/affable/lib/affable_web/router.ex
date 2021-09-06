@@ -70,6 +70,7 @@ defmodule AffableWeb.Router do
 
     live("/sites", SitesLive, :index)
     live("/sites/:id/edit", EditorLive, :edit)
+    live("/sites/:id/pages/:page_id/edit", EditorLive, :edit)
     live("/assets", AssetsLive, :index)
     live("/domains", DomainsLive, :index)
     get("/users/settings", UserSettingsController, :edit)

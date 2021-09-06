@@ -735,37 +735,42 @@ defmodule Affable.Sites do
       |> delete_item_multi(item_id_s)
       |> Repo.transaction()
 
-    {
-      :ok,
-      %{
-        site
-        | pages:
-            for p <- site.pages do
-              if p.id == page.id do
-                %{
-                  p
-                  | items:
-                      p.items
-                      |> Enum.reverse()
-                      |> Enum.reduce([], fn item, acc ->
-                        cond do
-                          item.id == deleted_item.id ->
-                            acc
+    new_page = remove_item_from_page(page, deleted_item)
 
-                          item.position > deleted_item.position ->
-                            [Map.update!(item, :position, &(&1 - 1)) | acc]
-
-                          true ->
-                            [item | acc]
-                        end
-                      end)
-                }
-              else
-                p
-              end
+    %{
+      site
+      | pages:
+          for p <- site.pages do
+            if p.id == page.id do
+              new_page
+            else
+              p
             end
-      }
-      |> broadcast()
+          end
+    }
+    |> broadcast()
+
+    {:ok, new_page}
+  end
+
+  defp remove_item_from_page(page, deleted_item) do
+    %{
+      page
+      | items:
+          page.items
+          |> Enum.reverse()
+          |> Enum.reduce([], fn item, acc ->
+            cond do
+              item.id == deleted_item.id ->
+                acc
+
+              item.position > deleted_item.position ->
+                [Map.update!(item, :position, &(&1 - 1)) | acc]
+
+              true ->
+                [item | acc]
+            end
+          end)
     }
   end
 

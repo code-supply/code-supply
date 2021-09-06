@@ -80,11 +80,11 @@ defmodule AffableWeb.PageComponent do
         %{"id" => item_id},
         %{assigns: %{site: site, user: user, page: page}} = socket
       ) do
-    {:ok, site} =
+    {:ok, page} =
       Sites.get_site!(user, site.id)
       |> Sites.delete_item(page, item_id)
 
-    send(self(), {:updated_site, site})
+    send(self(), {:updated_page, page})
 
     {:noreply, socket}
   end

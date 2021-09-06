@@ -49,12 +49,6 @@ body {
 a:hover {
     @apply text-blue-600;
 }
-a:focus {
-    @apply outline-none ring rounded
-}
-a.phx-click-loading {
-    @apply animate-ping;
-}
 
 h1 {
     @apply mb-6 text-5xl leading-relaxed;
