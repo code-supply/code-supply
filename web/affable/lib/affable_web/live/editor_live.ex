@@ -17,22 +17,46 @@ defmodule AffableWeb.EditorLive do
   def handle_params(
         %{"id" => _id, "page_id" => page_id},
         _path,
-        %{assigns: %{pages: pages}} = socket
+        %{assigns: %{pages: pages, preview_url: preview_url}} = socket
       ) do
     {page, changeset} =
       Enum.find(pages, fn {p, _cs} ->
         "#{page_id}" == "#{p.id}"
       end)
 
-    {:noreply, assign(socket, %{page: page, page_changeset: changeset})}
+    uri = URI.parse(preview_url)
+
+    preview_path =
+      case page.path do
+        "/" ->
+          "/preview"
+
+        p ->
+          "/preview/#{p}"
+      end
+
+    {:noreply,
+     assign(
+       socket,
+       page: page,
+       page_changeset: changeset,
+       preview_url: uri |> URI.merge(preview_path) |> URI.to_string()
+     )}
   end
 
   def handle_params(
         %{"id" => _id},
         _path,
-        socket
+        %{assigns: %{preview_url: preview_url}} = socket
       ) do
-    {:noreply, assign(socket, :page, nil)}
+    uri = URI.parse(preview_url)
+
+    {:noreply,
+     assign(
+       socket,
+       page: nil,
+       preview_url: uri |> URI.merge("/preview") |> URI.to_string()
+     )}
   end
 
   def handle_info(

@@ -43,9 +43,17 @@ defmodule AffableWeb.PageManagementTest do
     assert view
            |> has_element?("#page-#{id}")
 
+    assert view
+           |> element("iframe")
+           |> render() =~ ~r{src=".*affable\.app/preview/untitled-page"}
+
     view
     |> element("#site-choice a")
     |> render_click()
+
+    assert view
+           |> element("iframe")
+           |> render() =~ ~r{src=".*affable\.app/preview"}
 
     view
     |> element("#page-choice-#{id} a")
@@ -53,6 +61,10 @@ defmodule AffableWeb.PageManagementTest do
 
     assert view
            |> has_element?("#page-#{id}")
+
+    assert view
+           |> element("iframe")
+           |> render() =~ ~r{src=".*affable\.app/preview/untitled-page"}
 
     view
     |> element("#delete-page-#{id}")
