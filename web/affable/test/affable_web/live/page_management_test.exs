@@ -32,6 +32,8 @@ defmodule AffableWeb.PageManagementTest do
         Routes.editor_path(conn, :edit, site.id)
       )
 
+    stub_broadcast()
+
     view
     |> element("#new-page")
     |> render_click()

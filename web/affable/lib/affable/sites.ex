@@ -45,6 +45,7 @@ defmodule Affable.Sites do
           path: PageTitleUtils.to_path(page_title)
         })
         |> Repo.insert()
+        |> broadcast()
 
       {:ok, page |> Repo.preload(page_preloads())}
     else
@@ -56,7 +57,7 @@ defmodule Affable.Sites do
     %Page{} = page = Repo.get(Page, id)
 
     if user |> site_member?(page) do
-      page |> Repo.delete()
+      page |> Repo.delete() |> broadcast()
     end
   end
 

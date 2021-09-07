@@ -18,6 +18,7 @@ defmodule Affable.SiteUpdaterTest do
   test "can broadcast full site on demand", %{broadcast_1: broadcast} do
     user = user_fixture()
     site = site_fixture(user)
+    stub_broadcast()
     {:ok, %Page{}} = Sites.add_page(site, user)
     site = Sites.get_site!(site.id)
     site = %{site | id: 1}

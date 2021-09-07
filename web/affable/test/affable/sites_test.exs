@@ -16,12 +16,15 @@ defmodule Affable.SitesTest do
   setup :verify_on_exit!
 
   describe "pages" do
-    test "adding a page requires correct user" do
+    test "adding a page requires correct user, broadcasts result" do
       user = user_fixture()
       site = site_fixture(user)
 
       assert {:error, :unauthorized} = Sites.add_page(site, wrong_user())
+
+      expect_broadcast(fn %Site{pages: [_ | [%Page{title: "Untitled page"}]]} -> nil end)
       assert {:ok, %Page{title: "Untitled page"}} = Sites.add_page(site, user)
+
       assert [%Page{} | [%Page{title: "Untitled page"}]] = Sites.get_site!(site.id).pages
     end
 
@@ -44,6 +47,13 @@ defmodule Affable.SitesTest do
                Sites.update_page(page, %{title: "my new title"}, wrong_user())
 
       assert [%Page{title: ^old_title}] = Sites.get_site!(site.id).pages
+    end
+
+    test "deleting a page broadcasts the result" do
+      user = user_fixture()
+      %Site{pages: [page]} = site_fixture(user)
+      expect_broadcast(fn %Site{pages: []} -> nil end)
+      Sites.delete_page(page.id, user)
     end
 
     test "raw representation includes path" do
