@@ -1,8 +1,6 @@
 defmodule AffiliateWeb.PageLive do
   use AffiliateWeb, :live_view
 
-  alias Affiliate.SiteState
-
   import AffiliateWeb.PageShared
 
   @key :published
@@ -13,18 +11,19 @@ defmodule AffiliateWeb.PageLive do
   end
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(%{"path" => path_parts}, _session, socket) do
     if connected?(socket) do
       Phoenix.PubSub.subscribe(Affiliate.PubSub, "updates")
     end
 
-    %{@key => site} = SiteState.get()
-
-    {:ok, assign_site(socket, site)}
+    {:ok,
+     socket
+     |> assign_path(path_parts)
+     |> assign_state(@key, Affiliate.SiteState.get())}
   end
 
   @impl true
-  def handle_info(%{@key => site}, socket) do
-    {:noreply, assign_site(socket, site)}
+  def handle_info(state, socket) do
+    {:noreply, socket |> assign_state(@key, state)}
   end
 end

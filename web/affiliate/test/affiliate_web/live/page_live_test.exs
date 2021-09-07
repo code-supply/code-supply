@@ -25,6 +25,15 @@ defmodule AffiliateWeb.PageLiveTest do
     assert html_response(conn, 200)
   end
 
+  test "serves 404 when state present but path doesn't match", %{conn: conn} do
+    incoming_payload = fixture("site_update_message")
+    SiteState.store(incoming_payload)
+
+    assert_raise AffiliateWeb.PathNotStoredError, fn ->
+      get(conn, "/a-made-up-path")
+    end
+  end
+
   test "serves content", %{conn: conn} do
     incoming_payload = fixture("site_update_message")
     site = incoming_payload["published"]
@@ -36,6 +45,35 @@ defmodule AffiliateWeb.PageLiveTest do
     SiteState.store(incoming_payload)
 
     assert render(view) =~ site["name"]
+  end
+
+  test "serves pages at different paths", %{conn: conn} do
+    incoming_payload = fixture("site_update_message")
+    site = incoming_payload["published"]
+    [first_page] = site["pages"]
+
+    incoming_payload =
+      incoming_payload
+      |> update_in(
+        ["published", "pages"],
+        &(&1 ++
+            [
+              first_page
+              |> Map.put("path", "/another-page")
+              |> Map.put("title", "The second page")
+              |> Map.put("header_text", "some header text")
+            ])
+      )
+
+    {:ok, view, html} = live(conn, "/another-page")
+
+    refute "The second page" == page_title(view)
+    refute html =~ "some header text"
+
+    SiteState.store(incoming_payload)
+
+    assert render(view) =~ "some header text"
+    assert "The second page" == page_title(view)
   end
 
   test "serves preview", %{conn: conn} do

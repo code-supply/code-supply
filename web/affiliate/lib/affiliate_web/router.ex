@@ -13,24 +13,6 @@ defmodule AffiliateWeb.Router do
     plug(:accepts, ["json"])
   end
 
-  scope "/", AffiliateWeb do
-    pipe_through([:insecure_browser, :put_secure_browser_headers])
-
-    live("/", PageLive, :index)
-  end
-
-  scope "/", AffiliateWeb do
-    pipe_through(:api)
-
-    put("/", UpdatesController, :update)
-  end
-
-  scope "/preview", AffiliateWeb do
-    pipe_through(:insecure_browser)
-
-    live("/", PreviewLive, :index)
-  end
-
   # Other scopes may use custom stacks.
   # scope "/api", AffiliateWeb do
   #   pipe_through :api
@@ -50,5 +32,23 @@ defmodule AffiliateWeb.Router do
       pipe_through(:insecure_browser)
       live_dashboard("/dashboard", metrics: AffiliateWeb.Telemetry)
     end
+  end
+
+  scope "/preview", AffiliateWeb do
+    pipe_through(:insecure_browser)
+
+    live("/*path", PreviewLive, :index)
+  end
+
+  scope "/", AffiliateWeb do
+    pipe_through(:api)
+
+    put("/", UpdatesController, :update)
+  end
+
+  scope "/", AffiliateWeb do
+    pipe_through([:insecure_browser, :put_secure_browser_headers])
+
+    live("/*path", PageLive, :index)
   end
 end
