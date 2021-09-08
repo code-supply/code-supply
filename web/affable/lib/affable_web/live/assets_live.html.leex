@@ -41,7 +41,7 @@
     <div class="px-6 py-2 mt-4 text-black bg-white rounded-md">
       <div class="mt-6">
         <%= live_file_input @uploads.asset,
-            class: "shadow-sm bg-blue-200 #{@uploads.asset.entries |> Enum.any? && "invisible absolute top-0"}" %>
+            class: "shadow-sm #{@uploads.asset.entries |> Enum.any? && "invisible absolute top-0"}" %>
       </div>
 
       <%= if @uploads.asset.entries |> Enum.empty? do %>
