@@ -1,10 +1,11 @@
 defmodule Affable.Sites.PageTitleUtils do
   @default "Untitled page"
+  @default_path "/untitled-page"
 
-  def generate(existing_titles) do
-    case existing_titles
-         |> Enum.sort_by(fn title ->
-           case untitled_number(title) do
+  def generate(paths) do
+    case paths
+         |> Enum.sort_by(fn path ->
+           case untitled_number(path) do
              {:ok, number} ->
                number
 
@@ -13,15 +14,15 @@ defmodule Affable.Sites.PageTitleUtils do
            end
          end)
          |> Enum.reverse()
-         |> Enum.find(&(&1 =~ @default)) do
+         |> Enum.find(&String.starts_with?(&1, @default_path)) do
       nil ->
         @default
 
-      @default ->
+      @default_path ->
         "#{@default} 2"
 
-      title ->
-        case untitled_number(title) do
+      path ->
+        case untitled_number(path) do
           {:ok, number} ->
             "#{@default} #{number + 1}"
 
@@ -35,8 +36,8 @@ defmodule Affable.Sites.PageTitleUtils do
     "/" <> Regex.replace(~r/[^a-zA-Z0-9]/, String.downcase(title), "-")
   end
 
-  defp untitled_number(title) do
-    case Regex.named_captures(~r/#{@default} (?<number>\d+)/, title) do
+  defp untitled_number(path) do
+    case Regex.named_captures(~r/#{@default_path}-(?<number>\d+)/, path) do
       %{"number" => number} ->
         {:ok, String.to_integer(number)}
 
