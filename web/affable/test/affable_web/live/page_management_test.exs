@@ -77,6 +77,20 @@ defmodule AffableWeb.PageManagementTest do
            |> has_element?("#page-#{id}")
   end
 
+  test "changing the path updates the iframe, to avoid 404", %{conn: conn, site: site, page: page} do
+    {:ok, view, _html} = live(conn, path(conn, site))
+
+    stub_broadcast()
+
+    view
+    |> element("#page-#{page.id}")
+    |> render_change(%{page: %{path: "/something-else"}})
+
+    assert view
+           |> element("iframe")
+           |> render() =~ ~r{src=".*affable\.app/preview/something-else"}
+  end
+
   test "can set header properties", %{conn: conn, site: site, page: page} do
     {:ok, view, _html} = live(conn, path(conn, site))
 

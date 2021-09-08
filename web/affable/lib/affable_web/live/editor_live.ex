@@ -24,23 +24,12 @@ defmodule AffableWeb.EditorLive do
         "#{page_id}" == "#{p.id}"
       end)
 
-    uri = URI.parse(preview_url)
-
-    preview_path =
-      case page.path do
-        "/" ->
-          "/preview"
-
-        p ->
-          "/preview/#{p}"
-      end
-
     {:noreply,
-     assign(
-       socket,
+     socket
+     |> assign_preview_url(preview_url, page.path)
+     |> assign(
        page: page,
-       page_changeset: changeset,
-       preview_url: uri |> URI.merge(preview_path) |> URI.to_string()
+       page_changeset: changeset
      )}
   end
 
@@ -61,7 +50,7 @@ defmodule AffableWeb.EditorLive do
 
   def handle_info(
         {:updated_page, %Page{id: id} = updated_page},
-        %{assigns: %{changeset: %{data: site}}} = socket
+        %{assigns: %{preview_url: preview_url, changeset: %{data: site}}} = socket
       ) do
     %{
       site
@@ -72,7 +61,9 @@ defmodule AffableWeb.EditorLive do
           end)
     }
     |> reset_site(
-      assign(socket, page: updated_page, page_changeset: Page.changeset(updated_page, %{}))
+      socket
+      |> assign_preview_url(preview_url, updated_page.path)
+      |> assign(page: updated_page, page_changeset: Page.changeset(updated_page, %{}))
     )
   end
 
@@ -210,5 +201,20 @@ defmodule AffableWeb.EditorLive do
 
   defp reset_site({:error, changeset}, socket) do
     {:noreply, assign(socket, changeset: changeset)}
+  end
+
+  defp assign_preview_url(socket, preview_url, page_path) do
+    uri = URI.parse(preview_url)
+
+    preview_path =
+      case page_path do
+        "/" ->
+          "/preview"
+
+        p ->
+          "/preview/#{p}"
+      end
+
+    assign(socket, preview_url: uri |> URI.merge(preview_path) |> URI.to_string())
   end
 end
