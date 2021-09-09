@@ -5,33 +5,20 @@ defmodule AffiliateWeb.PageShared do
         socket,
         site,
         %{
-          "header_text" => header_text,
-          "header_image_url" => header_image_url,
-          "text" => text,
-          "cta_text" => cta_text,
           "cta_background_colour" => cta_background_colour,
           "cta_text_colour" => cta_text_colour,
+          "cta_text" => cta_text,
           "header_background_colour" => header_background_colour,
+          "header_image_url" => header_image_url,
           "header_text_colour" => header_text_colour,
-          "title" => title,
-          "items" => items
+          "header_text" => header_text,
+          "items" => items,
+          "meta_description" => meta_description,
+          "text" => text,
+          "title" => title
         }
       ) do
     assign(socket,
-      waiting: false,
-      site_name: site["name"],
-      page_title: title,
-      custom_head_html: site["custom_head_html"],
-      header_image_url: header_image_url,
-      text: text,
-      header_text: header_text,
-      logo_url: site["site_logo_url"],
-      cta_text: cta_text,
-      cta_background_colour: cta_background_colour,
-      cta_text_colour: cta_text_colour,
-      header_background_colour: header_background_colour,
-      header_text_colour: header_text_colour,
-      items: items,
       attributes:
         case items do
           [%{"attributes" => attrs} | _] ->
@@ -39,7 +26,22 @@ defmodule AffiliateWeb.PageShared do
 
           _ ->
             []
-        end
+        end,
+      cta_background_colour: cta_background_colour,
+      cta_text_colour: cta_text_colour,
+      cta_text: cta_text,
+      custom_head_html: site["custom_head_html"],
+      header_background_colour: header_background_colour,
+      header_image_url: header_image_url,
+      header_text_colour: header_text_colour,
+      header_text: header_text,
+      items: items,
+      logo_url: site["site_logo_url"],
+      meta_description: meta_description,
+      page_title: title,
+      site_name: site["name"],
+      text: text,
+      waiting: false
     )
   end
 
