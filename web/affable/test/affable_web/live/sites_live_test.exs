@@ -56,7 +56,7 @@ defmodule AffableWeb.SitesLiveTest do
 
     assert view
            |> form("#new-site", site: %{name: " "})
-           |> render_submit() =~ "can&apos;t be blank"
+           |> render_submit() =~ "can&#39;t be blank"
   end
 
   test "can delete sites", %{conn: conn, user: %User{sites: [site]}} do
