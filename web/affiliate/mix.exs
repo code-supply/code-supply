@@ -33,14 +33,14 @@ defmodule Affiliate.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.7"},
-      {:phoenix_live_view, "~> 0.15.4"},
-      {:floki, ">= 0.0.0", only: :test},
+      {:phoenix, "~> 1.5.12"},
+      {:phoenix_live_view, "~> 0.16.3"},
+      {:floki, ">= 0.31.0", only: :test},
       {:hammox, "~> 0.3", only: [:test]},
       {:httpoison, "~> 1.7"},
-      {:phoenix_html, "~> 2.11"},
+      {:phoenix_html, "~> 3.0.0"},
       {:phoenix_live_reload, "~> 1.3", only: :dev},
-      {:phoenix_live_dashboard, "~> 0.4.0"},
+      {:phoenix_live_dashboard, "~> 0.5.1"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:gettext, "~> 0.11"},
