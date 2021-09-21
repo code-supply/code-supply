@@ -69,7 +69,8 @@ config :affable, AffableWeb.Endpoint,
       ~r"priv/gettext/.*(po)$",
       ~r"lib/affable_web/(live|views)/.*(ex)$",
       ~r"lib/affable_web/templates/.*(eex)$"
-    ]
+    ],
+    debounce: 150
   ]
 
 # Do not include metadata nor timestamps in development logs
