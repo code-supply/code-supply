@@ -212,7 +212,7 @@ defmodule AffableWeb.EditorLive do
           "/preview"
 
         p ->
-          "/preview/#{p}"
+          "/preview#{p}"
       end
 
     assign(socket, preview_url: uri |> URI.merge(preview_path) |> URI.to_string())
