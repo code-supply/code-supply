@@ -1,10 +1,11 @@
-<%= f = form_for @changeset, "#",
-id: "page-#{@page.id}",
-class: "clear-left",
-csrf_token: false,
-phx_target: @myself,
-phx_change: :save,
-phx_submit: :save %>
+<div>
+<.form let={f} for={@changeset}
+id={"page-#{@page.id}"}
+class="clear-left"
+csrf_token={false}
+phx_target={@myself}
+phx_change={:save}
+phx_submit={:save}>
   <div class="py-4">
     <h2 class="text-xl font-bold bg-gray-100">General</h2>
 
@@ -95,43 +96,43 @@ phx_submit: :save %>
        class="btn sm"
        phx-hook="Scroll"
        phx-click="new-item"
-       phx-target="<%= @myself %>"
+       phx-target={@myself}
        >New Item</a>
   </div>
 
   <ol class="py-8 clear-both">
     <%= for inner_form <- inputs_for(f, :items) do %>
-      <li id="item-<%= inner_form.data.id %>" class="mb-4 item">
+      <li id={"item-#{inner_form.data.id}"} class="mb-4 item">
         <div class="flex">
           <p class="flex-1 text-4xl font-bold number"><%= inner_form.data.position %></p>
-          <a id="delete-item-<%= inner_form.data.id %>"
+          <a id={"delete-item-#{inner_form.data.id}"}
              href="#"
              class="flex-none leading-10"
              phx-click="delete-item"
-             phx-value-id="<%= inner_form.data.id %>"
-             phx-target="<%= @myself %>"
+             phx-value-id={inner_form.data.id}
+             phx-target={@myself}
              >Delete
           </a>
-          <a id="demote-<%= inner_form.data.id %>"
+            <a id={"demote-#{inner_form.data.id}"}
              href="#"
              class="flex-none ml-6 demote leading-10"
              phx-click="demote"
-             phx-value-id="<%= inner_form.data.id %>"
-             phx-target="<%= @myself %>"
+             phx-value-id={inner_form.data.id}
+             phx-target={@myself}
              >Move Down
           </a>
-          <a id="promote-<%= inner_form.data.id %>"
+            <a id={"promote-#{inner_form.data.id}"}
              href="#"
              class="flex-none ml-6 promote leading-10"
              phx-click="promote"
-             phx-value-id="<%= inner_form.data.id %>"
-             phx-target="<%= @myself %>"
+             phx-value-id={inner_form.data.id}
+             phx-target={@myself}
              >Move Up
           </a>
         </div>
 
         <div class="w-1/3">
-          <img src="<%= inner_form.data.image |> to_imgproxy_url() %>" alt=""/>
+          <img src={to_imgproxy_url(inner_form.data.image)} alt=""/>
         </div>
 
         <%= hidden_inputs_for inner_form %>
@@ -172,12 +173,13 @@ phx_submit: :save %>
   </ol>
 
   <p class="pb-48">
-  <a id="delete-page-<%= @page.id %>"
+  <a id={"delete-page-#{@page.id}"}
      class="btn"
-     phx-target="<%= @myself %>"
+     phx-target={@myself}
      phx-click="delete"
-     phx-value-id="<%= @page.id %>"
+     phx-value-id={@page.id}
      href="#"
      >Delete page</a>
   </p>
-</form>
+</.form>
+</div>
