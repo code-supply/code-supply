@@ -1,4 +1,4 @@
-FROM elixir:1.11.2-alpine@sha256:01aa42ec636b857222938db072b0107af941f0ab5ead26de4047e6b79485cf69 AS build
+FROM elixir:1.12.3-alpine@sha256:138f5642181e758028de51143d969af64feaceb01375dd6516d56aa562152aea AS build
 
 RUN apk add --no-cache build-base npm git python2
 
@@ -28,7 +28,7 @@ RUN mix phx.digest
 
 RUN mix do compile, release
 
-FROM alpine@sha256:a15790640a6690aa1730c38cf0a440e2aa44aaca9b0e8931a9f2b0d7cc90fd65 AS app
+FROM alpine:3.13.6@sha256:e15947432b813e8ffa90165da919953e2ce850bef511a0ad1287d7cb86de84b5 AS app
 RUN apk add --no-cache openssl ncurses-libs lsof
 
 WORKDIR /app
