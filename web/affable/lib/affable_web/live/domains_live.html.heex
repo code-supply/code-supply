@@ -1,8 +1,11 @@
 <div class="container">
   <h1>My Domains</h1>
 
-  <%= f = form_for @changeset, "#", id: "new-domain", phx_change: :validate, phx_submit: :create,
-      class: "xl:w-1/2 w-full" %>
+  <.form let={f} for={@changeset}
+     id="new-domain"
+     phx_change="validate"
+     phx_submit="create"
+     class="w-full xl:w-1/2">
   <div class="block px-6 pt-5 pb-4 overflow-hidden bg-white rounded shadow-lg" href="#">
     <h2 class="text-3xl align-middle">
       Add Domain
@@ -23,20 +26,20 @@
       <%= submit "Add", class: "block w-full px-2 py-2 mt-6 text-lg font-bold text-center text-white bg-gradient-to-br from-blue-400 to-blue-600 rounded-md" %>
     </div>
   </div>
-  </form>
+  </.form>
 
   <ul class="resources grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     <%= for domain <- @domains do %>
       <li>
         <div class="h-full p-4 my-5 overflow-hidden border-8 border-white rounded shadow-lg">
-          <h2><a class="block mb-4 text-2xl truncate" href="//<%= domain.name %>/"><%= domain.name %></a></h2>
-          <p><a class="truncate" href="<%= Routes.editor_path(@socket, :edit, domain.site_id) %>"><%= domain.site.name %></a></p>
+          <h2><a class="block mb-4 text-2xl truncate" href={"//#{domain.name}/"}><%= domain.name %></a></h2>
+          <p><a class="truncate" href={Routes.editor_path(@socket, :edit, domain.site_id)}><%= domain.site.name %></a></p>
           <ul class="float-right cta">
               <li class="float-left">
                 <%= if Domains.affable_domain?(domain) do %>
                   Permanent
                 <% else %>
-                  <a id="delete-domain-<%= domain.id %>" href="#" phx-click="delete" phx-value-id="<%= domain.id %>">Delete</a>
+                  <a id={"delete-domain-#{domain.id}"} href="#" phx-click="delete" phx-value-id={domain.id}>Delete</a>
                 <% end %>
               </li>
           </ul>
