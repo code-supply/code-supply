@@ -2,20 +2,20 @@
   <%= unless @published do %>
     <button id="publish" phx-click="publish" class="m-auto mb-4 shadow-md btn">Publish</button>
   <% end %>
-  <a class="mx-auto shadow-md btn-2nd" target="affable-published" href="<%= @canonical_url %>">Visit</a>
+  <a class="mx-auto shadow-md btn-2nd" target="affable-published" href={@canonical_url}>Visit</a>
 </div>
 
 <div class="fixed px-4 mt-1 overflow-y-scroll top-12 h-body lg:z-0 lg:w-1/3">
   <nav id="page-nav" class="pt-4">
     <ul>
       <li id="site-choice"
-          class="rounded-t-md float-left border-b-2 <%= if @page, do: "border-gray-100", else: "border-gray-400" %>">
+          class={"rounded-t-md float-left border-b-2 " <> if @page, do: "border-gray-100", else: "border-gray-400"}>
         <%= live_patch "Site", to: Routes.editor_path(@socket, :edit, @changeset.data.id),
       class: "focus:outline-none bg-gradient-to-t from-gray-100 to-gray-100 focus:to-white block p-3" %>
       </li>
       <%= for {page, _} <- @pages do %>
-        <li id="page-choice-<%= page.id %>"
-            class="rounded-t-md float-left border-b-2 <%= if @page == page, do: "border-gray-400", else: "border-gray-100" %>"
+        <li id={"page-choice-#{page.id}"}
+            class={"rounded-t-md float-left border-b-2 " <> if @page == page, do: "border-gray-400", else: "border-gray-100"}
             >
             <%= live_patch page.title, to: Routes.editor_path(@socket, :edit, @changeset.data.id, page.id),
           class: "focus:outline-none overflow-ellipsis overflow-hidden max-w-xs whitespace-nowrap bg-gradient-to-t from-gray-100 to-gray-100 focus:to-white block p-3" %>
@@ -45,8 +45,14 @@ asset_pairs: @asset_pairs
 
 <% else %>
 
-<%= outer_form = form_for @changeset, "#", id: "site", csrf_token: false, phx_change: :save, phx_submit: :save,
-   class: "clear-left" %>
+<.form let={outer_form}
+       for={@changeset}
+       url="#"
+       id="site"
+       csrf_token={false}
+       phx_change={:save}
+       phx_submit={:save}
+       class="clear-left">
   <div>
     <div class="py-4">
       <h2 class="text-xl font-bold bg-gray-100">Site</h2>
@@ -105,11 +111,11 @@ asset_pairs: @asset_pairs
             </div>
 
             <div class="flex-none w-1/12 pl-2">
-              <a id="delete-attribute-definition-<%= f.data.id %>"
+              <a id={"delete-attribute-definition-#{f.data.id}"}
                  href="#"
                  class="block w-8 h-12 m-auto bg-center bg-no-repeat bg-contain trash"
                  phx-click="delete-attribute-definition"
-                 phx-value-id="<%= f.data.id %>"
+                 phx-value-id={f.data.id}
                  >
               </a>
             </div>
@@ -119,9 +125,9 @@ asset_pairs: @asset_pairs
       <% end %>
     </ul>
   </div>
-</form>
+</.form>
 <% end %>
 
 </div>
 
-<iframe class="fixed hidden w-2/3 mt-1 overflow-scroll lg:block h-body top-12 left-1/3" src="<%= @preview_url %>">
+<iframe class="fixed hidden w-2/3 mt-1 overflow-scroll lg:block h-body top-12 left-1/3" src={@preview_url}/>
