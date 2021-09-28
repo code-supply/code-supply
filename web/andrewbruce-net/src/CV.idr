@@ -18,7 +18,7 @@ cv = page "Andrew Bruce: CV" "Andrew Bruce" $ do
       "DevOps Consultant (contract)"
       "Boclips"
       "London"
-      (From (July 2018) Present)
+      (From (July 2018) (To $ September 2021))
       """Modernising how Boclips deploys and runs software in the cloud, migrating from AWS EC2 deployments to Kubernetes on GKE.
 
 Introducing unified monitoring and logging systems and practices. Improving security of infrastructure, including credential management. Knowledge sharing through pair programming."""
