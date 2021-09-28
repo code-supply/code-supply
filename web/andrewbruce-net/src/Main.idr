@@ -32,6 +32,7 @@ generate = show
 static : List (String, String) -> Routes
 static ((path, body) :: xs) =
   MkRoute Get path End (serveBody body) :: static xs
+static xs = []
 
 handler : Routes -> Request -> Response
 handler routes req = fromMaybe notFound (handle req routes)
