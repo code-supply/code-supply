@@ -542,6 +542,6 @@ defmodule Affable.SitesTest do
   end
 
   defp wrong_user do
-    %User{id: 99999}
+    %User{id: 99_999}
   end
 end

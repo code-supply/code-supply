@@ -4,16 +4,7 @@ defmodule Affable.Sites.PageTitleUtils do
 
   def generate(paths) do
     case paths
-         |> Enum.sort_by(fn path ->
-           case untitled_number(path) do
-             {:ok, number} ->
-               number
-
-             {:error, _} ->
-               0
-           end
-         end)
-         |> Enum.reverse()
+         |> sort()
          |> Enum.find(&String.starts_with?(&1, @default_path)) do
       nil ->
         @default
@@ -34,6 +25,18 @@ defmodule Affable.Sites.PageTitleUtils do
 
   def to_path(title) do
     "/" <> Regex.replace(~r/[^a-zA-Z0-9]/, String.downcase(title), "-")
+  end
+
+  defp sort(paths) do
+    Enum.sort_by(paths, fn path ->
+      case untitled_number(path) do
+        {:ok, number} ->
+          -number
+
+        {:error, _} ->
+          0
+      end
+    end)
   end
 
   defp untitled_number(path) do
