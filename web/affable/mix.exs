@@ -63,7 +63,8 @@ defmodule Affable.MixProject do
       {:libcluster, "~> 3.2"},
       {:goth, "~> 1.3-rc"},
       {:hackney, "~> 1.17"},
-      {:esbuild, "~> 0.2", runtime: Mix.env() == :dev}
+      {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
     ]
   end
 
