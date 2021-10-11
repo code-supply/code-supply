@@ -23,9 +23,9 @@
   <ul class="resources grid grid-cols-1 sm:grid-cols-3 gap-4">
     <%= for site <- @sites do %>
       <li class={status(site)}>
-        <div class="relative items-start h-full p-4 my-5 overflow-hidden border-8 border-white rounded shadow-lg grid grid-rows-4">
+        <div class="relative items-start h-full p-4 my-5 overflow-hidden border-8 border-white rounded shadow-lg grid grid-rows-auto">
           <h2 class="text-2xl"><%= site.name %></h2>
-          <div class="domains pending-hidden row-span-2">
+          <div class="domains pending-hidden">
             <ul>
               <%= for domain <- site.domains do %>
               <li><a target="_blank" rel="noopener" href={"https://#{domain.name}/"}><%= domain.name %></a></li>
