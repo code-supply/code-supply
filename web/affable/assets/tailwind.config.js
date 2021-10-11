@@ -1,4 +1,5 @@
 module.exports = {
+  mode: "jit",
   purge: {
     content: [
       "../lib/affable_web/templates/*/*.html.*",
