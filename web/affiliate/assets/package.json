@@ -3,7 +3,7 @@
   "description": " ",
   "license": "MIT",
   "scripts": {
-    "deploy": "NODE_ENV=production npx postcss css/app.css -o ../priv/static/assets/app.css"
+    "deploy": "NODE_ENV=production npx postcss css/app.css -o build/app.css"
   },
   "dependencies": {
     "phoenix": "file:../deps/phoenix",

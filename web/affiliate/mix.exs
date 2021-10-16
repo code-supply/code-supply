@@ -64,6 +64,8 @@ defmodule Affiliate.MixProject do
       "assets.deploy": [
         "cmd --cd assets npm run deploy",
         "esbuild default --minify",
+        "esbuild css --minify",
+        "cmd cp -a assets/static/* priv/static/",
         "phx.digest"
       ]
     ]
