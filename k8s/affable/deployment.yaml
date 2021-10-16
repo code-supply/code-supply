@@ -37,8 +37,8 @@ spec:
           value: name
 
         readinessProbe:
-          initialDelaySeconds: 20
-          tcpSocket:
+          httpGet:
+            path: /
             port: http
 
         resources:

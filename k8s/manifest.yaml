@@ -46802,8 +46802,8 @@ spec:
         - containerPort: 4369
           name: tcp-epmd
         readinessProbe:
-          initialDelaySeconds: 20
-          tcpSocket:
+          httpGet:
+            path: /
             port: http
         resources:
           limits:
