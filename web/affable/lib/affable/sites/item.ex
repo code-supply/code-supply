@@ -6,7 +6,7 @@ defmodule Affable.Sites.Item do
   alias Affable.Sites.{Attribute, Page}
 
   schema "items" do
-    field :description, :string
+    field :description, :string, default: ""
     field :name, :string
     field :position, :integer
     field :url, :string
