@@ -22,7 +22,7 @@
 }
 
 .prose ul {
-    @apply list-disc ml-8;
+    @apply ml-8 list-disc;
 }
 
 .prose a {
