@@ -16,7 +16,6 @@ RUN mix do deps.get --only-prod, deps.compile
 COPY assets/package.json assets/package-lock.json ./assets/
 RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
 
-COPY priv priv
 COPY assets assets
 
 # Must copy source code before asset build.

@@ -36,3 +36,6 @@ npm-debug.log
 /node_modules
 /package-lock.json
 /tailwind.config.js
+
+# Our custom dir for writing un-minified CSS to, before processing by esbuild.
+/assets/build
