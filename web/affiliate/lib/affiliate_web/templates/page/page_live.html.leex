@@ -55,7 +55,7 @@
                   <div class="mt-1 lg:float-right lg:w-1/2">
                     <p class="subhead"><%= item["name"] %></p>
                     <div class="h-32 pb-2 overflow-auto prose sm:table-cell">
-                    <%= text_to_html (item["description"] || "") %>
+                    <%= raw(Earmark.as_html!(item["description"])) %>
                     </div>
                   </div>
                 </td>
