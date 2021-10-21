@@ -58,7 +58,7 @@ resource "google_container_node_pool" "waffles" {
   node_count = 1
 
   node_config {
-    disk_size_gb = 10
+    disk_size_gb = 20
 
     machine_type = "e2-standard-2"
 
