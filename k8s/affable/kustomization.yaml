@@ -17,7 +17,7 @@ resources:
 - sendgrid-api-egress.yaml
 - rbac.yaml
 replicas:
-- count: 2
+- count: 3
   name: affable
 commonLabels:
   app: affable
