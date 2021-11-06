@@ -2,16 +2,17 @@ defmodule Affable.Sites.Page do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Affable.Sites.{Item, Site}
-  alias Affable.Assets.Asset
+  alias Affable.Sites
+  alias Affable.Assets
 
   @path_format ~r/^\/[a-z0-9-_\+]*$/
   @colour_format ~r/^[A-F0-9]{6}$/
 
   schema "pages" do
-    belongs_to(:site, Site)
-    belongs_to(:header_image, Asset)
-    has_many(:items, Item)
+    belongs_to(:site, Sites.Site)
+    belongs_to(:header_image, Assets.Asset)
+    has_many(:items, Sites.Item)
+    embeds_many(:sections, Sites.Section)
 
     field(:title, :string)
     field(:meta_description, :string, default: "")
@@ -52,7 +53,7 @@ defmodule Affable.Sites.Page do
         :cta_text
       ]
     )
-    |> cast_assoc(:items, with: &Item.changeset/2)
+    |> cast_assoc(:items, with: &Sites.Item.changeset/2)
     |> validate_required([
       :title,
       :path,
