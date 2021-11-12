@@ -33,15 +33,14 @@
 
 <%= if @page do %>
 
-<%= live_component(
-AffableWeb.PageComponent,
-id: @page.id,
-site: @changeset.data,
-user: @user,
-page: @page,
-changeset: @page_changeset,
-asset_pairs: @asset_pairs
-) %>
+<.live_component module={AffableWeb.PageComponent}
+id={@page.id}
+site={@changeset.data}
+user={@user}
+page={@page}
+changeset={@page_changeset}
+asset_pairs={@asset_pairs}
+/>
 
 <% else %>
 
