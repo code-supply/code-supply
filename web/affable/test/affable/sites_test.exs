@@ -74,6 +74,18 @@ defmodule Affable.SitesTest do
       Sites.delete_page(page.id, user)
     end
 
+    test "default path is / when available" do
+      assert "/" == Sites.default_path(["/other", "/"])
+    end
+
+    test "default path is first page when / not available" do
+      assert "/other" == Sites.default_path(["/other", "/yetanother"])
+    end
+
+    test "default path is / when there are no more pages" do
+      assert "/" == Sites.default_path([])
+    end
+
     test "raw representation includes path" do
       assert %{"pages" => [%{"path" => "/contact"}]} =
                %{

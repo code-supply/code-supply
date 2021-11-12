@@ -36,7 +36,7 @@ defmodule Affable.Sites do
 
   def add_page(site, user) do
     if user |> site_member?(site) do
-      page_title = PageTitleUtils.generate(site.pages |> Enum.map(& &1.title))
+      page_title = PageTitleUtils.generate(for p <- site.pages, do: p.path)
 
       {:ok, page} =
         site
@@ -138,6 +138,17 @@ defmodule Affable.Sites do
     domain = Enum.find(domains, &Domains.affable_domain?(&1))
 
     "//#{domain.name}/preview"
+  end
+
+  def default_path([]) do
+    "/"
+  end
+
+  def default_path([first | _] = paths) do
+    case Enum.find(paths, &(&1 == "/")) do
+      nil -> first
+      path -> path
+    end
   end
 
   def get_site!(user, id) do

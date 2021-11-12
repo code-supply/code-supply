@@ -24,6 +24,18 @@ defmodule AffableWeb.PageManagementTest do
     }
   end
 
+  defp new_page(view, site) do
+    view
+    |> element("#new-page")
+    |> render_click()
+
+    List.last(Sites.page_ids(site))
+  end
+
+  def iframe_path(path) do
+    ~r{src=".*affable\.app/preview#{path}"}
+  end
+
   test "can create a page, navigate to it and delete it", %{
     conn: conn,
     site: %Sites.Site{} = site
@@ -36,41 +48,54 @@ defmodule AffableWeb.PageManagementTest do
 
     stub_broadcast()
 
-    view
-    |> element("#new-page")
-    |> render_click()
-
-    id = List.last(Sites.page_ids(site))
+    id = new_page(view, site)
 
     assert view
            |> element("iframe")
-           |> render() =~ ~r{src=".*affable\.app/preview/untitled-page"}
+           |> render() =~ iframe_path("/untitled-page")
 
     view
-    |> element(select_main_site())
+    |> element(select_main_site_tab(), "Site")
     |> render_click()
 
     assert view
            |> element("iframe")
-           |> render() =~ ~r{src=".*affable\.app/preview"}
+           |> render() =~ iframe_path("")
 
     view
-    |> element(select_page(2))
+    |> element(select_page_tab(1), "Home")
     |> render_click()
-
-    assert view
-           |> element("iframe")
-           |> render() =~ ~r{src=".*affable\.app/preview/untitled-page"}
 
     view
     |> element("a", "Delete page")
     |> render_click()
 
-    refute view
-           |> has_element?("#page-choice-#{id}")
+    assert view
+           |> element("iframe")
+           |> render() =~ iframe_path("/untitled-page")
 
-    refute view
-           |> has_element?("#page-#{id}")
+    view
+    |> element(select_main_site_tab(), "Site")
+    |> render_click()
+
+    assert view
+           |> element("iframe")
+           |> render() =~ iframe_path("/untitled-page")
+
+    view
+    |> element(select_page_tab(1), "Untitled page")
+    |> render_click()
+
+    assert view
+           |> element("iframe")
+           |> render() =~ iframe_path("/untitled-page")
+
+    view
+    |> element("a", "Delete page")
+    |> render_click()
+
+    refute view |> has_element?("#page-choice-#{id}")
+    refute view |> has_element?("#page-#{id}")
   end
 
   test "changing the path updates the iframe, to avoid 404", %{conn: conn, site: site, page: page} do
@@ -136,11 +161,11 @@ defmodule AffableWeb.PageManagementTest do
     refute view |> has_element?(".invalid-feedback")
   end
 
-  defp select_main_site() do
+  defp select_main_site_tab() do
     select_page_menu_item(1)
   end
 
-  defp select_page(n) do
+  defp select_page_tab(n) do
     select_page_menu_item(n + 1)
   end
 

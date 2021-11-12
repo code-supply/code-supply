@@ -36,16 +36,12 @@ defmodule AffableWeb.EditorLive do
   def handle_params(
         %{"id" => _id},
         _path,
-        %{assigns: %{preview_url: preview_url}} = socket
+        %{assigns: %{preview_url: preview_url, pages: pages}} = socket
       ) do
-    uri = URI.parse(preview_url)
-
     {:noreply,
-     assign(
-       socket,
-       page: nil,
-       preview_url: uri |> URI.merge("/preview") |> URI.to_string()
-     )}
+     socket
+     |> assign(page: nil)
+     |> assign_preview_url(preview_url, Sites.default_path(for {p, _} <- pages, do: p.path))}
   end
 
   def handle_info(
@@ -71,10 +67,7 @@ defmodule AffableWeb.EditorLive do
         {:deleted_page, %Page{id: id}},
         %{assigns: %{changeset: %{data: site}}} = socket
       ) do
-    %{
-      site
-      | pages: Enum.filter(site.pages, &(&1.id != id))
-    }
+    %Site{site | pages: Enum.filter(site.pages, &(&1.id != id))}
     |> reset_site(
       socket
       |> assign(page: nil, page_changeset: nil)
