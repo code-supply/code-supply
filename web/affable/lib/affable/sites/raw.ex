@@ -1,5 +1,5 @@
 defmodule Affable.Sites.Raw do
-  alias Affable.Sites.{Page, Site, Item, AttributeDefinition, Attribute}
+  alias Affable.Sites.{Page, Section, Site, Item, AttributeDefinition, Attribute}
   alias Affable.Assets
 
   def raw(
@@ -37,7 +37,22 @@ defmodule Affable.Sites.Raw do
       "cta_background_colour" => page.cta_background_colour,
       "cta_text_colour" => page.cta_text_colour,
       "cta_text" => page.cta_text,
-      "items" => page.items |> Enum.map(&raw/1)
+      "items" => page.items |> Enum.map(&raw/1),
+      "sections" => page.sections |> Enum.map(&raw/1)
+    }
+  end
+
+  def raw(%Section{
+        name: name,
+        element: element,
+        grid_area: grid_area,
+        background_colour: background_colour
+      }) do
+    %{
+      "name" => name,
+      "element" => element,
+      "grid_area" => grid_area,
+      "background_colour" => background_colour
     }
   end
 

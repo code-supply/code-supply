@@ -82,6 +82,42 @@ defmodule Affable.SitesTest do
                }
                |> raw()
     end
+
+    test "raw representation includes sections" do
+      assert %{
+               "pages" => [
+                 %{
+                   "sections" => [
+                     %{
+                       "name" => "my section",
+                       "element" => "header",
+                       "grid_area" => "sidebar",
+                       "background_colour" => "FF0000"
+                     }
+                   ]
+                 }
+               ]
+             } =
+               %Site{
+                 unpersisted_site_fixture()
+                 | pages: [
+                     %Page{
+                       path: "/contact",
+                       header_image: nil,
+                       items: [],
+                       sections: [
+                         %Section{
+                           name: "my section",
+                           element: "header",
+                           grid_area: "sidebar",
+                           background_colour: "FF0000"
+                         }
+                       ]
+                     }
+                   ]
+               }
+               |> raw()
+    end
   end
 
   describe "sites" do

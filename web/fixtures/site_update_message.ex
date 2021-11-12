@@ -97,6 +97,7 @@
         ],
         "meta_description" => "",
         "path" => "/",
+        "sections" => [],
         "text" => "",
         "title" => "Home"
       },
@@ -111,6 +112,7 @@
         "items" => [],
         "meta_description" => "",
         "path" => "/untitled-page",
+        "sections" => [],
         "text" => "",
         "title" => "Untitled page"
       }
@@ -215,6 +217,7 @@
         ],
         "meta_description" => "",
         "path" => "/",
+        "sections" => [],
         "text" => "",
         "title" => "Home"
       }
