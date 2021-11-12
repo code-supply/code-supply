@@ -10,7 +10,7 @@ defmodule Affable.SitesTest do
   alias Affable.Assets
   alias Affable.Assets.Asset
   alias Affable.Sites
-  alias Affable.Sites.{Page, Site, SiteMember, Item, AttributeDefinition}
+  alias Affable.Sites.{Page, Section, Site, SiteMember, Item, AttributeDefinition}
   alias Affable.Domains.Domain
 
   setup :verify_on_exit!
@@ -37,6 +37,24 @@ defmodule Affable.SitesTest do
       {:ok, page} = Sites.update_page(page, %{title: "my new title"}, user)
 
       assert "my new title" == page.title
+    end
+
+    test "can add multiple sections" do
+      {page, user} = page_fixture()
+
+      expect_broadcast(fn %Site{pages: [%Page{sections: [%Section{name: "New section"}]}]} ->
+        nil
+      end)
+
+      {:ok, page} = Sites.add_page_section(page, user)
+
+      expect_broadcast(fn %Site{pages: [%Page{sections: [_, %Section{name: "New section"}]}]} ->
+        nil
+      end)
+
+      {:ok, page} = Sites.add_page_section(page, user)
+
+      assert ["New section", "New section"] == Enum.map(page.sections, & &1.name)
     end
 
     test "updating a page with incorrect user is not allowed" do

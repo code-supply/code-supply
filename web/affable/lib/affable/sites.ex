@@ -67,6 +67,16 @@ defmodule Affable.Sites do
     end
   end
 
+  def add_page_section(page, user) do
+    update_page(
+      page,
+      %{
+        sections: Enum.map(page.sections, &Map.from_struct/1) ++ [%{name: "New section"}]
+      },
+      user
+    )
+  end
+
   def status(site) do
     if site.made_available_at do
       :available

@@ -30,4 +30,11 @@ defmodule Affable.SitesFixtures do
 
     site |> Sites.with_pages() |> Sites.with_items()
   end
+
+  def page_fixture() do
+    user = unconfirmed_user_fixture()
+    [site] = user.sites
+    [page] = Sites.with_pages(site).pages
+    {page, user}
+  end
 end
