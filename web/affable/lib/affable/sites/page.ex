@@ -54,7 +54,7 @@ defmodule Affable.Sites.Page do
       ]
     )
     |> cast_assoc(:items, with: &Sites.Item.changeset/2)
-    |> cast_embed(:sections)
+    |> cast_embed(:sections, with: &Sites.Section.changeset/2)
     |> validate_required([
       :title,
       :path,

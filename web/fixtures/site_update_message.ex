@@ -112,7 +112,20 @@
         "items" => [],
         "meta_description" => "",
         "path" => "/untitled-page",
-        "sections" => [],
+        "sections" => [
+          %{
+            "background_colour" => "FFFFFF",
+            "element" => "section",
+            "grid_area" => "content",
+            "name" => "New section"
+          },
+          %{
+            "background_colour" => "FFFFFF",
+            "element" => "section",
+            "grid_area" => "content",
+            "name" => "New section"
+          }
+        ],
         "text" => "",
         "title" => "Untitled page"
       }

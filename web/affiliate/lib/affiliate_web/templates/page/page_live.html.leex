@@ -25,6 +25,14 @@
         <%= raw(Earmark.as_html!(@text)) %>
       </div>
 
+      <div class="sections">
+        <%= for section <- @sections do %>
+          <%= raw ~s{<#{section["element"]} style="background-color:##{section["background_colour"]}; grid-area:#{section["grid_area"]}">}
+          %><%= section["name"]
+          %><%= raw ~s{</#{section["element"]}>} %>
+        <% end %>
+      </div>
+
       <%= unless Enum.empty?(@items) do %>
       <section class="px-1 lg:px-4">
         <table id="items" class="w-full mx-auto mt-4 md:px-8">

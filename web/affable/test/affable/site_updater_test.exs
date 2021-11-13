@@ -19,7 +19,9 @@ defmodule Affable.SiteUpdaterTest do
     user = user_fixture()
     site = site_fixture(user)
     stub_broadcast()
-    {:ok, %Page{}} = Sites.add_page(site, user)
+    {:ok, %Page{} = page} = Sites.add_page(site, user)
+    {:ok, %Page{} = page} = Sites.add_page_section(page, user)
+    {:ok, %Page{}} = Sites.add_page_section(page, user)
     site = Sites.get_site!(site.id)
     site = %{site | id: 1}
 

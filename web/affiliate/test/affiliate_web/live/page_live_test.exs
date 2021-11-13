@@ -89,6 +89,16 @@ defmodule AffiliateWeb.PageLiveTest do
     assert render(view) =~ site["name"]
   end
 
+  test "renders sections", %{conn: conn} do
+    incoming_payload = fixture("site_update_message")
+
+    SiteState.store(incoming_payload)
+
+    {:ok, view, _html} = live(conn, "/preview/untitled-page")
+
+    assert view |> element(".sections section:nth-child(1)") |> render() =~ "grid-area"
+  end
+
   test "shows attribute titles when available", %{conn: conn} do
     incoming_payload = fixture("site_update_message")
 
