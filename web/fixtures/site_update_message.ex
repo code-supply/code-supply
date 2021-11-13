@@ -116,14 +116,12 @@
           %{
             "background_colour" => "FFFFFF",
             "element" => "section",
-            "grid_area" => "content",
-            "name" => "New section"
+            "name" => "untitled-section"
           },
           %{
             "background_colour" => "FFFFFF",
             "element" => "section",
-            "grid_area" => "content",
-            "name" => "New section"
+            "name" => "untitled-section-2"
           }
         ],
         "text" => "",

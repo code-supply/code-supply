@@ -12,7 +12,7 @@ defmodule Affable.Sites.Page do
     belongs_to(:site, Sites.Site)
     belongs_to(:header_image, Assets.Asset)
     has_many(:items, Sites.Item)
-    embeds_many(:sections, Sites.Section)
+    has_many(:sections, Sites.Section)
 
     field(:title, :string)
     field(:meta_description, :string, default: "")
@@ -54,7 +54,7 @@ defmodule Affable.Sites.Page do
       ]
     )
     |> cast_assoc(:items, with: &Sites.Item.changeset/2)
-    |> cast_embed(:sections, with: &Sites.Section.changeset/2)
+    |> cast_assoc(:sections, with: &Sites.Section.changeset/2)
     |> validate_required([
       :title,
       :path,

@@ -34,9 +34,15 @@ defmodule Affable.Sites do
     end
   end
 
-  def add_page(site, user) do
+  def add_page(%Site{pages: pages} = site, user) do
     if user |> site_member?(site) do
-      page_title = PageTitleUtils.generate(for p <- site.pages, do: p.path)
+      page_title =
+        PageTitleUtils.generate(
+          for(p <- pages, do: p.path),
+          "/untitled-page",
+          "Untitled page"
+        )
+        |> Enum.join(" ")
 
       {:ok, page} =
         site
@@ -71,7 +77,19 @@ defmodule Affable.Sites do
     update_page(
       page,
       %{
-        sections: Enum.map(page.sections, &Map.from_struct/1) ++ [%{name: "New section"}]
+        sections:
+          Enum.map(page.sections, &Map.from_struct/1) ++
+            [
+              %{
+                name:
+                  PageTitleUtils.generate(
+                    for(s <- page.sections, do: s.name),
+                    "untitled-section",
+                    "untitled-section"
+                  )
+                  |> Enum.join("-")
+              }
+            ]
       },
       user
     )
@@ -235,7 +253,7 @@ defmodule Affable.Sites do
   end
 
   defp page_preloads() do
-    [items: items_query(), header_image: []]
+    [items: items_query(), sections: [], header_image: []]
   end
 
   def with_items(site, attrs \\ []) do

@@ -45,13 +45,11 @@ defmodule Affable.Sites.Raw do
   def raw(%Section{
         name: name,
         element: element,
-        grid_area: grid_area,
         background_colour: background_colour
       }) do
     %{
       "name" => name,
       "element" => element,
-      "grid_area" => grid_area,
       "background_colour" => background_colour
     }
   end

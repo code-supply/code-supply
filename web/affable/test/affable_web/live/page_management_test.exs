@@ -116,7 +116,7 @@ defmodule AffableWeb.PageManagementTest do
     {:ok, view, _html} = live(conn, path(conn, site))
 
     expect_broadcast(fn
-      %Sites.Site{pages: [%Sites.Page{sections: [%Sites.Section{name: "New section"}]} | _]} ->
+      %Sites.Site{pages: [%Sites.Page{sections: [%Sites.Section{name: "untitled-section"}]} | _]} ->
         nil
     end)
 
@@ -125,17 +125,17 @@ defmodule AffableWeb.PageManagementTest do
     |> render_click()
 
     expect_broadcast(fn
-      %Sites.Site{pages: [%Sites.Page{sections: [%Sites.Section{name: "my new name"}]} | _]} ->
+      %Sites.Site{pages: [%Sites.Page{sections: [%Sites.Section{name: "my-new-name"}]} | _]} ->
         nil
     end)
 
     view
-    |> change_form(page, page: %{sections: ["0": %{name: "my new name"}]})
+    |> change_form(page, page: %{sections: ["0": %{name: "my-new-name"}]})
     |> render_change()
 
     assert view
            |> element("#page-#{page.id}_sections_0_name")
-           |> render() =~ "my new name"
+           |> render() =~ "my-new-name"
   end
 
   test "invalid page attributes cause errors to be shown / cleared", %{

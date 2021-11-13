@@ -1,24 +1,21 @@
 defmodule Affable.Sites.PageTitleUtils do
-  @default "Untitled page"
-  @default_path "/untitled-page"
-
-  def generate(paths) do
-    case paths
-         |> sort()
-         |> Enum.find(&String.starts_with?(&1, @default_path)) do
+  def generate(strings, default_match, default_output) do
+    case strings
+         |> sort(default_match)
+         |> Enum.find(&String.starts_with?(&1, default_match)) do
       nil ->
-        @default
+        [default_output]
 
-      @default_path ->
-        "#{@default} 2"
+      ^default_match ->
+        [default_output, "#{2}"]
 
-      path ->
-        case untitled_number(path) do
+      str ->
+        case untitled_number(str, default_match) do
           {:ok, number} ->
-            "#{@default} #{number + 1}"
+            [default_output, "#{number + 1}"]
 
           {:error, _} ->
-            @default
+            [default_output]
         end
     end
   end
@@ -27,9 +24,9 @@ defmodule Affable.Sites.PageTitleUtils do
     "/" <> Regex.replace(~r/[^a-zA-Z0-9]/, String.downcase(title), "-")
   end
 
-  defp sort(paths) do
-    Enum.sort_by(paths, fn path ->
-      case untitled_number(path) do
+  defp sort(strings, default_match) do
+    Enum.sort_by(strings, fn str ->
+      case untitled_number(str, default_match) do
         {:ok, number} ->
           -number
 
@@ -39,8 +36,8 @@ defmodule Affable.Sites.PageTitleUtils do
     end)
   end
 
-  defp untitled_number(path) do
-    case Regex.named_captures(~r/#{@default_path}-(?<number>\d+)/, path) do
+  defp untitled_number(str, default_match) do
+    case Regex.named_captures(~r/#{default_match}-(?<number>\d+)/, str) do
       %{"number" => number} ->
         {:ok, String.to_integer(number)}
 

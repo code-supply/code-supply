@@ -42,19 +42,21 @@ defmodule Affable.SitesTest do
     test "can add multiple sections" do
       {page, user} = page_fixture()
 
-      expect_broadcast(fn %Site{pages: [%Page{sections: [%Section{name: "New section"}]}]} ->
-        nil
+      expect_broadcast(fn %Site{pages: [%Page{sections: [%Section{name: name}]}]} ->
+        assert "untitled-section" == name
       end)
 
       {:ok, page} = Sites.add_page_section(page, user)
 
-      expect_broadcast(fn %Site{pages: [%Page{sections: [_, %Section{name: "New section"}]}]} ->
-        nil
+      expect_broadcast(fn %Site{
+                            pages: [%Page{sections: [_, %Section{name: name}]}]
+                          } ->
+        assert "untitled-section-2" == name
       end)
 
       {:ok, page} = Sites.add_page_section(page, user)
 
-      assert ["New section", "New section"] == Enum.map(page.sections, & &1.name)
+      assert ["untitled-section", "untitled-section-2"] == Enum.map(page.sections, & &1.name)
     end
 
     test "updating a page with incorrect user is not allowed" do
@@ -90,7 +92,7 @@ defmodule Affable.SitesTest do
       assert %{"pages" => [%{"path" => "/contact"}]} =
                %{
                  unpersisted_site_fixture()
-                 | pages: [%Page{path: "/contact", header_image: nil, items: []}]
+                 | pages: [%Page{path: "/contact", header_image: nil, items: [], sections: []}]
                }
                |> raw()
     end
@@ -101,9 +103,8 @@ defmodule Affable.SitesTest do
                  %{
                    "sections" => [
                      %{
-                       "name" => "my section",
+                       "name" => "my-section",
                        "element" => "header",
-                       "grid_area" => "sidebar",
                        "background_colour" => "FF0000"
                      }
                    ]
@@ -119,9 +120,8 @@ defmodule Affable.SitesTest do
                        items: [],
                        sections: [
                          %Section{
-                           name: "my section",
+                           name: "my-section",
                            element: "header",
-                           grid_area: "sidebar",
                            background_colour: "FF0000"
                          }
                        ]
@@ -284,7 +284,7 @@ defmodule Affable.SitesTest do
              } =
                raw(%Site{
                  site_logo: %Asset{url: "foo"},
-                 pages: [%Page{header_image: nil, items: []}]
+                 pages: [%Page{header_image: nil, items: [], sections: []}]
                })
 
       assert %{
@@ -292,7 +292,7 @@ defmodule Affable.SitesTest do
                "site_logo_url" => nil
              } =
                raw(%Site{
-                 pages: [%Page{header_image: %Asset{url: "foo"}, items: []}],
+                 pages: [%Page{header_image: %Asset{url: "foo"}, items: [], sections: []}],
                  site_logo: nil
                })
     end
@@ -304,7 +304,8 @@ defmodule Affable.SitesTest do
           pages: [
             %Page{
               header_image: nil,
-              items: [%Item{attributes: [], image: %Asset{url: "gs://some-bucket/image.jpg"}}]
+              items: [%Item{attributes: [], image: %Asset{url: "gs://some-bucket/image.jpg"}}],
+              sections: []
             }
           ]
         })

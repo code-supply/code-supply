@@ -2,25 +2,38 @@ defmodule Affable.Sites.Section do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Affable.Sites
+  alias Affable.Assets
+
+  @name_format ~r/^[a-z0-9-]*$/
+
   @elements %{
     section: "section"
   }
 
-  embedded_schema do
+  schema "sections" do
+    belongs_to(:page, Sites.Page)
+    belongs_to(:image, Assets.Asset)
+
     field(:name, :string)
     field(:element, :string, default: @elements.section)
-    field(:grid_area, :string, default: "content")
     field(:background_colour, :string, default: "FFFFFF")
+    field(:text_colour, :string, default: "000000")
+    field(:content, :string, default: "")
+
+    timestamps()
   end
 
   def changeset(section, attrs) do
     section
-    |> cast(attrs, [:name, :element, :grid_area, :background_colour])
+    |> cast(attrs, [:name, :element, :background_colour])
+    |> unique_constraint([:page_id, :name])
     |> validate_required([
       :name,
       :element,
-      :grid_area,
-      :background_colour
+      :background_colour,
+      :text_colour
     ])
+    |> validate_format(:name, @name_format)
   end
 end
