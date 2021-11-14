@@ -64,6 +64,8 @@ defmodule Affable.Sites do
 
     if user |> site_member?(page) do
       page |> Repo.delete() |> broadcast()
+    else
+      {:error, :unauthorized}
     end
   end
 

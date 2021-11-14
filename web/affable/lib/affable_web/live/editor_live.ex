@@ -15,22 +15,25 @@ defmodule AffableWeb.EditorLive do
   end
 
   def handle_params(
-        %{"id" => _id, "page_id" => page_id},
+        %{"id" => id, "page_id" => page_id},
         _path,
         %{assigns: %{pages: pages, preview_url: preview_url}} = socket
       ) do
-    {page, changeset} =
-      Enum.find(pages, fn {p, _cs} ->
-        "#{page_id}" == "#{p.id}"
-      end)
+    case Enum.find(pages, fn {p, _cs} ->
+           "#{page_id}" == "#{p.id}"
+         end) do
+      nil ->
+        {:noreply, push_redirect(socket, to: Routes.editor_path(socket, :edit, id))}
 
-    {:noreply,
-     socket
-     |> assign_preview_url(preview_url, page.path)
-     |> assign(
-       page: page,
-       page_changeset: changeset
-     )}
+      {page, changeset} ->
+        {:noreply,
+         socket
+         |> assign_preview_url(preview_url, page.path)
+         |> assign(
+           page: page,
+           page_changeset: changeset
+         )}
+    end
   end
 
   def handle_params(

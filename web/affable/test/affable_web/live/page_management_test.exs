@@ -96,6 +96,11 @@ defmodule AffableWeb.PageManagementTest do
 
     refute view |> has_element?("#page-choice-#{id}")
     refute view |> has_element?("#page-#{id}")
+
+    expected_redirect_path = Routes.editor_path(conn, :edit, site.id)
+
+    assert {:error, {:live_redirect, %{to: ^expected_redirect_path}}} =
+             live(conn, Routes.editor_path(conn, :edit, site.id, id))
   end
 
   test "changing the path updates the iframe, to avoid 404", %{conn: conn, site: site, page: page} do
