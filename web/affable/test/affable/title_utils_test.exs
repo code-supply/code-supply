@@ -1,7 +1,7 @@
-defmodule Affable.PageTitleUtils do
+defmodule Affable.Sites.TitleUtilsTest do
   use ExUnit.Case, async: true
 
-  import Affable.Sites.PageTitleUtils, only: [generate: 3, to_path: 1]
+  import Affable.Sites.TitleUtils, only: [generate: 3, to_path: 1]
 
   @title_match "/untitled-page"
   @title_output "Untitled page"

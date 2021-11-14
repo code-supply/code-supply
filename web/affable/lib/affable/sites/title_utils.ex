@@ -1,4 +1,4 @@
-defmodule Affable.Sites.PageTitleUtils do
+defmodule Affable.Sites.TitleUtils do
   def generate(strings, default_match, default_output) do
     case strings
          |> sort(default_match)
