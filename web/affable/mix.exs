@@ -80,6 +80,9 @@ defmodule Affable.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      "assets:copy": [
+        "cmd cp -a assets/static/* priv/static/"
+      ],
       "assets.deploy": [
         "cmd --cd assets npm run deploy",
         "esbuild default --minify",
