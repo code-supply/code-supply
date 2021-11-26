@@ -37,6 +37,12 @@ defmodule AffiliateWeb.PageShared do
       header_text_colour: header_text_colour,
       header_text: header_text,
       sections: sections,
+      sections_style:
+        (["grid-template-columns:"] ++
+           for _ <- sections do
+             "1fr"
+           end)
+        |> Enum.join(" "),
       items: items,
       logo_url: site["site_logo_url"],
       meta_description: meta_description,

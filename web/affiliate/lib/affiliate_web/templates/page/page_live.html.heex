@@ -25,7 +25,7 @@
         <%= raw(Earmark.as_html!(@text)) %>
       </div>
 
-      <div class="sections">
+      <div class="sections grid" style={@sections_style}>
         <%= for section <- @sections do %>
           <%= raw ~s{<#{section["element"]} style="background-color:##{section["background_colour"]}; grid-area:#{section["grid_area"]}">}
           %><%= section["name"]
