@@ -39,7 +39,7 @@ defmodule Affable.SitesTest do
       assert "my new title" == page.title
     end
 
-    test "can add multiple sections" do
+    test "can add multiple sections and delete them" do
       {page, user} = page_fixture()
 
       expect_broadcast(fn %Site{pages: [%Page{sections: [%Section{name: name}]}]} ->
@@ -48,15 +48,23 @@ defmodule Affable.SitesTest do
 
       {:ok, page} = Sites.add_page_section(page, user)
 
-      expect_broadcast(fn %Site{
-                            pages: [%Page{sections: [_, %Section{name: name}]}]
-                          } ->
+      expect_broadcast(fn %Site{pages: [%Page{sections: [_, %Section{name: name}]}]} ->
         assert "untitled-section-2" == name
       end)
 
       {:ok, page} = Sites.add_page_section(page, user)
 
       assert ["untitled-section", "untitled-section-2"] == Enum.map(page.sections, & &1.name)
+
+      expect_broadcast(fn %Site{pages: [%Page{sections: [%Section{name: name}]}]} ->
+        assert "untitled-section-2" == name
+      end)
+
+      [first_section, _] = page.sections
+      Sites.delete_page_section(first_section.id, user)
+
+      %Site{pages: [%Page{sections: [section]}]} = Sites.get_site!(page.site_id)
+      assert section.name == "untitled-section-2"
     end
 
     test "updating a page with incorrect user is not allowed" do

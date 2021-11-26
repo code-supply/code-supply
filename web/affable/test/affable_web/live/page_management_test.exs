@@ -117,7 +117,11 @@ defmodule AffableWeb.PageManagementTest do
            |> render() =~ ~r{src=".*affable\.app/preview/something-else"}
   end
 
-  test "can add a section and set its attributes", %{conn: conn, site: site, page: page} do
+  test "can add a section, set its attributes and delete it", %{
+    conn: conn,
+    site: site,
+    page: page
+  } do
     {:ok, view, _html} = live(conn, path(conn, site))
 
     expect_broadcast(fn
@@ -141,6 +145,18 @@ defmodule AffableWeb.PageManagementTest do
     assert view
            |> element("#page-#{page.id}_sections_0_name")
            |> render() =~ "my-new-name"
+
+    expect_broadcast(fn
+      %Sites.Site{pages: [%Sites.Page{sections: sections} | _]} ->
+        assert [] == sections
+    end)
+
+    view
+    |> element(".delete-section")
+    |> render_click()
+
+    refute view
+           |> has_element?("#page-#{page.id}_sections_0_name")
   end
 
   test "invalid page attributes cause errors to be shown / cleared", %{

@@ -3,7 +3,7 @@ defmodule Affable.Sites do
 
   import Ecto.Query, warn: false
 
-  alias Affable.Sites.{Page, TitleUtils, Raw}
+  alias Affable.Sites.{Page, Section, TitleUtils, Raw}
   alias Affable.Repo
   alias Affable.Accounts.User
   alias Affable.Assets
@@ -95,6 +95,22 @@ defmodule Affable.Sites do
       },
       user
     )
+  end
+
+  def delete_page_section(id, user) do
+    %Section{page_id: page_id} = section = Repo.get(Section, id)
+
+    page = Repo.get!(Page, page_id)
+
+    if user |> site_member?(page) do
+      case section |> Repo.delete() do
+        {:ok, section} ->
+          broadcast(page)
+          {:ok, section}
+      end
+    else
+      {:error, :unauthorized}
+    end
   end
 
   def status(site) do
@@ -851,10 +867,15 @@ defmodule Affable.Sites do
     site
   end
 
-  defp broadcast({:ok, %Page{site_id: site_id}} = result) do
+  defp broadcast(%Page{site_id: site_id} = page) do
     get_site!(site_id)
     |> broadcast()
 
+    page
+  end
+
+  defp broadcast({:ok, %Page{} = page} = result) do
+    _ = broadcast(page)
     result
   end
 

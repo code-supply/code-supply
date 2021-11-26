@@ -47,6 +47,14 @@ phx_submit={:save}>
         <%= text_input inner_form, :background_colour, phx_debounce: 250 %>
         <%= error_tag inner_form, :background_colour %>
       </div>
+      <a id={"delete-section-#{inner_form.data.id}"}
+         class="delete-section"
+         href="#"
+         phx-click="delete-section"
+         phx-value-id={inner_form.data.id}
+         phx-target={@myself}
+         >Delete
+      </a>
     <% end %>
   </div>
 

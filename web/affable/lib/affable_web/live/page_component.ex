@@ -33,6 +33,16 @@ defmodule AffableWeb.PageComponent do
     {:noreply, socket}
   end
 
+  def handle_event(
+        "delete-section",
+        %{"id" => id},
+        %{assigns: %{user: user}} = socket
+      ) do
+    {:ok, section} = Sites.delete_page_section(id, user)
+    send(self(), {:deleted_section, section})
+    {:noreply, socket}
+  end
+
   def handle_event("save", %{"page" => params}, %{assigns: %{user: user, page: page}} = socket) do
     case Sites.update_page(page, params, user) do
       {:ok, page} ->

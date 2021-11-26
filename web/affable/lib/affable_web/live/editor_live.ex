@@ -5,7 +5,7 @@ defmodule AffableWeb.EditorLive do
 
   alias Affable.Accounts
   alias Affable.Sites
-  alias Affable.Sites.{Page, Site}
+  alias Affable.Sites.{Page, Section, Site}
 
   import AffableWeb.EditorHelpers
 
@@ -29,10 +29,7 @@ defmodule AffableWeb.EditorLive do
         {:noreply,
          socket
          |> assign_preview_url(preview_url, page.path)
-         |> assign(
-           page: page,
-           page_changeset: changeset
-         )}
+         |> assign(page: page, page_changeset: changeset)}
     end
   end
 
@@ -62,7 +59,7 @@ defmodule AffableWeb.EditorLive do
     |> reset_site(
       socket
       |> assign_preview_url(preview_url, updated_page.path)
-      |> assign(page: updated_page, page_changeset: Page.changeset(updated_page, %{}))
+      |> assign_page(updated_page)
     )
   end
 
@@ -73,9 +70,19 @@ defmodule AffableWeb.EditorLive do
     %Site{site | pages: Enum.filter(site.pages, &(&1.id != id))}
     |> reset_site(
       socket
-      |> assign(page: nil, page_changeset: nil)
+      |> assign_page(nil)
       |> push_patch(to: Routes.editor_path(socket, :edit, site.id))
     )
+  end
+
+  def handle_info(
+        {:deleted_section, %Section{page_id: page_id}},
+        %{assigns: %{changeset: %{data: site}}} = socket
+      ) do
+    site = Sites.get_site!(site.id)
+    [page] = site.pages |> Enum.filter(&(&1.id == page_id))
+
+    reset_site(site, assign_page(socket, page))
   end
 
   def handle_info(
@@ -177,6 +184,7 @@ defmodule AffableWeb.EditorLive do
       preview_url: Sites.preview_url(site),
       canonical_url: Sites.canonical_url(site)
     )
+    |> assign_page(nil)
   end
 
   defp reset_site(%Site{} = site, socket) do
@@ -197,6 +205,14 @@ defmodule AffableWeb.EditorLive do
 
   defp reset_site({:error, changeset}, socket) do
     {:noreply, assign(socket, changeset: changeset)}
+  end
+
+  defp assign_page(socket, %Page{} = page) do
+    assign(socket, page: page, page_changeset: Page.changeset(page, %{}))
+  end
+
+  defp assign_page(socket, nil) do
+    assign(socket, page: nil, page_changeset: nil)
   end
 
   defp assign_preview_url(socket, preview_url, page_path) do
