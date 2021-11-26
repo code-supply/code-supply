@@ -18,6 +18,10 @@ defmodule Affable.Sites.Page do
     field(:meta_description, :string, default: "")
     field(:path, :string, default: "/")
 
+    field(:grid_template_areas, :string, default: "")
+    field(:grid_template_rows, :string, default: "")
+    field(:grid_template_columns, :string, default: "")
+
     field(:text, :string, default: "")
     field(:header_text, :string, default: "")
     field(:cta_text, :string, default: "Go")
@@ -43,6 +47,9 @@ defmodule Affable.Sites.Page do
         :title,
         :meta_description,
         :path,
+        :grid_template_areas,
+        :grid_template_rows,
+        :grid_template_columns,
         :header_image_id,
         :header_text,
         :header_background_colour,

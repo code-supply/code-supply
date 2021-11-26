@@ -12,6 +12,9 @@ defmodule AffiliateWeb.PageShared do
           "header_image_url" => header_image_url,
           "header_text_colour" => header_text_colour,
           "header_text" => header_text,
+          "grid_template_areas" => grid_template_areas,
+          "grid_template_rows" => grid_template_rows,
+          "grid_template_columns" => grid_template_columns,
           "sections" => sections,
           "items" => items,
           "meta_description" => meta_description,
@@ -37,12 +40,11 @@ defmodule AffiliateWeb.PageShared do
       header_text_colour: header_text_colour,
       header_text: header_text,
       sections: sections,
-      sections_style:
-        (["grid-template-columns:"] ++
-           for _ <- sections do
-             "1fr"
-           end)
-        |> Enum.join(" "),
+      sections_style: """
+        grid-template-areas: #{grid_template_areas};
+        grid-template-rows: #{grid_template_rows};
+        grid-template-columns: #{grid_template_columns};
+      """,
       items: items,
       logo_url: site["site_logo_url"],
       meta_description: meta_description,

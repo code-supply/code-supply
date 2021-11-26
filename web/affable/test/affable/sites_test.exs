@@ -105,10 +105,13 @@ defmodule Affable.SitesTest do
                |> raw()
     end
 
-    test "raw representation includes sections" do
+    test "raw representation includes sections and grid stuff" do
       assert %{
                "pages" => [
                  %{
+                   "grid_template_areas" => "head head\nnav main\nnav foot",
+                   "grid_template_rows" => "50px 1fr 30px",
+                   "grid_template_columns" => "150px 1fr",
                    "sections" => [
                      %{
                        "name" => "my-section",
@@ -126,6 +129,9 @@ defmodule Affable.SitesTest do
                        path: "/contact",
                        header_image: nil,
                        items: [],
+                       grid_template_areas: "head head\nnav main\nnav foot",
+                       grid_template_rows: "50px 1fr 30px",
+                       grid_template_columns: "150px 1fr",
                        sections: [
                          %Section{
                            name: "my-section",

@@ -26,7 +26,12 @@ defmodule Affable.Sites.Section do
 
   def changeset(section, attrs) do
     section
-    |> cast(attrs, [:name, :element, :background_colour])
+    |> cast(attrs, [
+      :name,
+      :element,
+      :background_colour,
+      :content
+    ])
     |> unique_constraint([:page_id, :name])
     |> validate_required([
       :name,

@@ -9,6 +9,9 @@
         "cta_background_colour" => "059669",
         "cta_text" => "Go",
         "cta_text_colour" => "FFFFFF",
+        "grid_template_areas" => "",
+        "grid_template_columns" => "",
+        "grid_template_rows" => "",
         "header_background_colour" => "3B82F6",
         "header_image_url" => "https://images.affable.app/nosignature/fill/567/341/ce/0/plain/gs://affable-uploads/default-header.png",
         "header_text" => "# Top 10 Apples\n\nThe apple is a deciduous tree, generally standing 2 to 4.5 m (6 to 15 ft) tall in cultivation and up to 9 m (30 ft) in the wild. When cultivated, the size, shape and branch density are determined by rootstock selection and trimming method. The leaves are alternately arranged dark green-colored simple ovals with serrated margins and slightly downy undersides.\n",
@@ -105,6 +108,9 @@
         "cta_background_colour" => "059669",
         "cta_text" => "Go",
         "cta_text_colour" => "FFFFFF",
+        "grid_template_areas" => "",
+        "grid_template_columns" => "",
+        "grid_template_rows" => "",
         "header_background_colour" => "3B82F6",
         "header_image_url" => nil,
         "header_text" => "",
@@ -115,11 +121,13 @@
         "sections" => [
           %{
             "background_colour" => "FFFFFF",
+            "content" => "",
             "element" => "section",
             "name" => "untitled-section"
           },
           %{
             "background_colour" => "FFFFFF",
+            "content" => "",
             "element" => "section",
             "name" => "untitled-section-2"
           }
@@ -140,6 +148,9 @@
         "cta_background_colour" => "059669",
         "cta_text" => "Go",
         "cta_text_colour" => "FFFFFF",
+        "grid_template_areas" => "",
+        "grid_template_columns" => "",
+        "grid_template_rows" => "",
         "header_background_colour" => "3B82F6",
         "header_image_url" => "https://images.affable.app/nosignature/fill/567/341/ce/0/plain/gs://affable-uploads/default-header.png",
         "header_text" => "# Top 10 Apples\n\nThe apple is a deciduous tree, generally standing 2 to 4.5 m (6 to 15 ft) tall in cultivation and up to 9 m (30 ft) in the wild. When cultivated, the size, shape and branch density are determined by rootstock selection and trimming method. The leaves are alternately arranged dark green-colored simple ovals with serrated margins and slightly downy undersides.\n",

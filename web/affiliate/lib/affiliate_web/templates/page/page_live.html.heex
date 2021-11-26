@@ -27,8 +27,8 @@
 
       <div class="sections grid" style={@sections_style}>
         <%= for section <- @sections do %>
-          <%= raw ~s{<#{section["element"]} style="background-color:##{section["background_colour"]}; grid-area:#{section["grid_area"]}">}
-          %><%= section["name"]
+          <%= raw ~s{<#{section["element"]} class="p-8" style="background-color:##{section["background_colour"]}; grid-area:#{section["name"]}">}
+          %><%= raw(Earmark.as_html!(section["content"]))
           %><%= raw ~s{</#{section["element"]}>} %>
         <% end %>
       </div>

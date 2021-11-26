@@ -38,6 +38,9 @@ defmodule Affable.Sites.Raw do
       "cta_text_colour" => page.cta_text_colour,
       "cta_text" => page.cta_text,
       "items" => page.items |> Enum.map(&raw/1),
+      "grid_template_areas" => page.grid_template_areas,
+      "grid_template_rows" => page.grid_template_rows,
+      "grid_template_columns" => page.grid_template_columns,
       "sections" => page.sections |> Enum.map(&raw/1)
     }
   end
@@ -45,12 +48,14 @@ defmodule Affable.Sites.Raw do
   def raw(%Section{
         name: name,
         element: element,
-        background_colour: background_colour
+        background_colour: background_colour,
+        content: content
       }) do
     %{
       "name" => name,
       "element" => element,
-      "background_colour" => background_colour
+      "background_colour" => background_colour,
+      "content" => content
     }
   end
 
