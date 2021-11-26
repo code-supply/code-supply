@@ -5,14 +5,14 @@
   <div class="container mx-auto bg-white">
     <%= if @logo_url do %>
       <header class="flex block bg-white bg-no-repeat bg-cover border-b-8 border-black">
-        <img alt="<%= @site_name %>" class="max-w-full px-8 my-4" src="<%= @logo_url %>">
+      <img alt={@site_name} class="max-w-full px-8 my-4" src={@logo_url}>
       </header>
     <% end %>
 
     <main role="main">
       <header class="px-4 pt-4 pb-12 overflow-hidden md:p-8"
-              style="background-color: #<%= @header_background_colour %>; color: #<%= @header_text_colour %>">
-        <img class="float-right w-5/12 pb-8 pl-4 md:pl-8" src="<%= @header_image_url %>" />
+        style={"background-color:##{@header_background_colour};color:##{@header_text_colour}"}>
+        <img class="float-right w-5/12 pb-8 pl-4 md:pl-8" src={@header_image_url} />
 
         <div class="float-none">
           <div class="prose">
@@ -47,7 +47,7 @@
           </thead>
           <tbody>
             <%= for item <- @items do %>
-              <tr id="item<%= item["position"] %>"
+              <tr id={"item#{item["position"]}"}
               class="border-2 border-gray-300 h-52">
                 <td class="max-w-2xl py-3 pl-2 mb-4 align-top sm:table-cell item-position-image-description">
                   <div class="mb-3 text-2xl font-bold text-gray-400 position">
@@ -58,7 +58,7 @@
                     <% end %>
                   </div>
                   <%= if item["image_url"] do %>
-                  <img class="rounded lg:float-left lg:pr-4 lg:w-1/2" src="<%= item["image_url"] %>">
+                    <img class="rounded lg:float-left lg:pr-4 lg:w-1/2" src={item["image_url"]}>
                   <% end %>
                   <div class="mt-1 lg:float-right lg:w-1/2">
                     <p class="subhead"><%= item["name"] %></p>
@@ -74,10 +74,10 @@
                 <% end %>
                 <td class="item-cta">
                   <p class="p-2 pr-4">
-                  <a style="background-color: #<%= @cta_background_colour %>; color: #<%= @cta_text_colour %>"
+                  <a style={"background-color:##{@cta_background_colour};color:##{@cta_text_colour}"}
                      class="block p-4 text-lg text-center rounded-full hover-lighten"
                      target="_blank"
-                     href="<%= item["url"] %>"><%= @cta_text %></a>
+                     href={item["url"]}><%= @cta_text %></a>
                   </p>
                 </td>
               </tr>
