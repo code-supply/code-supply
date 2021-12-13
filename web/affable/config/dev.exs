@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :affable,
   k8s: Affable.FakeK8s
