@@ -57,21 +57,31 @@ phx_submit={:save}>
 
     <%= for inner_form <- inputs_for(f, :sections) do %>
       <%= hidden_inputs_for inner_form %>
+
       <div class="field">
         <%= label inner_form, :name %>
         <%= text_input inner_form, :name, phx_debounce: 250 %>
         <%= error_tag inner_form, :name %>
       </div>
+
       <div class="field">
         <%= label inner_form, :background_colour %>
         <%= text_input inner_form, :background_colour, phx_debounce: 250 %>
         <%= error_tag inner_form, :background_colour %>
       </div>
+
+      <div class="field">
+        <%= label inner_form, :image_id %>
+        <%= select inner_form, :image_id, @asset_pairs, prompt: "None" %>
+        <%= error_tag inner_form, :image_id %>
+      </div>
+
       <div class="field">
         <%= label inner_form, :content %>
         <%= editor_textarea inner_form, :content %>
         <%= error_tag inner_form, :content %>
       </div>
+
       <a id={"delete-section-#{inner_form.data.id}"}
          class="delete-section"
          href="#"
@@ -80,6 +90,7 @@ phx_submit={:save}>
          phx-target={@myself}
          >Delete
       </a>
+
     <% end %>
   </div>
 

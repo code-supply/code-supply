@@ -123,12 +123,17 @@
             "background_colour" => "FFFFFF",
             "content" => "",
             "element" => "section",
+            "image" => %{
+              "name" => "Logo",
+              "url" => "gs://affable-uploads/default-logo.png"
+            },
             "name" => "untitled-section"
           },
           %{
             "background_colour" => "FFFFFF",
             "content" => "",
             "element" => "section",
+            "image" => nil,
             "name" => "untitled-section-2"
           }
         ],

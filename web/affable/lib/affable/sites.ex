@@ -24,38 +24,38 @@ defmodule Affable.Sites do
   alias Ecto.Multi
 
   def update_page(%Page{} = page, attrs, %User{} = user) do
-    if user |> site_member?(page) do
-      page
-      |> Page.changeset(attrs)
-      |> Repo.update()
-      |> broadcast()
+    with :ok <- must_be_site_member(user, page),
+         {:ok, page} <-
+           page
+           |> Page.changeset(attrs)
+           |> Repo.update()
+           |> broadcast() do
+      {:ok, page |> Repo.preload(page_preloads())}
     else
-      {:error, :unauthorized}
+      err -> err
     end
   end
 
   def add_page(%Site{pages: pages} = site, user) do
-    if user |> site_member?(site) do
-      page_title =
-        TitleUtils.generate(
-          for(p <- pages, do: p.path),
-          "/untitled-page",
-          "Untitled page"
-        )
-        |> Enum.join(" ")
-
-      {:ok, page} =
-        site
-        |> Ecto.build_assoc(:pages, %{
-          title: page_title,
-          path: TitleUtils.to_path(page_title)
-        })
-        |> Repo.insert()
-        |> broadcast()
-
+    with :ok <- must_be_site_member(user, site),
+         page_title <-
+           TitleUtils.generate(
+             for(p <- pages, do: p.path),
+             "/untitled-page",
+             "Untitled page"
+           )
+           |> Enum.join(" "),
+         {:ok, page} <-
+           site
+           |> Ecto.build_assoc(:pages, %{
+             title: page_title,
+             path: TitleUtils.to_path(page_title)
+           })
+           |> Repo.insert()
+           |> broadcast() do
       {:ok, page |> Repo.preload(page_preloads())}
     else
-      {:error, :unauthorized}
+      err -> err
     end
   end
 
@@ -89,7 +89,8 @@ defmodule Affable.Sites do
                     "untitled-section",
                     "untitled-section"
                   )
-                  |> Enum.join("-")
+                  |> Enum.join("-"),
+                image: nil
               }
             ]
       },
@@ -102,14 +103,12 @@ defmodule Affable.Sites do
 
     page = Repo.get!(Page, page_id)
 
-    if user |> site_member?(page) do
-      case section |> Repo.delete() do
-        {:ok, section} ->
-          broadcast(page)
-          {:ok, section}
-      end
+    with :ok <- must_be_site_member(user, page),
+         {:ok, section} <- Repo.delete(section) do
+      broadcast(page)
+      {:ok, section}
     else
-      {:error, :unauthorized}
+      err -> err
     end
   end
 
@@ -271,7 +270,7 @@ defmodule Affable.Sites do
   end
 
   defp page_preloads() do
-    [items: items_query(), sections: [], header_image: []]
+    [items: items_query(), sections: [image: []], header_image: []]
   end
 
   def with_items(site, attrs \\ []) do
@@ -700,14 +699,11 @@ defmodule Affable.Sites do
   end
 
   def add_attribute_definition(%Site{} = site, %User{} = user) do
-    if user |> site_member?(site) do
-      {:ok, _} =
-        add_attribute_definition_multi(site)
-        |> Repo.transaction()
-
+    with :ok <- must_be_site_member(user, site),
+         {:ok, _} <- Repo.transaction(add_attribute_definition_multi(site)) do
       {:ok, get_site!(site.id) |> broadcast()}
     else
-      {:error, :unauthorized}
+      err -> err
     end
   end
 
@@ -721,6 +717,14 @@ defmodule Affable.Sites do
 
   def site_member?(user, site_id) do
     Repo.exists?(from(SiteMember, where: [user_id: ^user.id, site_id: ^site_id]))
+  end
+
+  defp must_be_site_member(user, page) do
+    if user |> site_member?(page) do
+      :ok
+    else
+      {:error, :unauthorized}
+    end
   end
 
   def delete_attribute_definition(site_id, definition_id, %User{} = user) do
@@ -746,20 +750,19 @@ defmodule Affable.Sites do
   def get_item!(id), do: Repo.get!(Item, id)
 
   def append_item(%Site{} = site, %Page{} = page, %User{} = user) do
-    if user |> site_member?(page) do
-      {:ok, %Item{} = item} =
-        create_item(page, %{
-          name: "New item",
-          position: length(page.items) + 1,
-          attributes:
-            for definition <- site.attribute_definitions do
-              %{
-                definition_id: definition.id,
-                value: "1.23"
-              }
-            end
-        })
-
+    with :ok <- must_be_site_member(user, page),
+         {:ok, %Item{} = item} <-
+           create_item(page, %{
+             name: "New item",
+             position: length(page.items) + 1,
+             attributes:
+               for definition <- site.attribute_definitions do
+                 %{
+                   definition_id: definition.id,
+                   value: "1.23"
+                 }
+               end
+           }) do
       {
         :ok,
         %{
@@ -778,7 +781,7 @@ defmodule Affable.Sites do
         item
       }
     else
-      {:error, :unauthorized}
+      err -> err
     end
   end
 

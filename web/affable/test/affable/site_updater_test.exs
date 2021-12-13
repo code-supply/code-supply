@@ -7,7 +7,8 @@ defmodule Affable.SiteUpdaterTest do
 
   alias Affable.MockHTTP
   alias Affable.{Broadcaster, Sites, SiteUpdater}
-  alias Affable.Sites.Page
+  alias Affable.Assets.Asset
+  alias Affable.Sites.{Page, Section, Site}
 
   setup :verify_on_exit!
 
@@ -17,12 +18,33 @@ defmodule Affable.SiteUpdaterTest do
 
   test "can broadcast full site on demand", %{broadcast_1: broadcast} do
     user = user_fixture()
-    site = site_fixture(user)
+    site = site_fixture(user) |> Sites.reload_assets()
+    [first_asset | _] = site.assets
     stub_broadcast()
     {:ok, %Page{} = page} = Sites.add_page(site, user)
-    {:ok, %Page{} = page} = Sites.add_page_section(page, user)
+    {:ok, %Page{sections: [section]} = page} = Sites.add_page_section(page, user)
+
+    {:ok, _} =
+      Sites.update_page(
+        page,
+        %{
+          sections: [
+            %{
+              id: section.id,
+              image_id: first_asset.id
+            }
+          ]
+        },
+        user
+      )
+
     {:ok, %Page{}} = Sites.add_page_section(page, user)
-    site = Sites.get_site!(site.id)
+
+    %Site{pages: [_ | [%Page{sections: [%Section{} = section | _]} | _]]} =
+      site = Sites.get_site!(site.id)
+
+    assert %Asset{} = section.image
+
     site = %{site | id: 1}
 
     expected_name = site.name

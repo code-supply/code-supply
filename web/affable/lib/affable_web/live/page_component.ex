@@ -83,7 +83,13 @@ defmodule AffableWeb.PageComponent do
     site = Sites.get_site!(user, site.id)
 
     {:ok, changed_site} = Sites.demote_item(site, page, item_id)
-    send(self(), {:updated_page, changed_site.pages |> Enum.find(fn p -> p.id == page.id end)})
+
+    send(
+      self(),
+      {:updated_page,
+       changed_site.pages
+       |> Enum.find(fn p -> p.id == page.id end)}
+    )
 
     {:noreply, socket}
   end

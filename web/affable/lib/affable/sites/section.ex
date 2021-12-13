@@ -30,7 +30,8 @@ defmodule Affable.Sites.Section do
       :name,
       :element,
       :background_colour,
-      :content
+      :content,
+      :image_id
     ])
     |> unique_constraint([:page_id, :name])
     |> validate_required([

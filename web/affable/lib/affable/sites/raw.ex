@@ -1,6 +1,7 @@
 defmodule Affable.Sites.Raw do
   alias Affable.Sites.{Page, Section, Site, Item, AttributeDefinition, Attribute}
   alias Affable.Assets
+  alias Affable.Assets.Asset
 
   def raw(
         %Site{
@@ -49,13 +50,22 @@ defmodule Affable.Sites.Raw do
         name: name,
         element: element,
         background_colour: background_colour,
-        content: content
+        content: content,
+        image: image
       }) do
     %{
       "name" => name,
       "element" => element,
       "background_colour" => background_colour,
-      "content" => content
+      "content" => content,
+      "image" => if(image, do: raw(image))
+    }
+  end
+
+  def raw(%Asset{url: url, name: name}) do
+    %{
+      "url" => url,
+      "name" => name
     }
   end
 

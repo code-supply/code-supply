@@ -116,7 +116,11 @@ defmodule Affable.SitesTest do
                      %{
                        "name" => "my-section",
                        "element" => "header",
-                       "background_colour" => "FF0000"
+                       "background_colour" => "FF0000",
+                       "image" => %{
+                         "url" => "http://example.com/foo.jpg",
+                         "name" => "Image of a Foo"
+                       }
                      }
                    ]
                  }
@@ -136,7 +140,11 @@ defmodule Affable.SitesTest do
                          %Section{
                            name: "my-section",
                            element: "header",
-                           background_colour: "FF0000"
+                           background_colour: "FF0000",
+                           image: %Asset{
+                             url: "http://example.com/foo.jpg",
+                             name: "Image of a Foo"
+                           }
                          }
                        ]
                      }
