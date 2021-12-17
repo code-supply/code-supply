@@ -58,7 +58,10 @@ defmodule Affable.Sites.Raw do
       "element" => element,
       "background_colour" => background_colour,
       "content" => content,
-      "image" => if(image, do: raw(image))
+      "image_url" =>
+        image
+        |> Assets.to_imgproxy_url(width: 567, height: 341, resizing_type: "fill"),
+      "image_name" => if(image, do: image.name)
     }
   end
 

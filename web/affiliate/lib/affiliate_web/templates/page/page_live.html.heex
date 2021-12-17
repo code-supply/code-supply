@@ -27,9 +27,9 @@
 
       <div class="sections grid" style={@sections_style}>
         <%= for section <- @sections do %>
-          <%= raw ~s{<#{section["element"]} class="p-8" style="background-color:##{section["background_colour"]}; grid-area:#{section["name"]}">}
-          %><%= raw(Earmark.as_html!(section["content"]))
-          %><%= raw ~s{</#{section["element"]}>} %>
+          <%= content_tag(section["element"], class: "p-8", style: "background-image:url('#{section["image_url"]}'); background-color:##{section["background_colour"]}; grid-area:#{section["name"]}") do %>
+            <%= raw(Earmark.as_html!(section["content"])) %>
+          <% end %>
         <% end %>
       </div>
 

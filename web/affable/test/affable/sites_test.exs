@@ -117,10 +117,9 @@ defmodule Affable.SitesTest do
                        "name" => "my-section",
                        "element" => "header",
                        "background_colour" => "FF0000",
-                       "image" => %{
-                         "url" => "http://example.com/foo.jpg",
-                         "name" => "Image of a Foo"
-                       }
+                       "image_url" =>
+                         "https://images.affable.app/nosignature/fill/567/341/ce/0/plain/http://example.com/foo.jpg",
+                       "image_name" => "Image of a Foo"
                      }
                    ]
                  }

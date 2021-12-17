@@ -123,17 +123,16 @@
             "background_colour" => "FFFFFF",
             "content" => "",
             "element" => "section",
-            "image" => %{
-              "name" => "Logo",
-              "url" => "gs://affable-uploads/default-logo.png"
-            },
+            "image_name" => "Logo",
+            "image_url" => "https://images.affable.app/nosignature/fill/567/341/ce/0/plain/gs://affable-uploads/default-logo.png",
             "name" => "untitled-section"
           },
           %{
             "background_colour" => "FFFFFF",
             "content" => "",
             "element" => "section",
-            "image" => nil,
+            "image_name" => nil,
+            "image_url" => nil,
             "name" => "untitled-section-2"
           }
         ],
