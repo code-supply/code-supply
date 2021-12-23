@@ -27,7 +27,7 @@
 
       <div class="sections grid" style={@sections_style}>
         <%= for section <- @sections do %>
-          <%= content_tag(section["element"], class: "p-8", style: "background-image:url('#{section["image_url"]}'); background-color:##{section["background_colour"]}; grid-area:#{section["name"]}") do %>
+          <%= content_tag(section["element"], class: "bg-cover p-8", style: Enum.join(AffiliateWeb.DynamicStyle.as_list(section), ";")) do %>
             <%= raw(Earmark.as_html!(section["content"])) %>
           <% end %>
         <% end %>
