@@ -63,6 +63,12 @@ asset_pairs={@asset_pairs}
       </div>
 
       <div class="field">
+        <%= label outer_form, :layout_id %>
+        <%= select outer_form, :layout_id, @layout_pairs, prompt: "None" %>
+        <%= error_tag outer_form, :layout_id %>
+      </div>
+
+      <div class="field">
         <%= label outer_form, :site_logo_id %>
         <%= select outer_form, :site_logo_id, @asset_pairs, prompt: "None" %>
         <%= error_tag outer_form, :site_logo_id %>

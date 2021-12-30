@@ -4,7 +4,7 @@ defmodule AffableWeb.EditorLiveTest do
   import Affable.SitesFixtures
   import Hammox
 
-  alias Affable.{Repo, Accounts, Sites}
+  alias Affable.{Accounts, Layouts, Repo, Sites}
   alias Affable.Sites.{Page, Site, Item, Attribute}
 
   setup :verify_on_exit!
@@ -67,6 +67,29 @@ defmodule AffableWeb.EditorLiveTest do
 
       refute view
              |> has_element?("#publish")
+    end
+
+    test "can choose layout", %{
+      conn: conn,
+      site: site
+    } do
+      {:ok, layout} = Layouts.create_layout(site, %{name: "basic"})
+      {:ok, view, _html} = live(conn, path(conn, site))
+
+      assert view
+             |> has_element?("#site_layout_id option[value=#{layout.id}]")
+
+      stub_broadcast()
+
+      view
+      |> render_change(:save, %{
+        "site" => %{
+          "layout_id" => "#{layout.id}"
+        }
+      })
+
+      assert view
+             |> has_element?("#site_layout_id option[value=#{layout.id}][selected]")
     end
 
     test "can create / update / delete an attribute definition", %{

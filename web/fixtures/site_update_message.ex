@@ -2,6 +2,45 @@
   "preview" => %{
     "custom_head_html" => "",
     "id" => 1,
+    "layout" => %{
+      "grid_template_areas" => "\"header header\"\n\"nav main\"\n\"footer footer\"",
+      "grid_template_columns" => "150px 1fr",
+      "grid_template_rows" => "50px 1fr 50px",
+      "sections" => [
+        %{
+          "background_colour" => "000000",
+          "content" => "",
+          "element" => "header",
+          "image_name" => nil,
+          "image_url" => nil,
+          "name" => "header"
+        },
+        %{
+          "background_colour" => "00FF00",
+          "content" => "",
+          "element" => "nav",
+          "image_name" => nil,
+          "image_url" => nil,
+          "name" => "nav"
+        },
+        %{
+          "background_colour" => "0000FF",
+          "content" => "",
+          "element" => "main",
+          "image_name" => nil,
+          "image_url" => nil,
+          "name" => "main"
+        },
+        %{
+          "background_colour" => "FFFF00",
+          "content" => "",
+          "element" => "footer",
+          "image_name" => nil,
+          "image_url" => nil,
+          "name" => "footer"
+        }
+      ]
+    },
     "made_available_at" => nil,
     "name" => "Top 10 Apples",
     "pages" => [
@@ -145,6 +184,7 @@
   "published" => %{
     "custom_head_html" => "",
     "id" => 1,
+    "layout" => nil,
     "made_available_at" => nil,
     "name" => "Top 10 Apples",
     "pages" => [

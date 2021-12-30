@@ -76,27 +76,17 @@ defmodule AffiliateWeb.PageLiveTest do
     assert "The second page" == page_title(view)
   end
 
-  test "serves preview", %{conn: conn} do
+  test "renders sections within the layout", %{conn: conn} do
     incoming_payload = fixture("site_update_message")
-    site = incoming_payload["preview"]
-
-    {:ok, view, html} = live(conn, "/preview")
-
-    refute html =~ site["name"]
-
-    SiteState.store(incoming_payload)
-
-    assert render(view) =~ site["name"]
-  end
-
-  test "renders sections", %{conn: conn} do
-    incoming_payload = fixture("site_update_message")
-
-    SiteState.store(incoming_payload)
 
     {:ok, view, _html} = live(conn, "/preview/untitled-page")
 
-    assert view |> element(".sections section:nth-child(1)") |> render() =~ "grid-area"
+    refute view |> has_element?("header+nav+main>section")
+
+    SiteState.store(incoming_payload)
+
+    assert view |> element("header+nav+main>section:nth-child(1)") |> render() =~
+             "grid-area"
   end
 
   test "shows attribute titles when available", %{conn: conn} do

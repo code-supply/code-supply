@@ -3,6 +3,7 @@ defmodule AffiliateWeb.PreviewLiveTest do
 
   import Affiliate.Fixtures
   import Phoenix.LiveViewTest
+  import Access, only: [filter: 1]
   import Hammox
 
   alias Affiliate.MockHTTP
@@ -31,21 +32,21 @@ defmodule AffiliateWeb.PreviewLiveTest do
     %{site: incoming_payload["preview"]}
   end
 
-  test "updates when new content arrives", %{conn: conn, site: site} do
+  test "updates when new content arrives", %{conn: conn} do
     {:ok, view, disconnected_html} = live(conn, "/preview")
-    assert disconnected_html =~ site["name"]
-    assert render(view) =~ site["name"]
-
-    assert view
-           |> element("header img[alt=\"#{site["name"]}\"]")
-           |> render() =~ site["site_logo_url"]
+    assert disconnected_html =~ "<main"
+    assert render(view) =~ "<main"
+    refute render(view) =~ "example.com"
 
     fixture("site_update_message")
-    |> put_in(["preview", "site_logo_url"], "http://example.com/something.jpeg")
+    |> put_in(
+      ["preview", "layout", "sections", filter(fn s -> s["element"] == "header" end), "content"],
+      "![logo](http://example.com/something.jpeg)"
+    )
     |> Affiliate.SiteState.store()
 
     assert view
-           |> element("img[alt=\"#{site["name"]}\"]")
+           |> element("img[alt=\"logo\"]")
            |> render() =~ "example.com/something.jpeg"
   end
 end

@@ -9,6 +9,7 @@ defmodule Affable.SitesTest do
   alias Affable.Accounts.User
   alias Affable.Assets
   alias Affable.Assets.Asset
+  alias Affable.Layouts.Layout
   alias Affable.Sites
   alias Affable.Sites.{Page, Section, Site, SiteMember, Item, AttributeDefinition}
   alias Affable.Domains.Domain
@@ -105,8 +106,19 @@ defmodule Affable.SitesTest do
                |> raw()
     end
 
-    test "raw representation includes sections and grid stuff" do
+    test "raw representation includes layout, sections and grid stuff" do
       assert %{
+               "layout" => %{
+                 "grid_template_areas" => "head head\nnav main\nfooter footer",
+                 "grid_template_rows" => "50px 1fr 30px",
+                 "grid_template_columns" => "150px 1fr",
+                 "sections" => [
+                   %{},
+                   %{},
+                   %{},
+                   %{}
+                 ]
+               },
                "pages" => [
                  %{
                    "grid_template_areas" => "head head\nnav main\nnav foot",
@@ -127,7 +139,38 @@ defmodule Affable.SitesTest do
              } =
                %Site{
                  unpersisted_site_fixture()
-                 | pages: [
+                 | layout: %Layout{
+                     grid_template_areas: "head head\nnav main\nfooter footer",
+                     grid_template_rows: "50px 1fr 30px",
+                     grid_template_columns: "150px 1fr",
+                     sections: [
+                       %Section{
+                         name: "header",
+                         element: "header",
+                         background_colour: "FF0000",
+                         image: nil
+                       },
+                       %Section{
+                         name: "nav",
+                         element: "nav",
+                         background_colour: "FF0000",
+                         image: nil
+                       },
+                       %Section{
+                         name: "main",
+                         element: "main",
+                         background_colour: "FF0000",
+                         image: nil
+                       },
+                       %Section{
+                         name: "footer",
+                         element: "footer",
+                         background_colour: "FF0000",
+                         image: nil
+                       }
+                     ]
+                   },
+                   pages: [
                      %Page{
                        path: "/contact",
                        header_image: nil,
@@ -304,6 +347,7 @@ defmodule Affable.SitesTest do
                "site_logo_url" => ^expected_logo_url
              } =
                raw(%Site{
+                 layout: nil,
                  site_logo: %Asset{url: "foo"},
                  pages: [%Page{header_image: nil, items: [], sections: []}]
                })
@@ -313,6 +357,7 @@ defmodule Affable.SitesTest do
                "site_logo_url" => nil
              } =
                raw(%Site{
+                 layout: nil,
                  pages: [%Page{header_image: %Asset{url: "foo"}, items: [], sections: []}],
                  site_logo: nil
                })
@@ -322,6 +367,7 @@ defmodule Affable.SitesTest do
       %{"pages" => [%{"items" => [%{"image_url" => raw_image_url}]}]} =
         raw(%Site{
           site_logo: nil,
+          layout: nil,
           pages: [
             %Page{
               header_image: nil,

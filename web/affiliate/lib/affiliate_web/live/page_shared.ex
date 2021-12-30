@@ -3,7 +3,9 @@ defmodule AffiliateWeb.PageShared do
 
   def assign_page(
         socket,
-        site,
+        %{
+          "layout" => layout
+        } = site,
         %{
           "cta_background_colour" => cta_background_colour,
           "cta_text_colour" => cta_text_colour,
@@ -12,15 +14,12 @@ defmodule AffiliateWeb.PageShared do
           "header_image_url" => header_image_url,
           "header_text_colour" => header_text_colour,
           "header_text" => header_text,
-          "grid_template_areas" => grid_template_areas,
-          "grid_template_rows" => grid_template_rows,
-          "grid_template_columns" => grid_template_columns,
           "sections" => sections,
           "items" => items,
           "meta_description" => meta_description,
           "text" => text,
           "title" => title
-        }
+        } = page
       ) do
     assign(socket,
       attributes:
@@ -39,12 +38,10 @@ defmodule AffiliateWeb.PageShared do
       header_image_url: header_image_url,
       header_text_colour: header_text_colour,
       header_text: header_text,
+      site_layout: layout,
+      site_layout_sections_style: sections_style(layout),
       sections: sections,
-      sections_style: """
-        grid-template-areas: #{grid_template_areas};
-        grid-template-rows: #{grid_template_rows};
-        grid-template-columns: #{grid_template_columns};
-      """,
+      sections_style: sections_style(page),
       items: items,
       logo_url: site["site_logo_url"],
       meta_description: meta_description,
@@ -57,6 +54,22 @@ defmodule AffiliateWeb.PageShared do
 
   def assign_page(socket, _site, nil) do
     waiting(socket)
+  end
+
+  defp sections_style(%{
+         "grid_template_areas" => grid_template_areas,
+         "grid_template_rows" => grid_template_rows,
+         "grid_template_columns" => grid_template_columns
+       }) do
+    """
+      grid-template-areas: #{grid_template_areas};
+      grid-template-rows: #{grid_template_rows};
+      grid-template-columns: #{grid_template_columns};
+    """
+  end
+
+  defp sections_style(nil) do
+    nil
   end
 
   def assign_path(socket, path_parts) do

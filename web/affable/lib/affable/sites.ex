@@ -23,6 +23,8 @@ defmodule Affable.Sites do
 
   alias Ecto.Multi
 
+  @section_preloads [image: []]
+
   def update_page(%Page{} = page, attrs, %User{} = user) do
     with :ok <- must_be_site_member(user, page),
          {:ok, page} <-
@@ -259,6 +261,8 @@ defmodule Affable.Sites do
     site
     |> Repo.preload(
       [
+        layouts: [],
+        layout: [sections: @section_preloads],
         pages: page_query()
       ],
       attrs
@@ -270,7 +274,7 @@ defmodule Affable.Sites do
   end
 
   defp page_preloads() do
-    [items: items_query(), sections: [image: []], header_image: []]
+    [items: items_query(), sections: @section_preloads, header_image: []]
   end
 
   def with_items(site, attrs \\ []) do

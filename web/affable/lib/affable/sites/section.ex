@@ -2,8 +2,7 @@ defmodule Affable.Sites.Section do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Affable.Sites
-  alias Affable.Assets
+  alias Affable.{Assets, Layouts, Sites}
 
   @name_format ~r/^[a-z0-9-]*$/
 
@@ -14,6 +13,7 @@ defmodule Affable.Sites.Section do
   schema "sections" do
     belongs_to(:page, Sites.Page)
     belongs_to(:image, Assets.Asset)
+    belongs_to(:layout, Layouts.Layout)
 
     field(:name, :string)
     field(:element, :string, default: @elements.section)

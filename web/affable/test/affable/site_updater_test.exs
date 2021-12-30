@@ -6,7 +6,7 @@ defmodule Affable.SiteUpdaterTest do
   import Affable.SitesFixtures
 
   alias Affable.MockHTTP
-  alias Affable.{Broadcaster, Sites, SiteUpdater}
+  alias Affable.{Broadcaster, Layouts, Sites, SiteUpdater}
   alias Affable.Assets.Asset
   alias Affable.Sites.{Page, Section, Site}
 
@@ -18,7 +18,14 @@ defmodule Affable.SiteUpdaterTest do
 
   test "can broadcast full site on demand", %{broadcast_1: broadcast} do
     user = user_fixture()
-    site = site_fixture(user) |> Sites.reload_assets()
+    site = site_fixture(user)
+    {:ok, layout} = Layouts.create_layout(site, %{name: "basic"})
+
+    stub_broadcast()
+
+    {:ok, site} = site |> Sites.update_site(%{layout_id: layout.id})
+    site = site |> Sites.reload_assets()
+
     [first_asset | _] = site.assets
     stub_broadcast()
     {:ok, %Page{} = page} = Sites.add_page(site, user)

@@ -4,11 +4,18 @@ defmodule Affable.Sites.Site do
 
   alias Affable.Domains.Domain
   alias Affable.Assets.Asset
+  alias Affable.Layouts.Layout
   alias Affable.Sites.{Page, Publication, SiteMember, AttributeDefinition}
 
   schema "sites" do
     field :name, :string
     belongs_to :site_logo, Asset
+
+    # chosen global layout for site
+    belongs_to :layout, Layout
+    # available layouts, created by any site member
+    has_many :layouts, Layout
+
     field :internal_name, :string
     field :internal_hostname, :string
     field :made_available_at, :utc_datetime
@@ -20,6 +27,7 @@ defmodule Affable.Sites.Site do
     has_many :domains, Domain
     has_many :attribute_definitions, AttributeDefinition
     has_many :publications, Publication
+
     has_one :latest_publication, Publication
 
     timestamps()
@@ -32,6 +40,7 @@ defmodule Affable.Sites.Site do
       attrs,
       [
         :name,
+        :layout_id,
         :site_logo_id,
         :custom_head_html
       ]

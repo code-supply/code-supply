@@ -2,11 +2,13 @@ defmodule Affable.Sites.Raw do
   alias Affable.Sites.{Page, Section, Site, Item, AttributeDefinition, Attribute}
   alias Affable.Assets
   alias Affable.Assets.Asset
+  alias Affable.Layouts.Layout
 
   def raw(
         %Site{
-          site_logo: site_logo,
-          pages: pages
+          layout: layout,
+          pages: pages,
+          site_logo: site_logo
         } = site
       ) do
     %{
@@ -15,12 +17,27 @@ defmodule Affable.Sites.Raw do
       "site_logo_url" => site_logo |> Assets.to_imgproxy_url(width: 600, height: 176),
       "custom_head_html" => site.custom_head_html,
       "made_available_at" => format_datetime(site.made_available_at),
+      "layout" => layout && raw(layout),
       "pages" => pages |> Enum.map(&raw/1)
     }
   end
 
   def raw(%Site{pages: []} = site) do
     raw(%{site | pages: [%Page{header_image: nil}]})
+  end
+
+  def raw(%Layout{
+        grid_template_areas: grid_template_areas,
+        grid_template_rows: grid_template_rows,
+        grid_template_columns: grid_template_columns,
+        sections: sections
+      }) do
+    %{
+      "grid_template_areas" => grid_template_areas,
+      "grid_template_rows" => grid_template_rows,
+      "grid_template_columns" => grid_template_columns,
+      "sections" => sections |> Enum.map(&raw/1)
+    }
   end
 
   def raw(%Page{} = page) do
