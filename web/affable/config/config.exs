@@ -28,6 +28,17 @@ config :affable, AffableWeb.Endpoint,
 
 config :libcluster, topologies: []
 
+config :tailwind,
+  version: "3.0.8",
+  default: [
+    args: ~w(
+        --config=tailwind.config.js
+        --input=css/app.css
+        --output=../priv/static/assets/app.css
+      ),
+    cd: Path.expand("../assets", __DIR__)
+  ]
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
@@ -43,11 +54,6 @@ config :esbuild,
   version: "0.12.18",
   default: [
     args: ~w(src/app.ts --bundle --target=es2016 --outdir=../priv/static/assets),
-    cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
-  ],
-  css: [
-    args: ~w(build/app.css --outdir=../priv/static/assets),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]

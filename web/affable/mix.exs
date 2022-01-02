@@ -64,6 +64,7 @@ defmodule Affable.MixProject do
       {:goth, "~> 1.3-rc"},
       {:hackney, "~> 1.17"},
       {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
     ]
   end
@@ -84,9 +85,8 @@ defmodule Affable.MixProject do
         "cmd cp -a assets/static/* priv/static/"
       ],
       "assets.deploy": [
-        "cmd --cd assets npm run deploy",
+        "tailwind default --minify",
         "esbuild default --minify",
-        "esbuild css --minify",
         "cmd cp -a assets/static/* priv/static/",
         "phx.digest"
       ]

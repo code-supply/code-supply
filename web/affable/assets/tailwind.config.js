@@ -1,18 +1,15 @@
+// See the Tailwind configuration guide for advanced usage
+// https://tailwindcss.com/docs/configuration
 module.exports = {
-  mode: "jit",
-  purge: {
-    content: [
-      "../lib/affable_web/templates/*/*.html.*",
-      "../lib/affable_web/live/*.html.*",
-      "../lib/affable_web/views/*.ex",
-      "../lib/affable_web/live/*.ex",
-      "./js/*.js",
-      "./css/*.css",
-    ]
-  },
+  content: [
+    './js/**/*.js',
+    '../lib/*_web.ex',
+    '../lib/*_web/**/*.*ex'
+  ],
   theme: {
     extend: {},
   },
-  variants: {},
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [
+    require('@tailwindcss/forms')
+  ]
 }
