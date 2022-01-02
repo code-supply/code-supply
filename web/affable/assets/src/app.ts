@@ -1,11 +1,25 @@
 import "phoenix_html"
+// @ts-ignore
 import { Socket } from "phoenix"
+// @ts-ignore
 import { LiveSocket } from "phoenix_live_view"
 
 declare global {
   interface Window {
     liveSocket: any
   }
+}
+
+interface FileMeta {
+  url: any
+  fields: any
+}
+
+interface FileEntry {
+  meta: FileMeta
+  file: string | Blob
+  error: () => void
+  progress: (percent: number) => void
 }
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
@@ -29,7 +43,7 @@ let liveSocket = new LiveSocket("/live", Socket, {
         return this.el.getAttribute("data-attrs").split(", ");
       },
       beforeUpdate() {
-        this.prevAttrs = this.attrs().map(name => [name, this.el.getAttribute(name)]);
+        this.prevAttrs = this.attrs().map((name: string) => [name, this.el.getAttribute(name)]);
       },
       updated() {
         this.prevAttrs.forEach(([name, val]) => this.el.setAttribute(name, val));
@@ -37,8 +51,8 @@ let liveSocket = new LiveSocket("/live", Socket, {
     }
   },
   uploaders: {
-    GCS: (entries, onViewError) => {
-      entries.forEach(entry => {
+    GCS: (entries: FileEntry[], onViewError: (callback: () => void) => void) => {
+      entries.forEach((entry) => {
         let formData = new FormData();
         let { url, fields } = entry.meta;
         Object.entries(fields).forEach(([key, val]: [string, string]) => {
