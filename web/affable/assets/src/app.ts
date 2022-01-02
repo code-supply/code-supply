@@ -8,8 +8,8 @@
 //     import socket from "./socket"
 //
 import "phoenix_html"
-import {Socket} from "phoenix"
-import {LiveSocket} from "phoenix_live_view"
+import { Socket } from "phoenix"
+import { LiveSocket } from "phoenix_live_view"
 
 declare global {
   interface Window {
@@ -22,13 +22,13 @@ let liveSocket = new LiveSocket("/live", Socket, {
   hooks: {
     Scroll: {
       mounted() {
-        this.handleEvent("scroll", ({id}) => {
+        this.handleEvent("scroll", ({ id }) => {
           let el = document.getElementById(id);
-          el.scrollIntoView({behavior: "smooth"});
+          el.scrollIntoView({ behavior: "smooth" });
           let focusEls = el.getElementsByClassName('scrollfocus');
           var focusEl = focusEls[0] as HTMLElement;
           if (focusEl) {
-            focusEl.focus({preventScroll: true});
+            focusEl.focus({ preventScroll: true });
           }
         })
       }
@@ -49,7 +49,7 @@ let liveSocket = new LiveSocket("/live", Socket, {
     GCS: (entries, onViewError) => {
       entries.forEach(entry => {
         let formData = new FormData();
-        let {url, fields} = entry.meta;
+        let { url, fields } = entry.meta;
         Object.entries(fields).forEach(([key, val]: [string, string]) => {
           formData.append(key, val);
         });
@@ -60,7 +60,7 @@ let liveSocket = new LiveSocket("/live", Socket, {
         xhr.onerror = () => entry.error();
 
         xhr.upload.addEventListener("progress", (event) => {
-          if (event.lengthComputable){
+          if (event.lengthComputable) {
             let percent = Math.round((event.loaded / event.total) * 100);
             entry.progress(percent);
           }
@@ -71,7 +71,7 @@ let liveSocket = new LiveSocket("/live", Socket, {
       })
     }
   },
-  params: {_csrf_token: csrfToken}
+  params: { _csrf_token: csrfToken }
 })
 
 // connect if there are any LiveViews on the page
