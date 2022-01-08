@@ -1,6 +1,6 @@
 FROM elixir:1.13.1-alpine@sha256:139a9d96206904a337c08d1c4889b596587c93422050d13bb8d77a773a7450ce AS build
 
-RUN apk add --no-cache build-base git python2 gcompat
+RUN apk add --no-cache build-base git python2
 
 WORKDIR /app
 
