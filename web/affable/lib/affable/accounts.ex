@@ -304,7 +304,7 @@ defmodule Affable.Accounts do
       {encoded_token, user_token} = UserToken.build_email_token(user, "confirm")
       Repo.insert!(user_token)
       email = Email.confirmation_instructions(user, confirmation_url_fun.(encoded_token))
-      email |> Mailer.deliver_later()
+      email |> Mailer.deliver_later!()
 
       {:ok, %{to: email.to, body: email.text_body}}
     end
