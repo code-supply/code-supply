@@ -4,6 +4,7 @@ defmodule Affable.Layouts do
   alias Affable.Repo
 
   alias Affable.Layouts.Layout
+  alias Affable.Sites
   alias Affable.Sites.Section
 
   @default_template_areas ~s("header header"
@@ -31,7 +32,19 @@ defmodule Affable.Layouts do
     |> Repo.insert()
   end
 
+  def resize(user, layout, section_name: _section_name, x: _x, y: y) do
+    with :ok <- Sites.must_be_site_member(user, layout),
+         {:ok, layout} =
+           layout
+           |> Layout.changeset(%{grid_template_rows: "50px #{y}px 50px"})
+           |> Repo.update() do
+      {:ok, layout}
+    else
+      err -> err
+    end
+  end
+
   def all() do
-    Repo.all(from l in Layout, preload: [:sections])
+    Repo.all(from(l in Layout, preload: [:sections]))
   end
 end

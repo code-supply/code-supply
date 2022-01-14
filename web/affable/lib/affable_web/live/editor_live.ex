@@ -4,6 +4,7 @@ defmodule AffableWeb.EditorLive do
   use AffableWeb, :live_view
 
   alias Affable.Accounts
+  alias Affable.Layouts
   alias Affable.Sites
   alias Affable.Sites.{Page, Section, Site}
 
@@ -16,7 +17,7 @@ defmodule AffableWeb.EditorLive do
 
   def handle_params(
         %{"id" => id, "page_id" => page_id},
-        _path,
+        _uri,
         %{assigns: %{pages: pages, preview_url: preview_url}} = socket
       ) do
     case Enum.find(pages, fn {p, _cs} ->
@@ -34,8 +35,16 @@ defmodule AffableWeb.EditorLive do
   end
 
   def handle_params(
+        %{"id" => _id, "layout_id" => layout_id},
+        _uri,
+        socket
+      ) do
+    {:noreply, assign(socket, layout_id: layout_id)}
+  end
+
+  def handle_params(
         %{"id" => _id},
-        _path,
+        _uri,
         %{assigns: %{preview_url: preview_url, pages: pages}} = socket
       ) do
     {:noreply,
@@ -170,6 +179,17 @@ defmodule AffableWeb.EditorLive do
     |> reset_site(socket)
   end
 
+  def handle_event(
+        "resize",
+        %{"name" => name, "blockSize" => block_size, "inlineSize" => inline_size},
+        %{assigns: %{changeset: %{data: site}, user: user}} = socket
+      ) do
+    {:ok, layout} =
+      Layouts.resize(user, site.layout, section_name: name, x: inline_size, y: block_size)
+
+    {:noreply, update(socket, :changeset, fn cs -> %{cs | data: %{cs.data | layout: layout}} end)}
+  end
+
   defp retrieve_state(user, socket, id) do
     site = Sites.get_site!(user, id)
 
@@ -191,6 +211,7 @@ defmodule AffableWeb.EditorLive do
   defp reset_site(%Site{} = site, socket) do
     {:noreply,
      assign(socket,
+       layout_id: nil,
        changeset: Site.changeset(site, %{}),
        published: Sites.is_published?(site),
        pages:

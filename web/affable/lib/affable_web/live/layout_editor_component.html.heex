@@ -1,0 +1,13 @@
+<div id="layout-editor" class="fixed hidden w-2/3 mt-1 overflow-scroll lg:grid gap-2 h-body top-12 left-1/3" style={"grid-template-areas:#{@layout.grid_template_areas};grid-template-rows:#{@layout.grid_template_rows};grid-template-columns:#{@layout.grid_template_columns}"}>
+  <%= for layout_section <- @layout.sections do %>
+    <%= content_tag(layout_section.element,
+id: "section-#{layout_section.id}",
+data_name: layout_section.name,
+phx_hook: "Resizable",
+phx_target: @myself,
+class: "resize overflow-hidden",
+style: "grid-area:#{layout_section.name};color:##{layout_section.text_colour};background-color:##{layout_section.background_colour}") do %>
+      <%= layout_section.name %>
+    <% end %>
+  <% end %>
+</div>

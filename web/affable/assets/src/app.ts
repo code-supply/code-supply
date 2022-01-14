@@ -48,6 +48,24 @@ let liveSocket = new LiveSocket("/live", Socket, {
       updated() {
         this.prevAttrs.forEach(([name, val]) => this.el.setAttribute(name, val));
       }
+    },
+    Resizable: {
+      mounted() {
+        const resizeObserver = new ResizeObserver(entries => {
+          for (let entry of entries) {
+            const el = entry.target as HTMLElement;
+            for (let contentBox of entry.contentBoxSize) {
+              this.pushEvent("resize", {
+                name: el.dataset.name,
+                inlineSize: contentBox.inlineSize,
+                blockSize: contentBox.blockSize
+              });
+            }
+          }
+        });
+
+        resizeObserver.observe(this.el);
+      }
     }
   },
   uploaders: {

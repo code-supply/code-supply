@@ -674,8 +674,4 @@ defmodule Affable.SitesTest do
       assert length(retrieved_item.attributes) > 0
     end
   end
-
-  defp wrong_user do
-    %User{id: 99_999}
-  end
 end

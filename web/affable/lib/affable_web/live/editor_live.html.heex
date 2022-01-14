@@ -64,7 +64,15 @@ asset_pairs={@asset_pairs}
 
       <div class="field">
         <%= label outer_form, :layout_id %>
-        <%= select outer_form, :layout_id, @layout_pairs, prompt: "None" %>
+        <div class="flex">
+          <%= select outer_form, :layout_id, @layout_pairs, prompt: "None", class: "w-5/8 flex-auto" %>
+          <%= if @changeset.data.layout_id do %>
+            <%= live_patch "Edit",
+                  to: Routes.editor_path(@socket, :edit_layout, @changeset.data.id, @changeset.data.layout_id),
+                  id: "site-layout-edit",
+                  class: "pl-3 pt-3 w-3/8 flex-none" %>
+          <% end %>
+        </div>
         <%= error_tag outer_form, :layout_id %>
       </div>
 
@@ -135,4 +143,8 @@ asset_pairs={@asset_pairs}
 
 </div>
 
-<iframe class="fixed hidden w-2/3 mt-1 overflow-scroll lg:block h-body top-12 left-1/3" src={@preview_url}/>
+<%= if assigns[:layout_id] do %>
+  <.live_component module={AffableWeb.LayoutEditorComponent} id={@layout_id} layout={@changeset.data.layout} />
+<% else %>
+  <iframe class="fixed hidden w-2/3 mt-1 overflow-scroll lg:block h-body top-12 left-1/3" src={@preview_url}/>
+<% end %>

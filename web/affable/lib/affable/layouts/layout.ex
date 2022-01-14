@@ -19,7 +19,7 @@ defmodule Affable.Layouts.Layout do
   @doc false
   def changeset(layout, attrs) do
     layout
-    |> cast(attrs, [:name])
+    |> cast(attrs, [:name, :grid_template_rows])
     |> validate_required([:name])
   end
 end

@@ -1,5 +1,6 @@
 defmodule Affable.AccountsFixtures do
   alias Affable.Accounts
+  alias Affable.Accounts.User
 
   @moduledoc """
   This module defines test helpers for creating
@@ -38,5 +39,9 @@ defmodule Affable.AccountsFixtures do
     {:ok, captured} = fun.(&"[TOKEN]#{&1}[TOKEN]")
     [_, token, _] = String.split(captured.body, "[TOKEN]")
     token
+  end
+
+  def wrong_user do
+    %User{id: 99_999}
   end
 end

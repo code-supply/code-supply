@@ -715,7 +715,7 @@ defmodule Affable.Sites do
     site_member?(user, site_id)
   end
 
-  def site_member?(user, %Page{site_id: site_id}) do
+  def site_member?(user, %{site_id: site_id}) do
     site_member?(user, site_id)
   end
 
@@ -723,8 +723,8 @@ defmodule Affable.Sites do
     Repo.exists?(from(SiteMember, where: [user_id: ^user.id, site_id: ^site_id]))
   end
 
-  defp must_be_site_member(user, page) do
-    if user |> site_member?(page) do
+  def must_be_site_member(user, obj) do
+    if user |> site_member?(obj) do
       :ok
     else
       {:error, :unauthorized}
