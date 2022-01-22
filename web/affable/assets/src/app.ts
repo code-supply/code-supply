@@ -49,22 +49,27 @@ let liveSocket = new LiveSocket("/live", Socket, {
         this.prevAttrs.forEach(([name, val]) => this.el.setAttribute(name, val));
       }
     },
-    Resizable: {
+    RowResize: {
       mounted() {
-        const resizeObserver = new ResizeObserver(entries => {
-          for (let entry of entries) {
-            const el = entry.target as HTMLElement;
-            for (let contentBox of entry.contentBoxSize) {
-              this.pushEvent("resize", {
-                name: el.dataset.name,
-                inlineSize: contentBox.inlineSize,
-                blockSize: contentBox.blockSize
-              });
-            }
+        const el = this.el;
+        var dragging = false;
+        el.addEventListener("mousedown", () => {
+          dragging = true;
+        });
+        document.addEventListener("mousemove", (e) => {
+          if (dragging) {
+            this.pushEventTo(el, "resizeRowDrag", {
+              row: el.dataset.row,
+              offset: e.clientY - el.getBoundingClientRect().top
+            });
           }
         });
-
-        resizeObserver.observe(this.el);
+        document.addEventListener("mouseup", () => {
+          if (dragging) {
+            this.pushEventTo(el, "resizeRow");
+            dragging = false;
+          }
+        });
       }
     }
   },

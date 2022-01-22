@@ -4,7 +4,6 @@ defmodule AffableWeb.EditorLive do
   use AffableWeb, :live_view
 
   alias Affable.Accounts
-  alias Affable.Layouts
   alias Affable.Sites
   alias Affable.Sites.{Page, Section, Site}
 
@@ -177,17 +176,6 @@ defmodule AffableWeb.EditorLive do
 
     Sites.demote_item(user, site, item_id)
     |> reset_site(socket)
-  end
-
-  def handle_event(
-        "resize",
-        %{"name" => name, "blockSize" => block_size, "inlineSize" => inline_size},
-        %{assigns: %{changeset: %{data: site}, user: user}} = socket
-      ) do
-    {:ok, layout} =
-      Layouts.resize(user, site.layout, section_name: name, x: inline_size, y: block_size)
-
-    {:noreply, update(socket, :changeset, fn cs -> %{cs | data: %{cs.data | layout: layout}} end)}
   end
 
   defp retrieve_state(user, socket, id) do

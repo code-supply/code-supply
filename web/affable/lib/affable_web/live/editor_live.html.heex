@@ -144,7 +144,10 @@ asset_pairs={@asset_pairs}
 </div>
 
 <%= if assigns[:layout_id] do %>
-  <.live_component module={AffableWeb.LayoutEditorComponent} id={@layout_id} layout={@changeset.data.layout} />
+  <.live_component module={AffableWeb.LayoutEditorComponent}
+                   id={@layout_id}
+                   user={@user}
+  />
 <% else %>
   <iframe class="fixed hidden w-2/3 mt-1 overflow-scroll lg:block h-body top-12 left-1/3" src={@preview_url}/>
 <% end %>

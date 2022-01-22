@@ -1,8 +1,13 @@
 defmodule AffableWeb.LayoutEditingTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
+  import Hammox
 
   alias Affable.Layouts
+  alias Affable.Layouts.Layout
+  alias Affable.Sites.Site
+
+  setup :verify_on_exit!
 
   setup context do
     %{conn: conn, user: user} = register_and_log_in_user(context)
@@ -31,28 +36,60 @@ defmodule AffableWeb.LayoutEditingTest do
            |> has_element?("iframe")
   end
 
-  test "resizing a section causes other sections to resize", %{conn: conn, site: site} do
-    {:ok, layout} = Layouts.create_layout(site, %{name: "basic"})
+  test "resizing a row causes layout adjustment", %{conn: conn, site: site} do
+    {:ok, layout} =
+      Layouts.create_layout(site, %{
+        name: "basic",
+        grid_template_rows: "40px 1fr 50px"
+      })
+
+    {:ok, view, _html} = live(conn, path(conn, site))
+
+    view
+    |> select_layout(layout)
+    |> edit_layout()
+    |> element("[data-row=1]")
+    |> render_hook(:resizeRowDrag, %{
+      "row" => "0",
+      "offset" => 10
+    })
+
+    assert view
+           |> element("#layout-editor")
+           |> render() =~ ~r(grid-template-rows.+50px.+1fr.+50px)
+  end
+
+  test "finalising a row resize persists the change and broadcasts", %{conn: conn, site: site} do
+    {:ok, layout} =
+      Layouts.create_layout(site, %{
+        name: "basic",
+        grid_template_rows: "40px 1fr 50px"
+      })
+
     {:ok, view, _html} = live(conn, path(conn, site))
 
     view
     |> select_layout(layout)
     |> edit_layout()
 
-    refute view
-           |> element("main[data-name=main]")
-           |> render() =~ "height"
+    expect_broadcast(fn %Site{layout: layout} ->
+      assert %Layout{grid_template_rows: "50px 1fr 50px"} = layout
+    end)
 
-    assert view
-           |> render_hook(:resize, %{
-             "name" => "main",
-             "blockSize" => "100",
-             "inlineSize" => "100"
-           }) =~ "foo"
+    view
+    |> element("[data-row=1]")
+    |> render_hook(:resizeRowDrag, %{
+      "row" => "0",
+      "offset" => 10
+    })
+
+    view
+    |> element("[data-row=1]")
+    |> render_hook(:resizeRow)
 
     assert view
            |> element("#layout-editor")
-           |> render() =~ ~r(grid-template-rows.*50px 100px 50px)
+           |> render() =~ ~r(grid-template-rows.+50px.+1fr.+50px)
   end
 
   defp path(conn, site) do

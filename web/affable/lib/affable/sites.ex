@@ -867,26 +867,26 @@ defmodule Affable.Sites do
     end)
   end
 
-  defp broadcast(%Site{} = site) do
+  def broadcast(%Site{} = site) do
     site = site |> with_pages() |> preload_latest_publication()
     :ok = site |> (&broadcaster().broadcast(&1)).()
 
     site
   end
 
-  defp broadcast(%Page{site_id: site_id} = page) do
+  def broadcast(%Page{site_id: site_id} = page) do
     get_site!(site_id)
     |> broadcast()
 
     page
   end
 
-  defp broadcast({:ok, %Page{} = page} = result) do
+  def broadcast({:ok, %Page{} = page} = result) do
     _ = broadcast(page)
     result
   end
 
-  defp broadcast({:error, changeset}) do
+  def broadcast({:error, changeset}) do
     {:error, changeset}
   end
 
