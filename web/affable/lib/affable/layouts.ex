@@ -144,19 +144,11 @@ defmodule Affable.Layouts do
     |> Repo.insert()
   end
 
-  def resize_grid_template_row(rows, row_index, offset) do
+  def resize_grid_template_row(rows, row_index, new_height) do
     rows
     |> String.split()
-    |> List.update_at(String.to_integer(row_index), fn height ->
-      case Integer.parse(height) do
-        {height, _junk} ->
-          new_height = height + offset
-          "#{new_height}px"
-
-        err ->
-          IO.inspect(height)
-          IO.inspect(err)
-      end
+    |> List.update_at(String.to_integer(row_index), fn _height ->
+      "#{new_height}px"
     end)
     |> Enum.join(" ")
   end

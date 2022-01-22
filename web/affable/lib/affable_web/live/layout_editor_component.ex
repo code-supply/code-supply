@@ -21,10 +21,10 @@ defmodule AffableWeb.LayoutEditorComponent do
 
   def handle_event(
         "resizeRowDrag",
-        %{"row" => row, "offset" => offset},
+        %{"row" => row, "height" => height},
         %{assigns: %{preview_grid_template_rows: grid_template_rows}} = socket
       ) do
-    grid_template_rows = Layouts.resize_grid_template_row(grid_template_rows, row, offset)
+    grid_template_rows = Layouts.resize_grid_template_row(grid_template_rows, row, height)
 
     {:noreply,
      assign(
@@ -36,15 +36,18 @@ defmodule AffableWeb.LayoutEditorComponent do
 
   def handle_event(
         "resizeRow",
-        %{},
+        %{"row" => row, "height" => height},
         %{assigns: %{preview_grid_template_rows: grid_template_rows, layout: layout, user: user}} =
           socket
       ) do
+    grid_template_rows = Layouts.resize_grid_template_row(grid_template_rows, row, height)
     {:ok, layout} = Layouts.update(user, layout, %{grid_template_rows: grid_template_rows})
 
     {:noreply,
      assign(
        socket,
+       preview_grid_template_rows: grid_template_rows,
+       editor_grid_template_rows: Layouts.editor_grid_template_rows(grid_template_rows),
        layout: layout
      )}
   end

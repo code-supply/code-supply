@@ -48,15 +48,15 @@ defmodule AffableWeb.LayoutEditingTest do
     view
     |> select_layout(layout)
     |> edit_layout()
-    |> element("[data-row=1]")
+    |> element("[data-row=1][phx-hook=RowResize")
     |> render_hook(:resizeRowDrag, %{
       "row" => "0",
-      "offset" => 10
+      "height" => 10
     })
 
     assert view
            |> element("#layout-editor")
-           |> render() =~ ~r(grid-template-rows.+50px.+1fr.+50px)
+           |> render() =~ ~r(grid-template-rows.+10px.+1fr.+50px)
   end
 
   test "finalising a row resize persists the change and broadcasts", %{conn: conn, site: site} do
@@ -73,23 +73,19 @@ defmodule AffableWeb.LayoutEditingTest do
     |> edit_layout()
 
     expect_broadcast(fn %Site{layout: layout} ->
-      assert %Layout{grid_template_rows: "50px 1fr 50px"} = layout
+      assert %Layout{grid_template_rows: "10px 1fr 50px"} = layout
     end)
 
     view
-    |> element("[data-row=1]")
-    |> render_hook(:resizeRowDrag, %{
+    |> element("[data-row=1][phx-hook=RowResize")
+    |> render_hook(:resizeRow, %{
       "row" => "0",
-      "offset" => 10
+      "height" => 10
     })
-
-    view
-    |> element("[data-row=1]")
-    |> render_hook(:resizeRow)
 
     assert view
            |> element("#layout-editor")
-           |> render() =~ ~r(grid-template-rows.+50px.+1fr.+50px)
+           |> render() =~ ~r(grid-template-rows.+10px.+1fr.+50px)
   end
 
   defp path(conn, site) do

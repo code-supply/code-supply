@@ -52,21 +52,42 @@ let liveSocket = new LiveSocket("/live", Socket, {
     RowResize: {
       mounted() {
         const el = this.el;
+        const row = el.dataset.row;
+        const firstInRow: HTMLElement = document.querySelector(`[data-row="${row}"]`);
         var dragging = false;
+        var timeoutId = undefined;
+        const initialDelay = 5;
+        const maxDelay = 50;
+        var delay = initialDelay;
+        console.log("first in row", firstInRow);
         el.addEventListener("mousedown", () => {
           dragging = true;
+          delay = initialDelay;
         });
         document.addEventListener("mousemove", (e) => {
           if (dragging) {
-            this.pushEventTo(el, "resizeRowDrag", {
-              row: el.dataset.row,
-              offset: e.clientY - el.getBoundingClientRect().top
-            });
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+            }
+            timeoutId = setTimeout(() => {
+              this.pushEventTo(el, "resizeRowDrag", {
+                row: row,
+                height: firstInRow.clientHeight + e.clientY - firstInRow.getBoundingClientRect().bottom
+              });
+              delay = initialDelay;
+            }, delay);
+            delay = delay + 0.1;
+            if (delay > maxDelay) {
+              delay = maxDelay;
+            }
           }
         });
-        document.addEventListener("mouseup", () => {
+        document.addEventListener("mouseup", (e) => {
           if (dragging) {
-            this.pushEventTo(el, "resizeRow");
+            this.pushEventTo(el, "resizeRow", {
+              row: row,
+              height: firstInRow.clientHeight + e.clientY - firstInRow.getBoundingClientRect().bottom
+            });
             dragging = false;
           }
         });

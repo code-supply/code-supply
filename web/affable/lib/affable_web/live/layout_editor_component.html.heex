@@ -3,7 +3,8 @@
     <%= content_tag(layout_section.element,
 [id: "section-#{layout_section.id}",
 class: "overflow-hidden #{if row_resize?(layout_section), do: "cursor-row-resize"}",
+data_row: row_index,
 style: "grid-area:#{layout_section.name};color:##{layout_section.text_colour};background-color:##{layout_section.background_colour}"] ++
-(if row_resize?(layout_section), do: [phx_target: @myself, phx_hook: "RowResize", data_row: row_index], else: [])) do %><%= if row_resize?(layout_section), do: "", else: layout_section.name %><% end %>
+(if row_resize?(layout_section), do: [phx_target: @myself, phx_hook: "RowResize"], else: [])) do %><%= if row_resize?(layout_section), do: "", else: layout_section.name %><% end %>
   <% end %>
 </div>
