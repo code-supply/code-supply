@@ -43,6 +43,7 @@ defmodule Affable.LayoutsTest do
 
     adjuster0 = %Section{id: "rowadjust0", name: "_rowadjust0", element: "div"}
     adjuster1 = %Section{id: "rowadjust1", name: "_rowadjust1", element: "div"}
+    adjuster2 = %Section{id: "rowadjust2", name: "_rowadjust2", element: "div"}
 
     assert [
              {0, header},
@@ -50,7 +51,8 @@ defmodule Affable.LayoutsTest do
              {1, nav},
              {1, main},
              {1, adjuster1},
-             {2, footer}
+             {2, footer},
+             {2, adjuster2}
            ] ==
              Layouts.editor_sections(layout)
 
@@ -58,7 +60,8 @@ defmodule Affable.LayoutsTest do
 "_rowadjust0 _rowadjust0"
 "nav main"
 "_rowadjust1 _rowadjust1"
-"footer footer") == Layouts.editor_grid_template_areas(layout)
+"footer footer"
+"_rowadjust2 _rowadjust2") == Layouts.editor_grid_template_areas(layout)
 
     bar = Layouts.resize_bar_width()
 

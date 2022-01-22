@@ -51,13 +51,12 @@ defmodule Affable.Layouts do
     end
   end
 
-  defp with_adjustment_row(row, row_index, row_count, column_count) do
-    [row] ++
-      if row_index == row_count - 1 do
-        []
-      else
-        [adjustment_row(column_count, row_index)]
-      end
+  defp with_adjustment_row(row, _row_index, 1, _column_count) do
+    [row]
+  end
+
+  defp with_adjustment_row(row, row_index, _row_count, column_count) do
+    [row] ++ [adjustment_row(column_count, row_index)]
   end
 
   defp indexed_cells(row, row_index) do
@@ -80,6 +79,10 @@ defmodule Affable.Layouts do
     ""
   end
 
+  def editor_grid_template_rows("") do
+    ""
+  end
+
   def editor_grid_template_rows(str_rows) do
     original_cols = String.split(str_rows)
 
@@ -92,6 +95,10 @@ defmodule Affable.Layouts do
   end
 
   defp deserialise_areas(%Layout{grid_template_areas: nil}) do
+    [[]]
+  end
+
+  defp deserialise_areas(%Layout{grid_template_areas: ""}) do
     [[]]
   end
 
