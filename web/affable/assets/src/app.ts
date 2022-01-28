@@ -59,7 +59,6 @@ let liveSocket = new LiveSocket("/live", Socket, {
         const initialDelay = 5;
         const maxDelay = 50;
         var delay = initialDelay;
-        console.log("first in row", firstInRow);
         el.addEventListener("mousedown", () => {
           dragging = true;
           delay = initialDelay;
