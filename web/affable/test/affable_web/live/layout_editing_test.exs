@@ -36,29 +36,6 @@ defmodule AffableWeb.LayoutEditingTest do
            |> has_element?("iframe")
   end
 
-  test "resizing a row causes layout adjustment", %{conn: conn, site: site} do
-    {:ok, layout} =
-      Layouts.create_layout(site, %{
-        name: "basic",
-        grid_template_rows: "40px 1fr 50px"
-      })
-
-    {:ok, view, _html} = live(conn, path(conn, site))
-
-    view
-    |> select_layout(layout)
-    |> edit_layout()
-    |> element("[data-row=1][phx-hook=RowResize")
-    |> render_hook(:resizeRowDrag, %{
-      "row" => "0",
-      "height" => 10
-    })
-
-    assert view
-           |> element("#layout-editor")
-           |> render() =~ ~r(grid-template-rows.+10px.+1fr.+50px)
-  end
-
   test "finalising a row resize persists the change and broadcasts", %{conn: conn, site: site} do
     {:ok, layout} =
       Layouts.create_layout(site, %{
@@ -77,7 +54,7 @@ defmodule AffableWeb.LayoutEditingTest do
     end)
 
     view
-    |> element("[data-row=1][phx-hook=RowResize")
+    |> element("[data-name=_adjustrow_0_0][phx-hook=RowResize")
     |> render_hook(:resizeRow, %{
       "row" => "0",
       "height" => 10

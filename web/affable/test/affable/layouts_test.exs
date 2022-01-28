@@ -21,52 +21,70 @@ defmodule Affable.LayoutsTest do
     assert layout == retrieved
   end
 
-  test "layout editor controls can be added to sections, template areas, rows and columns" do
-    sections = [
-      header = %Section{name: "header", element: "header", background_colour: "000000"},
-      nav = %Section{name: "nav", element: "nav", background_colour: "00FF00"},
-      main = %Section{name: "main", element: "main", background_colour: "0000FF"},
-      footer = %Section{name: "footer", element: "footer", background_colour: "FFFF00"}
-    ]
+  describe "layout editor controls" do
+    setup do
+      sections = [
+        %Section{name: "header", element: "header", background_colour: "000000"},
+        %Section{name: "nav", element: "nav", background_colour: "00FF00"},
+        %Section{name: "main", element: "main", background_colour: "0000FF"},
+        %Section{name: "social", element: "section", background_colour: "0000FF"},
+        %Section{name: "footer", element: "footer", background_colour: "FFFF00"}
+      ]
 
-    grid_template_areas = ~s("header header"
+      grid_template_areas = ~s("header header"
 "nav main"
+"nav social"
 "footer footer")
 
-    layout = %Layout{
-      name: "my layout",
-      sections: sections,
-      grid_template_areas: grid_template_areas,
-      grid_template_rows: ~s(50px 1fr 50px),
-      grid_template_columns: ~s(150px 1fr)
-    }
+      %{
+        bar: Layouts.resize_bar_width(),
+        grid:
+          Layouts.editor_grid(%Layout{
+            name: "my layout",
+            sections: sections,
+            grid_template_areas: grid_template_areas,
+            grid_template_rows: ~s(50px 1fr 1fr 50px),
+            grid_template_columns: ~s(150px 1fr)
+          }),
+        sections: sections
+      }
+    end
 
-    adjuster0 = %Section{id: "rowadjust0", name: "_rowadjust0", element: "div"}
-    adjuster1 = %Section{id: "rowadjust1", name: "_rowadjust1", element: "div"}
-    adjuster2 = %Section{id: "rowadjust2", name: "_rowadjust2", element: "div"}
+    test "can be added to sections", %{grid: grid, sections: sections} do
+      assert [
+               {[last_col: 2, last_row: 0], %Section{element: "header", name: "header"}},
+               {[last_col: _, last_row: _], %Section{name: "_adjustrow_0_0"}},
+               {[last_col: 0, last_row: 4], %Section{name: "nav"}},
+               {[last_col: _, last_row: _], %Section{name: "_adjustcolumn_0_0"}},
+               {[last_col: 2, last_row: 2], %Section{name: "main"}},
+               {[last_col: _, last_row: _], %Section{name: "_adjustrow_2_1"}},
+               {[last_col: 2, last_row: 4], %Section{name: "social"}},
+               {[last_col: _, last_row: _], %Section{name: "_adjustrow_4_2"}},
+               {[last_col: 2, last_row: 6], %Section{name: "footer"}},
+               {[last_col: _, last_row: _], %Section{name: "_adjustrow_6_3"}}
+             ] = Layouts.sections(grid, sections)
+    end
 
-    assert [
-             {0, header},
-             {0, adjuster0},
-             {1, nav},
-             {1, main},
-             {1, adjuster1},
-             {2, footer},
-             {2, adjuster2}
-           ] ==
-             Layouts.editor_sections(layout)
+    test "can be added to template areas", %{grid: grid} do
+      assert ~s("header header header"
+"_adjustrow_0_0 _adjustrow_0_0 _adjustrow_0_0"
+"nav _adjustcolumn_0_0 main"
+"nav _adjustcolumn_0_0 _adjustrow_2_1"
+"nav _adjustcolumn_0_0 social"
+"_adjustrow_4_2 _adjustrow_4_2 _adjustrow_4_2"
+"footer footer footer"
+"_adjustrow_6_3 _adjustrow_6_3 _adjustrow_6_3") == Layouts.format_areas(grid)
+    end
 
-    assert ~s("header header"
-"_rowadjust0 _rowadjust0"
-"nav main"
-"_rowadjust1 _rowadjust1"
-"footer footer"
-"_rowadjust2 _rowadjust2") == Layouts.editor_grid_template_areas(layout)
+    test "can be added to template rows", %{grid: grid, bar: bar} do
+      assert ~s{calc(50px - #{bar}) #{bar} calc(1fr - #{bar}) #{bar} calc(1fr - #{bar}) #{bar} calc(50px - #{bar}) #{bar}} ==
+               Layouts.format_measurements(grid.rows)
+    end
 
-    bar = Layouts.resize_bar_width()
-
-    assert ~s{calc(50px - #{bar}) #{bar} calc(1fr - #{bar}) #{bar} 50px} ==
-             Layouts.editor_grid_template_rows("50px 1fr 50px")
+    test "can be added to template columns", %{grid: grid, bar: bar} do
+      assert ~s{calc(150px - #{bar}) #{bar} 1fr} ==
+               Layouts.format_measurements(grid.columns)
+    end
   end
 
   test "layout editor controls aren't added to single row layouts" do
@@ -78,8 +96,10 @@ defmodule Affable.LayoutsTest do
       grid_template_columns: ~s(1fr)
     }
 
-    assert ~s("one") == Layouts.editor_grid_template_areas(layout)
-    assert ~s{1fr} == Layouts.editor_grid_template_rows("1fr")
+    grid = Layouts.editor_grid(layout)
+
+    assert ~s("one") == Layouts.format_areas(grid)
+    assert ~s{1fr} == Layouts.format_measurements(~w(1fr))
   end
 
   test "layout editor controls aren't added to empty or nil layouts" do
@@ -91,10 +111,10 @@ defmodule Affable.LayoutsTest do
       grid_template_columns: ~s(150px 1fr)
     }
 
-    assert ~s("") == Layouts.editor_grid_template_areas(empty_layout)
+    empty_grid = Layouts.editor_grid(empty_layout)
 
-    assert ~s{} ==
-             Layouts.editor_grid_template_rows("")
+    assert ~s("") == Layouts.format_areas(empty_grid)
+    assert ~s{} == Layouts.format_measurements(empty_grid.rows)
 
     nil_layout = %Layout{
       name: "my layout",
@@ -104,10 +124,10 @@ defmodule Affable.LayoutsTest do
       grid_template_columns: ~s(150px 1fr)
     }
 
-    assert ~s("") == Layouts.editor_grid_template_areas(nil_layout)
+    nil_grid = Layouts.editor_grid(nil_layout)
 
-    assert ~s{} ==
-             Layouts.editor_grid_template_rows(nil)
+    assert ~s("") == Layouts.format_areas(nil_grid)
+    assert ~s{} == Layouts.format_measurements(nil_grid.rows)
   end
 
   test "new layout has header, nav, main and footer sections, in a grid" do

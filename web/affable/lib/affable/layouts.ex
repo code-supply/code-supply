@@ -1,6 +1,7 @@
 defmodule Affable.Layouts do
   import Ecto.Query, warn: false
 
+  alias Affable.CssGrid
   alias Affable.Repo
   alias Affable.Layouts.Layout
   alias Affable.Sites
@@ -16,7 +17,15 @@ defmodule Affable.Layouts do
     ~s(20px)
   end
 
-  def row_resize?(%Section{id: "rowadjust" <> _}) do
+  def column_resize?(%Section{name: "_adjustcolumn" <> _}) do
+    true
+  end
+
+  def column_resize?(_) do
+    false
+  end
+
+  def row_resize?(%Section{name: "_adjustrow" <> _}) do
     true
   end
 
@@ -24,55 +33,59 @@ defmodule Affable.Layouts do
     false
   end
 
-  def editor_sections(layout) do
+  def editor_grid(layout) do
     layout
-    |> deserialised_editor_grid_template_areas()
-    |> Enum.flat_map(&Enum.uniq(&1))
+    |> layout_to_css_grid()
+    |> CssGrid.add_adjusters()
   end
 
-  def editor_grid_template_areas(layout) do
-    layout
-    |> deserialised_editor_grid_template_areas()
-    |> serialise_areas()
+  def format_areas(grid) do
+    grid.areas
+    |> Enum.map(fn row -> ~s(") <> Enum.join(row, " ") <> ~s(") end)
+    |> Enum.join("\n")
   end
 
-  defp deserialised_editor_grid_template_areas(layout) do
-    rows = deserialise_areas(layout)
-    [first_row | _] = rows
-    column_count = length(first_row)
-    row_count = length(rows)
-
-    for {row, row_index} <- Enum.with_index(rows), reduce: [] do
-      acc ->
-        acc ++
-          for r <- with_adjustment_row(row, row_index, row_count, column_count) do
-            indexed_cells(r, row_index)
-          end
-    end
+  def format_measurements(measurements) do
+    measurements |> Enum.join(" ")
   end
 
-  defp with_adjustment_row(row, _row_index, 1, _column_count) do
-    [row]
-  end
+  def sections(grid, sections) do
+    for {name, {last_col, last_row}} <- CssGrid.names_with_coords(grid.areas) do
+      section = Enum.find(sections, &(&1.name == name))
 
-  defp with_adjustment_row(row, row_index, _row_count, column_count) do
-    [row] ++ [adjustment_row(column_count, row_index)]
-  end
-
-  defp indexed_cells(row, row_index) do
-    for cell <- row do
-      {row_index, cell}
-    end
-  end
-
-  defp adjustment_row(column_count, row_index) do
-    for _ <- 1..column_count do
-      %Section{
-        id: "rowadjust#{row_index}",
-        name: "_rowadjust#{row_index}",
-        element: "div"
+      {
+        [last_col: last_col, last_row: last_row],
+        section || %Section{name: name}
       }
     end
+  end
+
+  def editor_grid_template_areas(%Layout{grid_template_areas: nil}) do
+    ~s("")
+  end
+
+  defp layout_to_css_grid(%Layout{
+         grid_template_areas: areas,
+         grid_template_columns: columns,
+         grid_template_rows: rows
+       }) do
+    %CssGrid{
+      bar: resize_bar_width(),
+      areas: areas |> areas_to_list(),
+      columns: columns |> String.split(),
+      rows: (rows || "") |> String.split()
+    }
+  end
+
+  @spec areas_to_list(nil | String.t()) :: list(list(String.t()))
+  defp areas_to_list(nil) do
+    [[]]
+  end
+
+  defp areas_to_list(areas) do
+    areas
+    |> String.split("\n")
+    |> Enum.map(fn row -> row |> String.replace(~s("), "") |> String.split() end)
   end
 
   def editor_grid_template_rows(nil) do
@@ -83,42 +96,13 @@ defmodule Affable.Layouts do
     ""
   end
 
-  def editor_grid_template_rows(str_rows) do
-    original_cols = String.split(str_rows)
+  def editor_grid_template_rows(layout) do
+    grid =
+      layout
+      |> layout_to_css_grid()
+      |> CssGrid.add_adjusters()
 
-    original_cols
-    |> Enum.map(fn col_size ->
-      ~s{calc(#{col_size} - #{resize_bar_width()}) #{resize_bar_width()}}
-    end)
-    |> List.replace_at(length(original_cols) - 1, List.last(original_cols))
-    |> Enum.join(" ")
-  end
-
-  defp deserialise_areas(%Layout{grid_template_areas: nil}) do
-    [[]]
-  end
-
-  defp deserialise_areas(%Layout{grid_template_areas: ""}) do
-    [[]]
-  end
-
-  defp deserialise_areas(%Layout{grid_template_areas: grid_template_areas, sections: sections}) do
-    for row <- String.split(grid_template_areas, "\n") do
-      for col <- String.split(row) do
-        name = col |> String.trim() |> String.replace(~s("), "")
-        sections |> Enum.find(fn s -> s.name == name end)
-      end
-    end
-  end
-
-  defp serialise_areas(arranged_sections) do
-    for row <- arranged_sections do
-      row
-      |> Enum.map(&elem(&1, 1).name)
-      |> Enum.join(" ")
-    end
-    |> Enum.map(fn w -> ~s("#{w}") end)
-    |> Enum.join("\n")
+    grid.rows |> Enum.join(" ")
   end
 
   def get!(user, id) do

@@ -1,10 +1,14 @@
-<div id="layout-editor" class="fixed hidden w-2/3 mt-1 overflow-scroll lg:grid h-body top-12 left-1/3" style={"grid-template-areas:#{@editor_grid_template_areas};grid-template-rows:#{@editor_grid_template_rows};grid-template-columns:#{@layout.grid_template_columns}"}>
-  <%= for {row_index, layout_section} <- @sections do %>
+<div id="layout-editor" class="fixed hidden w-2/3 mt-1 overflow-scroll lg:grid h-body top-12 left-1/3" style={"grid-template-areas:#{@editor_grid_template_areas};grid-template-rows:#{@editor_grid_template_rows};grid-template-columns:#{@editor_grid_template_columns}"}>
+  <%= for {[last_col: last_col, last_row: last_row], layout_section} <- @sections do %>
     <%= content_tag(layout_section.element,
-[id: "section-#{layout_section.id}",
-class: "overflow-hidden #{if row_resize?(layout_section), do: "cursor-row-resize"}",
-data_row: row_index,
-style: "grid-area:#{layout_section.name};color:##{layout_section.text_colour};background-color:##{layout_section.background_colour}"] ++
+[
+id: "section-#{layout_section.id}",
+class: "overflow-hidden #{if row_resize?(layout_section), do: "cursor-row-resize"} #{if column_resize?(layout_section), do: "cursor-col-resize"}",
+data_last_col: last_col,
+data_last_row: last_row,
+data_name: layout_section.name,
+style: "grid-area:#{layout_section.name};color:##{layout_section.text_colour};background-color:##{layout_section.background_colour}"
+] ++
 (if row_resize?(layout_section), do: [phx_target: @myself, phx_hook: "RowResize"], else: [])) do %><%= if row_resize?(layout_section), do: "", else: layout_section.name %><% end %>
   <% end %>
 </div>

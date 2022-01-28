@@ -52,40 +52,25 @@ let liveSocket = new LiveSocket("/live", Socket, {
     RowResize: {
       mounted() {
         const el = this.el;
-        const row = el.dataset.row;
-        const firstInRow: HTMLElement = document.querySelector(`[data-row="${row}"]`);
+        const [_underscore, _area, prev_pos, orig_prev_pos] = el.dataset.name.split("_");
+        const elForMeasuring: HTMLElement = document.querySelector(`[data-last-row="${prev_pos}"]`);
         var dragging = false;
-        var timeoutId = undefined;
-        const initialDelay = 5;
-        const maxDelay = 50;
-        var delay = initialDelay;
+
         el.addEventListener("mousedown", () => {
           dragging = true;
-          delay = initialDelay;
         });
-        document.addEventListener("mousemove", (e) => {
-          if (dragging) {
-            if (timeoutId) {
-              clearTimeout(timeoutId);
-            }
-            timeoutId = setTimeout(() => {
-              this.pushEventTo(el, "resizeRowDrag", {
-                row: row,
-                height: firstInRow.clientHeight + e.clientY - firstInRow.getBoundingClientRect().bottom
-              });
-              delay = initialDelay;
-            }, delay);
-            delay = delay + 0.1;
-            if (delay > maxDelay) {
-              delay = maxDelay;
-            }
-          }
-        });
+
+        // document.addEventListener("mousemove", (e) => {
+        //   if (dragging) {
+        //     // magic that mutates the row size on frontend
+        //   }
+        // });
+
         document.addEventListener("mouseup", (e) => {
           if (dragging) {
             this.pushEventTo(el, "resizeRow", {
-              row: row,
-              height: firstInRow.clientHeight + e.clientY - firstInRow.getBoundingClientRect().bottom
+              row: orig_prev_pos,
+              height: elForMeasuring.clientHeight + e.clientY - elForMeasuring.getBoundingClientRect().bottom
             });
             dragging = false;
           }
