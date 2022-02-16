@@ -52,16 +52,18 @@ defmodule Affable.LayoutsTest do
 
     test "can be added to sections", %{grid: grid, sections: sections} do
       assert [
-               {[last_col: 2, last_row: 0], %Section{element: "header", name: "header"}},
-               {[last_col: _, last_row: _], %Section{name: "_adjustrow_0_0"}},
-               {[last_col: 0, last_row: 4], %Section{name: "nav"}},
-               {[last_col: _, last_row: _], %Section{name: "_adjustcolumn_0_0"}},
-               {[last_col: 2, last_row: 2], %Section{name: "main"}},
-               {[last_col: _, last_row: _], %Section{name: "_adjustrow_2_1"}},
-               {[last_col: 2, last_row: 4], %Section{name: "social"}},
-               {[last_col: _, last_row: _], %Section{name: "_adjustrow_4_2"}},
-               {[last_col: 2, last_row: 6], %Section{name: "footer"}},
-               {[last_col: _, last_row: _], %Section{name: "_adjustrow_6_3"}}
+               {%{last_col: 2, last_row: 0, editor_pos: nil, original_pos: nil},
+                %Section{element: "header", name: "header"}},
+               {%{last_col: _, last_row: _, editor_pos: 0, original_pos: 0},
+                %Section{name: "_adjustrow_0_0"}},
+               {%{last_col: 0, last_row: 4}, %Section{name: "nav"}},
+               {%{last_col: _, last_row: _}, %Section{name: "_adjustcolumn_0_0"}},
+               {%{last_col: 2, last_row: 2}, %Section{name: "main"}},
+               {%{last_col: _, last_row: _}, %Section{name: "_adjustrow_2_1"}},
+               {%{last_col: 2, last_row: 4}, %Section{name: "social"}},
+               {%{last_col: _, last_row: _}, %Section{name: "_adjustrow_4_2"}},
+               {%{last_col: 2, last_row: 6}, %Section{name: "footer"}},
+               {%{last_col: _, last_row: _}, %Section{name: "_adjustrow_6_3"}}
              ] = Layouts.sections(grid, sections)
     end
 

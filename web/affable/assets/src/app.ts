@@ -26,15 +26,16 @@ interface Resize {
   el: HTMLElement
   styleAttr: string
   barSize: number
-  measuringElement: (prevPos: number) => HTMLElement
+  measuringElement: (pos: number) => HTMLElement
   calculateSize: (e: MouseEvent, el: HTMLElement) => number
-  mouseup: (e: MouseEvent, originalIndex: string, elForMeasuring: HTMLElement) => void
+  mouseup: (e: MouseEvent, originalPos: string, elForMeasuring: HTMLElement) => void
 }
 
 const resize = function({ el, styleAttr, barSize, measuringElement, calculateSize, mouseup }: Resize) {
-  const [_underscore, _area, prevPosStr, originalIndex] = el.dataset.name.split("_");
-  const prevPos = parseInt(prevPosStr, 10);
-  const elForMeasuring: HTMLElement = measuringElement(prevPos);
+  const editorPos = el.dataset.editorPos;
+  const originalPos = el.dataset.originalPos;
+  const prevEditorPos = parseInt(editorPos, 10);
+  const elForMeasuring: HTMLElement = measuringElement(prevEditorPos);
   let dragging = false;
 
   el.addEventListener("mousedown", () => {
@@ -47,14 +48,14 @@ const resize = function({ el, styleAttr, barSize, measuringElement, calculateSiz
       const container: HTMLElement = el.parentElement;
       const templateSizes: string = container.style[styleAttr];
       const sizes = templateSizes.split(" ");
-      sizes.splice(prevPos, 1, `calc(${size}px - ${barSize}px)`);
+      sizes.splice(prevEditorPos, 1, `calc(${size}px - ${barSize}px)`);
       container.style[styleAttr] = sizes.join(" ");
     }
   });
 
   document.addEventListener("mouseup", (e) => {
     if (dragging) {
-      mouseup(e, originalIndex, elForMeasuring);
+      mouseup(e, originalPos, elForMeasuring);
       dragging = false;
     }
   });
@@ -94,18 +95,17 @@ let liveSocket = new LiveSocket("/live", Socket, {
           styleAttr: "gridTemplateRows",
           barSize: this.el.clientHeight,
 
-          measuringElement: (prevPos) =>
-            document.querySelector(`[data-last-row="${prevPos}"]`),
+          measuringElement: (pos: number) =>
+            document.querySelector(`[data-last-row="${pos}"]`),
 
           calculateSize: (e: MouseEvent, el: HTMLElement) =>
             Math.floor((el.clientHeight + e.clientY - el.getBoundingClientRect().bottom)),
 
-          mouseup: (e: MouseEvent, originalIndex: string, elForMeasuring: HTMLElement) =>
+          mouseup: (e: MouseEvent, originalPos: string, elForMeasuring: HTMLElement) =>
             this.pushEventTo(this.el, "resizeRow", {
-              row: originalIndex,
+              row: originalPos,
               height: elForMeasuring.clientHeight + e.clientY - elForMeasuring.getBoundingClientRect().bottom
             }),
-
         });
       }
     },
@@ -116,18 +116,17 @@ let liveSocket = new LiveSocket("/live", Socket, {
           styleAttr: "gridTemplateColumns",
           barSize: this.el.clientWidth,
 
-          measuringElement: (prevPos) =>
-            document.querySelector(`[data-last-col="${prevPos}"]`),
+          measuringElement: (pos: number) =>
+            document.querySelector(`[data-last-col="${pos}"]`),
 
           calculateSize: (e: MouseEvent, el: HTMLElement) =>
             Math.floor((el.clientWidth + e.clientX - el.getBoundingClientRect().right)),
 
-          mouseup: (e: MouseEvent, originalIndex: string, elForMeasuring: HTMLElement) =>
+          mouseup: (e: MouseEvent, originalPos: string, elForMeasuring: HTMLElement) =>
             this.pushEventTo(this.el, "resizeColumn", {
-              column: originalIndex,
+              column: originalPos,
               width: elForMeasuring.clientWidth + e.clientX - elForMeasuring.getBoundingClientRect().right
             }),
-
         });
       }
     }

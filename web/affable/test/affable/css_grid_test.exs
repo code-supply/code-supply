@@ -51,6 +51,11 @@ defmodule Affable.CssGridTest do
              })
   end
 
+  test "can extract editor pos and original pos from a name" do
+    assert 4 == CssGrid.editor_pos("_adjustrow_4_2")
+    assert 2 == CssGrid.original_pos("_adjustrow_5_2")
+  end
+
   test "doesn't add adjusters to single-row lists" do
     assert %CssGrid{
              bar: "3px",

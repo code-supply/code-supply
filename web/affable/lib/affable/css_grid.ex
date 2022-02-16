@@ -26,6 +26,25 @@ defmodule Affable.CssGrid do
     |> pad()
   end
 
+  def editor_pos(name) do
+    extract_pos(name, 2)
+  end
+
+  def original_pos(name) do
+    extract_pos(name, 3)
+  end
+
+  defp extract_pos(name, name_index) do
+    case String.split(name, "_") do
+      [_underscore, _area, _editor_pos, _original_pos] = bits ->
+        {n, _junk} = Integer.parse(Enum.at(bits, name_index))
+        n
+
+      _ ->
+        nil
+    end
+  end
+
   def names(grid) do
     grid
     |> List.flatten()
