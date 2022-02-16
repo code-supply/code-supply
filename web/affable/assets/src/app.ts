@@ -52,19 +52,25 @@ let liveSocket = new LiveSocket("/live", Socket, {
     RowResize: {
       mounted() {
         const el = this.el;
+        const barSize: number = el.clientHeight;
         const [_underscore, _area, prev_pos, orig_prev_pos] = el.dataset.name.split("_");
         const elForMeasuring: HTMLElement = document.querySelector(`[data-last-row="${prev_pos}"]`);
-        var dragging = false;
+        let dragging = false;
 
         el.addEventListener("mousedown", () => {
           dragging = true;
         });
 
-        // document.addEventListener("mousemove", (e) => {
-        //   if (dragging) {
-        //     // magic that mutates the row size on frontend
-        //   }
-        // });
+        document.addEventListener("mousemove", (e) => {
+          if (dragging) {
+            const container: HTMLElement = el.parentElement;
+            const templateRows: string = container.style.gridTemplateRows;
+            const height: number = elForMeasuring.clientHeight + e.clientY - elForMeasuring.getBoundingClientRect().bottom;
+            const rows = templateRows.split(" ");
+            rows.splice(prev_pos, 1, `calc(${height}px - ${barSize}px)`);
+            container.style.gridTemplateRows = rows.join(" ");
+          }
+        });
 
         document.addEventListener("mouseup", (e) => {
           if (dragging) {
