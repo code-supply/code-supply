@@ -22,6 +22,44 @@ interface FileEntry {
   progress: (percent: number) => void
 }
 
+interface Resize {
+  el: HTMLElement
+  styleAttr: string
+  barSize: number
+  measuringElement: (prevPos: number) => HTMLElement
+  calculateSize: (e: MouseEvent, el: HTMLElement) => number
+  mouseup: (e: MouseEvent, originalIndex: string, elForMeasuring: HTMLElement) => void
+}
+
+const resize = function({ el, styleAttr, barSize, measuringElement, calculateSize, mouseup }: Resize) {
+  const [_underscore, _area, prevPosStr, originalIndex] = el.dataset.name.split("_");
+  const prevPos = parseInt(prevPosStr, 10);
+  const elForMeasuring: HTMLElement = measuringElement(prevPos);
+  let dragging = false;
+
+  el.addEventListener("mousedown", () => {
+    dragging = true;
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (dragging) {
+      const size = calculateSize(e, elForMeasuring);
+      const container: HTMLElement = el.parentElement;
+      const templateSizes: string = container.style[styleAttr];
+      const sizes = templateSizes.split(" ");
+      sizes.splice(prevPos, 1, `calc(${size}px - ${barSize}px)`);
+      container.style[styleAttr] = sizes.join(" ");
+    }
+  });
+
+  document.addEventListener("mouseup", (e) => {
+    if (dragging) {
+      mouseup(e, originalIndex, elForMeasuring);
+      dragging = false;
+    }
+  });
+};
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   hooks: {
@@ -51,35 +89,45 @@ let liveSocket = new LiveSocket("/live", Socket, {
     },
     RowResize: {
       mounted() {
-        const el = this.el;
-        const barSize: number = el.clientHeight;
-        const [_underscore, _area, prev_pos, orig_prev_pos] = el.dataset.name.split("_");
-        const elForMeasuring: HTMLElement = document.querySelector(`[data-last-row="${prev_pos}"]`);
-        let dragging = false;
+        resize({
+          el: this.el,
+          styleAttr: "gridTemplateRows",
+          barSize: this.el.clientHeight,
 
-        el.addEventListener("mousedown", () => {
-          dragging = true;
-        });
+          measuringElement: (prevPos) =>
+            document.querySelector(`[data-last-row="${prevPos}"]`),
 
-        document.addEventListener("mousemove", (e) => {
-          if (dragging) {
-            const container: HTMLElement = el.parentElement;
-            const templateRows: string = container.style.gridTemplateRows;
-            const height: number = elForMeasuring.clientHeight + e.clientY - elForMeasuring.getBoundingClientRect().bottom;
-            const rows = templateRows.split(" ");
-            rows.splice(prev_pos, 1, `calc(${height}px - ${barSize}px)`);
-            container.style.gridTemplateRows = rows.join(" ");
-          }
-        });
+          calculateSize: (e: MouseEvent, el: HTMLElement) =>
+            Math.floor((el.clientHeight + e.clientY - el.getBoundingClientRect().bottom)),
 
-        document.addEventListener("mouseup", (e) => {
-          if (dragging) {
-            this.pushEventTo(el, "resizeRow", {
-              row: orig_prev_pos,
+          mouseup: (e: MouseEvent, originalIndex: string, elForMeasuring: HTMLElement) =>
+            this.pushEventTo(this.el, "resizeRow", {
+              row: originalIndex,
               height: elForMeasuring.clientHeight + e.clientY - elForMeasuring.getBoundingClientRect().bottom
-            });
-            dragging = false;
-          }
+            }),
+
+        });
+      }
+    },
+    ColumnResize: {
+      mounted() {
+        resize({
+          el: this.el,
+          styleAttr: "gridTemplateColumns",
+          barSize: this.el.clientWidth,
+
+          measuringElement: (prevPos) =>
+            document.querySelector(`[data-last-col="${prevPos}"]`),
+
+          calculateSize: (e: MouseEvent, el: HTMLElement) =>
+            Math.floor((el.clientWidth + e.clientX - el.getBoundingClientRect().right)),
+
+          mouseup: (e: MouseEvent, originalIndex: string, elForMeasuring: HTMLElement) =>
+            this.pushEventTo(this.el, "resizeColumn", {
+              column: originalIndex,
+              width: elForMeasuring.clientWidth + e.clientX - elForMeasuring.getBoundingClientRect().right
+            }),
+
         });
       }
     }

@@ -88,6 +88,23 @@ defmodule Affable.Layouts do
     |> Enum.map(fn row -> row |> String.replace(~s("), "") |> String.split() end)
   end
 
+  def editor_grid_template_columns(nil) do
+    ""
+  end
+
+  def editor_grid_template_columns("") do
+    ""
+  end
+
+  def editor_grid_template_columns(layout) do
+    grid =
+      layout
+      |> layout_to_css_grid()
+      |> CssGrid.add_adjusters()
+
+    grid.columns |> Enum.join(" ")
+  end
+
   def editor_grid_template_rows(nil) do
     ""
   end
@@ -135,12 +152,10 @@ defmodule Affable.Layouts do
     |> Repo.insert()
   end
 
-  def resize_grid_template_row(rows, row_index, new_height) do
-    rows
+  def change_grid_template_size(sizes, index, new_size) do
+    sizes
     |> String.split()
-    |> List.update_at(String.to_integer(row_index), fn _height ->
-      "#{new_height}px"
-    end)
+    |> List.replace_at(String.to_integer(index), "#{new_size}px")
     |> Enum.join(" ")
   end
 

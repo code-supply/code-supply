@@ -65,6 +65,35 @@ defmodule AffableWeb.LayoutEditingTest do
            |> render() =~ ~r(grid-template-rows.+10px.+1fr.+50px)
   end
 
+  test "finalising a column resize persists the change and broadcasts", %{conn: conn, site: site} do
+    {:ok, layout} =
+      Layouts.create_layout(site, %{
+        name: "basic",
+        grid_template_columns: "150px 1fr"
+      })
+
+    {:ok, view, _html} = live(conn, path(conn, site))
+
+    view
+    |> select_layout(layout)
+    |> edit_layout()
+
+    expect_broadcast(fn %Site{layout: layout} ->
+      assert %Layout{grid_template_columns: "100px 1fr"} = layout
+    end)
+
+    view
+    |> element("[data-name=_adjustcolumn_0_0][phx-hook=ColumnResize")
+    |> render_hook(:resizeColumn, %{
+      "column" => "0",
+      "width" => 100
+    })
+
+    assert view
+           |> element("#layout-editor")
+           |> render() =~ ~r(grid-template-columns.+100px.+1fr)
+  end
+
   defp path(conn, site) do
     Routes.editor_path(conn, :edit, site.id)
   end
