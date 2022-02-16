@@ -106,13 +106,13 @@ defmodule Affable.CssGrid do
   end
 
   defp add_resizable_column(row, name, x, offset, col_sizes, bar_width) do
-    prev_col_index = x + offset - 1
-    orig_prev_col_index = x - 1
+    editor_pos = x + offset - 1
+    original_pos = x - 1
 
     {
       offset + 1,
-      row ++ ["_adjustcolumn_#{prev_col_index}_#{orig_prev_col_index}", name],
-      add_bar_size(col_sizes, bar_width, prev_col_index)
+      row ++ ["_adjustcolumn_#{editor_pos}_#{original_pos}", name],
+      add_bar_size(col_sizes, bar_width, editor_pos)
     }
   end
 
@@ -121,10 +121,12 @@ defmodule Affable.CssGrid do
     {_, new_grid, new_row_sizes} =
       for {row, y} <- Enum.with_index(areas), reduce: {0, areas, row_sizes} do
         {added_row_count, acc_grid, acc_row_sizes} ->
+          editor_pos = y + added_row_count
+
           case adjuster_for_row(
                  acc_grid,
-                 y + added_row_count,
-                 "_adjustrow_#{y + added_row_count}_#{y}",
+                 editor_pos,
+                 "_adjustrow_#{editor_pos}_#{y}",
                  row
                ) do
             {:not_adjusted, _} ->
@@ -137,7 +139,7 @@ defmodule Affable.CssGrid do
             {:adjusted, adjuster_row} ->
               {
                 added_row_count + 1,
-                List.insert_at(acc_grid, y + added_row_count + 1, adjuster_row),
+                List.insert_at(acc_grid, editor_pos + 1, adjuster_row),
                 add_bar_size(acc_row_sizes, bar_width, y)
               }
           end
