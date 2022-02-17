@@ -178,6 +178,23 @@ defmodule Affable.Layouts do
     end
   end
 
+  def update_section(user, attrs) do
+    {id, attrs} = Map.pop(attrs, "id")
+
+    section =
+      from(s in Section, where: s.id == ^id, preload: [:layout])
+      |> Repo.one!()
+
+    with :ok <- Sites.must_be_site_member(user, section.layout) do
+      section
+      |> Section.changeset(attrs)
+      |> Repo.update()
+      |> broadcast()
+    else
+      err -> err
+    end
+  end
+
   def all() do
     Repo.all(from(l in Layout, preload: [:sections]))
   end
@@ -187,5 +204,12 @@ defmodule Affable.Layouts do
     Affable.Sites.broadcast(site)
 
     {:ok, layout}
+  end
+
+  defp broadcast({:ok, %Section{} = section}) do
+    {:ok, Repo.get!(Layout, section.layout_id)}
+    |> broadcast()
+
+    {:ok, section}
   end
 end

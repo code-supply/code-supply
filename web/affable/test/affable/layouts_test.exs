@@ -175,7 +175,52 @@ defmodule Affable.LayoutsTest do
     assert reloaded_layout == layout
   end
 
-  test "resizing row with incorrect user is not allowed" do
+  test "can save and broadcast a section change" do
+    user = user_fixture()
+    [site] = user.sites
+
+    {:ok, layout} =
+      Layouts.create_layout(site, %{
+        name: "basic",
+        grid_template_rows: "50px 1fr 50px"
+      })
+
+    stub_broadcast()
+    {:ok, _site} = Sites.update_site(site, %{layout_id: layout.id})
+
+    [section | _] = layout.sections
+    refute "main" == section.element
+
+    expect_broadcast(fn %Site{layout: layout} ->
+      assert Enum.any?(layout.sections, &(&1.id == section.id and &1.element == "main"))
+    end)
+
+    {:ok, section} = Layouts.update_section(user, %{"element" => "main", "id" => "#{section.id}"})
+
+    assert "main" == section.element
+  end
+
+  test "updating a section with incorrect user is not allowed" do
+    user = user_fixture()
+    [site] = user.sites
+
+    {:ok, layout} =
+      Layouts.create_layout(site, %{
+        name: "basic",
+        grid_template_rows: "50px 1fr 50px"
+      })
+
+    [section | _] = layout.sections
+
+    old_element = section.element
+
+    assert {:error, :unauthorized} =
+             Layouts.update_section(wrong_user(), %{"element" => "main", "id" => "#{section.id}"})
+
+    assert old_element == Repo.get!(Section, section.id).element
+  end
+
+  test "updating layout with incorrect user is not allowed" do
     user = user_fixture()
     [site] = user.sites
     {:ok, layout} = Layouts.create_layout(site, %{name: "basic"})

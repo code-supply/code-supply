@@ -94,6 +94,33 @@ defmodule AffableWeb.LayoutEditingTest do
            |> render() =~ ~r(grid-template-columns.+100px.+1fr)
   end
 
+  test "updating section info persists and broadcasts", %{conn: conn, site: site} do
+    {:ok, %Layout{sections: [section | _]} = layout} =
+      Layouts.create_layout(site, %{
+        name: "basic",
+        grid_template_columns: "150px 1fr"
+      })
+
+    refute "nav" == section.element
+
+    {:ok, view, _html} = live(conn, path(conn, site))
+
+    view
+    |> select_layout(layout)
+    |> edit_layout()
+
+    expect_broadcast(fn %Site{layout: layout} ->
+      assert 2 == Enum.count(layout.sections, fn s -> s.element == "nav" end)
+    end)
+
+    view
+    |> element("#section-form-#{section.id}")
+    |> render_change(%{section: %{element: "nav"}})
+
+    assert view
+           |> has_element?("#section-form-#{section.id} [selected=selected][value=nav]")
+  end
+
   defp path(conn, site) do
     Routes.editor_path(conn, :edit, site.id)
   end
