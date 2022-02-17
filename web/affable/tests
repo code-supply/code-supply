@@ -1,17 +1,22 @@
 #!/usr/bin/env bash
 
+cwd="$(dirname $0)"
+
 pids=""
 for n in {1..5}
 do
+  (
+    cd "$cwd"
     MIX_TEST_PARTITION=$n mix test --partitions 5 &
-    pids+=" $!"
+  )
+  pids+=" $!"
 done
 
 for p in $pids
 do
-    if ! wait $p
-    then
-        echo "Some tests failed"
-        exit 1
-    fi
+  if ! wait $p
+  then
+    echo "Some tests failed"
+    exit 1
+  fi
 done
