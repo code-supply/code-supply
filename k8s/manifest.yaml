@@ -46635,10 +46635,10 @@ subjects:
 ---
 apiVersion: v1
 data:
-  AFFILIATE_SITE_IMAGE: eu.gcr.io/code-supply/affiliate@sha256:1dcbbaedc8135a0c3a908c730b8b1f96e3201a0694510846716fdeaaf98667c7
+  AFFILIATE_SITE_IMAGE: eu.gcr.io/code-supply/affiliate@sha256:2656d410c9bab9c43982128ef59796a7196f08edc104d97e6544cc8672c6ab88
 kind: ConfigMap
 metadata:
-  name: site-operator-62k76bdt96
+  name: site-operator-4ddhf7t427
   namespace: operators
 ---
 apiVersion: v1
@@ -46775,7 +46775,7 @@ spec:
         sidecar.istio.io/proxyCPULimit: 500m
       labels:
         app: affable
-        version: 03b3787
+        version: 8aa82f8
     spec:
       containers:
       - env:
@@ -46792,7 +46792,7 @@ spec:
         envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:03b3787
+        image: eu.gcr.io/code-supply/affable:8aa82f8
         name: affable
         ports:
         - containerPort: 4000
@@ -47078,7 +47078,7 @@ spec:
         - secretRef:
             name: site-operator
         - configMapRef:
-            name: site-operator-62k76bdt96
+            name: site-operator-4ddhf7t427
         image: eu.gcr.io/code-supply/site-operator:a10dce1
         name: site-operator
         resources:
