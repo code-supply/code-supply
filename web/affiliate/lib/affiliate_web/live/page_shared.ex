@@ -45,6 +45,7 @@ defmodule AffiliateWeb.PageShared do
       items: items,
       logo_url: site["site_logo_url"],
       meta_description: meta_description,
+      menu: menu(site["pages"]),
       page_title: title,
       site_name: site["name"],
       text: text,
@@ -54,6 +55,12 @@ defmodule AffiliateWeb.PageShared do
 
   def assign_page(socket, _site, nil) do
     waiting(socket)
+  end
+
+  defp menu(pages) do
+    for page <- pages do
+      %{path: page["path"], name: page["title"]}
+    end
   end
 
   defp sections_style(%{

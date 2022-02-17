@@ -34,17 +34,23 @@ defmodule AffiliateWeb.PageLiveTest do
     end
   end
 
-  test "serves content", %{conn: conn} do
+  test "serves a menu", %{conn: conn} do
     incoming_payload = fixture("site_update_message")
-    site = incoming_payload["published"]
+    site = incoming_payload["preview"]
+    assert site["layout"]
 
-    {:ok, view, html} = live(conn, "/")
+    {:ok, view, html} = live(conn, "/preview")
 
-    refute html =~ site["name"]
+    assert html =~ "Waiting for data"
+    refute html =~ "<nav"
 
     SiteState.store(incoming_payload)
 
-    assert render(view) =~ site["name"]
+    assert render(view) =~ "<nav"
+
+    for page <- site["pages"] do
+      assert has_element?(view, "nav a[href='#{page["path"]}']")
+    end
   end
 
   test "serves pages at different paths", %{conn: conn} do

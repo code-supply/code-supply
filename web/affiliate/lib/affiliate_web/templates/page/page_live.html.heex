@@ -4,18 +4,28 @@
 <% @site_layout -> %>
   <div class="grid" style={@site_layout_sections_style}>
   <%= for layout_section <- @site_layout["sections"] do %>
-    <%= if layout_section["element"] == "main" do %>
-      <main class="sections grid" style={@sections_style}>
-        <%= for section <- @sections do %>
-          <%= content_tag(section["element"], class: "bg-cover p-8", style: Enum.join(AffiliateWeb.DynamicStyle.as_list(section), ";")) do %>
-            <%= raw(Earmark.as_html!(section["content"])) %>
+    <%= case layout_section["element"] do %>
+      <% "nav" -> %>
+        <nav style={section_style(layout_section)}>
+          <ul>
+            <%= for entry <- @menu do %>
+              <li><a href={entry.path}><%= entry.name %></a></li>
+            <% end %>
+          </ul>
+        </nav>
+      <% "main" -> %>
+        <main class="sections grid" style={@sections_style}>
+          <%= for section <- @sections do %>
+              <%= content_tag(section["element"], class: "bg-cover p-8", style: section_style(section)) do %>
+                <%= raw(Earmark.as_html!(section["content"])) %>
+                <%= section["element"] %>
+              <% end %>
           <% end %>
+        </main>
+      <% _ -> %>
+        <%= content_tag(layout_section["element"], style: section_style(layout_section)) do %>
+          <%= raw(Earmark.as_html!(layout_section["content"])) %>
         <% end %>
-      </main>
-    <% else %>
-      <%= content_tag(layout_section["element"], style: Enum.join(AffiliateWeb.DynamicStyle.as_list(layout_section), ";")) do %>
-        <%= raw(Earmark.as_html!(layout_section["content"])) %>
-      <% end %>
     <% end %>
   <% end %>
   </div>
