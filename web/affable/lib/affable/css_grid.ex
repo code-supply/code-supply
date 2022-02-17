@@ -160,7 +160,11 @@ defmodule Affable.CssGrid do
         [size, bar]
 
       size ->
-        ["calc(#{size} - #{bar_width})", bar_width]
+        if String.match?(size, ~r/^[0-9]+fr$/) do
+          [size, bar_width]
+        else
+          ["calc(#{size} - #{bar_width})", bar_width]
+        end
     end)
   end
 

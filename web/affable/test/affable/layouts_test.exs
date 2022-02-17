@@ -79,7 +79,7 @@ defmodule Affable.LayoutsTest do
     end
 
     test "can be added to template rows", %{grid: grid, bar: bar} do
-      assert ~s{calc(50px - #{bar}) #{bar} calc(1fr - #{bar}) #{bar} calc(1fr - #{bar}) #{bar} calc(50px - #{bar}) #{bar}} ==
+      assert ~s{calc(50px - #{bar}) #{bar} 1fr #{bar} 1fr #{bar} calc(50px - #{bar}) #{bar}} ==
                Layouts.format_measurements(grid.rows)
     end
 

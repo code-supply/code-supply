@@ -10,7 +10,7 @@ defmodule Affable.CssGridTest do
                "calc(10px - 2px)",
                "2px",
                "20px",
-               "calc(30px - 2px)",
+               "1fr",
                "2px",
                "calc(40px - 2px)",
                "2px",
@@ -39,7 +39,7 @@ defmodule Affable.CssGridTest do
            } ==
              CssGrid.add_adjusters(%CssGrid{
                bar: "2px",
-               rows: ["10px", "20px", "30px", "40px", "50px"],
+               rows: ["10px", "20px", "1fr", "40px", "50px"],
                columns: ["50px", "40px", "30px"],
                areas: [
                  ["a", "a", "b"],
