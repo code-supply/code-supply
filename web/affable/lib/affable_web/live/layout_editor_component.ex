@@ -4,9 +4,8 @@ defmodule AffableWeb.LayoutEditorComponent do
   import Affable.Layouts, only: [column_resize?: 1, row_resize?: 1]
 
   alias Affable.Layouts
-  alias Affable.Sites.Section
 
-  def update(%{id: id, user: user}, socket) do
+  def update(%{id: id, user: user, selected_section_id: selected_section_id}, socket) do
     layout = Layouts.get!(user, id)
     grid = Layouts.editor_grid(layout)
 
@@ -16,7 +15,7 @@ defmodule AffableWeb.LayoutEditorComponent do
        layout: layout,
        sections:
          for {data_attrs, section} <- Layouts.sections(grid, layout.sections) do
-           {Keyword.new(data_attrs), section, Section.changeset(section, %{})}
+           {Keyword.new(data_attrs), section, selected_section_id == "#{section.id}"}
          end,
        editor_grid_template_areas: Layouts.format_areas(grid),
        editor_grid_template_rows: Layouts.format_measurements(grid.rows),
@@ -41,6 +40,17 @@ defmodule AffableWeb.LayoutEditorComponent do
   end
 
   def handle_event(
+        "edit-section",
+        %{"id" => section_id},
+        %{assigns: %{layout: layout}} = socket
+      ) do
+    {:noreply,
+     push_patch(socket,
+       to: Routes.editor_path(socket, :edit_layout_section, layout.site_id, layout.id, section_id)
+     )}
+  end
+
+  def handle_event(
         "save",
         %{"section" => params},
         %{assigns: %{user: user}} = socket
@@ -49,9 +59,9 @@ defmodule AffableWeb.LayoutEditorComponent do
 
     {:noreply,
      update(socket, :sections, fn sections ->
-       for {data_attrs, existing_section, _changeset} = entry <- sections do
+       for {data_attrs, existing_section} = entry <- sections do
          if existing_section.id == section.id do
-           {data_attrs, section, Section.changeset(section, %{})}
+           {data_attrs, section}
          else
            entry
          end

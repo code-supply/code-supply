@@ -1,0 +1,41 @@
+<div class="clear-left">
+  <.form let={f} for={@changeset} id={"section-form-#{@section.id}"} csrf_token={false} phx_target={@myself} phx_change={:save} phx_submit={:save}>
+    <div class="py-4">
+      <div class="field">
+        <%= label f, :element %>
+        <%= select f, :element, @elements %>
+        <%= error_tag f, :element %>
+      </div>
+
+      <div class="field">
+        <%= label f, :name %>
+        <%= text_input f, :name, phx_debounce: 250 %>
+        <%= error_tag f, :name %>
+      </div>
+
+      <div class="field">
+        <%= label f, :background_colour %>
+        <%= text_input f, :background_colour, phx_debounce: 250 %>
+        <%= error_tag f, :background_colour %>
+      </div>
+
+      <div class="field">
+        <%= label f, :text_colour %>
+        <%= text_input f, :text_colour, phx_debounce: 250 %>
+        <%= error_tag f, :text_colour %>
+      </div>
+
+      <div class="field">
+        <%= label f, :image_id %>
+        <%= select f, :image_id, @asset_pairs, prompt: "None" %>
+        <%= error_tag f, :image_id %>
+      </div>
+
+      <div class="field">
+        <%= label f, :content %>
+        <%= editor_textarea f, :content %>
+        <%= error_tag f, :content %>
+      </div> 
+    </div>
+  </.form>
+</div>

@@ -1,20 +1,24 @@
 <div id="layout-editor" class="fixed hidden w-2/3 mt-1 overflow-scroll lg:grid h-body top-12 left-1/3" style={"grid-template-areas:#{@editor_grid_template_areas};grid-template-rows:#{@editor_grid_template_rows};grid-template-columns:#{@editor_grid_template_columns}"}>
-  <%= for {data, layout_section, changeset} <- @sections do %>
+  <%= for {data, layout_section, selected} <- @sections do %>
     <%= content_tag(
 layout_section.element,
 [
-id: "section-#{layout_section.id}-#{layout_section.name}",
-  class: "overflow-hidden #{if row_resize?(layout_section), do: "cursor-row-resize"} #{if column_resize?(layout_section), do: "cursor-col-resize"}",
+  id: "section-#{layout_section.id}",
+class: "overflow-hidden #{cond do
+row_resize?(layout_section) ->
+"cursor-row-resize"
+column_resize?(layout_section) ->
+"cursor-col-resize"
+true ->
+"cursor-pointer"
+end} #{unless selected, do: "opacity-50"}",
   style: "grid-area:#{layout_section.name};color:##{layout_section.text_colour};background-color:##{layout_section.background_colour}",
   data: data,
+  phx_click: "edit-section",
+  phx_value_id: layout_section.id,
+  phx_target: @myself
 ] ++ resize_hooks(@myself, layout_section)
 ) do %>
-<%= unless data[:editor_pos] do %>
-  <.form id={"section-form-#{layout_section.id}"} let={f} for={changeset} phx-change="save" phx-target={@myself}>
-    <%= hidden_inputs_for(f) %>
-    <%= select(f, :element, ~w(nav header main footer)) %>
-  </.form>
-<% end %>
 <% end %>
   <% end %>
 </div>

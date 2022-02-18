@@ -34,11 +34,20 @@ defmodule AffableWeb.EditorLive do
   end
 
   def handle_params(
+        %{"id" => _id, "layout_id" => layout_id, "section_id" => section_id},
+        _uri,
+        socket
+      ) do
+    {layout_id, _junk} = Integer.parse(layout_id)
+    {:noreply, assign(socket, layout_id: layout_id, section_id: section_id)}
+  end
+
+  def handle_params(
         %{"id" => _id, "layout_id" => layout_id},
         _uri,
         socket
       ) do
-    {:noreply, assign(socket, layout_id: layout_id)}
+    {:noreply, assign(socket, layout_id: layout_id, section_id: nil)}
   end
 
   def handle_params(
@@ -48,7 +57,7 @@ defmodule AffableWeb.EditorLive do
       ) do
     {:noreply,
      socket
-     |> assign(page: nil)
+     |> assign(page: nil, section_id: nil, layout_id: nil)
      |> assign_preview_url(preview_url, Sites.default_path(for {p, _} <- pages, do: p.path))}
   end
 

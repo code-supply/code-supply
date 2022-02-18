@@ -5,6 +5,7 @@ defmodule AffableWeb.LayoutEditingTest do
 
   alias Affable.Layouts
   alias Affable.Layouts.Layout
+  alias Affable.Sites
   alias Affable.Sites.Site
 
   setup :verify_on_exit!
@@ -114,11 +115,62 @@ defmodule AffableWeb.LayoutEditingTest do
     end)
 
     view
+    |> element("#layout-editor #{section.element}")
+    |> render_click()
+
+    view
     |> element("#section-form-#{section.id}")
-    |> render_change(%{section: %{element: "nav"}})
+    |> render_change(%{section: %{text_colour: "invalid"}})
 
     assert view
-           |> has_element?("#section-form-#{section.id} [selected=selected][value=nav]")
+           |> has_element?("#section-form-#{section.id} .invalid-feedback")
+
+    refute view |> has_element?("#layout-editor #{section.element}", "new content")
+
+    view
+    |> element("#section-form-#{section.id}")
+    |> render_change(%{section: %{text_colour: "FF00FF", element: "nav"}})
+
+    assert view
+           |> element("#section-#{section.id}")
+           |> render() =~ "FF00FF"
+  end
+
+  test "can cycle between site editing and layout section editing", %{conn: conn, site: site} do
+    {:ok, layout} = Layouts.create_layout(site, %{name: "basic"})
+    stub_broadcast()
+    {:ok, site} = Sites.update_site(site, %{layout_id: layout.id})
+
+    {:ok, view, _html} = live(conn, path(conn, site))
+
+    view
+    |> element("#site-layout-edit")
+    |> render_click()
+
+    view
+    |> element("#layout-editor header")
+    |> render_click()
+
+    view
+    |> element("a", "Site")
+    |> render_click()
+
+    assert view
+           |> has_element?("label", "Site name")
+
+    view
+    |> element("#site-layout-edit")
+    |> render_click()
+
+    assert view
+           |> has_element?("#layout-editor")
+
+    view
+    |> element("#layout-editor header")
+    |> render_click()
+
+    assert view
+           |> has_element?("label", "Element")
   end
 
   defp path(conn, site) do

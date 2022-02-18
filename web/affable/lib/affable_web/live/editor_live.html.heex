@@ -30,20 +30,24 @@
       </li>
     </ul>
   </nav>
-
-<%= if @page do %>
-
-<.live_component module={AffableWeb.PageComponent}
-id={@page.id}
-site={@changeset.data}
-user={@user}
-page={@page}
-changeset={@page_changeset}
-asset_pairs={@asset_pairs}
-/>
-
-<% else %>
-
+<%= cond do %>
+<% @page -> %>
+  <.live_component module={AffableWeb.PageComponent}
+           id={@page.id}
+           site={@changeset.data}
+           user={@user}
+           page={@page}
+           changeset={@page_changeset}
+           asset_pairs={@asset_pairs}
+           />
+<% assigns[:section_id] -> %>
+  <.live_component 
+           module={AffableWeb.SectionEditorComponent}
+           id={@section_id}
+           user={@user}
+           site={@changeset.data}
+           />
+<% true -> %>
 <.form let={outer_form}
        for={@changeset}
        url="#"
@@ -147,6 +151,7 @@ asset_pairs={@asset_pairs}
   <.live_component module={AffableWeb.LayoutEditorComponent}
                    id={@layout_id}
                    user={@user}
+                   selected_section_id={assigns[:section_id]}
   />
 <% else %>
   <iframe class="fixed hidden w-2/3 mt-1 overflow-scroll lg:block h-body top-12 left-1/3" src={@preview_url}/>
