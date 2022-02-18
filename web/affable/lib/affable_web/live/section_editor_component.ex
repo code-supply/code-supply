@@ -29,7 +29,8 @@ defmodule AffableWeb.SectionEditorComponent do
            Sections.get!(user, section.id)
            |> Sections.update(attrs) do
       send_update(AffableWeb.LayoutEditorComponent,
-        id: section.layout_id,
+        id: "layout-editor",
+        layout_id: section.layout_id,
         user: user,
         selected_section_id: section.id
       )

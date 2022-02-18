@@ -5,7 +5,7 @@ defmodule AffableWeb.LayoutEditorComponent do
 
   alias Affable.Layouts
 
-  def update(%{id: id, user: user, selected_section_id: selected_section_id}, socket) do
+  def update(%{layout_id: id, user: user, selected_section_id: selected_section_id}, socket) do
     layout = Layouts.get!(user, id)
     grid = Layouts.editor_grid(layout)
 
