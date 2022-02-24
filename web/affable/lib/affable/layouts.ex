@@ -60,7 +60,7 @@ defmodule Affable.Layouts do
           editor_pos: CssGrid.editor_pos(name),
           original_pos: CssGrid.original_pos(name)
         },
-        section || %Section{name: name}
+        section || %Section{name: name, image: nil}
       }
     end
   end
@@ -128,9 +128,10 @@ defmodule Affable.Layouts do
   end
 
   def get!(user, id) do
-    from(l in Layout, where: l.id == ^id, preload: [:sections])
+    from(l in Layout)
     |> join(:inner, [l], m in SiteMember, on: l.site_id == m.site_id)
-    |> where([s, m], m.user_id == ^user.id)
+    |> where([l, m], l.id == ^id and m.user_id == ^user.id)
+    |> preload([l, m], sections: [:image])
     |> Repo.one!()
   end
 

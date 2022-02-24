@@ -3,16 +3,26 @@
     <%= content_tag(
 layout_section.element,
 [
-  id: "section-#{layout_section.id}",
-class: "overflow-hidden #{cond do
+
+id: "section-#{layout_section.id}",
+
+class: "overflow-hidden
+#{cond do
 row_resize?(layout_section) ->
 "cursor-row-resize"
 column_resize?(layout_section) ->
 "cursor-col-resize"
 true ->
 "cursor-pointer"
-end} #{unless selected, do: "opacity-50"}",
-  style: "grid-area:#{layout_section.name};color:##{layout_section.text_colour};background-color:##{layout_section.background_colour}",
+end}
+#{unless selected, do: "opacity-50"}",
+
+style: "
+grid-area:#{layout_section.name};
+color:##{layout_section.text_colour};
+background-color:##{layout_section.background_colour};
+#{if layout_section.image, do: "background-image:#{layout_section.image.url}"}
+",
   data: data,
   phx_click: "edit-section",
   phx_value_id: layout_section.id,
