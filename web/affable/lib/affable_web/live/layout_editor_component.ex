@@ -70,19 +70,6 @@ defmodule AffableWeb.LayoutEditorComponent do
      end)}
   end
 
-  def resize_hooks(myself, section) do
-    cond do
-      row_resize?(section) ->
-        [phx_target: myself, phx_hook: "RowResize"]
-
-      column_resize?(section) ->
-        [phx_target: myself, phx_hook: "ColumnResize"]
-
-      true ->
-        []
-    end
-  end
-
   defp handle_resize(socket, layout, user, pos, size, attr) do
     original_sizes = Map.get(layout, attr)
     sizes = Layouts.change_grid_template_size(original_sizes, pos, size)
