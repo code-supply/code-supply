@@ -2,6 +2,7 @@ defmodule AffableWeb.LayoutEditorComponent do
   use AffableWeb, :live_component
 
   import Affable.Layouts, only: [column_resize?: 1, row_resize?: 1]
+  import Affable.Assets, only: [to_imgproxy_url: 1]
 
   alias Affable.Layouts
 

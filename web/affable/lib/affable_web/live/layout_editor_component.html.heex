@@ -6,7 +6,9 @@ layout_section.element,
 
 id: "section-#{layout_section.id}",
 
-class: "overflow-hidden
+class: "
+bg-cover
+overflow-hidden
 #{cond do
 row_resize?(layout_section) ->
 "cursor-row-resize"
@@ -15,13 +17,14 @@ column_resize?(layout_section) ->
 true ->
 "cursor-pointer"
 end}
-#{unless selected, do: "opacity-50"}",
+#{unless selected, do: "opacity-50"}
+",
 
 style: "
 grid-area:#{layout_section.name};
 color:##{layout_section.text_colour};
 background-color:##{layout_section.background_colour};
-#{if layout_section.image, do: "background-image:#{layout_section.image.url}"}
+#{if layout_section.image, do: "background-image:url(#{to_imgproxy_url(layout_section.image)})"}
 ",
   data: data,
   phx_click: "edit-section",
