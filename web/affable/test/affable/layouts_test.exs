@@ -52,39 +52,35 @@ defmodule Affable.LayoutsTest do
 
     test "can be added to sections", %{grid: grid, sections: sections} do
       assert [
-               {%{last_col: 2, last_row: 0, editor_pos: nil, original_pos: nil},
-                %Section{element: "header", name: "header"}},
-               {%{last_col: _, last_row: _, editor_pos: 0, original_pos: 0},
-                %Section{name: "_adjustrow_0_0", image: nil}},
-               {%{last_col: 0, last_row: 4}, %Section{name: "nav"}},
-               {%{last_col: _, last_row: _}, %Section{name: "_adjustcolumn_0_0"}},
-               {%{last_col: 2, last_row: 2}, %Section{name: "main"}},
-               {%{last_col: _, last_row: _}, %Section{name: "_adjustrow_2_1"}},
-               {%{last_col: 2, last_row: 4}, %Section{name: "social"}},
-               {%{last_col: _, last_row: _}, %Section{name: "_adjustrow_4_2"}},
-               {%{last_col: 2, last_row: 6}, %Section{name: "footer"}},
-               {%{last_col: _, last_row: _}, %Section{name: "_adjustrow_6_3"}}
-             ] = Layouts.sections(grid, sections)
+               "_adjustcolumn_0",
+               "_adjustcolumn_1",
+               "_adjustrow_0",
+               "header",
+               "nav",
+               "main",
+               "_adjustrow_1",
+               "social",
+               "_adjustrow_2",
+               "footer",
+               "_adjustrow_3"
+             ] = Layouts.sections(grid, sections) |> Enum.map(& &1.name)
     end
 
     test "can be added to template areas", %{grid: grid} do
-      assert ~s("header header header"
-"_adjustrow_0_0 _adjustrow_0_0 _adjustrow_0_0"
-"nav _adjustcolumn_0_0 main"
-"nav _adjustcolumn_0_0 _adjustrow_2_1"
-"nav _adjustcolumn_0_0 social"
-"_adjustrow_4_2 _adjustrow_4_2 _adjustrow_4_2"
-"footer footer footer"
-"_adjustrow_6_3 _adjustrow_6_3 _adjustrow_6_3") == Layouts.format_areas(grid)
+      assert ~s("_adjustcolumn_0 _adjustcolumn_1 _adjustrow_0"
+"header header _adjustrow_0"
+"nav main _adjustrow_1"
+"nav social _adjustrow_2"
+"footer footer _adjustrow_3") == Layouts.format_areas(grid)
     end
 
     test "can be added to template rows", %{grid: grid, bar: bar} do
-      assert ~s{calc(50px - #{bar}) #{bar} 1fr #{bar} 1fr #{bar} calc(50px - #{bar}) #{bar}} ==
+      assert ~s{#{bar} 50px 1fr 1fr 50px} ==
                Layouts.format_measurements(grid.rows)
     end
 
     test "can be added to template columns", %{grid: grid, bar: bar} do
-      assert ~s{calc(150px - #{bar}) #{bar} 1fr} ==
+      assert ~s{150px 1fr #{bar}} ==
                Layouts.format_measurements(grid.columns)
     end
   end

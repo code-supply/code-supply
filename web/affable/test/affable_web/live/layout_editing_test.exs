@@ -55,7 +55,7 @@ defmodule AffableWeb.LayoutEditingTest do
     end)
 
     view
-    |> element("[data-editor-pos=0][data-original-pos=0][phx-hook=RowResize")
+    |> element("#section-_adjustrow_0")
     |> render_hook(:resizeRow, %{
       "row" => "0",
       "height" => 10
@@ -84,7 +84,7 @@ defmodule AffableWeb.LayoutEditingTest do
     end)
 
     view
-    |> element("[data-editor-pos=0][data-original-pos=0][phx-hook=ColumnResize")
+    |> element("#section-_adjustcolumn_0")
     |> render_hook(:resizeColumn, %{
       "column" => "0",
       "width" => 100

@@ -50,18 +50,8 @@ defmodule Affable.Layouts do
   end
 
   def sections(grid, sections) do
-    for {name, {last_col, last_row}} <- CssGrid.names_with_coords(grid.areas) do
-      section = Enum.find(sections, &(&1.name == name))
-
-      {
-        %{
-          last_col: last_col,
-          last_row: last_row,
-          editor_pos: CssGrid.editor_pos(name),
-          original_pos: CssGrid.original_pos(name)
-        },
-        section || %Section{name: name, image: nil}
-      }
+    for name <- grid.areas |> List.flatten() |> Enum.uniq() do
+      Enum.find(sections, &(&1.name == name)) || %Section{id: name, name: name, image: nil}
     end
   end
 
@@ -137,10 +127,10 @@ defmodule Affable.Layouts do
 
   def create_layout(site, attrs) do
     sections = [
-      %Section{name: "header", element: "header", background_colour: "000000"},
-      %Section{name: "nav", element: "nav", background_colour: "00FF00"},
-      %Section{name: "main", element: "main", background_colour: "0000FF"},
-      %Section{name: "footer", element: "footer", background_colour: "FFFF00"}
+      %Section{name: "header", element: "header", background_colour: "000000", image: nil},
+      %Section{name: "nav", element: "nav", background_colour: "00FF00", image: nil},
+      %Section{name: "main", element: "main", background_colour: "0000FF", image: nil},
+      %Section{name: "footer", element: "footer", background_colour: "FFFF00", image: nil}
     ]
 
     site
@@ -197,7 +187,7 @@ defmodule Affable.Layouts do
   end
 
   def all() do
-    Repo.all(from(l in Layout, preload: [:sections]))
+    Repo.all(from(l in Layout, preload: [sections: :image]))
   end
 
   defp broadcast({:ok, %Layout{} = layout}) do

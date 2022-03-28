@@ -15,8 +15,8 @@ defmodule AffableWeb.LayoutEditorComponent do
        user: user,
        layout: layout,
        sections:
-         for {data_attrs, section} <- Layouts.sections(grid, layout.sections) do
-           {Keyword.new(data_attrs), section, selected_section_id == "#{section.id}"}
+         for section <- Layouts.sections(grid, layout.sections) do
+           {section, selected_section_id == "#{section.id}"}
          end,
        editor_grid_template_areas: Layouts.format_areas(grid),
        editor_grid_template_rows: Layouts.format_measurements(grid.rows),

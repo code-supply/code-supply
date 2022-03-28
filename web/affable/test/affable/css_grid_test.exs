@@ -3,38 +3,18 @@ defmodule Affable.CssGridTest do
 
   alias Affable.CssGrid
 
-  test "intersperses adjusters, which have editor pos and original pos" do
+  test "adds adjusters to top and right of grid" do
     assert %CssGrid{
              bar: "2px",
-             rows: [
-               "calc(10px - 2px)",
-               "2px",
-               "20px",
-               "1fr",
-               "2px",
-               "calc(40px - 2px)",
-               "2px",
-               "calc(50px - 2px)",
-               "2px"
-             ],
-             columns: [
-               "calc(50px - 2px)",
-               "2px",
-               "calc(40px - 2px)",
-               "2px",
-               "calc(30px - 2px)",
-               "2px"
-             ],
+             rows: ["2px", "10px", "20px", "1fr", "40px", "50px"],
+             columns: ["50px", "40px", "30px", "2px"],
              areas: [
-               ~w(a               a                 _adjustcolumn_1_1 b                 b               ),
-               ~w(_adjustrow_0_0  _adjustrow_0_0    _adjustrow_0_0    _adjustrow_0_0    _adjustrow_0_0  ),
-               ~w(c               _adjustcolumn_0_0 d                 d                 d               ),
-               ~w(c               _adjustcolumn_0_0 d                 d                 d               ),
-               ~w(c               _adjustcolumn_0_0 _adjustrow_3_2    _adjustrow_3_2    _adjustrow_3_2  ),
-               ~w(c               _adjustcolumn_0_0 e                 _adjustcolumn_2_1 f               ),
-               ~w(_adjustrow_5_3  _adjustrow_5_3    _adjustrow_5_3    _adjustrow_5_3    _adjustrow_5_3  ),
-               ~w(g               g                 g                 g                 g               ),
-               ~w(_adjustrow_7_4  _adjustrow_7_4    _adjustrow_7_4    _adjustrow_7_4    _adjustrow_7_4  )
+               ["_adjustcolumn_0", "_adjustcolumn_1", "_adjustcolumn_2", "_adjustrow_0"],
+               ["a", "a", "b", "_adjustrow_0"],
+               ["c", "d", "d", "_adjustrow_1"],
+               ["c", "d", "d", "_adjustrow_2"],
+               ["c", "e", "f", "_adjustrow_3"],
+               ["g", "g", "g", "_adjustrow_4"]
              ]
            } ==
              CssGrid.add_adjusters(%CssGrid{
@@ -49,11 +29,6 @@ defmodule Affable.CssGridTest do
                  ["g", "g", "g"]
                ]
              })
-  end
-
-  test "can extract editor pos and original pos from a name" do
-    assert 4 == CssGrid.editor_pos("_adjustrow_4_2")
-    assert 2 == CssGrid.original_pos("_adjustrow_5_2")
   end
 
   test "doesn't add adjusters to single-row lists" do
@@ -79,24 +54,6 @@ defmodule Affable.CssGridTest do
                ["c", "d", "d"],
                ["c", "e", "e"],
                ["f", "f", "f"]
-             ])
-  end
-
-  test "produces a unique list of names with coords, for looking up elements to measure from frontend" do
-    assert [
-             {"f", {2, 0}},
-             {"a", {1, 1}},
-             {"b", {2, 1}},
-             {"c", {0, 4}},
-             {"d", {2, 3}},
-             {"e", {2, 4}}
-           ] ==
-             CssGrid.names_with_coords([
-               ["f", "f", "f"],
-               ["a", "a", "b"],
-               ["c", "d", "d"],
-               ["c", "d", "d"],
-               ["c", "e", "e"]
              ])
   end
 end

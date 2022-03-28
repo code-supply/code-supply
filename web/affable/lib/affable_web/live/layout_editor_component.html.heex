@@ -1,32 +1,30 @@
-<div id="layout-editor" class="fixed hidden w-2/3 mt-1 overflow-scroll lg:grid h-body top-12 left-1/3" style={"grid-template-areas:#{@editor_grid_template_areas};grid-template-rows:#{@editor_grid_template_rows};grid-template-columns:#{@editor_grid_template_columns}"}>
-  <%= for {data, section, selected} <- @sections do %>
+<div 
+  id="layout-editor"
+  class="bg-gray-100 z-50 fixed hidden w-2/3 mt-1 overflow-scroll lg:grid h-body top-12 left-1/3"
+  style={"grid-template-areas:#{@editor_grid_template_areas};grid-template-rows:#{@editor_grid_template_rows};grid-template-columns:#{@editor_grid_template_columns}"}>
+  <%= for {section, selected} <- @sections do %>
     <%= cond do %>
       <% row_resize?(section) -> %>
-    <%= content_tag(
-section.element,
-[
-  id: "section-#{section.id}",
-  class: "cursor-row-resize",
-  style: "grid-area:#{section.name}; background-color:##{section.background_colour};",
-  data: data,
-  phx_target: @myself,
-  phx_hook: "RowResize"
-]
-) do %>
-<% end %>
+        <div class="relative" style={"grid-area:#{section.name}"}>
+          <%= content_tag(section.element, [
+            id: "section-#{section.id}",
+            class: "absolute bottom-0 bg-red-400 w-4 h-4 cursor-row-resize",
+            phx_target: @myself,
+            phx_hook: "RowResize"
+          ]) do %>
+          <% end %>
+        </div>
       <% column_resize?(section) -> %>
-    <%= content_tag(
-section.element,
-[
-  id: "section-#{section.id}",
-  class: "cursor-col-resize",
-  style: "grid-area:#{section.name}; background-color:##{section.background_colour};",
-  data: data,
-  phx_target: @myself,
-  phx_hook: "ColumnResize"
-]
-) do %>
-<% end %>
+        <div class="relative" style={"grid-area:#{section.name}"}>
+          <%= content_tag(section.element, [
+            id: "section-#{section.id}",
+            class: "absolute right-0 bg-red-400 w-4 h-4 cursor-col-resize",
+            style: "grid-area:#{section.name}",
+            phx_target: @myself,
+            phx_hook: "ColumnResize"
+          ]) do %>
+          <% end %>
+        </div>
       <% true -> %>
     <%= content_tag(
 section.element,
@@ -36,7 +34,6 @@ class: "hover:border-4 hover:border-black cursor-pointer bg-cover #{if selected,
 style: "grid-area:#{section.name}; color:##{section.text_colour}; background-color:##{section.background_colour};
 #{if section.image, do: "background-image:url(#{to_imgproxy_url(section.image)})"}
 ",
-  data: data,
   phx_click: "edit-section",
   phx_value_id: section.id,
   phx_target: @myself
