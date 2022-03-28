@@ -58,7 +58,7 @@ defmodule AffableWeb.LayoutEditingTest do
     |> element("#section-_adjustrow_0")
     |> render_hook(:resizeRow, %{
       "row" => "0",
-      "height" => 10
+      "height" => "10px"
     })
 
     assert view
@@ -87,7 +87,7 @@ defmodule AffableWeb.LayoutEditingTest do
     |> element("#section-_adjustcolumn_0")
     |> render_hook(:resizeColumn, %{
       "column" => "0",
-      "width" => 100
+      "width" => "100px"
     })
 
     assert view

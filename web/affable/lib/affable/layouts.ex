@@ -151,7 +151,7 @@ defmodule Affable.Layouts do
   def change_grid_template_size(sizes, index, new_size) do
     sizes
     |> String.split()
-    |> List.replace_at(String.to_integer(index), "#{new_size}px")
+    |> List.replace_at(String.to_integer(index), "#{new_size}")
     |> Enum.join(" ")
   end
 

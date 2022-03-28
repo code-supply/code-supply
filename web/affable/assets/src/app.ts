@@ -27,17 +27,30 @@ interface Resize {
   styleAttr: string
   localIndexOffset: number
   calculateSize: (e: MouseEvent) => number
-  mouseup: (e: MouseEvent, index: string, elForMeasuring: HTMLElement) => void
+  saveSize: (e: MouseEvent, index: string) => void
+  setExpandable: (index: string) => void
 }
 
-const resize = function({ el, styleAttr, localIndexOffset, calculateSize, mouseup }: Resize) {
+const resize = function({ el, styleAttr, localIndexOffset, calculateSize, saveSize, setExpandable }: Resize) {
   const [_a, _b, index] = el.id.split("_");
   const elForMeasuring = el.parentElement;
   const gridContainer: HTMLElement = elForMeasuring.parentElement;
   let dragging = false;
 
-  el.addEventListener("mousedown", () => {
-    dragging = true;
+  el.addEventListener("contextmenu", (e: PointerEvent) => {
+    e.preventDefault();
+  });
+
+  el.addEventListener("mousedown", (e: MouseEvent) => {
+    if (e.button == 0) {
+      dragging = true;
+    }
+  });
+
+  el.addEventListener("mouseup", (e: MouseEvent) => {
+    if (e.button == 2) {
+      setExpandable(index);
+    }
   });
 
   document.addEventListener("mousemove", (e) => {
@@ -50,9 +63,9 @@ const resize = function({ el, styleAttr, localIndexOffset, calculateSize, mouseu
     }
   });
 
-  document.addEventListener("mouseup", (e) => {
+  document.addEventListener("mouseup", (e: MouseEvent) => {
     if (dragging) {
-      mouseup(e, index, elForMeasuring);
+      saveSize(e, index);
       dragging = false;
     }
   });
@@ -95,10 +108,17 @@ let liveSocket = new LiveSocket("/live", Socket, {
           calculateSize: (e: MouseEvent) =>
             Math.floor((this.el.parentElement.clientHeight + e.clientY - this.el.parentElement.getBoundingClientRect().bottom)),
 
-          mouseup: (e: MouseEvent, index: string, elForMeasuring: HTMLElement) => {
+          saveSize: (e: MouseEvent, index: string) => {
             this.pushEventTo(this.el, "resizeRow", {
               row: index,
-              height: elForMeasuring.clientHeight + e.clientY - elForMeasuring.getBoundingClientRect().bottom
+              height: this.el.parentElement.clientHeight + e.clientY - this.el.parentElement.getBoundingClientRect().bottom + "px"
+            })
+          },
+
+          setExpandable: (index: string) => {
+            this.pushEventTo(this.el, "resizeRow", {
+              row: index,
+              height: "1fr"
             })
           },
         });
@@ -114,10 +134,17 @@ let liveSocket = new LiveSocket("/live", Socket, {
           calculateSize: (e: MouseEvent) =>
             Math.floor((this.el.parentElement.clientWidth + e.clientX - this.el.parentElement.getBoundingClientRect().right)),
 
-          mouseup: (e: MouseEvent, index: string, elForMeasuring: HTMLElement) => {
+          saveSize: (e: MouseEvent, index: string) => {
             this.pushEventTo(this.el, "resizeColumn", {
               column: index,
-              width: elForMeasuring.clientWidth + e.clientX - elForMeasuring.getBoundingClientRect().right
+              width: this.el.parentElement.clientWidth + e.clientX - this.el.parentElement.getBoundingClientRect().right + "px"
+            });
+          },
+
+          setExpandable: (index: string) => {
+            this.pushEventTo(this.el, "resizeColumn", {
+              column: index,
+              width: "1fr"
             });
           },
         });

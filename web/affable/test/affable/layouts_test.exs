@@ -143,7 +143,7 @@ defmodule Affable.LayoutsTest do
   end
 
   test "resizing a row causes layout to shift" do
-    assert "100px 2px 3px" == Layouts.change_grid_template_size("1px 2px 3px", "0", 100)
+    assert "100px 2px 3px" == Layouts.change_grid_template_size("1px 2px 3px", "0", "100px")
   end
 
   test "can save and broadcast a layout change" do
