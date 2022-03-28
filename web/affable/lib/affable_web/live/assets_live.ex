@@ -41,7 +41,9 @@ defmodule AffableWeb.AssetsLive do
   @impl true
   def handle_event("save", %{"asset" => params}, %{assigns: %{user: user}} = socket) do
     uuid =
-      case consume_uploaded_entries(socket, :asset, fn _, %UploadEntry{uuid: uuid} -> uuid end) do
+      case consume_uploaded_entries(socket, :asset, fn _, %UploadEntry{uuid: uuid} ->
+             {:ok, uuid}
+           end) do
         [uuid] -> uuid
         [] -> nil
       end
