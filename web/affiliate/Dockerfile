@@ -22,7 +22,7 @@ COPY lib lib
 RUN mix do assets.deploy, compile, release
 
 FROM alpine@sha256:a15790640a6690aa1730c38cf0a440e2aa44aaca9b0e8931a9f2b0d7cc90fd65 AS app
-RUN apk add --no-cache openssl ncurses-libs lsof
+RUN apk add --no-cache openssl ncurses-libs libstdc++ lsof
 
 WORKDIR /app
 
