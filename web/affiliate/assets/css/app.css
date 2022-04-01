@@ -9,12 +9,20 @@
     rgba(255,255,255,0.1) 100%);
 }
 
+nav a {
+    @apply block hover:underline p-2;
+}
+
 .prose {
     @apply text-xl;
 }
 
 .prose h1 {
     @apply pb-4 pr-8 text-3xl font-semibold;
+}
+
+.prose h2 {
+    @apply font-semibold;
 }
 
 .prose p {
