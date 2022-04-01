@@ -16,14 +16,13 @@
       <% "main" -> %>
         <main class="bg-cover sections grid" style={@sections_style <> section_style(layout_section)}>
           <%= for section <- @sections do %>
-              <%= content_tag(section["element"], class: "p-8", style: section_style(section)) do %>
+              <%= content_tag(section["element"], class: "prose p-8", style: section_style(section)) do %>
                 <%= raw(Earmark.as_html!(section["content"])) %>
-                <%= section["element"] %>
               <% end %>
           <% end %>
         </main>
       <% _ -> %>
-        <%= content_tag(layout_section["element"], class: "bg-cover", style: section_style(layout_section)) do %>
+        <%= content_tag(layout_section["element"], class: "prose bg-cover", style: section_style(layout_section)) do %>
           <%= raw(Earmark.as_html!(layout_section["content"])) %>
         <% end %>
     <% end %>
