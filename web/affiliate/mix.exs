@@ -48,7 +48,8 @@ defmodule Affiliate.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:decimal, "~> 1.8"},
       {:earmark, "~> 1.4.15"},
-      {:esbuild, "~> 0.2", runtime: Mix.env() == :dev}
+      {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev}
     ]
   end
 
@@ -62,9 +63,8 @@ defmodule Affiliate.MixProject do
     [
       setup: ["deps.get", "cmd npm install --prefix assets"],
       "assets.deploy": [
-        "cmd --cd assets npm run deploy",
+        "tailwind default --minify",
         "esbuild default --minify",
-        "esbuild css --minify",
         "cmd cp -a assets/static/* priv/static/",
         "phx.digest"
       ]

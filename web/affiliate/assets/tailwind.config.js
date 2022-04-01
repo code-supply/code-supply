@@ -1,13 +1,10 @@
 module.exports = {
-  mode: "jit",
   purge: {
     content: [
-      "../lib/**/*.html.*",
-      "../lib/**/views/**/*.ex",
-      "../lib/**/live/**/*.ex",
-      "./js/**/*.js",
-      "./css/*.css",
-    ]
+      './js/**/*.js',
+      '../lib/*_web.ex',
+      '../lib/*_web/**/*.*ex'
+    ],
   },
   theme: {
     extend: {},
