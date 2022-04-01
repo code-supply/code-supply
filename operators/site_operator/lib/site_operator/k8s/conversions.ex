@@ -48,7 +48,7 @@ defmodule SiteOperator.K8s.Conversions do
 
   def to_k8s(%Certificate{name: site_name, domains: domains}) do
     %{
-      "apiVersion" => "cert-manager.io/v1alpha2",
+      "apiVersion" => "cert-manager.io/v1",
       "kind" => "Certificate",
       "metadata" => %{
         "name" => site_name,
