@@ -29820,7 +29820,7 @@ spec:
             name: site-operator
         - configMapRef:
             name: site-operator-fc4mffk9t6
-        image: eu.gcr.io/code-supply/site-operator:78149fb
+        image: eu.gcr.io/code-supply/site-operator:6a9595f
         name: site-operator
         resources:
           limits:
