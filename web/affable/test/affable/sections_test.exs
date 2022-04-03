@@ -2,11 +2,14 @@ defmodule Affable.SectionsTest do
   use Affable.DataCase, async: true
 
   import Affable.{AccountsFixtures, SitesFixtures}
+  import Hammox
 
   alias Affable.Sites
   alias Affable.Sites.Section
   alias Affable.Layouts
   alias Affable.Sections
+
+  setup :verify_on_exit!
 
   test "names are a-z, 0-9 or dash, nothing else" do
     name = fn s -> Section.changeset(%Section{}, %{name: s}) end
