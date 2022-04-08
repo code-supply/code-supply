@@ -38,4 +38,9 @@
       </div> 
     </div>
   </.form>
+  <button id="delete-section"
+          class="btn"
+          phx-target={@myself}
+          phx-value-id={@section.id}
+          phx-click={:delete}>Delete</button>
 </div>

@@ -136,6 +136,40 @@ defmodule AffableWeb.LayoutEditingTest do
            |> render() =~ "FF00FF"
   end
 
+  test "can delete sections", %{conn: conn, site: site} do
+    {:ok, %Layout{sections: [section | _]} = layout} =
+      Layouts.create_layout(site, %{
+        name: "basic",
+        grid_template_columns: "150px 1fr"
+      })
+
+    {:ok, view, _html} = live(conn, path(conn, site))
+
+    view
+    |> select_layout(layout)
+    |> edit_layout()
+
+    stub_broadcast()
+
+    view
+    |> element("#layout-editor #{section.element}")
+    |> render_click()
+
+    assert view
+           |> has_element?("#section-#{section.id}")
+
+    view
+    |> element("#delete-section")
+    |> render_click()
+
+    refute view
+           |> has_element?("#section-#{section.id}")
+
+    refute view
+           |> element("#layout-editor")
+           |> render() =~ ~r/grid-template-areas.*#{section.name}/s
+  end
+
   test "can cycle between site editing and layout section editing", %{conn: conn, site: site} do
     {:ok, layout} = Layouts.create_layout(site, %{name: "basic"})
     stub_broadcast()

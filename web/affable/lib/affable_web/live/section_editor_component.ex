@@ -41,4 +41,23 @@ defmodule AffableWeb.SectionEditorComponent do
         {:noreply, assign(socket, changeset: changeset)}
     end
   end
+
+  @impl true
+  def handle_event(
+        "delete",
+        %{"id" => id},
+        %{assigns: %{user: user}} = socket
+      ) do
+    with section <- Sections.get!(user, id),
+         :ok <- Sections.delete(section) do
+      send_update(AffableWeb.LayoutEditorComponent,
+        id: "layout-editor",
+        layout_id: section.layout_id,
+        user: user,
+        selected_section_id: nil
+      )
+    end
+
+    {:noreply, socket}
+  end
 end

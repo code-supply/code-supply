@@ -59,11 +59,11 @@ defmodule Affable.Layouts do
     ~s("")
   end
 
-  defp layout_to_css_grid(%Layout{
-         grid_template_areas: areas,
-         grid_template_columns: columns,
-         grid_template_rows: rows
-       }) do
+  def layout_to_css_grid(%Layout{
+        grid_template_areas: areas,
+        grid_template_columns: columns,
+        grid_template_rows: rows
+      }) do
     %CssGrid{
       bar: resize_bar_width(),
       areas: areas |> areas_to_list(),

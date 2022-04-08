@@ -95,4 +95,24 @@ defmodule Affable.SectionsTest do
     assert "anewname" == section.name
     assert "anewname" == Sections.get!(user, section.id).name
   end
+
+  test "can delete a section" do
+    user = user_fixture()
+    site = site_fixture(user)
+    {:ok, layout} = Layouts.create_layout(site, %{name: "my layout"})
+    [section | _] = layout.sections
+
+    stub_broadcast()
+    {:ok, _site} = Sites.update_site(site, %{layout_id: layout.id})
+
+    expect_broadcast(fn site ->
+      refute section.name in for(s <- site.layout.sections, do: s.name)
+    end)
+
+    :ok = Sections.delete(section)
+
+    reloaded_layout = Layouts.get!(user, layout.id)
+
+    refute reloaded_layout.grid_template_areas =~ ~r/#{section.name}/s
+  end
 end

@@ -3,6 +3,166 @@ defmodule Affable.CssGridTest do
 
   alias Affable.CssGrid
 
+  test "can delete the main section of the common header-nav-main-footer layout" do
+    assert %CssGrid{
+             bar: "2px",
+             rows: ~w(10px 10px 10px),
+             columns: ~w(50px 40px 30px),
+             areas: [
+               ~w(h h),
+               ~w(n n),
+               ~w(f f)
+             ]
+           } ==
+             CssGrid.delete_area(
+               %CssGrid{
+                 bar: "2px",
+                 rows: ~w(10px 10px 10px),
+                 columns: ~w(50px 40px 30px),
+                 areas: [
+                   ~w(h h),
+                   ~w(n m),
+                   ~w(f f)
+                 ]
+               },
+               "m"
+             )
+  end
+
+  test "removing last section in row removes the row" do
+    assert %CssGrid{
+             bar: "2px",
+             rows: ~w(10px 10px),
+             columns: ~w(50px 40px 30px),
+             areas: [
+               ~w(a a b),
+               ~w(d d d)
+             ]
+           } ==
+             CssGrid.delete_area(
+               %CssGrid{
+                 bar: "2px",
+                 rows: ~w(10px 10px 10px),
+                 columns: ~w(50px 40px 30px),
+                 areas: [
+                   ~w(a a b),
+                   ~w(c c c),
+                   ~w(d d d)
+                 ]
+               },
+               "c"
+             )
+  end
+
+  test "removing a section that leaves sections continued on other rows removes the rows" do
+    assert %CssGrid{
+             bar: "2px",
+             rows: ~w(10px 30px),
+             columns: ~w(50px 40px 30px),
+             areas: [
+               ~w(a a b),
+               ~w(d f f)
+             ]
+           } ==
+             CssGrid.delete_area(
+               %CssGrid{
+                 bar: "2px",
+                 rows: ~w(10px 20px 30px),
+                 columns: ~w(50px 40px 30px),
+                 areas: [
+                   ~w(a a b),
+                   ~w(d c c),
+                   ~w(d f f)
+                 ]
+               },
+               "c"
+             )
+  end
+
+  test "removing a section doesn't remove rows that contain other unique sections" do
+    assert %CssGrid{
+             bar: "2px",
+             rows: ~w(10px 20px 30px 40px),
+             columns: ~w(50px 40px 30px),
+             areas: [
+               ~w(a a a),
+               ~w(d b b),
+               ~w(d e e),
+               ~w(d e e)
+             ]
+           } ==
+             CssGrid.delete_area(
+               %CssGrid{
+                 bar: "2px",
+                 rows: ~w(10px 20px 30px 40px),
+                 columns: ~w(50px 40px 30px),
+                 areas: [
+                   ~w(a a a),
+                   ~w(d b c),
+                   ~w(d e e),
+                   ~w(d e e)
+                 ]
+               },
+               "c"
+             )
+  end
+
+  test "removing a section that was the only one in a column removes the column" do
+    assert %CssGrid{
+             bar: "2px",
+             rows: ~w(10px 20px 30px 40px),
+             columns: ~w(40px 30px),
+             areas: [
+               ~w(b b),
+               ~w(b b),
+               ~w(c c),
+               ~w(c c)
+             ]
+           } ==
+             CssGrid.delete_area(
+               %CssGrid{
+                 bar: "2px",
+                 rows: ~w(10px 20px 30px 40px),
+                 columns: ~w(50px 40px 30px),
+                 areas: [
+                   ~w(a b b),
+                   ~w(a b b),
+                   ~w(a c c),
+                   ~w(a c c)
+                 ]
+               },
+               "a"
+             )
+  end
+
+  test "removing a section that was the only one in multiple columns removes the columns" do
+    assert %CssGrid{
+             bar: "2px",
+             rows: ~w(10px 20px 30px 40px),
+             columns: ~w(40px 30px),
+             areas: [
+               ~w(b b),
+               ~w(b b),
+               ~w(c c),
+               ~w(c c)
+             ]
+           } ==
+             CssGrid.delete_area(
+               %CssGrid{
+                 bar: "2px",
+                 rows: ~w(10px 20px 30px 40px),
+                 columns: ~w(10px 50px 40px 30px),
+                 areas: [
+                   ~w(a a b b),
+                   ~w(a a b b),
+                   ~w(a a c c),
+                   ~w(a a c c)
+                 ]
+               },
+               "a"
+             )
+  end
+
   test "adds adjusters to top and right of grid" do
     assert %CssGrid{
              bar: "2px",
