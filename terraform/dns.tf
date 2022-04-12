@@ -89,7 +89,7 @@ resource "google_dns_managed_zone" "ab" {
 resource "google_dns_record_set" "ab-root" {
   name         = google_dns_managed_zone.ab.dns_name
   managed_zone = google_dns_managed_zone.ab.name
-  rrdatas      = [google_compute_address.multi-vhost.address]
+  rrdatas      = [google_compute_global_address.affable.address]
   ttl          = 300
   type         = "A"
 }
