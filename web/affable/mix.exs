@@ -53,8 +53,6 @@ defmodule Affable.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:phx_gen_auth, "~> 0.4.0", only: [:dev], runtime: false},
-      {:hammox, "~> 0.3", only: [:test]},
-      {:k8s, "~> 0.5", only: [:dev, :prod]},
       {:httpoison, "~> 1.7"},
       {:bamboo, "~> 2.2.0"},
       {:bamboo_phoenix, "~> 1.0.0"},
@@ -66,7 +64,8 @@ defmodule Affable.MixProject do
       {:hackney, "~> 1.17"},
       {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
-      {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
+      {:earmark, "~> 1.4.15"}
     ]
   end
 

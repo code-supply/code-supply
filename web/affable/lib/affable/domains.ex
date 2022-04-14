@@ -6,6 +6,10 @@ defmodule Affable.Domains do
   alias Affable.Sites.Site
   alias Affable.Sites.SiteMember
 
+  def servable?(name) do
+    Repo.get_by(Domain, name: name)
+  end
+
   def affable_suffix() do
     ".affable.app"
   end

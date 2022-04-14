@@ -1,6 +1,4 @@
 defmodule Affable.Sites do
-  @behaviour Affable.SiteClusterIO
-
   import Ecto.Query, warn: false
 
   alias Affable.Sites.{Page, Section, TitleUtils, Raw}
@@ -30,8 +28,7 @@ defmodule Affable.Sites do
          {:ok, page} <-
            page
            |> Page.changeset(attrs)
-           |> Repo.update()
-           |> broadcast() do
+           |> Repo.update() do
       {:ok, page |> Repo.preload(page_preloads())}
     else
       err -> err
@@ -53,8 +50,7 @@ defmodule Affable.Sites do
              title: page_title,
              path: TitleUtils.to_path(page_title)
            })
-           |> Repo.insert()
-           |> broadcast() do
+           |> Repo.insert() do
       {:ok, page |> Repo.preload(page_preloads())}
     else
       err -> err
@@ -65,7 +61,7 @@ defmodule Affable.Sites do
     %Page{} = page = Repo.get(Page, id)
 
     if user |> site_member?(page) do
-      page |> Repo.delete() |> broadcast()
+      Repo.delete(page)
     else
       {:error, :unauthorized}
     end
@@ -107,7 +103,6 @@ defmodule Affable.Sites do
 
     with :ok <- must_be_site_member(user, page),
          {:ok, section} <- Repo.delete(section) do
-      broadcast(page)
       {:ok, section}
     else
       err -> err
@@ -129,17 +124,13 @@ defmodule Affable.Sites do
     |> Ecto.build_assoc(:publications, %{data: raw(site)})
     |> Repo.insert()
 
-    {
-      :ok,
-      site
-      |> broadcast()
-    }
+    {:ok, site}
   end
 
   def is_published?(%Site{id: id} = site) do
     latest_publication =
       from(p in Publication, where: [site_id: ^id], order_by: [desc: p.id], limit: 1)
-      |> Repo.one!()
+      |> Repo.one()
 
     case latest_publication do
       nil ->
@@ -171,10 +162,14 @@ defmodule Affable.Sites do
     "//#{name}/preview"
   end
 
-  def preview_url(%Site{domains: domains}) do
-    domain = Enum.find(domains, &Domains.affable_domain?(&1))
+  def preview_url(%Site{domains: domains} = site) do
+    case Enum.find(domains, &Domains.affable_domain?(&1)) do
+      nil ->
+        preview_url(%{site | domains: Enum.drop(domains, 1)})
 
-    "//#{domain.name}/preview"
+      domain ->
+        "//#{domain.name}/preview"
+    end
   end
 
   def default_path([]) do
@@ -201,7 +196,6 @@ defmodule Affable.Sites do
     get_site!(id)
   end
 
-  @impl true
   def get_site!(id) do
     site_query(id)
     |> Repo.one!()
@@ -237,24 +231,6 @@ defmodule Affable.Sites do
     site
     |> preload_base_assets
     |> Repo.preload(latest_publication: from(p in Publication, order_by: [desc: p.id]))
-  end
-
-  @impl true
-  def set_available(id, at) do
-    site =
-      from(s in Site, where: s.id == ^id)
-      |> Repo.one()
-      |> with_pages()
-      |> preload_latest_publication()
-      |> Repo.preload(:domains)
-
-    if site.made_available_at do
-      {:ok, site}
-    else
-      site
-      |> Site.change_made_available_at(at)
-      |> Repo.update()
-    end
   end
 
   def with_pages(site, attrs \\ []) do
@@ -565,7 +541,6 @@ defmodule Affable.Sites do
           |> preload_base_assets(force: true)
           |> with_items(force: true)
           |> with_pages(force: true)
-          |> broadcast()
         }
 
       otherwise ->
@@ -657,7 +632,6 @@ defmodule Affable.Sites do
               end
         }
         |> with_items()
-        |> broadcast()
       }
     else
       {:ok, site}
@@ -705,7 +679,7 @@ defmodule Affable.Sites do
   def add_attribute_definition(%Site{} = site, %User{} = user) do
     with :ok <- must_be_site_member(user, site),
          {:ok, _} <- Repo.transaction(add_attribute_definition_multi(site)) do
-      {:ok, get_site!(site.id) |> broadcast()}
+      {:ok, get_site!(site.id)}
     else
       err -> err
     end
@@ -745,7 +719,7 @@ defmodule Affable.Sites do
         {:error, "Couldn't delete"}
 
       _ ->
-        {:ok, get_site!(site_id) |> broadcast()}
+        {:ok, get_site!(site_id)}
     end
   end
 
@@ -780,8 +754,7 @@ defmodule Affable.Sites do
                 end
               end
         }
-        |> with_pages(force: true)
-        |> broadcast(),
+        |> with_pages(force: true),
         item
       }
     else
@@ -796,7 +769,7 @@ defmodule Affable.Sites do
     |> Repo.insert()
   end
 
-  def delete_item(%Site{} = site, %Page{} = page, item_id) do
+  def delete_item(%Site{}, %Page{} = page, item_id) do
     item_id_s = "#{item_id}"
 
     {:ok, %{delete: deleted_item}} =
@@ -805,19 +778,6 @@ defmodule Affable.Sites do
       |> Repo.transaction()
 
     new_page = remove_item_from_page(page, deleted_item)
-
-    %{
-      site
-      | pages:
-          for p <- site.pages do
-            if p.id == page.id do
-              new_page
-            else
-              p
-            end
-          end
-    }
-    |> broadcast()
 
     {:ok, new_page}
   end
@@ -865,32 +825,5 @@ defmodule Affable.Sites do
           multi
       end
     end)
-  end
-
-  def broadcast(%Site{} = site) do
-    site = site |> with_pages() |> preload_latest_publication()
-    :ok = site |> (&broadcaster().broadcast(&1)).()
-
-    site
-  end
-
-  def broadcast(%Page{site_id: site_id} = page) do
-    get_site!(site_id)
-    |> broadcast()
-
-    page
-  end
-
-  def broadcast({:ok, %Page{} = page} = result) do
-    _ = broadcast(page)
-    result
-  end
-
-  def broadcast({:error, changeset}) do
-    {:error, changeset}
-  end
-
-  defp broadcaster() do
-    Application.get_env(:affable, :broadcaster)
   end
 end

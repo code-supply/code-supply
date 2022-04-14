@@ -161,7 +161,6 @@ defmodule Affable.Layouts do
         layout
         |> Layout.changeset(attrs)
         |> Repo.update()
-        |> broadcast()
 
       {:ok, layout}
     else
@@ -180,7 +179,6 @@ defmodule Affable.Layouts do
       section
       |> Section.changeset(attrs)
       |> Repo.update()
-      |> broadcast()
     else
       err -> err
     end
@@ -188,19 +186,5 @@ defmodule Affable.Layouts do
 
   def all() do
     Repo.all(from(l in Layout, preload: [sections: :image]))
-  end
-
-  defp broadcast({:ok, %Layout{} = layout}) do
-    site = Affable.Sites.get_site!(layout.site_id)
-    Affable.Sites.broadcast(site)
-
-    {:ok, layout}
-  end
-
-  defp broadcast({:ok, %Section{} = section}) do
-    {:ok, Repo.get!(Layout, section.layout_id)}
-    |> broadcast()
-
-    {:ok, section}
   end
 end

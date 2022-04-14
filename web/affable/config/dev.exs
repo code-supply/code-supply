@@ -22,7 +22,6 @@ config :affable, AffableWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: true,
-  check_origin: false,
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}

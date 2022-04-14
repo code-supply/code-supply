@@ -3,14 +3,11 @@ defmodule Affable.LayoutsTest do
 
   import Affable.SitesFixtures
   import Affable.AccountsFixtures
-  import Hammox
 
   alias Affable.Sites
   alias Affable.Sites.{Section, Site}
   alias Affable.Layouts
   alias Affable.Layouts.Layout
-
-  setup :verify_on_exit!
 
   test "can retrieve layout" do
     user = user_fixture()
@@ -156,12 +153,7 @@ defmodule Affable.LayoutsTest do
         grid_template_rows: "50px 1fr 50px"
       })
 
-    stub_broadcast()
     {:ok, _site} = Sites.update_site(site, %{layout_id: layout.id})
-
-    expect_broadcast(fn %Site{layout: layout} ->
-      assert %Layout{grid_template_rows: "150px 1fr 50px"} = layout
-    end)
 
     {:ok, layout} = Layouts.update(user, layout, %{grid_template_rows: "150px 1fr 50px"})
 
@@ -181,15 +173,10 @@ defmodule Affable.LayoutsTest do
         grid_template_rows: "50px 1fr 50px"
       })
 
-    stub_broadcast()
     {:ok, _site} = Sites.update_site(site, %{layout_id: layout.id})
 
     [section | _] = layout.sections
     refute "main" == section.element
-
-    expect_broadcast(fn %Site{layout: layout} ->
-      assert Enum.any?(layout.sections, &(&1.id == section.id and &1.element == "main"))
-    end)
 
     {:ok, section} = Layouts.update_section(user, %{"element" => "main", "id" => "#{section.id}"})
 

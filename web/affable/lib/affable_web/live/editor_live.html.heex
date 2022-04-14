@@ -156,5 +156,10 @@
        selected_section_id={assigns[:section_id]}
   />
 <% else %>
-  <iframe class="fixed hidden w-2/3 mt-1 overflow-scroll lg:block h-body top-12 left-1/3" src={@preview_url}/>
+  <.live_component
+       module={AffableWeb.PreviewComponent}
+       id="preview"
+       user={@user}
+       site={@changeset.data}
+  />
 <% end %>

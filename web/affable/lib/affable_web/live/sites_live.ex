@@ -6,8 +6,6 @@ defmodule AffableWeb.SitesLive do
   alias Affable.Accounts
   alias Affable.Sites
   alias Affable.Sites.Site
-  alias Affable.Domains.Domain
-  alias Affable.K8sFactories
 
   import Affable.Sites, only: [canonical_url: 1, status: 1]
 
@@ -38,9 +36,7 @@ defmodule AffableWeb.SitesLive do
         %{assigns: %{sites: sites}} = socket
       ) do
     Logger.info(
-      "Received site #{received_site.internal_name} made available at #{
-        received_site.made_available_at
-      }"
+      "Received site #{received_site.internal_name} made available at #{received_site.made_available_at}"
     )
 
     updated_sites =
@@ -65,17 +61,8 @@ defmodule AffableWeb.SitesLive do
     case Sites.create_bare_site(user, attrs) do
       {:ok,
        %Site{
-         internal_name: internal_name,
-         domains: [%Domain{name: domain_name}]
+         internal_name: internal_name
        } = site} ->
-        case k8s().deploy(K8sFactories.affiliate_site(internal_name, [domain_name])) do
-          {:ok, _} ->
-            Logger.info("Deployed site #{internal_name} for the first time")
-
-          {:error, msg} ->
-            Logger.error("Failed to deploy #{internal_name}: #{msg}")
-        end
-
         Phoenix.PubSub.subscribe(:affable, internal_name)
 
         {:noreply, update(socket, :sites, fn sites -> [site | sites] end)}
@@ -94,20 +81,9 @@ defmodule AffableWeb.SitesLive do
     site = Sites.get_site!(user, site_id)
     Sites.delete_site(site)
 
-    k8s().undeploy(
-      K8sFactories.affiliate_site(
-        site.internal_name,
-        site.domains |> Enum.map(fn domain -> domain.name end)
-      )
-    )
-
     {:noreply,
      update(socket, :sites, fn sites ->
        Enum.reject(sites, fn %Site{id: id} -> "#{id}" == site_id end)
      end)}
-  end
-
-  defp k8s() do
-    Application.get_env(:affable, :k8s)
   end
 end

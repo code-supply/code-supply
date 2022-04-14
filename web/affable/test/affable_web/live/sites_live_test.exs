@@ -2,15 +2,11 @@ defmodule AffableWeb.SitesLiveTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
   import ExUnit.CaptureLog
-  import Hammox
 
-  alias Affable.MockK8s
   alias Affable.Accounts.User
   alias Affable.Sites.Site
 
   import Ecto.Query, only: [from: 2]
-
-  setup :verify_on_exit!
 
   setup context do
     {:ok, register_and_log_in_user(context)}
@@ -33,15 +29,6 @@ defmodule AffableWeb.SitesLiveTest do
   test "can make a new site", %{conn: conn} do
     {:ok, view, _html} = live(conn, path(conn))
 
-    expect(MockK8s, :deploy, fn %{
-                                  "apiVersion" => "site-operator.code.supply/v1",
-                                  "kind" => "AffiliateSite",
-                                  "metadata" => %{"name" => _name},
-                                  "spec" => %{"domains" => [_domain_name]}
-                                } ->
-      {:ok, ""}
-    end)
-
     assert view
            |> form("#new-site", site: %{name: "The best pizzas"})
            |> render_submit() =~ "The best pizzas</h2>"
@@ -63,11 +50,6 @@ defmodule AffableWeb.SitesLiveTest do
     {:ok, view, html} = live(conn, path(conn))
 
     assert html =~ site.name
-
-    expect(MockK8s, :undeploy, fn %{"kind" => "AffiliateSite", "metadata" => %{"name" => name}} ->
-      assert name == site.internal_name
-      {:ok, ""}
-    end)
 
     refute view
            |> element("#delete-site-#{site.id}")
@@ -94,5 +76,6 @@ defmodule AffableWeb.SitesLiveTest do
 
   defp path(conn) do
     AffableWeb.Router.Helpers.sites_path(conn, :index)
+    |> control_plane_path()
   end
 end

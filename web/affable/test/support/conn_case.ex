@@ -23,7 +23,6 @@ defmodule AffableWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import AffableWeb.ConnCase
-      import Affable.BroadcastExpectations
 
       alias AffableWeb.Router.Helpers, as: Routes
 
@@ -58,5 +57,9 @@ defmodule AffableWeb.ConnCase do
     conn
     |> Phoenix.ConnTest.init_test_session(%{})
     |> Plug.Conn.put_session(:user_token, token)
+  end
+
+  def control_plane_path(path) do
+    "http://localhost#{path}"
   end
 end

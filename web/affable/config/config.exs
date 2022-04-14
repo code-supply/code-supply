@@ -9,10 +9,7 @@ import Config
 
 config :affable,
   ecto_repos: [Affable.Repo],
-  k8s: Affable.RealK8s,
   id_salt: "replacedinrelease",
-  broadcaster: Affable.SiteUpdater,
-  http: Affable.RealHTTP,
   pubsub_topic_requests: "devsiterequests",
   bucket_name: "affable-uploads-dev",
   access_key_id: "affable-dev@code-supply.iam.gserviceaccount.com",
@@ -24,7 +21,8 @@ config :affable, AffableWeb.Endpoint,
   secret_key_base: "xmJOBP9bmljDpmDuE5AUTOt1ryhJ4Tqteqfoz7BEZQozBIQUU2a1ggTI9+nuAQ8u",
   render_errors: [view: AffableWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: :affable,
-  live_view: [signing_salt: "SOJjYeds"]
+  live_view: [signing_salt: "SOJjYeds"],
+  check_origin: {AffableWeb.Origin, :check_origin, []}
 
 config :libcluster, topologies: []
 

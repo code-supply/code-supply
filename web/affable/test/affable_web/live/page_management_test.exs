@@ -1,14 +1,17 @@
 defmodule AffableWeb.PageManagementTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
-  import Hammox
 
   alias Affable.Sites
 
-  setup :verify_on_exit!
-
   defp path(conn, %Sites.Site{pages: [page | _]} = site) do
     Routes.editor_path(conn, :edit, site.id, page.id)
+    |> control_plane_path()
+  end
+
+  defp path(conn, action, id) do
+    Routes.editor_path(conn, action, id)
+    |> control_plane_path()
   end
 
   setup context do
@@ -32,10 +35,6 @@ defmodule AffableWeb.PageManagementTest do
     List.last(Sites.page_ids(site))
   end
 
-  def iframe_path(path) do
-    ~r{src=".*affable\.app/preview#{path}"}
-  end
-
   test "can create a page, navigate to it and delete it", %{
     conn: conn,
     site: %Sites.Site{} = site
@@ -43,52 +42,39 @@ defmodule AffableWeb.PageManagementTest do
     {:ok, view, _html} =
       live(
         conn,
-        Routes.editor_path(conn, :edit, site.id)
+        path(conn, :edit, site.id)
       )
-
-    stub_broadcast()
 
     id = new_page(view, site)
 
     assert view
-           |> element("iframe")
-           |> render() =~ iframe_path("/untitled-page")
+           |> has_element?("#no-layout")
 
     view
     |> element(select_main_site_tab(), "Site")
     |> render_click()
-
-    assert view
-           |> element("iframe")
-           |> render() =~ iframe_path("")
 
     view
     |> element(select_page_tab(1), "Home")
     |> render_click()
 
+    assert view
+           |> has_element?("a", "Home")
+
     view
     |> element("a", "Delete page")
     |> render_click()
 
-    assert view
-           |> element("iframe")
-           |> render() =~ iframe_path("/untitled-page")
+    refute view
+           |> has_element?("a", "Home")
 
     view
     |> element(select_main_site_tab(), "Site")
     |> render_click()
 
-    assert view
-           |> element("iframe")
-           |> render() =~ iframe_path("/untitled-page")
-
     view
     |> element(select_page_tab(1), "Untitled page")
     |> render_click()
-
-    assert view
-           |> element("iframe")
-           |> render() =~ iframe_path("/untitled-page")
 
     view
     |> element("a", "Delete page")
@@ -100,21 +86,7 @@ defmodule AffableWeb.PageManagementTest do
     expected_redirect_path = Routes.editor_path(conn, :edit, site.id)
 
     assert {:error, {:live_redirect, %{to: ^expected_redirect_path}}} =
-             live(conn, Routes.editor_path(conn, :edit, site.id, id))
-  end
-
-  test "changing the path updates the iframe, to avoid 404", %{conn: conn, site: site, page: page} do
-    {:ok, view, _html} = live(conn, path(conn, site))
-
-    stub_broadcast()
-
-    view
-    |> change_form(page, page: %{path: "/something-else"})
-    |> render_change()
-
-    assert view
-           |> element("iframe")
-           |> render() =~ ~r{src=".*affable\.app/preview/something-else"}
+             live(conn, Routes.editor_path(conn, :edit, site.id, id) |> control_plane_path())
   end
 
   test "can add a section, set its attributes and delete it", %{
@@ -124,19 +96,9 @@ defmodule AffableWeb.PageManagementTest do
   } do
     {:ok, view, _html} = live(conn, path(conn, site))
 
-    expect_broadcast(fn
-      %Sites.Site{pages: [%Sites.Page{sections: [%Sites.Section{name: "untitled-section"}]} | _]} ->
-        nil
-    end)
-
     view
     |> element("#new-section")
     |> render_click()
-
-    expect_broadcast(fn
-      %Sites.Site{pages: [%Sites.Page{sections: [%Sites.Section{name: "my-new-name"}]} | _]} ->
-        nil
-    end)
 
     view
     |> change_form(page, page: %{sections: ["0": %{name: "my-new-name"}]})
@@ -145,11 +107,6 @@ defmodule AffableWeb.PageManagementTest do
     assert view
            |> element("#page-#{page.id}_sections_0_name")
            |> render() =~ "my-new-name"
-
-    expect_broadcast(fn
-      %Sites.Site{pages: [%Sites.Page{sections: sections} | _]} ->
-        assert [] == sections
-    end)
 
     view
     |> element(".delete-section")
@@ -172,8 +129,6 @@ defmodule AffableWeb.PageManagementTest do
 
     refute view |> has_element?("#publish")
     assert view |> has_element?(".invalid-feedback")
-
-    stub_broadcast()
 
     view
     |> change_form(page, page: %{cta_background_colour: "FF0000"})

@@ -2,14 +2,11 @@ defmodule Affable.SectionsTest do
   use Affable.DataCase, async: true
 
   import Affable.{AccountsFixtures, SitesFixtures}
-  import Hammox
 
   alias Affable.Sites
   alias Affable.Sites.Section
   alias Affable.Layouts
   alias Affable.Sections
-
-  setup :verify_on_exit!
 
   test "names are a-z, 0-9 or dash, nothing else" do
     name = fn s -> Section.changeset(%Section{}, %{name: s}) end
@@ -66,7 +63,6 @@ defmodule Affable.SectionsTest do
     user = user_fixture()
     site = site_fixture(user)
     [page | _] = site.pages
-    stub_broadcast()
     {:ok, page} = Sites.add_page_section(page, user)
     [%Section{id: id, name: name} | _] = page.sections
     section = Sections.get!(user, id)
@@ -83,12 +79,7 @@ defmodule Affable.SectionsTest do
     {:ok, layout} = Layouts.create_layout(site, %{name: "my layout"})
     [section | _] = layout.sections
 
-    stub_broadcast()
     {:ok, _site} = Sites.update_site(site, %{layout_id: layout.id})
-
-    expect_broadcast(fn site ->
-      assert "anewname" in for(s <- site.layout.sections, do: s.name)
-    end)
 
     {:ok, section} = Sections.update(section, %{name: "anewname"})
 
@@ -102,12 +93,7 @@ defmodule Affable.SectionsTest do
     {:ok, layout} = Layouts.create_layout(site, %{name: "my layout"})
     [section | _] = layout.sections
 
-    stub_broadcast()
     {:ok, _site} = Sites.update_site(site, %{layout_id: layout.id})
-
-    expect_broadcast(fn site ->
-      refute section.name in for(s <- site.layout.sections, do: s.name)
-    end)
 
     :ok = Sections.delete(section)
 

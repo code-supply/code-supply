@@ -1,14 +1,10 @@
 defmodule AffableWeb.LayoutEditingTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
-  import Hammox
 
   alias Affable.Layouts
   alias Affable.Layouts.Layout
   alias Affable.Sites
-  alias Affable.Sites.Site
-
-  setup :verify_on_exit!
 
   setup context do
     %{conn: conn, user: user} = register_and_log_in_user(context)
@@ -30,14 +26,14 @@ defmodule AffableWeb.LayoutEditingTest do
     refute view
            |> select_layout(layout)
            |> edit_layout()
-           |> has_element?("iframe")
+           |> has_element?("#no-layout")
 
     assert view
            |> deselect_layout()
-           |> has_element?("iframe")
+           |> has_element?("#no-layout")
   end
 
-  test "finalising a row resize persists the change and broadcasts", %{conn: conn, site: site} do
+  test "finalising a row resize persists the change", %{conn: conn, site: site} do
     {:ok, layout} =
       Layouts.create_layout(site, %{
         name: "basic",
@@ -49,10 +45,6 @@ defmodule AffableWeb.LayoutEditingTest do
     view
     |> select_layout(layout)
     |> edit_layout()
-
-    expect_broadcast(fn %Site{layout: layout} ->
-      assert %Layout{grid_template_rows: "10px 1fr 50px"} = layout
-    end)
 
     view
     |> element("#section-_adjustrow_0")
@@ -79,10 +71,6 @@ defmodule AffableWeb.LayoutEditingTest do
     |> select_layout(layout)
     |> edit_layout()
 
-    expect_broadcast(fn %Site{layout: layout} ->
-      assert %Layout{grid_template_columns: "100px 1fr"} = layout
-    end)
-
     view
     |> element("#section-_adjustcolumn_0")
     |> render_hook(:resizeColumn, %{
@@ -95,7 +83,7 @@ defmodule AffableWeb.LayoutEditingTest do
            |> render() =~ ~r(grid-template-columns.+100px.+1fr)
   end
 
-  test "updating section info persists and broadcasts", %{conn: conn, site: site} do
+  test "updating section info persists", %{conn: conn, site: site} do
     {:ok, %Layout{sections: [section | _]} = layout} =
       Layouts.create_layout(site, %{
         name: "basic",
@@ -109,10 +97,6 @@ defmodule AffableWeb.LayoutEditingTest do
     view
     |> select_layout(layout)
     |> edit_layout()
-
-    expect_broadcast(fn %Site{layout: layout} ->
-      assert 2 == Enum.count(layout.sections, fn s -> s.element == "nav" end)
-    end)
 
     view
     |> element("#layout-editor #{section.element}")
@@ -149,8 +133,6 @@ defmodule AffableWeb.LayoutEditingTest do
     |> select_layout(layout)
     |> edit_layout()
 
-    stub_broadcast()
-
     view
     |> element("#layout-editor #{section.element}")
     |> render_click()
@@ -172,7 +154,6 @@ defmodule AffableWeb.LayoutEditingTest do
 
   test "can cycle between site editing and layout section editing", %{conn: conn, site: site} do
     {:ok, layout} = Layouts.create_layout(site, %{name: "basic"})
-    stub_broadcast()
     {:ok, site} = Sites.update_site(site, %{layout_id: layout.id})
 
     {:ok, view, _html} = live(conn, path(conn, site))
@@ -209,13 +190,12 @@ defmodule AffableWeb.LayoutEditingTest do
 
   defp path(conn, site) do
     Routes.editor_path(conn, :edit, site.id)
+    |> control_plane_path()
   end
 
   defp select_layout(view, layout) do
     assert view
            |> has_element?("#site_layout_id option[value=#{layout.id}]")
-
-    stub_broadcast()
 
     view |> render_change(:save, %{"site" => %{"layout_id" => "#{layout.id}"}})
 

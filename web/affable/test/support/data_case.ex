@@ -24,7 +24,6 @@ defmodule Affable.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Affable.DataCase
-      import Affable.BroadcastExpectations
     end
   end
 

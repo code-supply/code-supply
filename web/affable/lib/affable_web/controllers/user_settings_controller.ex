@@ -2,8 +2,6 @@ defmodule AffableWeb.UserSettingsController do
   use AffableWeb, :controller
 
   alias Affable.Accounts
-  alias Affable.K8sFactories
-  alias Affable.Sites
   alias AffableWeb.UserAuth
 
   plug :assign_email_and_password_changesets
@@ -67,15 +65,6 @@ defmodule AffableWeb.UserSettingsController do
   def delete_account(%{assigns: %{current_user: %Accounts.User{} = user}} = conn, _) do
     user = user |> Affable.Repo.preload(sites: :domains)
 
-    for site <- Sites.unshared(user) do
-      k8s().undeploy(
-        K8sFactories.affiliate_site(
-          site.internal_name,
-          site.domains |> Enum.map(fn domain -> domain.name end)
-        )
-      )
-    end
-
     Accounts.delete_user(user)
 
     conn
@@ -88,9 +77,5 @@ defmodule AffableWeb.UserSettingsController do
     conn
     |> assign(:email_changeset, Accounts.change_user_email(user))
     |> assign(:password_changeset, Accounts.change_user_password(user))
-  end
-
-  def k8s() do
-    Application.get_env(:affable, :k8s)
   end
 end

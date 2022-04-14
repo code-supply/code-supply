@@ -2,16 +2,9 @@ defmodule AffableWeb.EditorLiveTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
   import Affable.SitesFixtures
-  import Hammox
 
-  alias Affable.{Accounts, Repo, Sites}
+  alias Affable.{Accounts, Sites}
   alias Affable.Sites.{Page, Site, Item, Attribute}
-
-  setup :verify_on_exit!
-
-  defp path(conn, site) do
-    Routes.editor_path(conn, :edit, site.id)
-  end
 
   describe "authenticated user" do
     setup context do
@@ -41,13 +34,8 @@ defmodule AffableWeb.EditorLiveTest do
     } do
       {:ok, view, _html} = live(conn, path(conn, site))
 
-      attribute_definitions_before =
-        Repo.preload(site, :attribute_definitions).attribute_definitions
-
       refute view
              |> has_element?("#publish")
-
-      stub_broadcast()
 
       view
       |> element("#new-attribute-definition")
@@ -55,11 +43,6 @@ defmodule AffableWeb.EditorLiveTest do
 
       assert view
              |> has_element?("#publish")
-
-      expect_broadcast(fn updated_site ->
-        assert length(updated_site.attribute_definitions) ==
-                 length(attribute_definitions_before) + 1
-      end)
 
       view
       |> element("#publish")
@@ -78,8 +61,6 @@ defmodule AffableWeb.EditorLiveTest do
 
       %Site{attribute_definitions: [existing_definition]} =
         site |> Affable.Repo.preload(:attribute_definitions)
-
-      stub_broadcast()
 
       view
       |> element("#delete-attribute-definition-#{existing_definition.id}")
@@ -212,5 +193,10 @@ defmodule AffableWeb.EditorLiveTest do
 
       assert actual_path == expected_path
     end
+  end
+
+  defp path(conn, site) do
+    Routes.editor_path(conn, :edit, site.id)
+    |> control_plane_path()
   end
 end

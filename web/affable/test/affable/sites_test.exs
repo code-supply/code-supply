@@ -4,7 +4,6 @@ defmodule Affable.SitesTest do
   import Affable.{AccountsFixtures, SitesFixtures}
   import Affable.Sites.Raw
   import Access, only: [at: 1]
-  import Hammox
 
   alias Affable.Accounts.User
   alias Affable.Assets
@@ -14,8 +13,6 @@ defmodule Affable.SitesTest do
   alias Affable.Sites.{Page, Section, Site, SiteMember, Item, AttributeDefinition}
   alias Affable.Domains.Domain
 
-  setup :verify_on_exit!
-
   describe "pages" do
     test "adding a page requires correct user, broadcasts result" do
       user = user_fixture()
@@ -23,7 +20,6 @@ defmodule Affable.SitesTest do
 
       assert {:error, :unauthorized} = Sites.add_page(site, wrong_user())
 
-      expect_broadcast(fn %Site{pages: [_ | [%Page{title: "Untitled page"}]]} -> nil end)
       assert {:ok, %Page{title: "Untitled page"}} = Sites.add_page(site, user)
 
       assert [%Page{} | [%Page{title: "Untitled page"}]] = Sites.get_site!(site.id).pages
@@ -34,7 +30,6 @@ defmodule Affable.SitesTest do
       site = site_fixture(user)
       [page] = site.pages
 
-      expect_broadcast(fn %Site{pages: [%Page{title: "my new title"}]} -> nil end)
       {:ok, page} = Sites.update_page(page, %{title: "my new title"}, user)
 
       assert "my new title" == page.title
@@ -43,23 +38,11 @@ defmodule Affable.SitesTest do
     test "can add multiple sections and delete them" do
       {page, user} = page_fixture()
 
-      expect_broadcast(fn %Site{pages: [%Page{sections: [%Section{name: name}]}]} ->
-        assert "untitled-section" == name
-      end)
-
       {:ok, page} = Sites.add_page_section(page, user)
-
-      expect_broadcast(fn %Site{pages: [%Page{sections: [_, %Section{name: name}]}]} ->
-        assert "untitled-section-2" == name
-      end)
 
       {:ok, page} = Sites.add_page_section(page, user)
 
       assert ["untitled-section", "untitled-section-2"] == Enum.map(page.sections, & &1.name)
-
-      expect_broadcast(fn %Site{pages: [%Page{sections: [%Section{name: name}]}]} ->
-        assert "untitled-section-2" == name
-      end)
 
       [first_section, _] = page.sections
       Sites.delete_page_section(first_section.id, user)
@@ -81,7 +64,6 @@ defmodule Affable.SitesTest do
     test "deleting a page broadcasts the result" do
       user = user_fixture()
       %Site{pages: [page]} = site_fixture(user)
-      expect_broadcast(fn %Site{pages: []} -> nil end)
       Sites.delete_page(page.id, user)
     end
 
@@ -201,15 +183,6 @@ defmodule Affable.SitesTest do
 
     @invalid_attrs %{name: nil}
 
-    setup do
-      Hammox.protect(
-        Sites,
-        Affable.SiteClusterIO,
-        get_site!: 1,
-        set_available: 2
-      )
-    end
-
     defp user_and_site_with_items() do
       %User{sites: [site]} = user = unconfirmed_user_fixture()
 
@@ -218,6 +191,14 @@ defmodule Affable.SitesTest do
         site |> Sites.with_items() |> Sites.with_pages()
       }
     end
+
+    # test "can find by domain" do
+    #   site = site_fixture()
+
+    #   [domain_name | _] = for d <- site.domains, do: d.name
+
+    #   assert {:ok, site} == Sites.find_by_domain_name(domain_name)
+    # end
 
     test "status of new site is pending" do
       assert %Site{}
@@ -245,6 +226,17 @@ defmodule Affable.SitesTest do
                |> Sites.preview_url()
     end
 
+    test "preview URL chooses last domain if there are multiple, and none are affable domains" do
+      assert "//ohhi/preview" ==
+               %Site{
+                 domains: [
+                   %Domain{name: "my.domain.example.com"},
+                   %Domain{name: "ohhi"}
+                 ]
+               }
+               |> Sites.preview_url()
+    end
+
     test "canonical URL with a single domain uses that domain" do
       assert "//something.affable.app/" ==
                %Site{domains: [%Domain{name: "something.affable.app"}]}
@@ -260,34 +252,6 @@ defmodule Affable.SitesTest do
                  ]
                }
                |> Sites.canonical_url()
-    end
-
-    test "status of site that's been made available once is available, and doesn't update date subsequently",
-         %{
-           set_available_2: set_available
-         } do
-      site = site_fixture()
-
-      first_made_available_at = DateTime.from_unix!(0)
-
-      {:ok, site} = set_available.(site.id, first_made_available_at)
-
-      assert site |> Sites.status() == :available
-
-      {:ok, site} = set_available.(site.id, DateTime.from_unix!(1))
-      assert site.made_available_at == first_made_available_at
-    end
-
-    test "setting as available preloads domains, so the live sites view can render them", %{
-      set_available_2: set_available
-    } do
-      site = site_fixture()
-
-      first_made_available_at = DateTime.from_unix!(0)
-
-      {:ok, site} = set_available.(site.id, first_made_available_at)
-
-      assert site.domains |> length == 1
     end
 
     test "sites start with a publication" do
@@ -309,24 +273,16 @@ defmodule Affable.SitesTest do
              ) == get_in(publication.data, ["pages", at(0), "header_image_url"])
     end
 
-    test "site is published when latest publication is same as current raw representation", %{
-      set_available_2: set_available
-    } do
-      %User{sites: [site]} = user_fixture()
-
-      {:ok, site} = set_available.(site.id, DateTime.from_unix!(0))
+    test "site is published when latest publication is same as current raw representation" do
+      site = site_fixture()
+      Repo.delete(site.latest_publication)
 
       refute Sites.is_published?(site)
-
-      expect_broadcast(fn site ->
-        assert Sites.is_published?(site)
-      end)
 
       {:ok, published_site} = Sites.publish(site)
 
       assert Sites.is_published?(published_site)
 
-      expect_broadcast(fn %Site{} -> nil end)
       {:ok, published_again_site} = Sites.publish(site)
 
       assert Sites.is_published?(published_again_site)
@@ -442,10 +398,6 @@ defmodule Affable.SitesTest do
 
       definitions_before = site.attribute_definitions
 
-      expect_broadcast(fn %Site{attribute_definitions: definitions} ->
-        assert length(definitions) == length(definitions_before) + 1
-      end)
-
       {:ok,
        %Site{attribute_definitions: [%AttributeDefinition{id: definition_id} = definition | _]}} =
         Sites.add_attribute_definition(site, user)
@@ -459,10 +411,6 @@ defmodule Affable.SitesTest do
       {:error, _} = Sites.delete_attribute_definition(site.id, definition.id, wrong_user())
       assert [definition | _] = Sites.get_site!(user, site.id).attribute_definitions
 
-      expect_broadcast(fn %Site{attribute_definitions: definitions} ->
-        assert length(definitions) == length(definitions_before)
-      end)
-
       {:ok, _} = Sites.delete_attribute_definition(site.id, definition.id, user)
 
       assert Sites.get_site!(user, site.id).attribute_definitions ==
@@ -472,12 +420,6 @@ defmodule Affable.SitesTest do
     test "can delete an item from start of list" do
       user = user_fixture()
       %Site{pages: [%Page{items: [item | _]} = page_before]} = site = site_fixture(user)
-
-      expect_broadcast(fn site ->
-        [page] = site.pages
-        [published_page] = site.latest_publication.data["pages"]
-        assert length(published_page["items"]) - 1 == length(page.items)
-      end)
 
       {:ok, %Page{} = page_after} = Sites.delete_item(site, page_before, "#{item.id}")
 
@@ -497,12 +439,6 @@ defmodule Affable.SitesTest do
     test "can delete an item from end of list" do
       user = user_fixture()
       %Site{pages: [%Page{items: items} = page_before]} = site = site_fixture(user)
-
-      expect_broadcast(fn site ->
-        [page] = site.pages
-        [published_page] = site.latest_publication.data["pages"]
-        assert length(published_page["items"]) - 1 == length(page.items)
-      end)
 
       {:ok, %Page{} = page_after} = Sites.delete_item(site, page_before, "#{List.last(items).id}")
 
@@ -527,12 +463,6 @@ defmodule Affable.SitesTest do
 
       assert first_before.position == 1
       assert second_before.position == 2
-
-      expect_broadcast(fn s ->
-        [page] = s.pages
-        [published_page] = s.latest_publication.data["pages"]
-        assert Enum.map(page.items, & &1.name) != Enum.map(published_page["items"], & &1["name"])
-      end)
 
       {:ok, %Site{pages: [page]}} = Sites.demote_item(site, page, "#{first_before.id}")
 
@@ -569,8 +499,6 @@ defmodule Affable.SitesTest do
       assert first_before.position == 1
       assert second_before.position == 2
 
-      stub_broadcast()
-
       {:ok, %Site{pages: [page]}} = Sites.promote_item(site, page, "#{second_before.id}")
 
       [first_after | rest] = page.items
@@ -600,15 +528,8 @@ defmodule Affable.SitesTest do
     test "update_site/2 with valid data updates the site" do
       {_, site} = user_and_site_with_items()
 
-      %Site{pages: [%Page{header_image: %Asset{id: header_image_id, url: expected_asset_url}}]} =
+      %Site{pages: [%Page{header_image: %Asset{id: header_image_id}}]} =
         site |> Repo.preload(pages: [:header_image])
-
-      expect_broadcast(fn %Site{
-                            name: "some updated name",
-                            site_logo: %Asset{url: broadcast_asset_url}
-                          } ->
-        assert broadcast_asset_url == expected_asset_url
-      end)
 
       [definition] = site.attribute_definitions
 
@@ -655,10 +576,6 @@ defmodule Affable.SitesTest do
 
     test "append_item/2 adds a default item to the end of the items list" do
       {user, %Site{pages: [page]} = site} = user_and_site_with_items()
-
-      expect_broadcast(fn %Site{pages: [%Page{items: items}]} ->
-        assert %{"name" => "New item"} = raw(items |> List.last())
-      end)
 
       {:ok, %Site{pages: [%Page{items: appended_site_items}]}, _appended_item} =
         Sites.append_item(site, page, user)

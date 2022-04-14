@@ -119,13 +119,13 @@ defmodule AffableWeb.AssetsLiveTest do
   end
 
   defp path(conn) do
-    Routes.assets_path(conn, :index)
+    conn
+    |> Routes.assets_path(:index)
+    |> control_plane_path()
   end
 
   defp successful_upload_pattern() do
-    ~r(src="https://images.affable.app/nosignature/fill/[0-9]+/[0-9]+/ce/0/plain/gs://#{
-      Application.fetch_env!(:affable, :bucket_name)
-    }/.+")
+    ~r(src="https://images.affable.app/nosignature/fill/[0-9]+/[0-9]+/ce/0/plain/gs://#{Application.fetch_env!(:affable, :bucket_name)}/.+")
   end
 
   defp no_images_uploaded_pattern() do

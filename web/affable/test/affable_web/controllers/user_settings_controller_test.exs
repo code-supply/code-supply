@@ -2,25 +2,22 @@ defmodule AffableWeb.UserSettingsControllerTest do
   use AffableWeb.ConnCase, async: true
 
   alias Affable.Accounts
-  alias Affable.MockK8s
   alias Affable.Sites
 
   import Affable.AccountsFixtures
-  import Hammox
 
   setup :register_and_log_in_user
-  setup :verify_on_exit!
 
   describe "GET /users/settings" do
     test "renders settings page", %{conn: conn} do
-      conn = get(conn, Routes.user_settings_path(conn, :edit))
+      conn = get(conn, path(conn, :edit))
       response = html_response(conn, 200)
       assert response =~ "<h1>Settings</h1>"
     end
 
     test "redirects if user is not logged in" do
       conn = build_conn()
-      conn = get(conn, Routes.user_settings_path(conn, :edit))
+      conn = get(conn, path(conn, :edit))
       assert redirected_to(conn) == Routes.user_session_path(conn, :new)
     end
   end
@@ -28,7 +25,7 @@ defmodule AffableWeb.UserSettingsControllerTest do
   describe "PUT /users/settings/update_password" do
     test "updates the user password and resets tokens", %{conn: conn, user: user} do
       new_password_conn =
-        put(conn, Routes.user_settings_path(conn, :update_password), %{
+        put(conn, path(conn, :update_password), %{
           "current_password" => valid_user_password(),
           "user" => %{
             "password" => "new valid password",
@@ -44,7 +41,7 @@ defmodule AffableWeb.UserSettingsControllerTest do
 
     test "does not update password on invalid data", %{conn: conn} do
       old_password_conn =
-        put(conn, Routes.user_settings_path(conn, :update_password), %{
+        put(conn, path(conn, :update_password), %{
           "current_password" => "invalid",
           "user" => %{
             "password" => "too short",
@@ -66,7 +63,7 @@ defmodule AffableWeb.UserSettingsControllerTest do
     @tag :capture_log
     test "updates the user email", %{conn: conn, user: user} do
       conn =
-        put(conn, Routes.user_settings_path(conn, :update_email), %{
+        put(conn, path(conn, :update_email), %{
           "current_password" => valid_user_password(),
           "user" => %{"email" => unique_user_email()}
         })
@@ -78,7 +75,7 @@ defmodule AffableWeb.UserSettingsControllerTest do
 
     test "does not update email on invalid data", %{conn: conn} do
       conn =
-        put(conn, Routes.user_settings_path(conn, :update_email), %{
+        put(conn, path(conn, :update_email), %{
           "current_password" => "invalid",
           "user" => %{"email" => "with spaces"}
         })
@@ -103,19 +100,19 @@ defmodule AffableWeb.UserSettingsControllerTest do
     end
 
     test "updates the user email once", %{conn: conn, user: user, token: token, email: email} do
-      conn = get(conn, Routes.user_settings_path(conn, :confirm_email, token))
+      conn = get(conn, path(conn, :confirm_email, token))
       assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
       assert get_flash(conn, :info) =~ "E-mail changed successfully"
       refute Accounts.get_user_by_email(user.email)
       assert Accounts.get_user_by_email(email)
 
-      conn = get(conn, Routes.user_settings_path(conn, :confirm_email, token))
+      conn = get(conn, path(conn, :confirm_email, token))
       assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
       assert get_flash(conn, :error) =~ "Email change link is invalid or it has expired"
     end
 
     test "does not update email with invalid token", %{conn: conn, user: user} do
-      conn = get(conn, Routes.user_settings_path(conn, :confirm_email, "oops"))
+      conn = get(conn, path(conn, :confirm_email, "oops"))
       assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
       assert get_flash(conn, :error) =~ "Email change link is invalid or it has expired"
       assert Accounts.get_user_by_email(user.email)
@@ -123,22 +120,14 @@ defmodule AffableWeb.UserSettingsControllerTest do
 
     test "redirects if user is not logged in", %{token: token} do
       conn = build_conn()
-      conn = get(conn, Routes.user_settings_path(conn, :confirm_email, token))
+      conn = get(conn, path(conn, :confirm_email, token))
       assert redirected_to(conn) == Routes.user_session_path(conn, :new)
     end
   end
 
   describe "DELETE /users/settings/delete_account" do
-    test "deletes the account and redirects to home page", %{
-      conn: conn,
-      user: %Accounts.User{sites: [site]} = user
-    } do
-      expect(MockK8s, :undeploy, fn %{"kind" => "AffiliateSite", "metadata" => %{"name" => name}} ->
-        assert name == site.internal_name
-        {:ok, ""}
-      end)
-
-      conn = delete(conn, Routes.user_settings_path(conn, :delete_account))
+    test "deletes the account and redirects to home page", %{conn: conn, user: user} do
+      conn = delete(conn, path(conn, :delete_account))
 
       assert redirected_to(conn) == "/"
 
@@ -156,7 +145,7 @@ defmodule AffableWeb.UserSettingsControllerTest do
       %Sites.SiteMember{user: colleague, site: site}
       |> Affable.Repo.insert()
 
-      conn = delete(conn, Routes.user_settings_path(conn, :delete_account))
+      conn = delete(conn, path(conn, :delete_account))
 
       assert redirected_to(conn) == "/"
 
@@ -166,5 +155,17 @@ defmodule AffableWeb.UserSettingsControllerTest do
 
       assert Sites.get_site!(colleague, site.id)
     end
+  end
+
+  defp path(conn, action) do
+    conn
+    |> Routes.user_settings_path(action)
+    |> control_plane_path()
+  end
+
+  defp path(conn, action, token) do
+    conn
+    |> Routes.user_settings_path(action, token)
+    |> control_plane_path()
   end
 end

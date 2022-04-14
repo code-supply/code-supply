@@ -27,11 +27,7 @@ defmodule Affable.Sections do
            section
            |> Section.changeset(attrs)
            |> Repo.update() do
-      {
-        :ok,
-        section
-        |> broadcast()
-      }
+      {:ok, section}
     else
       err -> err
     end
@@ -56,18 +52,8 @@ defmodule Affable.Sections do
     |> Ecto.Multi.update(:remove_from_grid_template_areas, layout_changeset)
     |> Repo.transaction()
 
-    Sites.get_site!(Repo.preload(section, layout: :site).layout.site_id) |> Sites.broadcast()
+    Sites.get_site!(Repo.preload(section, layout: :site).layout.site_id)
 
     :ok
-  end
-
-  defp broadcast(%Section{} = section) do
-    site = (section |> Repo.preload(layout: :site)).layout.site
-    Sites.broadcast(site)
-    section
-  end
-
-  defp broadcast({:ok, %Section{} = section}) do
-    broadcast(section)
   end
 end

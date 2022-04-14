@@ -1,15 +1,10 @@
 defmodule AffableWeb.DomainsLiveTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
-  import Hammox
-  import ExUnit.CaptureLog
 
   alias Affable.Accounts.User
   alias Affable.Sites.Site
   alias Affable.Sites
-  alias Affable.MockK8s
-
-  setup :verify_on_exit!
 
   setup context do
     {:ok, register_and_log_in_user(context)}
@@ -17,20 +12,9 @@ defmodule AffableWeb.DomainsLiveTest do
 
   test "can add and delete a custom domain", %{
     conn: conn,
-    user: %User{sites: [%Site{internal_name: internal_name, id: site_id}]}
+    user: %User{sites: [%Site{id: site_id}]}
   } do
     {:ok, view, _html} = live(conn, path(conn))
-
-    expect(MockK8s, :patch, fn %{
-                                 "apiVersion" => "site-operator.code.supply/v1",
-                                 "kind" => "AffiliateSite",
-                                 "metadata" => %{"name" => ^internal_name},
-                                 "spec" => %{
-                                   "domains" => ["www.pizzas4u.example.com" | _original_domain]
-                                 }
-                               } ->
-      {:ok, ""}
-    end)
 
     assert view
            |> form("#new-domain", domain: %{name: "www.pizzas4u.example.com", site_id: site_id})
@@ -38,35 +22,9 @@ defmodule AffableWeb.DomainsLiveTest do
 
     %Site{domains: [_default_domain | [new_domain | _]]} = Sites.get_site!(site_id)
 
-    expect(MockK8s, :patch, fn %{
-                                 "metadata" => %{"name" => ^internal_name},
-                                 "spec" => %{
-                                   "domains" => [_original_domain]
-                                 }
-                               } ->
-      {:ok, ""}
-    end)
-
     refute view
            |> element("#delete-domain-#{new_domain.id}")
            |> render_click() =~ "www.pizzas4u.example.com</a>"
-  end
-
-  test "site patch errors are logged", %{
-    conn: conn,
-    user: %User{sites: [%Site{id: site_id}]}
-  } do
-    {:ok, view, _html} = live(conn, path(conn))
-
-    stub(MockK8s, :patch, fn %{} ->
-      {:error, "Bad stuff happened"}
-    end)
-
-    assert capture_log(fn ->
-             view
-             |> form("#new-domain", domain: %{name: "www.example.com", site_id: site_id})
-             |> render_submit()
-           end) =~ "Bad stuff happened"
   end
 
   test "cannot delete an affable domain", %{
@@ -103,5 +61,6 @@ defmodule AffableWeb.DomainsLiveTest do
 
   defp path(conn) do
     Routes.domains_path(conn, :index)
+    |> control_plane_path()
   end
 end

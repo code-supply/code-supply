@@ -3,6 +3,9 @@ defmodule AffableWeb.Router do
 
   import AffableWeb.UserAuth
 
+  control_plane_host = Application.fetch_env!(:affable, AffableWeb.Endpoint)[:url][:host]
+  control_plane = [host: control_plane_host, alias: AffableWeb]
+
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
@@ -13,21 +16,10 @@ defmodule AffableWeb.Router do
     plug(:fetch_current_user)
   end
 
-  pipeline :api do
-    plug(:accepts, ["json"])
-  end
-
-  scope "/", AffableWeb do
+  scope control_plane ++ [path: "/"] do
     pipe_through(:browser)
 
     get("/", HomeController, :show)
-  end
-
-  scope "/api", AffableWeb do
-    pipe_through(:api)
-
-    get("/sites/:id", Api.SitesController, :show, as: :api_sites)
-    get("/sites/:id/preview", Api.SitesController, :preview, as: :api_sites)
   end
 
   # Enables LiveDashboard only for development
@@ -52,7 +44,7 @@ defmodule AffableWeb.Router do
 
   ## Authentication routes
 
-  scope "/", AffableWeb do
+  scope control_plane ++ [path: "/"] do
     pipe_through([:browser, :redirect_if_user_is_authenticated])
 
     get("/users/register", UserRegistrationController, :new)
@@ -65,7 +57,7 @@ defmodule AffableWeb.Router do
     put("/users/reset_password/:token", UserResetPasswordController, :update)
   end
 
-  scope "/", AffableWeb do
+  scope control_plane ++ [path: "/"] do
     pipe_through([:browser, :require_authenticated_user])
 
     live("/sites", SitesLive, :index)
@@ -88,12 +80,16 @@ defmodule AffableWeb.Router do
     delete("/users/settings/delete_account", UserSettingsController, :delete_account)
   end
 
-  scope "/", AffableWeb do
+  scope control_plane ++ [path: "/"] do
     pipe_through([:browser])
 
     delete("/users/log_out", UserSessionController, :delete)
     get("/users/confirm", UserConfirmationController, :new)
     post("/users/confirm", UserConfirmationController, :create)
     get("/users/confirm/:token", UserConfirmationController, :confirm)
+  end
+
+  scope path: "/", alias: AffableWeb do
+    live("/*path", PageLive, :index)
   end
 end

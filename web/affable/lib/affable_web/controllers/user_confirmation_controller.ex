@@ -5,8 +5,6 @@ defmodule AffableWeb.UserConfirmationController do
 
   alias Affable.Accounts
   alias Affable.Accounts.User
-  alias Affable.Domains.Domain
-  alias Affable.K8sFactories
   alias Affable.Sites.Site
 
   def new(conn, _params) do
@@ -35,34 +33,14 @@ defmodule AffableWeb.UserConfirmationController do
   # leaked token giving the user access to the account.
   def confirm(conn, %{"token" => token}) do
     case Accounts.confirm_user(token) do
-      {:ok,
-       %User{
-         sites: [
-           %Site{
-             internal_name: internal_name,
-             domains: [%Domain{name: domain_name}]
-           }
-         ]
-       }} ->
-        case k8s().deploy(K8sFactories.affiliate_site(internal_name, [domain_name])) do
-          {:ok, _} ->
-            Logger.info("Deployed site #{internal_name} for the first time")
+      {:ok, %User{sites: [%Site{internal_name: internal_name}]}} ->
+        Logger.info("Deployed site #{internal_name} for the first time")
 
-            conn
-            |> put_flash(
-              :info,
-              "Account confirmed successfully. We're busy building your first site. It should be ready in a few seconds."
-            )
-
-          {:error, msg} ->
-            Logger.error("Failed to deploy #{internal_name}: #{msg}")
-
-            conn
-            |> put_flash(
-              :info,
-              "Account confirmed successfully. We're busy building your first site. Please get in touch if it's not ready soon!"
-            )
-        end
+        conn
+        |> put_flash(
+          :info,
+          "Account confirmed successfully."
+        )
         |> redirect(to: Routes.sites_path(conn, :index))
 
       :error ->
@@ -70,9 +48,5 @@ defmodule AffableWeb.UserConfirmationController do
         |> put_flash(:error, "Confirmation link is invalid or it has expired.")
         |> redirect(to: "/")
     end
-  end
-
-  defp k8s() do
-    Application.get_env(:affable, :k8s)
   end
 end

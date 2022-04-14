@@ -1,6 +1,5 @@
 defmodule Affable.DomainsTest do
   use Affable.DataCase, async: true
-  import Hammox
 
   alias Affable.Domains
 
@@ -19,8 +18,6 @@ defmodule Affable.DomainsTest do
       user = user_fixture()
       %{user: user, site: site_fixture(user)}
     end
-
-    setup :verify_on_exit!
 
     def domain_fixture(%Site{} = site, attrs \\ %{}) do
       {:ok, domain} =
