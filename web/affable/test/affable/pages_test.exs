@@ -1,9 +1,22 @@
 defmodule Affable.PagesTest do
   use Affable.DataCase, async: true
-
   alias Affable.Sites.Page
+  alias Affable.Pages
+  import Affable.SitesFixtures
 
   @valid_page %Page{title: "hi", path: "/"}
+
+  test "can retrieve with host and path" do
+    site = site_fixture()
+    [homepage] = site.pages
+    [domain] = site.domains
+    page = Pages.get(domain.name, "/")
+
+    assert homepage.id == page.id
+  end
+
+  test "attempting to retrieve with non-existent host returns nil"
+  test "attempting to retrieve with non-existent path returns nil"
 
   test "colours can be set to valid values and get uppercased automatically" do
     changeset =
