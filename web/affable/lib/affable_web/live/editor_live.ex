@@ -195,7 +195,7 @@ defmodule AffableWeb.EditorLive do
       user: user,
       site_id: id,
       pages: Enum.map(site.pages, fn page -> {page, Page.changeset(page, %{})} end),
-      layout_pairs: Enum.map(site.layouts, &{&1.name, &1.id}),
+      layout_pairs: Enum.map(site.available_layouts, &{&1.name, &1.id}),
       asset_pairs: Enum.map(site.assets, &{&1.name, &1.id}),
       changeset: Site.changeset(site, %{}),
       published: Sites.is_published?(site),

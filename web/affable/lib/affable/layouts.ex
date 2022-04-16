@@ -135,7 +135,7 @@ defmodule Affable.Layouts do
 
     site
     |> Ecto.build_assoc(
-      :layouts,
+      :available_layouts,
       attrs
       |> Enum.into(%{
         site_id: site.id,

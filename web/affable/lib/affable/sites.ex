@@ -237,7 +237,7 @@ defmodule Affable.Sites do
     site
     |> Repo.preload(
       [
-        layouts: [],
+        available_layouts: [],
         layout: [sections: @section_preloads],
         pages: page_query()
       ],

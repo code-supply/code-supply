@@ -11,10 +11,8 @@ defmodule Affable.Sites.Site do
     field :name, :string
     belongs_to :site_logo, Asset
 
-    # chosen global layout for site
     belongs_to :layout, Layout
-    # available layouts, created by any site member
-    has_many :layouts, Layout
+    has_many :available_layouts, Layout
 
     field :internal_name, :string
     field :internal_hostname, :string
