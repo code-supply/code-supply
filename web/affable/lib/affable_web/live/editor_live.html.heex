@@ -147,7 +147,8 @@
 
 </div>
 
-<%= if assigns[:layout_id] do %>
+<%= cond do %>
+  <% assigns[:layout_id] -> %>
   <.live_component
        module={AffableWeb.LayoutEditorComponent}
        id="layout-editor"
@@ -155,11 +156,24 @@
        user={@user}
        selected_section_id={assigns[:section_id]}
   />
-<% else %>
-  <.live_component
-       module={AffableWeb.PreviewComponent}
+  <% assigns[:page] -> %>
+  <div class="fixed hidden w-2/3 mt-1 overflow-scroll lg:block h-body top-12 left-1/3">
+    <.live_component
+       module={AffableWeb.InnerPageComponent}
        id="preview"
        user={@user}
        site={@changeset.data}
-  />
+       page={@page}
+       />
+  </div>
+  <% true -> %>
+  <div class="fixed hidden w-2/3 mt-1 overflow-scroll lg:block h-body top-12 left-1/3">
+    <.live_component
+       module={AffableWeb.InnerPageComponent}
+       id="preview"
+       user={@user}
+       site={@changeset.data}
+       page={@changeset.data.pages |> List.first()}
+       />
+  </div>
 <% end %>

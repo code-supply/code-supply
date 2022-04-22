@@ -5,7 +5,7 @@ defmodule Affable.LayoutsTest do
   import Affable.AccountsFixtures
 
   alias Affable.Sites
-  alias Affable.Sites.{Section, Site}
+  alias Affable.Sites.Section
   alias Affable.Layouts
   alias Affable.Layouts.Layout
 

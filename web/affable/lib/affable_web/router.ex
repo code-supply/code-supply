@@ -6,6 +6,15 @@ defmodule AffableWeb.Router do
   control_plane_host = Application.fetch_env!(:affable, AffableWeb.Endpoint)[:url][:host]
   control_plane = [host: control_plane_host, alias: AffableWeb]
 
+  pipeline :site_browser do
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, {AffableWeb.LayoutView, :site_root})
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
+  end
+
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
@@ -90,6 +99,7 @@ defmodule AffableWeb.Router do
   end
 
   scope path: "/", alias: AffableWeb do
+    pipe_through([:site_browser])
     live("/*path", PageLive, :index)
   end
 end

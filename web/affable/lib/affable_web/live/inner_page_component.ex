@@ -1,10 +1,11 @@
-defmodule AffableWeb.PreviewComponent do
+defmodule AffableWeb.InnerPageComponent do
   use AffableWeb, :live_component
 
   def update(assigns, socket) do
     {:ok,
      assign(socket,
        site: assigns.site,
+       page: assigns.page,
        menu: menu(assigns.site.pages),
        sections_style: sections_style(assigns.site.layout)
      )}

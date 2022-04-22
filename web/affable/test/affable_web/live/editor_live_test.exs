@@ -4,7 +4,6 @@ defmodule AffableWeb.EditorLiveTest do
   import Affable.SitesFixtures
 
   alias Affable.{Accounts, Sites}
-  alias Affable.Sites.{Page, Site, Item, Attribute}
 
   describe "authenticated user" do
     setup context do
@@ -52,67 +51,6 @@ defmodule AffableWeb.EditorLiveTest do
              |> has_element?("#publish")
     end
 
-    test "can create / update / delete an attribute definition", %{
-      conn: conn,
-      user: user,
-      site: site
-    } do
-      {:ok, view, _html} = live(conn, path(conn, site))
-
-      %Site{attribute_definitions: [existing_definition]} =
-        site |> Affable.Repo.preload(:attribute_definitions)
-
-      view
-      |> element("#delete-attribute-definition-#{existing_definition.id}")
-      |> render_click()
-
-      refute view
-             |> has_element?(".attribute-definition:nth-child(1)")
-
-      view
-      |> element("#new-attribute-definition")
-      |> render_click()
-
-      %Site{
-        attribute_definitions: [new_definition],
-        pages: [
-          %Page{
-            items:
-              [%Item{attributes: [%Attribute{id: first_attribute_id}]} = first_item | _] = items
-          }
-        ]
-      } = Sites.get_site!(user, site.id)
-
-      assert view
-             |> has_element?("#site_attribute_definitions_0_name[value=Price]")
-
-      view
-      |> render_change(:save, %{
-        "site" => %{
-          "attribute_definitions" => %{
-            "0" => %{
-              "id" => "#{new_definition.id}",
-              "name" => "Mattress Size",
-              "type" => "text"
-            }
-          }
-        }
-      })
-
-      assert view
-             |> has_element?("#site_attribute_definitions_0_name[value='Mattress Size']")
-
-      view
-      |> render_first_item_change(items, %{
-        "attributes" => %{
-          "0" => %{"id" => "#{first_attribute_id}", "value" => "King"}
-        }
-      })
-
-      assert view
-             |> has_element?("#item-#{first_item.id} [value=King]")
-    end
-
     test "raises exception when site doesn't belong to user", %{conn: conn} do
       site = site_fixture()
 
@@ -130,51 +68,6 @@ defmodule AffableWeb.EditorLiveTest do
       {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn, site))
 
       assert actual_path == expected_path
-    end
-
-    defp render_first_item_change(view, items, attrs) do
-      [first_item | other_items] = items
-
-      view
-      |> element("#page-choice-#{first_item.page_id} a")
-      |> render_click()
-
-      render_change(view |> element("#page-#{first_item.page_id}"), %{
-        "page" => %{
-          "items" =>
-            Map.merge(
-              %{
-                "0" =>
-                  Map.merge(
-                    %{
-                      "id" => "#{first_item.id}",
-                      "name" => first_item.name,
-                      "description" => first_item.description
-                    },
-                    attrs
-                  )
-              },
-              item_params(other_items, from: 1)
-            )
-        }
-      })
-    end
-
-    defp item_params([], from: _n) do
-      %{}
-    end
-
-    defp item_params([item | items], from: n) do
-      Map.merge(
-        %{
-          "#{n}" => %{
-            "id" => "#{item.id}",
-            "name" => "#{item.name}",
-            "description" => "#{item.description}"
-          }
-        },
-        item_params(items, from: n + 1)
-      )
     end
   end
 

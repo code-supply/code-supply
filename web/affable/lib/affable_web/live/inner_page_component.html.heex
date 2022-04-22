@@ -1,4 +1,4 @@
-<div class="fixed hidden w-2/3 mt-1 overflow-scroll lg:block h-body top-12 left-1/3">
+<div>
 <%= cond do %>
 <% @site.layout -> %>
   <div class="grid" style={@sections_style}>
@@ -13,12 +13,12 @@
           </ul>
         </nav>
       <% "main" -> %>
-        <main class="bg-cover sections grid" style={@sections_style <> section_style(layout_section)}>
-          <%# <%= for section <- @page.sections do %1> %>
-          <%#     <%= content_tag(section.element, class: "prose p-8", style: section_style(section)) do %1> %>
-          <%#       <%= raw(Earmark.as_html!(section.content)) %1> %>
-          <%#     <% end %1> %>
-          <%# <% end %1> %>
+        <main class="min-h-[30em] bg-cover sections grid" style={section_style(layout_section)}>
+          <%= for section <- @page.sections do %>
+              <%= content_tag(section.element, class: "prose p-8", style: section_style(section)) do %>
+                <%= raw(Earmark.as_html!(section.content)) %>
+              <% end %>
+          <% end %>
         </main>
       <% _ -> %>
         <%= content_tag(layout_section.element, class: "p-4 prose bg-cover", style: section_style(layout_section)) do %>

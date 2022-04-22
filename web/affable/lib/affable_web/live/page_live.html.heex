@@ -1,26 +1,7 @@
-<%# <div class="grid" style={@site_layout_sections_style}> %>
-<%# <%= for layout_section <- @site_layout.sections do %1> %>
-<%#   <%= case layout_section["element"] do %1> %>
-<%#     <% "nav" -> %1> %>
-<%#       <nav class="p-4 bg-cover" style={section_style(layout_section)}> %>
-<%#         <ul> %>
-<%#           <%= for entry <- @menu do %1> %>
-<%#             <li><a href={entry.path}><%= entry.name %1></a></li> %>
-<%#           <% end %1> %>
-<%#         </ul> %>
-<%#       </nav> %>
-<%#     <% "main" -> %1> %>
-<%#       <main class="bg-cover sections grid" style={@sections_style <> section_style(layout_section)}> %>
-<%#         <%= for section <- @sections do %1> %>
-<%#             <%= content_tag(section["element"], class: "prose p-8", style: section_style(section)) do %1> %>
-<%#               <%= raw(Earmark.as_html!(section["content"])) %1> %>
-<%#             <% end %1> %>
-<%#         <% end %1> %>
-<%#       </main> %>
-<%#     <% _ -> %1> %>
-<%#       <%= content_tag(layout_section["element"], class: "p-4 prose bg-cover", style: section_style(layout_section)) do %1> %>
-<%#         <%= raw(Earmark.as_html!(layout_section["content"])) %1> %>
-<%#       <% end %1> %>
-<%#   <% end %1> %>
-<%# <% end %1> %>
-<%# </div> %>
+<.live_component
+   module={AffableWeb.InnerPageComponent}
+   id="page"
+   user={nil}
+   site={@site}
+   page={@page}
+   />

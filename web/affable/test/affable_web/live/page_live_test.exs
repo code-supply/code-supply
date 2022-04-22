@@ -1,24 +1,38 @@
-# defmodule AffableWeb.PageLiveTest do
-#   use AffableWeb.ConnCase, async: true
-#   import Phoenix.LiveViewTest
+defmodule AffableWeb.PageLiveTest do
+  use AffableWeb.ConnCase, async: true
+  import Phoenix.LiveViewTest
 
-#   alias Affable.Sites
-#   alias Affable.Sites.Site
+  alias Affable.Sites
 
-#   import Affable.SitesFixtures
+  import Affable.AccountsFixtures
+  import Affable.SitesFixtures
 
-#   test "renders a published site" do
-#     site = site_fixture()
+  test "renders a published site" do
+    site = site_fixture(user_fixture(), %{name: "my site"})
+    [domain] = site.domains
 
-#     assert Sites.is_published?(site)
+    assert Sites.is_published?(site)
 
-#     conn = get(build_conn(), :render)
+    conn = build_conn()
+    conn = get(conn, "http://#{domain.name}" <> Routes.page_path(conn, :index, []))
 
-#     {:ok, view, _html} = live(conn)
+    {:ok, _view, html} = live(conn)
 
-#     assert(false)
-#   end
+    assert html =~ "<title>my site"
+  end
 
-#   test "renders a preview of a site" do
-#   end
-# end
+  # test "does not render unpublished stuff" do
+  #   site = site_fixture(user_fixture(), %{name: "my site"})
+  #   [domain] = site.domains
+  #   [page] = site.pages
+
+  #   Sites.update_page(page,
+
+  #   conn = build_conn()
+  #   conn = get(conn, "http://#{domain.name}" <> Routes.page_path(conn, :index, []))
+
+  #   {:ok, _view, html} = live(conn)
+
+  #   assert html =~ "<title>my site"
+  # end
+end
