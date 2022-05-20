@@ -3,7 +3,9 @@ defmodule AffableWeb.PageLive do
 
   alias Affable.Pages
 
-  import Affable.Assets, only: [to_imgproxy_url: 1]
+  defmodule MissingPage do
+    defexception message: "could not find the page requested", plug_status: 404
+  end
 
   @impl true
   def mount(_params, _things, socket) do
@@ -13,27 +15,32 @@ defmodule AffableWeb.PageLive do
   @impl true
   def handle_params(_params, uri, socket) do
     %URI{host: host, path: path} = URI.parse(uri)
-    page = Pages.get(host, path)
 
-    {:noreply,
-     assign(
-       socket,
-       site: page.site,
-       layout_sections:
-         if page.site.layout do
-           page.site.layout.sections
-         else
-           []
-         end,
-       sections: page.sections,
-       menu:
-         for page <- page.site.pages do
-           %{path: page.path, name: page.title}
-         end,
-       page_layout: page.site.layout,
-       page: page,
-       page_title: page.site.name
-     )}
+    case Pages.get(host, path) do
+      nil ->
+        raise MissingPage
+
+      page ->
+        {:noreply,
+         assign(
+           socket,
+           site: page.site,
+           layout_sections:
+             if page.site.layout do
+               page.site.layout.sections
+             else
+               []
+             end,
+           sections: page.sections,
+           menu:
+             for page <- page.site.pages do
+               %{path: page.path, name: page.title}
+             end,
+           page_layout: page.site.layout,
+           page: page,
+           page_title: page.site.name
+         )}
+    end
   end
 
   def grid_style(%{

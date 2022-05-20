@@ -21,6 +21,12 @@ defmodule AffableWeb.PageLiveTest do
     assert html =~ "<title>my site"
   end
 
+  test "404s for things like favicons" do
+    assert_error_sent 404, fn ->
+      get(build_conn(), "http://localhost:4000/favicon.ico")
+    end
+  end
+
   # test "does not render unpublished stuff" do
   #   site = site_fixture(user_fixture(), %{name: "my site"})
   #   [domain] = site.domains
