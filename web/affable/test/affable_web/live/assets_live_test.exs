@@ -69,7 +69,7 @@ defmodule AffableWeb.AssetsLiveTest do
     view |> assert_sites_selectable([site1, site2])
 
     view
-    |> element("#resources-site#{site1.id} .trash")
+    |> element("#resources-site#{site1.id} li:first-child .trash")
     |> render_click()
 
     site1_resources_html = site1_resources |> render()

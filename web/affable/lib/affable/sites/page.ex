@@ -11,7 +11,6 @@ defmodule Affable.Sites.Page do
   schema "pages" do
     belongs_to(:site, Sites.Site)
     belongs_to(:header_image, Assets.Asset)
-    has_many(:items, Sites.Item)
     has_many(:sections, Sites.Section)
 
     field(:title, :string)
@@ -60,7 +59,6 @@ defmodule Affable.Sites.Page do
         :cta_text
       ]
     )
-    |> cast_assoc(:items, with: &Sites.Item.changeset/2)
     |> cast_assoc(:sections, with: &Sites.Section.changeset/2)
     |> validate_required([
       :title,

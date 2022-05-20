@@ -93,55 +93,6 @@
       </div>
     </div>
   </div>
-
-  <div>
-    <div class="bg-gray-100">
-      <h2 class="text-xl font-bold">Item Attributes</h2>
-
-      <a href="#"
-         id="new-attribute-definition"
-         class="btn sm"
-         phx-click="new-attribute-definition">New Attribute</a>
-    </div>
-
-    <ul class="clear-both divide-y-2">
-      <%= for f <- inputs_for(outer_form, :attribute_definitions) do %>
-        <li class="pb-6 attribute-definition">
-          <%= hidden_inputs_for f %>
-
-          <div class="flex items-end">
-            <div class="w-3/12 pr-2 field">
-              <%= label f, :type %>
-              <%= select f, :type, [
-                    "Text": "text",
-                    "Number": "number",
-                    "$": "dollar",
-                    "€": "euro",
-                    "£": "pound",
-                  ] %>
-            </div>
-
-            <div class="w-8/12 pl-2 field">
-              <%= label f, :name %>
-              <%= text_input f, :name, phx_debounce: 250 %>
-              <%= error_tag f, :name %>
-            </div>
-
-            <div class="flex-none w-1/12 pl-2">
-              <a id={"delete-attribute-definition-#{f.data.id}"}
-                 href="#"
-                 class="block w-8 h-12 m-auto bg-center bg-no-repeat bg-contain trash"
-                 phx-click="delete-attribute-definition"
-                 phx-value-id={f.data.id}
-                 >
-              </a>
-            </div>
-
-          </div>
-        </li>
-      <% end %>
-    </ul>
-  </div>
 </.form>
 <% end %>
 

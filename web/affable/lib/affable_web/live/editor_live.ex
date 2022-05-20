@@ -123,16 +123,6 @@ defmodule AffableWeb.EditorLive do
   end
 
   def handle_event(
-        "new-attribute-definition",
-        %{},
-        %{assigns: %{changeset: %{data: site}, user: user}} = socket
-      ) do
-    site
-    |> Sites.add_attribute_definition(user)
-    |> reset_site(socket)
-  end
-
-  def handle_event(
         "new-page",
         %{},
         %{assigns: %{changeset: %{data: site}, user: user}} = socket
@@ -155,35 +145,12 @@ defmodule AffableWeb.EditorLive do
   end
 
   def handle_event(
-        "delete-attribute-definition",
-        %{"id" => definition_id},
-        %{assigns: %{site_id: site_id, user: user}} = socket
-      ) do
-    Sites.delete_attribute_definition(site_id, definition_id, user)
-    |> reset_site(socket)
-  end
-
-  def handle_event(
         "save",
         %{"site" => attrs},
         %{assigns: %{site_id: id, user: user}} = socket
       ) do
     Sites.get_site!(user, id)
     |> Sites.update_site(attrs)
-    |> reset_site(socket)
-  end
-
-  def handle_event("promote", %{"id" => item_id}, %{assigns: %{site_id: id, user: user}} = socket) do
-    site = Sites.get_site!(user, id)
-
-    Sites.promote_item(user, site, item_id)
-    |> reset_site(socket)
-  end
-
-  def handle_event("demote", %{"id" => item_id}, %{assigns: %{site_id: id, user: user}} = socket) do
-    site = Sites.get_site!(user, id)
-
-    Sites.demote_item(user, site, item_id)
     |> reset_site(socket)
   end
 

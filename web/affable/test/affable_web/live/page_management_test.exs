@@ -17,7 +17,7 @@ defmodule AffableWeb.PageManagementTest do
   setup context do
     %{conn: conn, user: user} = register_and_log_in_user(context)
     [site] = user.sites
-    %Sites.Site{pages: [page | _]} = site = site |> Sites.with_items() |> Sites.with_pages()
+    %Sites.Site{pages: [page | _]} = site = site |> Sites.with_pages()
 
     %{
       conn: conn,

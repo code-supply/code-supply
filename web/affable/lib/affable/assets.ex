@@ -53,9 +53,7 @@ defmodule Affable.Assets do
     gravity = "ce"
     enlarge = 0
 
-    "https://images.affable.app/nosignature/#{resizing_type}/#{width}/#{height}/#{gravity}/#{
-      enlarge
-    }/plain/#{source_url}"
+    "https://images.affable.app/nosignature/#{resizing_type}/#{width}/#{height}/#{gravity}/#{enlarge}/plain/#{source_url}"
   end
 
   def delete(%User{} = user, asset_id) do
@@ -72,8 +70,7 @@ defmodule Affable.Assets do
 
   def in_use?(%Asset{id: id}, %Site{pages: pages}) do
     Enum.any?(pages, fn page ->
-      page.header_image_id == id ||
-        Enum.any?(page.items, &(&1.image_id == id))
+      page.header_image_id == id
     end)
   end
 end

@@ -13,7 +13,7 @@ defmodule AffableWeb.EditorLiveTest do
       %{
         conn: conn,
         user: user,
-        site: site |> Sites.with_items() |> Sites.with_pages()
+        site: site |> Sites.with_pages()
       }
     end
 
@@ -36,9 +36,11 @@ defmodule AffableWeb.EditorLiveTest do
       refute view
              |> has_element?("#publish")
 
+      refute nil == site.site_logo_id
+
       view
-      |> element("#new-attribute-definition")
-      |> render_click()
+      |> element("form#site")
+      |> render_change(%{"site" => %{"site_logo_id" => ""}})
 
       assert view
              |> has_element?("#publish")

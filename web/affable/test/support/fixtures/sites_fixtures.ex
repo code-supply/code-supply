@@ -15,7 +15,7 @@ defmodule Affable.SitesFixtures do
       latest_publication: %Publication{},
       layout: nil,
       site_logo: nil,
-      pages: [%Page{header_image: nil, items: []}]
+      pages: [%Page{header_image: nil}]
     }
   end
 
@@ -29,7 +29,7 @@ defmodule Affable.SitesFixtures do
         })
       )
 
-    site |> Sites.with_pages() |> Sites.with_items()
+    site |> Sites.with_pages()
   end
 
   def page_fixture() do

@@ -11,10 +11,7 @@ defmodule Affable.Sites do
   alias Affable.Sites.{
     Publication,
     Site,
-    SiteMember,
-    Item,
-    AttributeDefinition,
-    Attribute
+    SiteMember
   }
 
   alias Affable.Domains.Domain
@@ -144,7 +141,6 @@ defmodule Affable.Sites do
 
   defp raw(%Site{} = site) do
     site
-    |> with_items()
     |> Raw.raw()
   end
 
@@ -188,7 +184,6 @@ defmodule Affable.Sites do
     |> join(:inner, [s], m in SiteMember, on: s.id == m.site_id)
     |> where([s, m], m.user_id == ^user.id)
     |> Repo.one!()
-    |> with_items()
     |> with_pages()
   end
 
@@ -199,22 +194,18 @@ defmodule Affable.Sites do
   def get_site!(id) do
     site_query(id)
     |> Repo.one!()
-    |> with_items()
     |> with_pages()
     |> preload_latest_publication()
   end
 
   defp site_query(id) do
-    definitions_q = definitions_query()
-
     from(s in Site,
       where: s.id == ^id,
       preload: [
         assets: [],
         domains: [],
         members: [],
-        site_logo: [],
-        attribute_definitions: ^definitions_q
+        site_logo: []
       ]
     )
   end
@@ -250,25 +241,7 @@ defmodule Affable.Sites do
   end
 
   defp page_preloads() do
-    [items: items_query(), sections: @section_preloads, header_image: []]
-  end
-
-  def with_items(site, attrs \\ []) do
-    site
-    |> Repo.preload([attribute_definitions: definitions_query()], attrs)
-  end
-
-  defp items_query do
-    attributes_q = from(a in Attribute, order_by: [desc: a.definition_id], preload: :definition)
-
-    from(i in Item,
-      order_by: i.position,
-      preload: ^[image: [], attributes: attributes_q]
-    )
-  end
-
-  defp definitions_query do
-    from(i in AttributeDefinition, order_by: [desc: i.id])
+    [sections: @section_preloads, header_image: []]
   end
 
   def unshared(user) do
@@ -310,10 +283,6 @@ defmodule Affable.Sites do
       """
     })
     |> default_assets_multi()
-    |> Multi.merge(fn %{site: site} ->
-      add_attribute_definition_multi(site)
-    end)
-    |> default_items_multi()
     |> Multi.insert(:publish, &build_publication(&1.site_with_default_assets))
   end
 
@@ -323,7 +292,6 @@ defmodule Affable.Sites do
         {
           :ok,
           multis[site_multi_key]
-          |> with_items()
           |> Repo.preload(:domains)
           |> preload_latest_publication()
         }
@@ -339,29 +307,11 @@ defmodule Affable.Sites do
     end)
   end
 
-  defp default_items_multi(%Multi{} = multi) do
-    Enum.reduce(default_items(), multi, fn {identifier, item}, multi ->
-      Multi.insert(
-        multi,
-        "item#{item.position}",
-        fn %{homepage: homepage, definition: definition} = previous_multis ->
-          %{
-            item
-            | page_id: homepage.id,
-              image_id: previous_multis[identifier].id,
-              attributes: [%Attribute{value: "1.23", definition_id: definition.id}]
-          }
-        end
-      )
-    end)
-  end
-
   defp build_publication(site) do
     Ecto.build_assoc(site, :publications, %{
       data:
         raw(
           site
-          |> with_items()
           |> with_pages()
           |> Repo.preload(site_logo: [])
         )
@@ -463,73 +413,6 @@ defmodule Affable.Sites do
     Multi.insert(multi, identifier, &%Asset{site_id: &1.site.id, url: url, name: name})
   end
 
-  defp default_items do
-    [
-      golden_delicious: %Item{
-        position: 1,
-        name: "Golden Delicious",
-        description: "Yellow. Nothing like Red Delicious.",
-        url: "https://commons.wikimedia.org/wiki/File:Mele_golden.jpg"
-      },
-      gala: %Item{
-        position: 2,
-        name: "Gala",
-        description: "Red. Offspring of Red D and Kidd's Orange.",
-        url: "https://commons.wikimedia.org/wiki/File:2015-02-xx_Gala_(apple).jpg"
-      },
-      bramley: %Item{
-        position: 3,
-        name: "Bramley",
-        description: "Nice in a pie.",
-        url: "https://commons.wikimedia.org/wiki/File:Bramley%27s_Seedling_Apples.jpg"
-      },
-      red_prince: %Item{
-        position: 4,
-        name: "Red Prince",
-        description: "Holland made an apple. It's kinda red.",
-        url: "https://commons.wikimedia.org/wiki/File:Red_Prince_Aepfel.jpg"
-      },
-      greensleeves: %Item{
-        position: 5,
-        name: "Greensleeves",
-        description: "Parents are Golden D and James Grieve. That naughty James.",
-        url:
-          "https://commons.wikimedia.org/wiki/File:Greensleeves_on_tree,_National_Fruit_Collection_(acc._1980-077).jpg"
-      },
-      red_delicious: %Item{
-        position: 6,
-        name: "Red Delicious",
-        description: "Dark Red. Popular in the states. Don't cook with it.",
-        url: "https://commons.wikimedia.org/wiki/File:Red_Delicious_apples.jpg"
-      },
-      pink_lady: %Item{
-        position: 7,
-        name: "Pink Lady",
-        description: "From the 70's. Light red / pink. Tasty.",
-        url:
-          "https://commons.wikimedia.org/wiki/File:Pink_lady_apples,_Thulimbah,_Granite_Belt,_Queensland,_2015_02.jpg"
-      },
-      discovery: %Item{
-        position: 8,
-        name: "Discovery",
-        description: "Sweet flavour. English.",
-        url: "https://commons.wikimedia.org/wiki/File:Discovery_apples.jpg"
-      },
-      braeburn: %Item{
-        position: 9,
-        name: "Braeburn",
-        description: "Common in the UK supermarkets. Pretty good!",
-        url: "https://commons.wikimedia.org/wiki/File:Braeburn2008.jpg"
-      },
-      coxs_orange_pippin: %Item{
-        position: 10,
-        name: "Cox's Orange Pippin",
-        description: "Kind of a big deal in the UK.",
-        url: "https://commons.wikimedia.org/wiki/File:Cox_orange_renette2.JPG"
-      }
-    ]
-  end
-
   def update_site(%Site{} = site, attrs) do
     case site
          |> Site.changeset(attrs)
@@ -539,7 +422,6 @@ defmodule Affable.Sites do
           :ok,
           site
           |> preload_base_assets(force: true)
-          |> with_items(force: true)
           |> with_pages(force: true)
         }
 
@@ -550,7 +432,6 @@ defmodule Affable.Sites do
 
   def delete_site(%Site{} = site) do
     site
-    |> delete_items()
     |> delete_pages()
     |> delete_assets()
     |> Repo.delete()
@@ -558,12 +439,6 @@ defmodule Affable.Sites do
 
   defp delete_pages(%Site{} = site) do
     Repo.delete_all(from(Page, where: [site_id: ^site.id]))
-
-    site
-  end
-
-  defp delete_items(%Site{} = site) do
-    Repo.delete_all(from(Item, where: [site_id: ^site.id]))
 
     site
   end
@@ -581,108 +456,6 @@ defmodule Affable.Sites do
 
   def change_site(%Site{} = site, attrs \\ %{}) do
     Site.changeset(site, attrs)
-  end
-
-  def promote_item(%Site{} = site, %Page{} = page, item_id) do
-    move_item(site, page, item_id, &(&1 - 1))
-  end
-
-  def demote_item(%Site{} = site, %Page{} = page, item_id) do
-    move_item(site, page, item_id, &(&1 + 1))
-  end
-
-  defp move_item(%Site{} = site, %Page{} = page, item_id, f) do
-    {item_id, ""} = Integer.parse(item_id)
-
-    demotee_idx =
-      page.items
-      |> Enum.find_index(&(&1.id == item_id))
-
-    demotee = page.items |> Enum.at(demotee_idx)
-
-    promotee_idx =
-      page.items
-      |> Enum.find_index(&(&1.position == f.(demotee.position)))
-
-    if promotee_idx do
-      promotee = page.items |> Enum.at(promotee_idx)
-
-      {:ok, %{promote: promoted_item, demote: demoted_item}} =
-        move_item_multi(demotee, promotee, f)
-        |> Repo.transaction()
-
-      {
-        :ok,
-        %{
-          site
-          | pages:
-              for p <- site.pages do
-                if p.id == page.id do
-                  %{
-                    p
-                    | items:
-                        p.items
-                        |> List.replace_at(promotee_idx, promoted_item)
-                        |> List.replace_at(demotee_idx, demoted_item)
-                        |> Enum.sort_by(& &1.position)
-                  }
-                else
-                  p
-                end
-              end
-        }
-        |> with_items()
-      }
-    else
-      {:ok, site}
-    end
-  end
-
-  defp move_item_multi(demotee, promotee, f) do
-    Multi.new()
-    |> Multi.update(
-      :move,
-      Item.changeset(demotee, %{position: -demotee.position})
-    )
-    |> Multi.update(
-      :promote,
-      Item.changeset(promotee, %{position: promotee.position - f.(0)})
-    )
-    |> Multi.update(
-      :demote,
-      Item.changeset(demotee, %{position: promotee.position})
-    )
-  end
-
-  alias Affable.Sites.AttributeDefinition
-
-  defp add_attribute_definition_multi(site) do
-    multi =
-      Multi.new()
-      |> Multi.insert(
-        :definition,
-        site
-        |> Ecto.build_assoc(:attribute_definitions)
-        |> AttributeDefinition.changeset(%{name: "Price", type: "dollar"})
-      )
-
-    Repo.preload(site, pages: :items).pages
-    |> Enum.flat_map(& &1.items)
-    |> Enum.reduce(multi, fn item, acc_multi ->
-      acc_multi
-      |> Multi.insert("item#{item.id}", fn %{definition: definition} ->
-        Ecto.build_assoc(item, :attributes, %{definition_id: definition.id, value: "1.23"})
-      end)
-    end)
-  end
-
-  def add_attribute_definition(%Site{} = site, %User{} = user) do
-    with :ok <- must_be_site_member(user, site),
-         {:ok, _} <- Repo.transaction(add_attribute_definition_multi(site)) do
-      {:ok, get_site!(site.id)}
-    else
-      err -> err
-    end
   end
 
   def site_member?(user, %Site{id: site_id}) do
@@ -703,127 +476,5 @@ defmodule Affable.Sites do
     else
       {:error, :unauthorized}
     end
-  end
-
-  def delete_attribute_definition(site_id, definition_id, %User{} = user) do
-    case from(ad in AttributeDefinition,
-           where: ad.id == ^definition_id,
-           join: s in Site,
-           on: s.id == ad.site_id,
-           join: sm in SiteMember,
-           on: sm.site_id == s.id,
-           where: sm.user_id == ^user.id
-         )
-         |> Repo.delete_all() do
-      {0, _} ->
-        {:error, "Couldn't delete"}
-
-      _ ->
-        {:ok, get_site!(site_id)}
-    end
-  end
-
-  alias Affable.Sites.Item
-
-  def get_item!(id), do: Repo.get!(Item, id)
-
-  def append_item(%Site{} = site, %Page{} = page, %User{} = user) do
-    with :ok <- must_be_site_member(user, page),
-         {:ok, %Item{} = item} <-
-           create_item(page, %{
-             name: "New item",
-             position: length(page.items) + 1,
-             attributes:
-               for definition <- site.attribute_definitions do
-                 %{
-                   definition_id: definition.id,
-                   value: "1.23"
-                 }
-               end
-           }) do
-      {
-        :ok,
-        %{
-          site
-          | pages:
-              for p <- site.pages do
-                if p.id == page.id do
-                  %{page | items: page.items ++ [item]}
-                else
-                  page
-                end
-              end
-        }
-        |> with_pages(force: true),
-        item
-      }
-    else
-      err -> err
-    end
-  end
-
-  defp create_item(page, attrs) do
-    page
-    |> Ecto.build_assoc(:items)
-    |> Item.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def delete_item(%Site{}, %Page{} = page, item_id) do
-    item_id_s = "#{item_id}"
-
-    {:ok, %{delete: deleted_item}} =
-      page.items
-      |> delete_item_multi(item_id_s)
-      |> Repo.transaction()
-
-    new_page = remove_item_from_page(page, deleted_item)
-
-    {:ok, new_page}
-  end
-
-  defp remove_item_from_page(page, deleted_item) do
-    %{
-      page
-      | items:
-          page.items
-          |> Enum.reverse()
-          |> Enum.reduce([], fn item, acc ->
-            cond do
-              item.id == deleted_item.id ->
-                acc
-
-              item.position > deleted_item.position ->
-                [Map.update!(item, :position, &(&1 - 1)) | acc]
-
-              true ->
-                [item | acc]
-            end
-          end)
-    }
-  end
-
-  defp delete_item_multi(items, id) do
-    delete_position =
-      items
-      |> Enum.find_value(&("#{&1.id}" == id && &1.position))
-
-    items
-    |> Enum.reduce(Ecto.Multi.new(), fn item, multi ->
-      cond do
-        "#{item.id}" == id ->
-          Multi.delete(multi, :delete, item)
-
-        item.position > delete_position ->
-          Multi.update(
-            multi,
-            "reposition-#{item.id}",
-            Item.changeset(item, %{position: item.position - 1})
-          )
-
-        true ->
-          multi
-      end
-    end)
   end
 end

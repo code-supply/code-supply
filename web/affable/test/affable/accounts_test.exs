@@ -11,10 +11,10 @@ defmodule Affable.AccountsTest do
   import Affable.AccountsFixtures
 
   describe "delete_user/1" do
-    test "deletes the user, its site, items and domains if it's not been shared" do
+    test "deletes the user, its site and domains if it's not been shared" do
       user = user_fixture() |> Accounts.preload_for_assets()
 
-      [%Sites.Site{pages: [%Page{items: [item1 | _]}]} = site] = user.sites
+      [%Sites.Site{pages: [%Page{}]} = site] = user.sites
       [domain] = site.domains
 
       Accounts.delete_user(user)
@@ -25,10 +25,6 @@ defmodule Affable.AccountsTest do
 
       assert_raise(Ecto.NoResultsError, fn ->
         Affable.Repo.get_by!(Sites.Site, id: site.id)
-      end)
-
-      assert_raise(Ecto.NoResultsError, fn ->
-        Sites.get_item!(item1.id)
       end)
 
       assert_raise(Ecto.NoResultsError, fn ->

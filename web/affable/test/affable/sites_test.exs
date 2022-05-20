@@ -10,7 +10,7 @@ defmodule Affable.SitesTest do
   alias Affable.Assets.Asset
   alias Affable.Layouts.Layout
   alias Affable.Sites
-  alias Affable.Sites.{Page, Section, Site, SiteMember, Item, AttributeDefinition}
+  alias Affable.Sites.{Page, Section, Site, SiteMember}
   alias Affable.Domains.Domain
 
   describe "pages" do
@@ -83,7 +83,7 @@ defmodule Affable.SitesTest do
       assert %{"pages" => [%{"path" => "/contact"}]} =
                %{
                  unpersisted_site_fixture()
-                 | pages: [%Page{path: "/contact", header_image: nil, items: [], sections: []}]
+                 | pages: [%Page{path: "/contact", header_image: nil, sections: []}]
                }
                |> raw()
     end
@@ -156,7 +156,6 @@ defmodule Affable.SitesTest do
                      %Page{
                        path: "/contact",
                        header_image: nil,
-                       items: [],
                        grid_template_areas: "head head\nnav main\nnav foot",
                        grid_template_rows: "50px 1fr 30px",
                        grid_template_columns: "150px 1fr",
@@ -183,22 +182,14 @@ defmodule Affable.SitesTest do
 
     @invalid_attrs %{name: nil}
 
-    defp user_and_site_with_items() do
+    defp user_and_site() do
       %User{sites: [site]} = user = unconfirmed_user_fixture()
 
       {
         user,
-        site |> Sites.with_items() |> Sites.with_pages()
+        site |> Sites.with_pages()
       }
     end
-
-    # test "can find by domain" do
-    #   site = site_fixture()
-
-    #   [domain_name | _] = for d <- site.domains, do: d.name
-
-    #   assert {:ok, site} == Sites.find_by_domain_name(domain_name)
-    # end
 
     test "status of new site is pending" do
       assert %Site{}
@@ -305,7 +296,7 @@ defmodule Affable.SitesTest do
                raw(%Site{
                  layout: nil,
                  site_logo: %Asset{url: "foo"},
-                 pages: [%Page{header_image: nil, items: [], sections: []}]
+                 pages: [%Page{header_image: nil, sections: []}]
                })
 
       assert %{
@@ -314,26 +305,9 @@ defmodule Affable.SitesTest do
              } =
                raw(%Site{
                  layout: nil,
-                 pages: [%Page{header_image: %Asset{url: "foo"}, items: [], sections: []}],
+                 pages: [%Page{header_image: %Asset{url: "foo"}, sections: []}],
                  site_logo: nil
                })
-    end
-
-    test "raw representation includes item image URLs" do
-      %{"pages" => [%{"items" => [%{"image_url" => raw_image_url}]}]} =
-        raw(%Site{
-          site_logo: nil,
-          layout: nil,
-          pages: [
-            %Page{
-              header_image: nil,
-              items: [%Item{attributes: [], image: %Asset{url: "gs://some-bucket/image.jpg"}}],
-              sections: []
-            }
-          ]
-        })
-
-      assert raw_image_url =~ "https://images.affable.app"
     end
 
     test "get_site!/1 preloads latest publication" do
@@ -357,7 +331,7 @@ defmodule Affable.SitesTest do
 
     test "new sites have batteries-included defaults" do
       user = user_fixture()
-      %Site{pages: [page]} = site = site_fixture(user, %{name: "some name !@#!@#$@#%#$"})
+      site = site_fixture(user, %{name: "some name !@#!@#$@#%#$"})
 
       [%SiteMember{user_id: received_user_id}] = site.members
       [%Domain{name: domain_name}] = site.domains
@@ -368,9 +342,6 @@ defmodule Affable.SitesTest do
       assert domain_name == "#{site.internal_name}.affable.app"
       assert received_user_id == user.id
 
-      assert [%Item{name: "Golden Delicious"} | rest] = page.items
-      assert length(rest) == 9
-
       assert Sites.is_published?(site)
     end
 
@@ -378,181 +349,19 @@ defmodule Affable.SitesTest do
       assert {:error, %Ecto.Changeset{}} = Sites.create_site(user_fixture(), @invalid_attrs)
     end
 
-    test "there is a finite set of attribute types" do
-      definition = %AttributeDefinition{name: "validname"}
-
-      has_valid = fn definition, attr, ty ->
-        AttributeDefinition.changeset(definition, %{attr => ty}).valid?
-      end
-
-      refute definition |> has_valid.(:type, "bad-type")
-      assert definition |> has_valid.(:type, "dollar")
-      assert definition |> has_valid.(:type, "pound")
-      assert definition |> has_valid.(:type, "euro")
-      assert definition |> has_valid.(:type, "number")
-      assert definition |> has_valid.(:type, "text")
-    end
-
-    test "site members can manage attribute definitions" do
-      {user, site} = user_and_site_with_items()
-
-      definitions_before = site.attribute_definitions
-
-      {:ok,
-       %Site{attribute_definitions: [%AttributeDefinition{id: definition_id} = definition | _]}} =
-        Sites.add_attribute_definition(site, user)
-
-      {:error, _} = Sites.add_attribute_definition(site, wrong_user())
-
-      %Site{pages: [%Page{items: [first_item | _]}]} = Sites.get_site!(site.id)
-
-      assert definition_id in (first_item.attributes |> Enum.map(& &1.definition_id))
-
-      {:error, _} = Sites.delete_attribute_definition(site.id, definition.id, wrong_user())
-      assert [definition | _] = Sites.get_site!(user, site.id).attribute_definitions
-
-      {:ok, _} = Sites.delete_attribute_definition(site.id, definition.id, user)
-
-      assert Sites.get_site!(user, site.id).attribute_definitions ==
-               definitions_before
-    end
-
-    test "can delete an item from start of list" do
-      user = user_fixture()
-      %Site{pages: [%Page{items: [item | _]} = page_before]} = site = site_fixture(user)
-
-      {:ok, %Page{} = page_after} = Sites.delete_item(site, page_before, "#{item.id}")
-
-      positions_after =
-        page_after.items
-        |> Enum.map(fn i -> i.position end)
-
-      assert length(page_before.items) - 1 == length(page_after.items)
-
-      assert 1..length(page_after.items) |> Enum.into([]) == positions_after
-
-      %Site{pages: [page_reloaded]} = Sites.get_site!(site.id)
-
-      assert Enum.map(page_after.items, & &1.id) == Enum.map(page_reloaded.items, & &1.id)
-    end
-
-    test "can delete an item from end of list" do
-      user = user_fixture()
-      %Site{pages: [%Page{items: items} = page_before]} = site = site_fixture(user)
-
-      {:ok, %Page{} = page_after} = Sites.delete_item(site, page_before, "#{List.last(items).id}")
-
-      positions_after =
-        page_after.items
-        |> Enum.map(fn i -> i.position end)
-
-      assert length(page_before.items) - 1 == length(page_after.items)
-
-      assert 1..length(page_after.items) |> Enum.into([]) == positions_after
-
-      %Site{pages: [page_reloaded]} = Sites.get_site!(site.id)
-
-      assert Enum.map(page_after.items, & &1.id) == Enum.map(page_reloaded.items, & &1.id)
-    end
-
-    test "can demote an item" do
-      %Site{pages: [page]} = site = site_fixture()
-
-      [first_before | rest] = page.items
-      [second_before | _] = rest
-
-      assert first_before.position == 1
-      assert second_before.position == 2
-
-      {:ok, %Site{pages: [page]}} = Sites.demote_item(site, page, "#{first_before.id}")
-
-      [first_after | rest] = page.items
-      [second_after | _] = rest
-
-      assert first_after.position == 1
-      assert second_after.position == 2
-
-      assert first_after.name == second_before.name
-      assert second_after.name == first_before.name
-    end
-
-    test "demoting at the last position doesn't increase position number" do
-      %Site{pages: [page]} = site = site_fixture()
-
-      item = page.items |> List.last()
-
-      assert item.position == 10
-
-      {:ok, %Site{pages: [page]}} = Sites.demote_item(site, page, "#{item.id}")
-
-      item_after = page.items |> List.last()
-
-      assert item_after.position == 10
-    end
-
-    test "can promote an item" do
-      %Site{pages: [page]} = site = site_fixture()
-
-      [first_before | rest] = page.items
-      [second_before | _] = rest
-
-      assert first_before.position == 1
-      assert second_before.position == 2
-
-      {:ok, %Site{pages: [page]}} = Sites.promote_item(site, page, "#{second_before.id}")
-
-      [first_after | rest] = page.items
-      [second_after | _] = rest
-
-      assert first_after.position == 1
-      assert second_after.position == 2
-
-      assert first_after.name == second_before.name
-      assert second_after.name == first_before.name
-    end
-
-    test "promoting at the first position doesn't decrease position number" do
-      %Site{pages: [page]} = site = site_fixture()
-
-      [item | _] = page.items
-
-      assert item.position == 1
-
-      {:ok, %Site{pages: [page]}} = Sites.promote_item(site, page, "#{item.id}")
-
-      [item_after | _] = page.items
-
-      assert item_after.position == 1
-    end
-
     test "update_site/2 with valid data updates the site" do
-      {_, site} = user_and_site_with_items()
+      {_, site} = user_and_site()
 
       %Site{pages: [%Page{header_image: %Asset{id: header_image_id}}]} =
         site |> Repo.preload(pages: [:header_image])
 
-      [definition] = site.attribute_definitions
-
-      assert {:ok, %Site{pages: [updated_page]} = updated_site} =
+      assert {:ok, updated_site} =
                Sites.update_site(site, %{
                  "name" => "some updated name",
-                 "site_logo_id" => header_image_id,
-                 "attribute_definitions" => %{
-                   "0" => %{
-                     "id" => "#{definition.id}",
-                     "name" => "some updated attribute name"
-                   }
-                 }
+                 "site_logo_id" => header_image_id
                })
 
       assert updated_site.name == "some updated name"
-
-      [definition] = updated_site.attribute_definitions
-      assert "some updated attribute name" == definition.name
-
-      [item | _] = updated_page.items
-      [attribute | _] = item.attributes
-      assert "some updated attribute name" == attribute.definition.name
     end
 
     test "update_site/2 with invalid data returns error changeset" do
@@ -568,27 +377,6 @@ defmodule Affable.SitesTest do
     test "change_site/1 returns a site changeset" do
       site = site_fixture()
       assert %Ecto.Changeset{} = Sites.change_site(site)
-    end
-  end
-
-  describe "items" do
-    alias Affable.Sites.Item
-
-    test "append_item/2 adds a default item to the end of the items list" do
-      {user, %Site{pages: [page]} = site} = user_and_site_with_items()
-
-      {:ok, %Site{pages: [%Page{items: appended_site_items}]}, _appended_item} =
-        Sites.append_item(site, page, user)
-
-      {:error, :unauthorized} = Sites.append_item(site, page, wrong_user())
-
-      %Site{pages: [%Page{items: items}]} = Sites.get_site!(site.id)
-      retrieved_item = List.last(items)
-
-      appended_item = List.last(appended_site_items)
-      assert appended_item == retrieved_item
-      assert retrieved_item.name == "New item"
-      assert length(retrieved_item.attributes) > 0
     end
   end
 end
