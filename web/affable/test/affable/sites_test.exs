@@ -191,11 +191,6 @@ defmodule Affable.SitesTest do
       }
     end
 
-    test "status of new site is pending" do
-      assert %Site{}
-             |> Sites.status() == :pending
-    end
-
     test "preview URL chooses affable domain" do
       assert "//something.affable.app/preview" ==
                %Site{

@@ -1,19 +1,21 @@
 defmodule Affable.Sites do
   import Ecto.Query, warn: false
 
-  alias Affable.Sites.{Page, Section, TitleUtils, Raw}
+  alias Affable.Sites.{
+    Page,
+    Publication,
+    Raw,
+    Section,
+    Site,
+    SiteMember,
+    TitleUtils
+  }
+
   alias Affable.Repo
   alias Affable.Accounts.User
   alias Affable.Assets
   alias Affable.Assets.Asset
   alias Affable.Domains
-
-  alias Affable.Sites.{
-    Publication,
-    Site,
-    SiteMember
-  }
-
   alias Affable.Domains.Domain
 
   alias Ecto.Multi
@@ -103,14 +105,6 @@ defmodule Affable.Sites do
       {:ok, section}
     else
       err -> err
-    end
-  end
-
-  def status(site) do
-    if site.made_available_at do
-      :available
-    else
-      :pending
     end
   end
 

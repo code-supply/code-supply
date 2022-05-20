@@ -142,20 +142,6 @@ tbody tr:hover {
     @apply text-gray-200 from-gray-300 to-gray-400
 }
 
-.pending .pending-spinner {
-    @apply w-4 h-4 p-3 bg-no-repeat animate-spin;
-    animation-duration: 4s;
-    background-image: url("/images/loader.svg");
-}
-
-.pending .pending-invisible {
-    @apply invisible;
-}
-
-.pending .pending-hidden {
-    @apply hidden;
-}
-
 .feather {
     stroke-width: 1.5;
     stroke-linecap: round;
