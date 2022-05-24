@@ -227,7 +227,7 @@ defmodule Affable.Sites do
   end
 
   defp page_preloads() do
-    [sections: @section_preloads, header_image: []]
+    [sections: @section_preloads]
   end
 
   def unshared(user) do
@@ -261,13 +261,7 @@ defmodule Affable.Sites do
   def create_site_multi(user, attrs) do
     Multi.new()
     |> site_with_name_multi(user, attrs)
-    |> add_homepage_multi(%{
-      header_text: """
-      # Top 10 Apples
-
-      The apple is a deciduous tree, generally standing 2 to 4.5 m (6 to 15 ft) tall in cultivation and up to 9 m (30 ft) in the wild. When cultivated, the size, shape and branch density are determined by rootstock selection and trimming method. The leaves are alternately arranged dark green-colored simple ovals with serrated margins and slightly downy undersides.
-      """
-    })
+    |> add_homepage_multi(%{})
     |> default_assets_multi()
     |> Multi.insert(:publish, &build_publication(&1.site_with_internal_name))
   end
@@ -322,7 +316,6 @@ defmodule Affable.Sites do
 
   defp default_assets_multi(%Multi{} = multi) do
     multi
-    |> asset_multi(:header_image, "Header", "gs://affable-uploads/default-header.png")
     |> asset_multi(
       :golden_delicious,
       "Golden Delicious",
@@ -373,12 +366,6 @@ defmodule Affable.Sites do
       "Cox's Orange Pippin",
       "gs://affable-uploads/Cox_orange_renette2.JPG"
     )
-    |> Multi.update(:homepage_with_default_assets, fn %{
-                                                        header_image: header_image,
-                                                        homepage: homepage
-                                                      } ->
-      Page.changeset(homepage, %{header_image_id: header_image.id})
-    end)
   end
 
   defp asset_multi(%Multi{} = multi, identifier, name, url) do

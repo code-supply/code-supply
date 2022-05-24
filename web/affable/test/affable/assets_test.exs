@@ -21,16 +21,6 @@ defmodule Affable.AssetsTest do
 
       assert Assets.in_use?(
                %Asset{id: 1},
-               %Site{
-                 pages: [
-                   %Page{header_image_id: 2, sections: []},
-                   %Page{header_image_id: 1, sections: []}
-                 ]
-               }
-             )
-
-      assert Assets.in_use?(
-               %Asset{id: 1},
                %Site{pages: [%Page{sections: [%Section{image_id: 1}]}]}
              )
     end

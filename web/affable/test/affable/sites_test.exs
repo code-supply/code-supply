@@ -3,10 +3,8 @@ defmodule Affable.SitesTest do
 
   import Affable.{AccountsFixtures, SitesFixtures}
   import Affable.Sites.Raw
-  import Access, only: [at: 1]
 
   alias Affable.Accounts.User
-  alias Affable.Assets
   alias Affable.Assets.Asset
   alias Affable.Layouts.Layout
   alias Affable.Sites
@@ -83,7 +81,7 @@ defmodule Affable.SitesTest do
       assert %{"pages" => [%{"path" => "/contact"}]} =
                %{
                  unpersisted_site_fixture()
-                 | pages: [%Page{path: "/contact", header_image: nil, sections: []}]
+                 | pages: [%Page{path: "/contact", sections: []}]
                }
                |> raw()
     end
@@ -155,7 +153,6 @@ defmodule Affable.SitesTest do
                    pages: [
                      %Page{
                        path: "/contact",
-                       header_image: nil,
                        grid_template_areas: "head head\nnav main\nnav foot",
                        grid_template_rows: "50px 1fr 30px",
                        grid_template_columns: "150px 1fr",
@@ -244,19 +241,15 @@ defmodule Affable.SitesTest do
       %{
         sites: [
           %Site{
-            pages: [%Page{header_image: %Asset{url: header_image_url}}],
+            name: name,
             publications: [publication]
           }
         ]
       } =
         user_fixture()
-        |> Repo.preload(sites: [pages: [:header_image], publications: []])
+        |> Repo.preload(sites: [:publications])
 
-      assert Assets.to_imgproxy_url(header_image_url,
-               width: 567,
-               height: 341,
-               resizing_type: "fill"
-             ) == get_in(publication.data, ["pages", at(0), "header_image_url"])
+      assert name == publication.data["name"]
     end
 
     test "site is published when latest publication is same as current raw representation" do
@@ -275,28 +268,7 @@ defmodule Affable.SitesTest do
 
       %{pages: [page]} = published_again_site
 
-      refute Sites.is_published?(%{published_again_site | pages: [%{page | header_text: "hi"}]})
-    end
-
-    test "raw representation copes with images being missing" do
-      expected_header_image_url =
-        Assets.to_imgproxy_url("foo", width: 567, height: 341, resizing_type: "fill")
-
-      assert %{
-               "pages" => [%{"header_image_url" => nil}]
-             } =
-               raw(%Site{
-                 layout: nil,
-                 pages: [%Page{header_image: nil, sections: []}]
-               })
-
-      assert %{
-               "pages" => [%{"header_image_url" => ^expected_header_image_url}]
-             } =
-               raw(%Site{
-                 layout: nil,
-                 pages: [%Page{header_image: %Asset{url: "foo"}, sections: []}]
-               })
+      refute Sites.is_published?(%{published_again_site | pages: [%{page | title: "hi"}]})
     end
 
     test "get_site!/1 preloads latest publication" do

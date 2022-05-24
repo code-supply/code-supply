@@ -23,7 +23,7 @@ defmodule Affable.Accounts do
     user
     |> Affable.Repo.preload(
       sites: [
-        pages: [:header_image, sections: [:image]],
+        pages: [sections: [:image]],
         assets: Assets.default_query()
       ]
     )

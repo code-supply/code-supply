@@ -16,7 +16,7 @@ defmodule Affable.Sites.Raw do
   end
 
   def raw(%Site{pages: []} = site) do
-    raw(%{site | pages: [%Page{header_image: nil}]})
+    raw(%{site | pages: [%Page{}]})
   end
 
   def raw(%Layout{
@@ -38,12 +38,6 @@ defmodule Affable.Sites.Raw do
       "title" => page.title,
       "meta_description" => page.meta_description,
       "path" => page.path,
-      "header_text" => page.header_text,
-      "header_background_colour" => page.header_background_colour,
-      "header_text_colour" => page.header_text_colour,
-      "header_image_url" =>
-        page.header_image
-        |> Assets.to_imgproxy_url(width: 567, height: 341, resizing_type: "fill"),
       "text" => page.text,
       "grid_template_areas" => page.grid_template_areas,
       "grid_template_rows" => page.grid_template_rows,
