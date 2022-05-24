@@ -3,7 +3,6 @@ defmodule Affable.Sites.Page do
   import Ecto.Changeset
 
   alias Affable.Sites
-  alias Affable.Assets
 
   @path_format ~r/^\/[a-z0-9-_\+]*$/
 
