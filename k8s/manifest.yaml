@@ -29534,6 +29534,9 @@ spec:
           name: tcp-epmd
         readinessProbe:
           httpGet:
+            httpHeaders:
+            - name: Host
+              value: www.affable.app
             path: /
             port: http
         resources:
