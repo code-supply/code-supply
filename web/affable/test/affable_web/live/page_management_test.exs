@@ -124,14 +124,14 @@ defmodule AffableWeb.PageManagementTest do
     {:ok, view, _html} = live(conn, path(conn, site))
 
     view
-    |> change_form(page, page: %{cta_background_colour: "FF"})
+    |> change_form(page, page: %{title: ""})
     |> render_change()
 
     refute view |> has_element?("#publish")
     assert view |> has_element?(".invalid-feedback")
 
     view
-    |> change_form(page, page: %{cta_background_colour: "FF0000"})
+    |> change_form(page, page: %{title: "a lovely title"})
     |> render_change()
 
     refute view |> has_element?(".invalid-feedback")

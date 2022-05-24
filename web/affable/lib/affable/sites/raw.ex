@@ -45,9 +45,6 @@ defmodule Affable.Sites.Raw do
         page.header_image
         |> Assets.to_imgproxy_url(width: 567, height: 341, resizing_type: "fill"),
       "text" => page.text,
-      "cta_background_colour" => page.cta_background_colour,
-      "cta_text_colour" => page.cta_text_colour,
-      "cta_text" => page.cta_text,
       "grid_template_areas" => page.grid_template_areas,
       "grid_template_rows" => page.grid_template_rows,
       "grid_template_columns" => page.grid_template_columns,

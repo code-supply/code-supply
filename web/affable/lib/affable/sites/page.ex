@@ -23,10 +23,6 @@ defmodule Affable.Sites.Page do
 
     field(:text, :string, default: "")
     field(:header_text, :string, default: "")
-    field(:cta_text, :string, default: "Go")
-
-    field(:cta_background_colour, :string, default: "059669")
-    field(:cta_text_colour, :string, default: "FFFFFF")
     field(:header_background_colour, :string, default: "3B82F6")
     field(:header_text_colour, :string, default: "FFFFFF")
 
@@ -38,8 +34,6 @@ defmodule Affable.Sites.Page do
     page
     |> cast(
       attrs
-      |> coerce_uppercase("cta_text_colour")
-      |> coerce_uppercase("cta_background_colour")
       |> coerce_uppercase("header_text_colour")
       |> coerce_uppercase("header_background_colour"),
       [
@@ -53,10 +47,7 @@ defmodule Affable.Sites.Page do
         :header_text,
         :header_background_colour,
         :header_text_colour,
-        :text,
-        :cta_background_colour,
-        :cta_text_colour,
-        :cta_text
+        :text
       ]
     )
     |> cast_assoc(:sections, with: &Sites.Section.changeset/2)
@@ -64,15 +55,10 @@ defmodule Affable.Sites.Page do
       :title,
       :path,
       :header_background_colour,
-      :header_text_colour,
-      :cta_background_colour,
-      :cta_text_colour,
-      :cta_text
+      :header_text_colour
     ])
     |> unique_constraint(:path, name: :pages_site_id_path_index)
     |> validate_format(:path, @path_format)
-    |> validate_format(:cta_text_colour, @colour_format)
-    |> validate_format(:cta_background_colour, @colour_format)
     |> validate_format(:header_background_colour, @colour_format)
     |> validate_format(:header_text_colour, @colour_format)
   end
