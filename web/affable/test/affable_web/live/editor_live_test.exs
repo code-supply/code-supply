@@ -36,11 +36,9 @@ defmodule AffableWeb.EditorLiveTest do
       refute view
              |> has_element?("#publish")
 
-      refute nil == site.site_logo_id
-
       view
       |> element("form#site")
-      |> render_change(%{"site" => %{"site_logo_id" => ""}})
+      |> render_change(%{"site" => %{"custom_head_html" => "<script>alert('hi')</script>"}})
 
       assert view
              |> has_element?("#publish")

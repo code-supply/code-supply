@@ -8,26 +8,25 @@ defmodule Affable.Sites.Site do
   alias Affable.Sites.{Page, Publication, SiteMember}
 
   schema "sites" do
-    field :name, :string
-    belongs_to :site_logo, Asset
+    field(:name, :string)
 
     # chosen global layout for site
-    belongs_to :layout, Layout
+    belongs_to(:layout, Layout)
     # available layouts, created by any site member
-    has_many :layouts, Layout
+    has_many(:layouts, Layout)
 
-    field :internal_name, :string
-    field :internal_hostname, :string
-    field :made_available_at, :utc_datetime
-    field :custom_head_html, :string, default: ""
-    has_many :pages, Page
-    has_many :assets, Asset
-    has_many :members, SiteMember
-    has_many :users, through: [:members, :user]
-    has_many :domains, Domain
-    has_many :publications, Publication
+    field(:internal_name, :string)
+    field(:internal_hostname, :string)
+    field(:made_available_at, :utc_datetime)
+    field(:custom_head_html, :string, default: "")
+    has_many(:pages, Page)
+    has_many(:assets, Asset)
+    has_many(:members, SiteMember)
+    has_many(:users, through: [:members, :user])
+    has_many(:domains, Domain)
+    has_many(:publications, Publication)
 
-    has_one :latest_publication, Publication
+    has_one(:latest_publication, Publication)
 
     timestamps()
   end
@@ -40,7 +39,6 @@ defmodule Affable.Sites.Site do
       [
         :name,
         :layout_id,
-        :site_logo_id,
         :custom_head_html
       ]
     )

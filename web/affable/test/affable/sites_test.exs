@@ -279,29 +279,23 @@ defmodule Affable.SitesTest do
     end
 
     test "raw representation copes with images being missing" do
-      expected_logo_url = Assets.to_imgproxy_url("foo", width: 600, height: 176)
-
       expected_header_image_url =
         Assets.to_imgproxy_url("foo", width: 567, height: 341, resizing_type: "fill")
 
       assert %{
-               "pages" => [%{"header_image_url" => nil}],
-               "site_logo_url" => ^expected_logo_url
+               "pages" => [%{"header_image_url" => nil}]
              } =
                raw(%Site{
                  layout: nil,
-                 site_logo: %Asset{url: "foo"},
                  pages: [%Page{header_image: nil, sections: []}]
                })
 
       assert %{
-               "pages" => [%{"header_image_url" => ^expected_header_image_url}],
-               "site_logo_url" => nil
+               "pages" => [%{"header_image_url" => ^expected_header_image_url}]
              } =
                raw(%Site{
                  layout: nil,
-                 pages: [%Page{header_image: %Asset{url: "foo"}, sections: []}],
-                 site_logo: nil
+                 pages: [%Page{header_image: %Asset{url: "foo"}, sections: []}]
                })
     end
 
@@ -347,13 +341,9 @@ defmodule Affable.SitesTest do
     test "update_site/2 with valid data updates the site" do
       {_, site} = user_and_site()
 
-      %Site{pages: [%Page{header_image: %Asset{id: header_image_id}}]} =
-        site |> Repo.preload(pages: [:header_image])
-
       assert {:ok, updated_site} =
                Sites.update_site(site, %{
-                 "name" => "some updated name",
-                 "site_logo_id" => header_image_id
+                 "name" => "some updated name"
                })
 
       assert updated_site.name == "some updated name"

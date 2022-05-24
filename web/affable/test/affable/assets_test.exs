@@ -6,7 +6,7 @@ defmodule Affable.AssetsTest do
   alias Affable.Assets
   alias Affable.Assets.Asset
   alias Affable.Accounts.User
-  alias Affable.Sites.{Page, Site}
+  alias Affable.Sites.{Page, Site, Section}
 
   setup do
     %{wrong_user: %User{id: 9999}}
@@ -16,22 +16,22 @@ defmodule Affable.AssetsTest do
     test "can determine if it's in use by the site" do
       refute Assets.in_use?(
                %Asset{id: 1},
-               %Site{pages: []}
+               %Site{pages: [%Page{sections: [%Section{}]}]}
              )
 
       assert Assets.in_use?(
                %Asset{id: 1},
                %Site{
                  pages: [
-                   %Page{header_image_id: 2},
-                   %Page{header_image_id: 1}
+                   %Page{header_image_id: 2, sections: []},
+                   %Page{header_image_id: 1, sections: []}
                  ]
                }
              )
 
       assert Assets.in_use?(
                %Asset{id: 1},
-               %Site{site_logo_id: 1, pages: []}
+               %Site{pages: [%Page{sections: [%Section{image_id: 1}]}]}
              )
     end
 

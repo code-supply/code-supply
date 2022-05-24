@@ -4,17 +4,10 @@ defmodule Affable.Sites.Raw do
   alias Affable.Assets.Asset
   alias Affable.Layouts.Layout
 
-  def raw(
-        %Site{
-          layout: layout,
-          pages: pages,
-          site_logo: site_logo
-        } = site
-      ) do
+  def raw(%Site{layout: layout, pages: pages} = site) do
     %{
       "id" => site.id,
       "name" => site.name,
-      "site_logo_url" => site_logo |> Assets.to_imgproxy_url(width: 600, height: 176),
       "custom_head_html" => site.custom_head_html,
       "made_available_at" => format_datetime(site.made_available_at),
       "layout" => layout && raw(layout),

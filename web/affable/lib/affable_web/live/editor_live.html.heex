@@ -81,12 +81,6 @@
       </div>
 
       <div class="field">
-        <%= label outer_form, :site_logo_id %>
-        <%= select outer_form, :site_logo_id, @asset_pairs, prompt: "None" %>
-        <%= error_tag outer_form, :site_logo_id %>
-      </div>
-
-      <div class="field">
         <%= label outer_form, :custom_head_html, "Custom <head> HTML" %>
         <%= editor_textarea outer_form, :custom_head_html, class: "font-mono" %>
         <%= error_tag outer_form, :custom_head_html %>

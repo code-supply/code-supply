@@ -14,7 +14,6 @@ defmodule Affable.SitesFixtures do
     %Site{
       latest_publication: %Publication{},
       layout: nil,
-      site_logo: nil,
       pages: [%Page{header_image: nil}]
     }
   end

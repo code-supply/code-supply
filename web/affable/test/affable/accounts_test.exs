@@ -3,7 +3,6 @@ defmodule Affable.AccountsTest do
 
   alias Affable.Accounts
   alias Affable.Accounts.{User, UserToken}
-  alias Affable.Assets.Asset
   alias Affable.Domains
   alias Affable.Sites
   alias Affable.Sites.{Page, Site}
@@ -98,20 +97,18 @@ defmodule Affable.AccountsTest do
 
   describe "register_user/1" do
     test "sets up default site" do
-      user = user_fixture() |> Repo.preload(sites: [:site_logo])
+      user = user_fixture() |> Repo.preload(:sites)
 
       [
         %Site{
           internal_name: internal_name,
-          domains: [domain],
-          site_logo: site_logo
+          domains: [domain]
         } = site
       ] = user.sites
 
       assert [_home_page_id] = Sites.page_ids(site)
       assert internal_name =~ ~r/site[a-z0-9]+/
       assert domain.name =~ ~r/site[a-z0-9]+\.affable\.app/
-      assert %Asset{} = site_logo
     end
 
     test "requires email and password to be set" do

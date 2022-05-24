@@ -109,8 +109,6 @@ defmodule Affable.Sites do
   end
 
   def publish(site) do
-    site = site |> preload_base_assets()
-
     site
     |> Ecto.build_assoc(:publications, %{data: raw(site)})
     |> Repo.insert()
@@ -198,8 +196,7 @@ defmodule Affable.Sites do
       preload: [
         assets: [],
         domains: [],
-        members: [],
-        site_logo: []
+        members: []
       ]
     )
   end
@@ -208,13 +205,8 @@ defmodule Affable.Sites do
     Repo.preload(site, [assets: Assets.default_query()], force: true)
   end
 
-  defp preload_base_assets(site, opts \\ []) do
-    Repo.preload(site, [:site_logo], opts)
-  end
-
   defp preload_latest_publication(site) do
     site
-    |> preload_base_assets
     |> Repo.preload(latest_publication: from(p in Publication, order_by: [desc: p.id]))
   end
 
@@ -256,7 +248,7 @@ defmodule Affable.Sites do
   def create_site(%User{} = user, attrs \\ %{}) do
     create_site_multi(user, attrs)
     |> Repo.transaction()
-    |> handle_create_site_multi(:site_with_default_assets)
+    |> handle_create_site_multi(:site_with_internal_name)
   end
 
   def create_bare_site_multi(user, attrs) do
@@ -277,7 +269,7 @@ defmodule Affable.Sites do
       """
     })
     |> default_assets_multi()
-    |> Multi.insert(:publish, &build_publication(&1.site_with_default_assets))
+    |> Multi.insert(:publish, &build_publication(&1.site_with_internal_name))
   end
 
   defp handle_create_site_multi(result, site_multi_key) do
@@ -302,14 +294,7 @@ defmodule Affable.Sites do
   end
 
   defp build_publication(site) do
-    Ecto.build_assoc(site, :publications, %{
-      data:
-        raw(
-          site
-          |> with_pages()
-          |> Repo.preload(site_logo: [])
-        )
-    })
+    Ecto.build_assoc(site, :publications, %{data: raw(site |> with_pages())})
   end
 
   defp site_with_name_multi(%Multi{} = multi, user, attrs) do
@@ -337,7 +322,6 @@ defmodule Affable.Sites do
 
   defp default_assets_multi(%Multi{} = multi) do
     multi
-    |> asset_multi(:site_logo, "Logo", "gs://affable-uploads/default-logo.png")
     |> asset_multi(:header_image, "Header", "gs://affable-uploads/default-header.png")
     |> asset_multi(
       :golden_delicious,
@@ -395,12 +379,6 @@ defmodule Affable.Sites do
                                                       } ->
       Page.changeset(homepage, %{header_image_id: header_image.id})
     end)
-    |> Multi.update(:site_with_default_assets, fn %{
-                                                    site_logo: site_logo,
-                                                    site_with_internal_name: site
-                                                  } ->
-      Site.changeset(site, %{site_logo_id: site_logo.id})
-    end)
   end
 
   defp asset_multi(%Multi{} = multi, identifier, name, url) do
@@ -415,7 +393,6 @@ defmodule Affable.Sites do
         {
           :ok,
           site
-          |> preload_base_assets(force: true)
           |> with_pages(force: true)
         }
 
@@ -438,13 +415,7 @@ defmodule Affable.Sites do
   end
 
   def delete_assets(%Site{} = site) do
-    site =
-      site
-      |> change_site(%{site_logo_id: nil})
-      |> Repo.update!()
-
     Repo.delete_all(from(Asset, where: [site_id: ^site.id]))
-
     site
   end
 
