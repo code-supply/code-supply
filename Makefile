@@ -1,12 +1,9 @@
 .POSIX:
 affable_version = k8s/affable/version.yaml
-operator_version = k8s/operators/site-operator-version.yaml
 
 k8s/manifest.yaml: \
 	k8s/kustomization.yaml \
-	k8s/*/*.yaml \
-	k8s/operators/site-operator.yaml \
-	k8s/operators/site-operator-version.yaml
+	k8s/*/*.yaml
 	kustomize build k8s > $@
 
 .PHONY: apply
@@ -21,44 +18,6 @@ diff: \
 	k8s/manifest.yaml
 	kubectl diff \
 		-f k8s/manifest.yaml
-
-operators/site_operator/VERSION:
-	git rev-parse --short HEAD > $@
-
-operators/site_operator/VERSION_BUILT: operators/site_operator/VERSION
-	cd operators/site_operator; mix test
-	docker build -t eu.gcr.io/code-supply/site-operator:$$(cat $<) operators/site_operator
-	cat $< > $@
-
-operators/site_operator/VERSION_PUSHED: operators/site_operator/VERSION_BUILT
-	docker push eu.gcr.io/code-supply/site-operator:$$(cat $<)
-	cat $< > $@
-
-k8s/operators/site-operator.yaml: \
-	operators/site_operator/lib/site_operator/controllers/v1/* \
-	operators/site_operator/config/* \
-	operators/site_operator/VERSION_PUSHED \
-	k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
-	cd operators/site_operator && \
-		mix compile && \
-		mix bonny.gen.manifest \
-		--namespace operators \
-		--image eu.gcr.io/code-supply/site-operator:$$(cat VERSION_PUSHED) \
-		--out - \
-		> ../../$@
-
-k8s/operators/site-operator-version.yaml:
-	> $(operator_version)
-	echo "apiVersion: apps/v1" >> $(operator_version)
-	echo "kind: Deployment" >> $(operator_version)
-	echo "metadata:" >> $(operator_version)
-	echo "  name: site-operator" >> $(operator_version)
-	echo "  namespace: operators" >> $(operator_version)
-	echo "spec:" >> $(operator_version)
-	echo "  template:" >> $(operator_version)
-	echo "    metadata:" >> $(operator_version)
-	echo "      labels:" >> $(operator_version)
-	echo "        version: \"$$(cat operators/site_operator/VERSION_PUSHED)\"" >> $(operator_version)
 
 web/affable/VERSION:
 	git rev-parse --short HEAD > $@
@@ -98,11 +57,6 @@ web/affiliate/VERSION_BUILT: web/affiliate/VERSION
 web/affiliate/VERSION_PUSHED: web/affiliate/VERSION_BUILT
 	docker push eu.gcr.io/code-supply/affiliate:$$(cat $<)
 	cat $< > $@
-
-k8s/operators/env-vars/AFFILIATE_SITE_IMAGE: web/affiliate/VERSION_PUSHED
-	docker inspect --format='{{index .RepoDigests 0}}' eu.gcr.io/code-supply/affiliate:$$(cat $<) \
-		| tr -d '\n' \
-		> k8s/operators/env-vars/AFFILIATE_SITE_IMAGE
 
 .PHONY: install_istio_operator
 install_istio_operator:

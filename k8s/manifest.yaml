@@ -19,13 +19,6 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  labels:
-    istio-injection: enabled
-  name: operators
----
-apiVersion: v1
-kind: Namespace
-metadata:
   name: prometheus
 ---
 apiVersion: v1
@@ -27957,36 +27950,6 @@ status:
   conditions: []
   storedVersions: []
 ---
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  labels:
-    app: site-operator
-    k8s-app: site-operator
-  name: affiliatesites.site-operator.code.supply
-spec:
-  additionalPrinterColumns:
-  - JSONPath: .spec.domains
-    description: Domain names of the website
-    name: domains
-    type: string
-  - JSONPath: .metadata.creationTimestamp
-    description: |-
-      CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC.
-
-            Populated by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
-    name: Age
-    type: date
-  group: site-operator.code.supply
-  names:
-    kind: AffiliateSite
-    plural: affiliatesites
-    shortNames:
-    - as
-    singular: affiliatesite
-  scope: Cluster
-  version: v1
----
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -28047,15 +28010,6 @@ metadata:
     app.kubernetes.io/version: v1.7.2
   name: cert-manager-webhook
   namespace: cert-manager
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app: site-operator
-    k8s-app: site-operator
-  name: site-operator
-  namespace: operators
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -28954,87 +28908,6 @@ rules:
   - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  labels:
-    app: site-operator
-    k8s-app: site-operator
-  name: site-operator
-rules:
-- apiGroups:
-  - apiextensions.k8s.io
-  resources:
-  - customresourcedefinitions
-  verbs:
-  - '*'
-- apiGroups:
-  - site-operator.code.supply
-  resources:
-  - affiliatesites
-  verbs:
-  - '*'
-- apiGroups:
-  - ""
-  resources:
-  - namespaces
-  verbs:
-  - get
-- apiGroups:
-  - ""
-  resources:
-  - namespaces
-  - secrets
-  - services
-  verbs:
-  - create
-  - delete
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - create
-  - get
-  - patch
-  - delete
-- apiGroups:
-  - networking.k8s.io
-  resources:
-  - ingresses
-  verbs:
-  - create
-  - get
-  - patch
-  - delete
-- apiGroups:
-  - networking.istio.io
-  resources:
-  - gateways
-  - virtualservices
-  verbs:
-  - get
-  - create
-  - patch
-  - delete
-- apiGroups:
-  - cert-manager.io
-  resources:
-  - certificates
-  verbs:
-  - create
-  - get
-  - patch
-  - delete
-- apiGroups:
-  - security.istio.io
-  resources:
-  - authorizationpolicies
-  verbs:
-  - get
-  - create
-  - delete
----
-apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   labels:
@@ -29332,22 +29205,6 @@ subjects:
   name: prometheus-operator
   namespace: prometheus-operator
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  labels:
-    app: site-operator
-    k8s-app: site-operator
-  name: site-operator
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: site-operator
-subjects:
-- kind: ServiceAccount
-  name: site-operator
-  namespace: operators
----
 apiVersion: v1
 data: null
 kind: ConfigMap
@@ -29359,14 +29216,6 @@ metadata:
     app.kubernetes.io/name: webhook
   name: cert-manager-webhook
   namespace: cert-manager
----
-apiVersion: v1
-data:
-  AFFILIATE_SITE_IMAGE: eu.gcr.io/code-supply/affiliate@sha256:1954a5e4008d4ca148d5b3db0566892271a529883cccdc359ed6e63b4584371c
-kind: ConfigMap
-metadata:
-  name: site-operator-fc4mffk9t6
-  namespace: operators
 ---
 apiVersion: v1
 kind: Service
@@ -29506,7 +29355,7 @@ spec:
         sidecar.istio.io/proxyCPULimit: 500m
       labels:
         app: affable
-        version: ed1f0c9
+        version: 9c12350
     spec:
       containers:
       - env:
@@ -29523,7 +29372,7 @@ spec:
         envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:ed1f0c9
+        image: eu.gcr.io/code-supply/affable:9c12350
         name: affable
         ports:
         - containerPort: 4000
@@ -29773,71 +29622,6 @@ spec:
       securityContext:
         runAsNonRoot: true
       serviceAccountName: cert-manager-webhook
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: site-operator
-    k8s-app: site-operator
-  name: site-operator
-  namespace: operators
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: site-operator
-      k8s-app: site-operator
-  template:
-    metadata:
-      annotations:
-        sidecar.istio.io/proxyCPU: 3m
-        sidecar.istio.io/proxyCPULimit: 500m
-      labels:
-        app: site-operator
-        k8s-app: site-operator
-        version: 853ed4a
-    spec:
-      containers:
-      - env:
-        - name: MIX_ENV
-          value: prod
-        - name: BONNY_POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: BONNY_POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: BONNY_POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        - name: BONNY_POD_SERVICE_ACCOUNT
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.serviceAccountName
-        envFrom:
-        - secretRef:
-            name: site-operator
-        - configMapRef:
-            name: site-operator-fc4mffk9t6
-        image: eu.gcr.io/code-supply/site-operator:6a9595f
-        name: site-operator
-        resources:
-          limits:
-            cpu: 50m
-            memory: 100Mi
-          requests:
-            cpu: 1m
-            memory: 48Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          runAsNonRoot: true
-          runAsUser: 65534
-      serviceAccountName: site-operator
 ---
 apiVersion: apps/v1
 kind: Deployment

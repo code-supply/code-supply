@@ -9,4 +9,3 @@ resources:
 - certificates
 - istio-system
 - letsencrypt
-- operators
