@@ -1,2 +1,0 @@
-defmodule SiteOperator do
-end
