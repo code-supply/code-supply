@@ -30008,6 +30008,17 @@ spec:
       name: affable
       port:
         number: 80
+  rules:
+  - host: images.affable.app
+    http:
+      paths:
+      - backend:
+          service:
+            name: imgproxy
+            port:
+              number: 80
+        path: /*
+        pathType: ImplementationSpecific
   tls:
   - secretName: affable-www
 ---

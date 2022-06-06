@@ -15,3 +15,14 @@ spec:
       name: affable
       port:
         number: 80
+  rules:
+  - host: images.affable.app
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: imgproxy
+            port:
+              number: 80
