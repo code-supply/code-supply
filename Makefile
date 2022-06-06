@@ -46,18 +46,6 @@ k8s/affable/version.yaml: web/affable/VERSION_PUSHED
 	echo "      labels:" >> $@
 	echo "        version: \"$$(cat $<)\"" >> $@
 
-web/affiliate/VERSION:
-	git rev-parse --short HEAD > $@
-
-web/affiliate/VERSION_BUILT: web/affiliate/VERSION
-	cd web/affiliate; mix test
-	docker build -t eu.gcr.io/code-supply/affiliate:$$(cat $<) web/affiliate
-	cat $< > $@
-
-web/affiliate/VERSION_PUSHED: web/affiliate/VERSION_BUILT
-	docker push eu.gcr.io/code-supply/affiliate:$$(cat $<)
-	cat $< > $@
-
 .PHONY: kubectl_set_contexts
 kubectl_set_contexts:
 	kubectl config set-context \
