@@ -6,6 +6,4 @@ resources:
 - prometheus
 - affable
 - imgproxy
-- certificates
-- istio-system
 - letsencrypt

@@ -58,10 +58,6 @@ web/affiliate/VERSION_PUSHED: web/affiliate/VERSION_BUILT
 	docker push eu.gcr.io/code-supply/affiliate:$$(cat $<)
 	cat $< > $@
 
-.PHONY: install_istio_operator
-install_istio_operator:
-	istioctl operator init
-
 .PHONY: kubectl_set_contexts
 kubectl_set_contexts:
 	kubectl config set-context \
@@ -69,11 +65,6 @@ kubectl_set_contexts:
 		--cluster=gke_code-supply_europe-west1-b_pink \
 		--user=gke_code-supply_europe-west1-b_pink \
 		--namespace=affable
-	kubectl config set-context \
-		istio-system \
-		--cluster=gke_code-supply_europe-west1-b_pink \
-		--user=gke_code-supply_europe-west1-b_pink \
-		--namespace=istio-system
 
 .PHONY: build_vm
 build_vm:

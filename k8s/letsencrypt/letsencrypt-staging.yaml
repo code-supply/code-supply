@@ -11,7 +11,7 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: istio
+          name: affable
     - dns01:
         cloudDNS:
           project: code-supply

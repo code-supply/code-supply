@@ -3,18 +3,12 @@ kind: Namespace
 metadata:
   labels:
     app: affable
-    istio-injection: enabled
   name: affable
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: cert-manager
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: istio-system
 ---
 apiVersion: v1
 kind: Namespace
@@ -29350,9 +29344,6 @@ spec:
       app: affable
   template:
     metadata:
-      annotations:
-        sidecar.istio.io/proxyCPU: 5m
-        sidecar.istio.io/proxyCPULimit: 500m
       labels:
         app: affable
         version: 9c12350
@@ -29427,9 +29418,6 @@ spec:
       app: imgproxy
   template:
     metadata:
-      annotations:
-        sidecar.istio.io/proxyCPU: 5m
-        sidecar.istio.io/proxyCPULimit: 500m
       labels:
         app: imgproxy
         version: 5c844dd
@@ -29673,8 +29661,10 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
+  labels:
+    app: affable
   name: affable-www
-  namespace: istio-system
+  namespace: affable
 spec:
   commonName: '*.affable.app'
   dnsNames:
@@ -29698,7 +29688,7 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: istio
+          name: affable
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -29728,148 +29718,10 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: istio
+          name: affable
     - dns01:
         cloudDNS:
           project: code-supply
----
-apiVersion: cloud.google.com/v1
-kind: BackendConfig
-metadata:
-  name: cdn-enabled
-  namespace: istio-system
-spec:
-  cdn:
-    cachePolicy:
-      includeHost: true
-      includeProtocol: true
-      includeQueryString: true
-    enabled: true
-  timeoutSec: 3600
----
-apiVersion: install.istio.io/v1alpha1
-kind: IstioOperator
-metadata:
-  name: istio-control-plane
-  namespace: istio-system
-spec:
-  components:
-    egressGateways:
-    - enabled: true
-      k8s:
-        resources:
-          limits:
-            memory: 100Mi
-          requests:
-            cpu: 3m
-            memory: 43Mi
-      name: istio-egressgateway
-    ingressGateways:
-    - enabled: true
-      k8s:
-        resources:
-          limits:
-            memory: 100Mi
-          requests:
-            cpu: 5m
-            memory: 43Mi
-        service:
-          type: NodePort
-        serviceAnnotations:
-          cloud.google.com/backend-config: '{"ports": {"80": "cdn-enabled"}}'
-          cloud.google.com/neg: '{"exposed_ports": {"80":{}}}'
-      name: istio-ingressgateway-nodeport
-    - enabled: true
-      k8s:
-        resources:
-          limits:
-            memory: 100Mi
-          requests:
-            cpu: 5m
-            memory: 43Mi
-      name: istio-ingressgateway
-    pilot:
-      k8s:
-        resources:
-          limits:
-            cpu: 500m
-            memory: 500Mi
-          requests:
-            cpu: 5m
-            memory: 49Mi
-  meshConfig:
-    accessLogEncoding: JSON
-    accessLogFile: /dev/stdout
-    outboundTrafficPolicy:
-      mode: REGISTRY_ONLY
-  profile: default
----
-apiVersion: kiali.io/v1alpha1
-kind: Kiali
-metadata:
-  annotations:
-    ansible.operator-sdk/verbosity: "1"
-  name: kiali
-  namespace: istio-system
-spec:
-  auth:
-    strategy: anonymous
-  deployment:
-    accessible_namespaces:
-    - '**'
-    ingress_enabled: false
-  external_services:
-    prometheus:
-      url: http://prometheus-operated.prometheus:9090
-  istio_component_namespaces:
-    prometheus: prometheus
-  kubernetes_config:
-    cache_enabled: true
----
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
-metadata:
-  labels:
-    monitoring: istio-proxies
-    release: istio
-  name: envoy-stats-monitor
-  namespace: istio-system
-spec:
-  jobLabel: envoy-stats
-  namespaceSelector:
-    any: true
-  podMetricsEndpoints:
-  - interval: 15s
-    path: /stats/prometheus
-    relabelings:
-    - action: keep
-      regex: istio-proxy
-      sourceLabels:
-      - __meta_kubernetes_pod_container_name
-    - action: keep
-      sourceLabels:
-      - __meta_kubernetes_pod_annotationpresent_prometheus_io_scrape
-    - action: replace
-      regex: ([^:]+)(?::\d+)?;(\d+)
-      replacement: $1:$2
-      sourceLabels:
-      - __address__
-      - __meta_kubernetes_pod_annotation_prometheus_io_port
-      targetLabel: __address__
-    - action: labeldrop
-      regex: __meta_kubernetes_pod_label_(.+)
-    - action: replace
-      sourceLabels:
-      - __meta_kubernetes_namespace
-      targetLabel: namespace
-    - action: replace
-      sourceLabels:
-      - __meta_kubernetes_pod_name
-      targetLabel: pod_name
-  selector:
-    matchExpressions:
-    - key: istio-prometheus-ignore
-      operator: DoesNotExist
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: Prometheus
@@ -29903,343 +29755,6 @@ spec:
   serviceMonitorNamespaceSelector: {}
   serviceMonitorSelector: {}
   version: v2.23.0
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  labels:
-    monitoring: istio-components
-    release: istio
-  name: istio-component-monitor
-  namespace: istio-system
-spec:
-  endpoints:
-  - interval: 15s
-    port: http-monitoring
-  jobLabel: istio
-  namespaceSelector:
-    any: true
-  selector:
-    matchExpressions:
-    - key: istio
-      operator: In
-      values:
-      - pilot
-  targetLabels:
-  - app
----
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  labels:
-    app: affable
-  name: affable
-  namespace: affable
-spec:
-  selector:
-    istio: ingressgateway
-  servers:
-  - hosts:
-    - affable.app
-    - '*.affable.app'
-    port:
-      name: http
-      number: 80
-      protocol: HTTP
-  - hosts:
-    - affable.app
-    - '*.affable.app'
-    port:
-      name: https
-      number: 443
-      protocol: HTTPS
-    tls:
-      credentialName: affable-www
-      mode: SIMPLE
----
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: health
-  namespace: istio-system
-spec:
-  selector:
-    istio: ingressgateway
-    service.istio.io/canonical-name: istio-ingressgateway-nodeport
-  servers:
-  - hosts:
-    - '*'
-    port:
-      name: http
-      number: 80
-      protocol: HTTP
-  - hosts:
-    - '*'
-    port:
-      name: https
-      number: 443
-      protocol: HTTPS
-    tls:
-      credentialName: affable-www
-      mode: SIMPLE
----
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  labels:
-    app: affable
-  name: cloud-sql-instance
-  namespace: affable
-spec:
-  hosts:
-  - 188.128.77.34.bc.googleusercontent.com.
-  location: MESH_EXTERNAL
-  ports:
-  - name: tcp
-    number: 3307
-    protocol: tcp
-  resolution: DNS
----
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  labels:
-    app: imgproxy
-  name: gcs
-  namespace: affable
-spec:
-  exportTo:
-  - .
-  hosts:
-  - storage.googleapis.com
-  location: MESH_EXTERNAL
-  ports:
-  - name: https
-    number: 443
-    protocol: HTTPS
-  resolution: DNS
----
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  labels:
-    app: affable
-  name: google-compute-api
-  namespace: affable
-spec:
-  exportTo:
-  - .
-  hosts:
-  - compute.googleapis.com
-  - iamcredentials.googleapis.com
-  - www.googleapis.com
-  location: MESH_EXTERNAL
-  ports:
-  - name: https
-    number: 443
-    protocol: HTTPS
-  resolution: DNS
----
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  labels:
-    app: affable
-  name: google-metadata
-  namespace: affable
-spec:
-  exportTo:
-  - .
-  hosts:
-  - metadata.google.internal
-  location: MESH_EXTERNAL
-  ports:
-  - name: http
-    number: 80
-    protocol: HTTP
-  resolution: DNS
----
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  labels:
-    app: affable
-  name: google-metadata-ip
-  namespace: affable
-spec:
-  addresses:
-  - 169.254.169.254
-  endpoints:
-  - address: 169.254.169.254
-  exportTo:
-  - .
-  hosts:
-  - ignore.example.com
-  location: MESH_EXTERNAL
-  ports:
-  - name: http
-    number: 80
-    protocol: HTTP
-  resolution: STATIC
----
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  labels:
-    app: affable
-  name: google-oauth2-api
-  namespace: affable
-spec:
-  exportTo:
-  - .
-  hosts:
-  - oauth2.googleapis.com
-  location: MESH_EXTERNAL
-  ports:
-  - name: https
-    number: 443
-    protocol: HTTPS
-  resolution: DNS
----
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  labels:
-    app: affable
-  name: google-sql-api
-  namespace: affable
-spec:
-  exportTo:
-  - .
-  hosts:
-  - sqladmin.googleapis.com
-  location: MESH_EXTERNAL
-  ports:
-  - name: https
-    number: 443
-    protocol: HTTPS
-  resolution: DNS
----
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  labels:
-    app: affable
-  name: sendgrid-api
-  namespace: affable
-spec:
-  exportTo:
-  - .
-  hosts:
-  - api.sendgrid.com
-  location: MESH_EXTERNAL
-  ports:
-  - name: https
-    number: 443
-    protocol: HTTPS
-  resolution: DNS
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  labels:
-    app: affable
-  name: affable
-  namespace: affable
-spec:
-  gateways:
-  - affable
-  hosts:
-  - affable.app
-  - www.affable.app
-  - images.affable.app
-  http:
-  - match:
-    - authority:
-        exact: affable.app
-    redirect:
-      authority: www.affable.app
-  - match:
-    - authority:
-        exact: www.affable.app
-      uri:
-        prefix: /
-    route:
-    - destination:
-        host: affable
-  - match:
-    - authority:
-        exact: images.affable.app
-      uri:
-        prefix: /
-    retries:
-      attempts: 5
-      retryOn: retriable-status-codes
-    route:
-    - destination:
-        host: imgproxy
-        port:
-          number: 80
-      headers:
-        request:
-          set:
-            x-envoy-retriable-status-codes: "404"
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: health
-  namespace: istio-system
-spec:
-  gateways:
-  - health
-  hosts:
-  - '*'
-  http:
-  - match:
-    - headers:
-        user-agent:
-          prefix: GoogleHC
-      method:
-        exact: GET
-      uri:
-        exact: /
-    rewrite:
-      authority: istio-ingressgateway-nodeport.istio-system.svc.cluster.local:15021
-      uri: /healthz/ready
-    route:
-    - destination:
-        host: istio-ingressgateway-nodeport.istio-system.svc.cluster.local
-        port:
-          number: 15021
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.allow-http: "false"
-    kubernetes.io/ingress.class: gce
-    kubernetes.io/ingress.global-static-ip-name: affable
-  name: load-balancer-affable
-  namespace: istio-system
-spec:
-  defaultBackend:
-    service:
-      name: istio-ingressgateway-nodeport
-      port:
-        number: 80
-  tls:
-  - secretName: affable-www
-  - secretName: tls-site5xzn
----
-apiVersion: security.istio.io/v1beta1
-kind: PeerAuthentication
-metadata:
-  name: default
-  namespace: istio-system
-spec:
-  mtls:
-    mode: STRICT
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration

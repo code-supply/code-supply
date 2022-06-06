@@ -7,15 +7,8 @@ resources:
 - service.yaml
 - deployment.yaml
 - headless-service.yaml
-- gateway.yaml
-- virtual-service.yaml
-- cloud-sql-egress.yaml
-- googleapis-egress.yaml
-- google-metadata-egress.yaml
-- google-oauth2-api-egress.yaml
-- google-sql-api-egress.yaml
-- sendgrid-api-egress.yaml
 - rbac.yaml
+- certificate.yaml
 replicas:
 - count: 3
   name: affable
@@ -27,4 +20,3 @@ images:
   newTag: 9c12350
 patchesStrategicMerge:
 - version.yaml
-- istio-proxy-resources.yaml

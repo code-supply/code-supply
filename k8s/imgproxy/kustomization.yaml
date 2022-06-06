@@ -4,7 +4,6 @@ namespace: affable
 resources:
 - deployment.yaml
 - service.yaml
-- gcs-egress.yaml
 - service-account.yaml
 commonLabels:
   app: imgproxy
