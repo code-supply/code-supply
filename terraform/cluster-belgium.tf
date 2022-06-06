@@ -6,19 +6,6 @@ variable "standard_node_tag" {
   default = "codesupplyk8s"
 }
 
-resource "google_compute_firewall" "permit_istio_master" {
-  name    = "istio-master"
-  network = data.google_compute_network.default.name
-
-  allow {
-    protocol = "tcp"
-    ports    = ["8080", "15000", "15017"]
-  }
-
-  source_ranges = [var.cluster_cidr_block]
-  target_tags   = [var.standard_node_tag]
-}
-
 resource "google_container_cluster" "belgium_pink" {
   provider = google-beta
 
