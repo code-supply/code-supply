@@ -7329,13 +7329,11 @@ status:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  annotations:
-    cert-manager.io/inject-ca-from-secret: cert-manager/cert-manager-webhook-ca
   labels:
     app: cert-manager
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: certificaterequests.cert-manager.io
 spec:
   group: cert-manager.io
@@ -7565,6 +7563,9 @@ spec:
                   - type
                   type: object
                 type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
               failureTime:
                 description: FailureTime stores the time that this CertificateRequest
                   failed. This is used to influence garbage collection and back-off.
@@ -7582,13 +7583,11 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  annotations:
-    cert-manager.io/inject-ca-from-secret: cert-manager/cert-manager-webhook-ca
   labels:
     app: cert-manager
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: certificates.cert-manager.io
 spec:
   group: cert-manager.io
@@ -7843,6 +7842,9 @@ spec:
                       a private key matching the specified requirements will be generated
                       whenever a re-issuance occurs. Default is 'Never' for backward
                       compatibility.
+                    enum:
+                    - Never
+                    - Always
                     type: string
                   size:
                     description: Size is the key bit size of the corresponding private
@@ -8038,6 +8040,16 @@ spec:
                   - type
                   type: object
                 type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
+              failedIssuanceAttempts:
+                description: The number of continuous failed issuance attempts up
+                  till now. This field gets removed (if set) on a successful issuance
+                  and gets set to 1 if unset and an issuance has failed. If an issuance
+                  has failed, the delay till the next issuance will be calculated
+                  using formula time.Hour * 2 ^ (failedIssuanceAttempts - 1).
+                type: integer
               lastFailureTime:
                 description: LastFailureTime is the time as recorded by the Certificate
                   controller of the most recent failure to complete a CertificateRequest
@@ -8091,13 +8103,11 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  annotations:
-    cert-manager.io/inject-ca-from-secret: cert-manager/cert-manager-webhook-ca
   labels:
     app: cert-manager
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: challenges.acme.cert-manager.io
 spec:
   group: acme.cert-manager.io
@@ -8587,11 +8597,86 @@ spec:
                           labels:
                             additionalProperties:
                               type: string
-                            description: The labels that cert-manager will use when
-                              creating the temporary HTTPRoute needed for solving
-                              the HTTP-01 challenge. These labels must match the label
-                              selector of at least one Gateway.
+                            description: Custom labels that will be applied to HTTPRoutes
+                              created by cert-manager while solving HTTP-01 challenges.
                             type: object
+                          parentRefs:
+                            description: 'When solving an HTTP-01 challenge, cert-manager
+                              creates an HTTPRoute. cert-manager needs to know which
+                              parentRefs should be used when creating the HTTPRoute.
+                              Usually, the parentRef references a Gateway. See: https://gateway-api.sigs.k8s.io/v1alpha2/api-types/httproute/#attaching-to-gateways'
+                            items:
+                              description: "ParentRef identifies an API object (usually
+                                a Gateway) that can be considered a parent of this
+                                resource (usually a route). The only kind of parent
+                                resource with \"Core\" support is Gateway. This API
+                                may be extended in the future to support additional
+                                kinds of parent resources, such as HTTPRoute. \n The
+                                API object must be valid in the cluster; the Group
+                                and Kind must be registered in the cluster for this
+                                reference to be valid. \n References to objects with
+                                invalid Group and Kind are not valid, and must be
+                                rejected by the implementation, with appropriate Conditions
+                                set on the containing object."
+                              properties:
+                                group:
+                                  default: gateway.networking.k8s.io
+                                  description: "Group is the group of the referent.
+                                    \n Support: Core"
+                                  maxLength: 253
+                                  pattern: ^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
+                                  type: string
+                                kind:
+                                  default: Gateway
+                                  description: "Kind is kind of the referent. \n Support:
+                                    Core (Gateway) Support: Custom (Other Resources)"
+                                  maxLength: 63
+                                  minLength: 1
+                                  pattern: ^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$
+                                  type: string
+                                name:
+                                  description: "Name is the name of the referent.
+                                    \n Support: Core"
+                                  maxLength: 253
+                                  minLength: 1
+                                  type: string
+                                namespace:
+                                  description: "Namespace is the namespace of the
+                                    referent. When unspecified (or empty string),
+                                    this refers to the local namespace of the Route.
+                                    \n Support: Core"
+                                  maxLength: 63
+                                  minLength: 1
+                                  pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                                  type: string
+                                sectionName:
+                                  description: "SectionName is the name of a section
+                                    within the target resource. In the following resources,
+                                    SectionName is interpreted as the following: \n
+                                    * Gateway: Listener Name \n Implementations MAY
+                                    choose to support attaching Routes to other resources.
+                                    If that is the case, they MUST clearly document
+                                    how SectionName is interpreted. \n When unspecified
+                                    (empty string), this will reference the entire
+                                    resource. For the purpose of status, an attachment
+                                    is considered successful if at least one section
+                                    in the parent resource accepts it. For example,
+                                    Gateway listeners can restrict which Routes can
+                                    attach to them by Route kind, namespace, or hostname.
+                                    If 1 of 2 Gateway listeners accept attachment
+                                    from the referencing Route, the Route MUST be
+                                    considered successfully attached. If no Gateway
+                                    listeners accept attachment from this Route, the
+                                    Route MUST be considered detached from the Gateway.
+                                    \n Support: Core"
+                                  maxLength: 253
+                                  minLength: 1
+                                  pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
+                                  type: string
+                              required:
+                              - name
+                              type: object
+                            type: array
                           serviceType:
                             description: Optional service type for Kubernetes solver
                               service. Supported values are NodePort or ClusterIP.
@@ -9987,13 +10072,11 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  annotations:
-    cert-manager.io/inject-ca-from-secret: cert-manager/cert-manager-webhook-ca
   labels:
     app: cert-manager
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: clusterissuers.cert-manager.io
 spec:
   group: cert-manager.io
@@ -10589,11 +10672,93 @@ spec:
                                 labels:
                                   additionalProperties:
                                     type: string
-                                  description: The labels that cert-manager will use
-                                    when creating the temporary HTTPRoute needed for
-                                    solving the HTTP-01 challenge. These labels must
-                                    match the label selector of at least one Gateway.
+                                  description: Custom labels that will be applied
+                                    to HTTPRoutes created by cert-manager while solving
+                                    HTTP-01 challenges.
                                   type: object
+                                parentRefs:
+                                  description: 'When solving an HTTP-01 challenge,
+                                    cert-manager creates an HTTPRoute. cert-manager
+                                    needs to know which parentRefs should be used
+                                    when creating the HTTPRoute. Usually, the parentRef
+                                    references a Gateway. See: https://gateway-api.sigs.k8s.io/v1alpha2/api-types/httproute/#attaching-to-gateways'
+                                  items:
+                                    description: "ParentRef identifies an API object
+                                      (usually a Gateway) that can be considered a
+                                      parent of this resource (usually a route). The
+                                      only kind of parent resource with \"Core\" support
+                                      is Gateway. This API may be extended in the
+                                      future to support additional kinds of parent
+                                      resources, such as HTTPRoute. \n The API object
+                                      must be valid in the cluster; the Group and
+                                      Kind must be registered in the cluster for this
+                                      reference to be valid. \n References to objects
+                                      with invalid Group and Kind are not valid, and
+                                      must be rejected by the implementation, with
+                                      appropriate Conditions set on the containing
+                                      object."
+                                    properties:
+                                      group:
+                                        default: gateway.networking.k8s.io
+                                        description: "Group is the group of the referent.
+                                          \n Support: Core"
+                                        maxLength: 253
+                                        pattern: ^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
+                                        type: string
+                                      kind:
+                                        default: Gateway
+                                        description: "Kind is kind of the referent.
+                                          \n Support: Core (Gateway) Support: Custom
+                                          (Other Resources)"
+                                        maxLength: 63
+                                        minLength: 1
+                                        pattern: ^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$
+                                        type: string
+                                      name:
+                                        description: "Name is the name of the referent.
+                                          \n Support: Core"
+                                        maxLength: 253
+                                        minLength: 1
+                                        type: string
+                                      namespace:
+                                        description: "Namespace is the namespace of
+                                          the referent. When unspecified (or empty
+                                          string), this refers to the local namespace
+                                          of the Route. \n Support: Core"
+                                        maxLength: 63
+                                        minLength: 1
+                                        pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                                        type: string
+                                      sectionName:
+                                        description: "SectionName is the name of a
+                                          section within the target resource. In the
+                                          following resources, SectionName is interpreted
+                                          as the following: \n * Gateway: Listener
+                                          Name \n Implementations MAY choose to support
+                                          attaching Routes to other resources. If
+                                          that is the case, they MUST clearly document
+                                          how SectionName is interpreted. \n When
+                                          unspecified (empty string), this will reference
+                                          the entire resource. For the purpose of
+                                          status, an attachment is considered successful
+                                          if at least one section in the parent resource
+                                          accepts it. For example, Gateway listeners
+                                          can restrict which Routes can attach to
+                                          them by Route kind, namespace, or hostname.
+                                          If 1 of 2 Gateway listeners accept attachment
+                                          from the referencing Route, the Route MUST
+                                          be considered successfully attached. If
+                                          no Gateway listeners accept attachment from
+                                          this Route, the Route MUST be considered
+                                          detached from the Gateway. \n Support: Core"
+                                        maxLength: 253
+                                        minLength: 1
+                                        pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
+                                        type: string
+                                    required:
+                                    - name
+                                    type: object
+                                  type: array
                                 serviceType:
                                   description: Optional service type for Kubernetes
                                     solver service. Supported values are NodePort
@@ -12439,6 +12604,9 @@ spec:
                   - type
                   type: object
                 type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
             type: object
         required:
         - spec
@@ -12457,7 +12625,7 @@ metadata:
     app: cert-manager
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: issuers.cert-manager.io
 spec:
   group: cert-manager.io
@@ -13052,11 +13220,93 @@ spec:
                                 labels:
                                   additionalProperties:
                                     type: string
-                                  description: The labels that cert-manager will use
-                                    when creating the temporary HTTPRoute needed for
-                                    solving the HTTP-01 challenge. These labels must
-                                    match the label selector of at least one Gateway.
+                                  description: Custom labels that will be applied
+                                    to HTTPRoutes created by cert-manager while solving
+                                    HTTP-01 challenges.
                                   type: object
+                                parentRefs:
+                                  description: 'When solving an HTTP-01 challenge,
+                                    cert-manager creates an HTTPRoute. cert-manager
+                                    needs to know which parentRefs should be used
+                                    when creating the HTTPRoute. Usually, the parentRef
+                                    references a Gateway. See: https://gateway-api.sigs.k8s.io/v1alpha2/api-types/httproute/#attaching-to-gateways'
+                                  items:
+                                    description: "ParentRef identifies an API object
+                                      (usually a Gateway) that can be considered a
+                                      parent of this resource (usually a route). The
+                                      only kind of parent resource with \"Core\" support
+                                      is Gateway. This API may be extended in the
+                                      future to support additional kinds of parent
+                                      resources, such as HTTPRoute. \n The API object
+                                      must be valid in the cluster; the Group and
+                                      Kind must be registered in the cluster for this
+                                      reference to be valid. \n References to objects
+                                      with invalid Group and Kind are not valid, and
+                                      must be rejected by the implementation, with
+                                      appropriate Conditions set on the containing
+                                      object."
+                                    properties:
+                                      group:
+                                        default: gateway.networking.k8s.io
+                                        description: "Group is the group of the referent.
+                                          \n Support: Core"
+                                        maxLength: 253
+                                        pattern: ^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
+                                        type: string
+                                      kind:
+                                        default: Gateway
+                                        description: "Kind is kind of the referent.
+                                          \n Support: Core (Gateway) Support: Custom
+                                          (Other Resources)"
+                                        maxLength: 63
+                                        minLength: 1
+                                        pattern: ^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$
+                                        type: string
+                                      name:
+                                        description: "Name is the name of the referent.
+                                          \n Support: Core"
+                                        maxLength: 253
+                                        minLength: 1
+                                        type: string
+                                      namespace:
+                                        description: "Namespace is the namespace of
+                                          the referent. When unspecified (or empty
+                                          string), this refers to the local namespace
+                                          of the Route. \n Support: Core"
+                                        maxLength: 63
+                                        minLength: 1
+                                        pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                                        type: string
+                                      sectionName:
+                                        description: "SectionName is the name of a
+                                          section within the target resource. In the
+                                          following resources, SectionName is interpreted
+                                          as the following: \n * Gateway: Listener
+                                          Name \n Implementations MAY choose to support
+                                          attaching Routes to other resources. If
+                                          that is the case, they MUST clearly document
+                                          how SectionName is interpreted. \n When
+                                          unspecified (empty string), this will reference
+                                          the entire resource. For the purpose of
+                                          status, an attachment is considered successful
+                                          if at least one section in the parent resource
+                                          accepts it. For example, Gateway listeners
+                                          can restrict which Routes can attach to
+                                          them by Route kind, namespace, or hostname.
+                                          If 1 of 2 Gateway listeners accept attachment
+                                          from the referencing Route, the Route MUST
+                                          be considered successfully attached. If
+                                          no Gateway listeners accept attachment from
+                                          this Route, the Route MUST be considered
+                                          detached from the Gateway. \n Support: Core"
+                                        maxLength: 253
+                                        minLength: 1
+                                        pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
+                                        type: string
+                                    required:
+                                    - name
+                                    type: object
+                                  type: array
                                 serviceType:
                                   description: Optional service type for Kubernetes
                                     solver service. Supported values are NodePort
@@ -14902,6 +15152,9 @@ spec:
                   - type
                   type: object
                 type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
             type: object
         required:
         - spec
@@ -14920,7 +15173,7 @@ metadata:
     app: cert-manager
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: orders.acme.cert-manager.io
 spec:
   group: acme.cert-manager.io
@@ -27975,7 +28228,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager
   namespace: cert-manager
 ---
@@ -27988,7 +28241,7 @@ metadata:
     app.kubernetes.io/component: cainjector
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-cainjector
   namespace: cert-manager
 ---
@@ -28001,7 +28254,7 @@ metadata:
     app.kubernetes.io/component: webhook
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: webhook
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-webhook
   namespace: cert-manager
 ---
@@ -28029,7 +28282,7 @@ metadata:
     app.kubernetes.io/component: webhook
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: webhook
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-webhook:dynamic-serving
   namespace: cert-manager
 rules:
@@ -28059,27 +28312,10 @@ metadata:
     app.kubernetes.io/component: cainjector
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-cainjector:leaderelection
   namespace: kube-system
 rules:
-- apiGroups:
-  - ""
-  resourceNames:
-  - cert-manager-cainjector-leader-election
-  - cert-manager-cainjector-leader-election-core
-  resources:
-  - configmaps
-  verbs:
-  - get
-  - update
-  - patch
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - create
 - apiGroups:
   - coordination.k8s.io
   resourceNames:
@@ -28106,26 +28342,10 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager:leaderelection
   namespace: kube-system
 rules:
-- apiGroups:
-  - ""
-  resourceNames:
-  - cert-manager-controller
-  resources:
-  - configmaps
-  verbs:
-  - get
-  - update
-  - patch
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - create
 - apiGroups:
   - coordination.k8s.io
   resourceNames:
@@ -28171,7 +28391,7 @@ metadata:
     app.kubernetes.io/component: cainjector
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-cainjector
 rules:
 - apiGroups:
@@ -28227,15 +28447,6 @@ rules:
   - list
   - watch
   - update
-- apiGroups:
-  - auditregistration.k8s.io
-  resources:
-  - auditsinks
-  verbs:
-  - get
-  - list
-  - watch
-  - update
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -28245,7 +28456,7 @@ metadata:
     app.kubernetes.io/component: cert-manager
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-approve:cert-manager-io
 rules:
 - apiGroups:
@@ -28266,7 +28477,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-certificates
 rules:
 - apiGroups:
@@ -28278,6 +28489,7 @@ rules:
   - certificaterequests/status
   verbs:
   - update
+  - patch
 - apiGroups:
   - cert-manager.io
   resources:
@@ -28334,7 +28546,7 @@ metadata:
     app.kubernetes.io/component: cert-manager
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-certificatesigningrequests
 rules:
 - apiGroups:
@@ -28352,6 +28564,7 @@ rules:
   - certificatesigningrequests/status
   verbs:
   - update
+  - patch
 - apiGroups:
   - certificates.k8s.io
   resourceNames:
@@ -28376,7 +28589,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-challenges
 rules:
 - apiGroups:
@@ -28386,6 +28599,7 @@ rules:
   - challenges/status
   verbs:
   - update
+  - patch
 - apiGroups:
   - acme.cert-manager.io
   resources:
@@ -28441,7 +28655,7 @@ rules:
   - delete
   - update
 - apiGroups:
-  - networking.x-k8s.io
+  - gateway.networking.k8s.io
   resources:
   - httproutes
   verbs:
@@ -28480,7 +28694,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-clusterissuers
 rules:
 - apiGroups:
@@ -28490,6 +28704,7 @@ rules:
   - clusterissuers/status
   verbs:
   - update
+  - patch
 - apiGroups:
   - cert-manager.io
   resources:
@@ -28525,7 +28740,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-ingress-shim
 rules:
 - apiGroups:
@@ -28563,7 +28778,7 @@ rules:
   verbs:
   - update
 - apiGroups:
-  - networking.x-k8s.io
+  - gateway.networking.k8s.io
   resources:
   - gateways
   - httproutes
@@ -28572,7 +28787,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - networking.x-k8s.io
+  - gateway.networking.k8s.io
   resources:
   - gateways/finalizers
   - httproutes/finalizers
@@ -28594,7 +28809,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-issuers
 rules:
 - apiGroups:
@@ -28604,6 +28819,7 @@ rules:
   - issuers/status
   verbs:
   - update
+  - patch
 - apiGroups:
   - cert-manager.io
   resources:
@@ -28639,7 +28855,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-orders
 rules:
 - apiGroups:
@@ -28649,6 +28865,7 @@ rules:
   - orders/status
   verbs:
   - update
+  - patch
 - apiGroups:
   - acme.cert-manager.io
   resources:
@@ -28704,7 +28921,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
     rbac.authorization.k8s.io/aggregate-to-edit: "true"
   name: cert-manager-edit
@@ -28720,6 +28937,12 @@ rules:
   - delete
   - deletecollection
   - patch
+  - update
+- apiGroups:
+  - cert-manager.io
+  resources:
+  - certificates/status
+  verbs:
   - update
 - apiGroups:
   - acme.cert-manager.io
@@ -28741,7 +28964,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
     rbac.authorization.k8s.io/aggregate-to-edit: "true"
     rbac.authorization.k8s.io/aggregate-to-view: "true"
@@ -28775,7 +28998,7 @@ metadata:
     app.kubernetes.io/component: webhook
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: webhook
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-webhook:subjectaccessreviews
 rules:
 - apiGroups:
@@ -28909,7 +29132,7 @@ metadata:
     app.kubernetes.io/component: webhook
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: webhook
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-webhook:dynamic-serving
   namespace: cert-manager
 roleRef:
@@ -28930,7 +29153,7 @@ metadata:
     app.kubernetes.io/component: cainjector
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-cainjector:leaderelection
   namespace: kube-system
 roleRef:
@@ -28950,7 +29173,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager:leaderelection
   namespace: kube-system
 roleRef:
@@ -28986,7 +29209,7 @@ metadata:
     app.kubernetes.io/component: cainjector
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-cainjector
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -29005,7 +29228,7 @@ metadata:
     app.kubernetes.io/component: cert-manager
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-approve:cert-manager-io
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -29024,7 +29247,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-certificates
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -29043,7 +29266,7 @@ metadata:
     app.kubernetes.io/component: cert-manager
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-certificatesigningrequests
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -29062,7 +29285,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-challenges
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -29081,7 +29304,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-clusterissuers
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -29100,7 +29323,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-ingress-shim
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -29119,7 +29342,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-issuers
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -29138,7 +29361,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-controller-orders
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -29157,7 +29380,7 @@ metadata:
     app.kubernetes.io/component: webhook
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: webhook
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-webhook:subjectaccessreviews
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -29273,7 +29496,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager
   namespace: cert-manager
 spec:
@@ -29296,7 +29519,7 @@ metadata:
     app.kubernetes.io/component: webhook
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: webhook
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-webhook
   namespace: cert-manager
 spec:
@@ -29454,7 +29677,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager
   namespace: cert-manager
 spec:
@@ -29475,7 +29698,7 @@ spec:
         app.kubernetes.io/component: controller
         app.kubernetes.io/instance: cert-manager
         app.kubernetes.io/name: cert-manager
-        app.kubernetes.io/version: v1.7.2
+        app.kubernetes.io/version: v1.8.0
     spec:
       containers:
       - args:
@@ -29488,12 +29711,17 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: quay.io/jetstack/cert-manager-controller:v1.7.2
+        image: quay.io/jetstack/cert-manager-controller:v1.8.0
         imagePullPolicy: IfNotPresent
         name: cert-manager
         ports:
         - containerPort: 9402
+          name: http-metrics
           protocol: TCP
+        securityContext:
+          allowPrivilegeEscalation: false
+      nodeSelector:
+        kubernetes.io/os: linux
       securityContext:
         runAsNonRoot: true
       serviceAccountName: cert-manager
@@ -29506,7 +29734,7 @@ metadata:
     app.kubernetes.io/component: cainjector
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-cainjector
   namespace: cert-manager
 spec:
@@ -29523,7 +29751,7 @@ spec:
         app.kubernetes.io/component: cainjector
         app.kubernetes.io/instance: cert-manager
         app.kubernetes.io/name: cainjector
-        app.kubernetes.io/version: v1.7.2
+        app.kubernetes.io/version: v1.8.0
     spec:
       containers:
       - args:
@@ -29534,9 +29762,13 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: quay.io/jetstack/cert-manager-cainjector:v1.7.2
+        image: quay.io/jetstack/cert-manager-cainjector:v1.8.0
         imagePullPolicy: IfNotPresent
         name: cert-manager
+        securityContext:
+          allowPrivilegeEscalation: false
+      nodeSelector:
+        kubernetes.io/os: linux
       securityContext:
         runAsNonRoot: true
       serviceAccountName: cert-manager-cainjector
@@ -29549,7 +29781,7 @@ metadata:
     app.kubernetes.io/component: webhook
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: webhook
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-webhook
   namespace: cert-manager
 spec:
@@ -29566,7 +29798,7 @@ spec:
         app.kubernetes.io/component: webhook
         app.kubernetes.io/instance: cert-manager
         app.kubernetes.io/name: webhook
-        app.kubernetes.io/version: v1.7.2
+        app.kubernetes.io/version: v1.8.0
     spec:
       containers:
       - args:
@@ -29580,7 +29812,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: quay.io/jetstack/cert-manager-webhook:v1.7.2
+        image: quay.io/jetstack/cert-manager-webhook:v1.8.0
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
@@ -29607,6 +29839,10 @@ spec:
           periodSeconds: 5
           successThreshold: 1
           timeoutSeconds: 1
+        securityContext:
+          allowPrivilegeEscalation: false
+      nodeSelector:
+        kubernetes.io/os: linux
       securityContext:
         runAsNonRoot: true
       serviceAccountName: cert-manager-webhook
@@ -29766,7 +30002,7 @@ metadata:
     app.kubernetes.io/component: webhook
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: webhook
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-webhook
 webhooks:
 - admissionReviewVersions:
@@ -29803,7 +30039,7 @@ metadata:
     app.kubernetes.io/component: webhook
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: webhook
-    app.kubernetes.io/version: v1.7.2
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-webhook
 webhooks:
 - admissionReviewVersions:
