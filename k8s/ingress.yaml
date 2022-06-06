@@ -1,0 +1,17 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: gce
+    kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.global-static-ip-name: affable
+  name: load-balancer-affable
+spec:
+  tls:
+  - secretName: affable-www
+  defaultBackend:
+    service:
+      name: affable
+      port:
+        number: 80
