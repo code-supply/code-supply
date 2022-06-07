@@ -11,7 +11,7 @@ spec:
     solvers:
     - http01:
         ingress:
-          name: affable
+          name: load-balancer-affable
     - dns01:
         cloudDNS:
           project: code-supply

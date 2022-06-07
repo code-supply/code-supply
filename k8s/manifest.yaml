@@ -29927,7 +29927,7 @@ spec:
     solvers:
     - http01:
         ingress:
-          name: affable
+          name: load-balancer-affable
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -29957,7 +29957,7 @@ spec:
     solvers:
     - http01:
         ingress:
-          name: affable
+          name: load-balancer-affable
     - dns01:
         cloudDNS:
           project: code-supply
