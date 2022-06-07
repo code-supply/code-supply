@@ -91,9 +91,9 @@ defmodule Affable.Domains do
         "issuerRef" => %{
           "name" => "letsencrypt-production",
           "kind" => "ClusterIssuer"
-        }
-      },
-      "dnsNames" => [domain_name, www_flipped(domain_name)]
+        },
+        "dnsNames" => [domain_name, www_flipped(domain_name)]
+      }
     }
   end
 
