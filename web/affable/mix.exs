@@ -48,10 +48,10 @@ defmodule Affable.MixProject do
        github: "phoenixframework/phoenix_live_reload", ref: "2f6e908", only: :dev},
       {:phoenix_live_dashboard, "~> 0.6"},
       {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 0.5"},
+      {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"},
+      {:plug_cowboy, "~> 2.5"},
       {:phx_gen_auth, "~> 0.4.0", only: [:dev], runtime: false},
       {:httpoison, "~> 1.7"},
       {:bamboo, "~> 2.2.0"},
@@ -65,7 +65,8 @@ defmodule Affable.MixProject do
       {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
-      {:earmark, "~> 1.4.15"}
+      {:earmark, "~> 1.4.15"},
+      {:k8s, "~> 1.1"}
     ]
   end
 
