@@ -66,7 +66,8 @@ defmodule Affable.MixProject do
       {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:earmark, "~> 1.4.15"},
-      {:k8s, "~> 1.1"}
+      {:k8s, "~> 1.1"},
+      {:hammox, "~> 0.6", only: :test}
     ]
   end
 

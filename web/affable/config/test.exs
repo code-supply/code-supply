@@ -25,6 +25,9 @@ config :affable, AffableWeb.Endpoint,
 
 config :affable, Affable.Mailer, adapter: Bamboo.TestAdapter
 
+config :affable,
+  k8s: Affable.MockK8s
+
 # capture all logs
 config :logger, level: :debug
 # but only show warnings and up on the console

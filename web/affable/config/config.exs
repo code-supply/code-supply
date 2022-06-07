@@ -9,6 +9,7 @@ import Config
 
 config :affable,
   ecto_repos: [Affable.Repo],
+  k8s: Affable.RealK8s,
   id_salt: "replacedinrelease",
   pubsub_topic_requests: "devsiterequests",
   bucket_name: "affable-uploads-dev",

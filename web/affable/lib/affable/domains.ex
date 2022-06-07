@@ -70,10 +70,38 @@ defmodule Affable.Domains do
       where: not like(d.name, ^affable_name)
     )
     |> Repo.get_by!(id: domain_id)
+    |> Repo.preload(:site)
     |> Repo.delete!()
   end
 
   def change_domain(%Domain{} = domain, attrs \\ %{}) do
     Domain.changeset(domain, attrs)
+  end
+
+  def k8s_certificate(cert_name, domain_name) do
+    %{
+      "apiVersion" => "cert-manager.io/v1",
+      "kind" => "Certificate",
+      "metadata" => %{
+        "name" => cert_name,
+        "namespace" => "affable"
+      },
+      "spec" => %{
+        "secretName" => "tls-#{cert_name}",
+        "issuerRef" => %{
+          "name" => "letsencrypt-production",
+          "kind" => "ClusterIssuer"
+        }
+      },
+      "dnsNames" => [domain_name, www_flipped(domain_name)]
+    }
+  end
+
+  defp www_flipped("www." <> rest) do
+    rest
+  end
+
+  defp www_flipped(domain) do
+    "www." <> domain
   end
 end

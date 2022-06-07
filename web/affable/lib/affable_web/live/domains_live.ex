@@ -46,6 +46,18 @@ defmodule AffableWeb.DomainsLive do
 
     case Domains.create_domain(site, %{name: new_name}) do
       {:ok, new_domain} ->
+        case k8s().deploy(Domains.k8s_certificate(site.internal_name, new_domain.name)) do
+          {:ok, _} ->
+            Logger.info(
+              "Successfully created certificate for #{site.internal_name} / #{new_domain.name}"
+            )
+
+          {:error, msg} ->
+            Logger.error(
+              "Failed to create certificate for #{site.internal_name} / #{new_domain.name}: #{msg}"
+            )
+        end
+
         {:noreply, update(socket, :domains, &Domains.list_insert(&1, new_domain))}
 
       {:error, changeset} ->
@@ -59,7 +71,9 @@ defmodule AffableWeb.DomainsLive do
         %{"id" => id},
         %{assigns: %{user: user}} = socket
       ) do
-    Domains.delete_domain!(user, id)
+    domain = Domains.delete_domain!(user, id)
+
+    k8s().undeploy(Domains.k8s_certificate(domain.site.internal_name, domain.name))
 
     {:noreply,
      update(socket, :domains, fn domains ->
@@ -71,5 +85,9 @@ defmodule AffableWeb.DomainsLive do
          end
        end)
      end)}
+  end
+
+  defp k8s() do
+    Application.get_env(:affable, :k8s)
   end
 end
