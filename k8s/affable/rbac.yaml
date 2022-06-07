@@ -5,11 +5,12 @@ metadata:
   name: affable
 rules:
 - apiGroups:
-  - site-operator.code.supply
+  - cert-manager.io
   resources:
-  - affiliatesites
+  - certificates
   verbs:
-  - "*"
+  - create
+  - delete
 - apiGroups:
   - ""
   resources:
