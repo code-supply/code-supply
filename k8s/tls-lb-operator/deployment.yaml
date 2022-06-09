@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tls-lb-operator
+spec:
+  template:
+    metadata:
+    spec:
+      serviceAccountName: tls-lb-operator
+      containers:
+      - name: tls-lb-operator
+        image: tls-lb-operator:0

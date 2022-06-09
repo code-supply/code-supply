@@ -8,3 +8,4 @@ resources:
 - affable
 - imgproxy
 - letsencrypt
+- tls-lb-operator

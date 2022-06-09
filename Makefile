@@ -20,6 +20,31 @@ diff: \
 	kubectl diff \
 		-f k8s/manifest.yaml
 
+operators/tls-lb-operator/VERSION:
+	git rev-parse --short HEAD > $@
+
+operators/tls-lb-operator/VERSION_BUILT: operators/tls-lb-operator/VERSION
+	docker build -t eu.gcr.io/code-supply/tls-lb-operator:$$(cat $<) operators/tls-lb-operator
+	cp $< $@
+
+operators/tls-lb-operator/VERSION_PUSHED: operators/tls-lb-operator/VERSION_BUILT
+	docker push eu.gcr.io/code-supply/tls-lb-operator:$$(cat $<)
+	cp $< $@
+
+k8s/tls-lb-operator/version.yaml: operators/tls-lb-operator/VERSION_PUSHED
+	cd k8s/tls-lb-operator && \
+		kustomize edit set image tls-lb-operator=eu.gcr.io/code-supply/tls-lb-operator:$$(cat ../../$<)
+	> $@
+	echo "apiVersion: apps/v1" >> $@
+	echo "kind: Deployment" >> $@
+	echo "metadata:" >> $@
+	echo "  name: tls-lb-operator" >> $@
+	echo "spec:" >> $@
+	echo "  template:" >> $@
+	echo "    metadata:" >> $@
+	echo "      labels:" >> $@
+	echo "        version: \"$$(cat $<)\"" >> $@
+
 web/affable/VERSION:
 	git rev-parse --short HEAD > $@
 

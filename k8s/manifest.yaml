@@ -28218,6 +28218,14 @@ metadata:
   namespace: affable
 ---
 apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: tls-lb-operator
+  name: tls-lb-operator
+  namespace: affable
+---
+apiVersion: v1
 automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
@@ -29126,6 +29134,22 @@ rules:
   - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app: tls-lb-operator
+  name: watch-secrets
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   labels:
@@ -29423,6 +29447,21 @@ subjects:
   name: prometheus-operator
   namespace: prometheus-operator
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: tls-lb-operator
+  name: tls-lb-operator-can-watch-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: watch-secrets
+subjects:
+- kind: ServiceAccount
+  name: tls-lb-operator
+  namespace: affable
+---
 apiVersion: v1
 data: null
 kind: ConfigMap
@@ -29671,6 +29710,28 @@ spec:
             cpu: 5m
             memory: 100Mi
       serviceAccountName: imgproxy
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tls-lb-operator
+  name: tls-lb-operator
+  namespace: affable
+spec:
+  selector:
+    matchLabels:
+      app: tls-lb-operator
+  template:
+    metadata:
+      labels:
+        app: tls-lb-operator
+        version: 9a75b04
+    spec:
+      containers:
+      - image: eu.gcr.io/code-supply/tls-lb-operator:9a75b04
+        name: tls-lb-operator
+      serviceAccountName: tls-lb-operator
 ---
 apiVersion: apps/v1
 kind: Deployment
