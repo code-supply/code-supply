@@ -1,18 +1,5 @@
 defmodule TlsLbOperator do
-  @moduledoc """
-  Documentation for `TlsLbOperator`.
-  """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> TlsLbOperator.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def main(_args) do
+    IO.puts("Hello, World!")
   end
 end
