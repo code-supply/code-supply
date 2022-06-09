@@ -24,6 +24,7 @@ operators/tls-lb-operator/VERSION:
 	git rev-parse --short HEAD > $@
 
 operators/tls-lb-operator/VERSION_BUILT: operators/tls-lb-operator/VERSION
+	cd operators/tls-lb-operator/; mix test
 	docker build -t eu.gcr.io/code-supply/tls-lb-operator:$$(cat $<) operators/tls-lb-operator
 	cp $< $@
 
