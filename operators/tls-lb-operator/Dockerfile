@@ -1,0 +1,2 @@
+FROM flant/shell-operator:latest@sha256:d1fe58aec7d9b5ddbbc619831274dd634c7e6c8a4ed3e8ac06291521372d1b51
+ADD secrets-hook /hooks
