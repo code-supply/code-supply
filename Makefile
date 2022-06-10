@@ -3,7 +3,6 @@ affable_version = k8s/affable/version.yaml
 
 k8s/manifest.yaml: \
 	k8s/kustomization.yaml \
-	k8s/ingress.yaml \
 	k8s/*/*.yaml
 	kustomize build k8s > $@
 

@@ -30062,34 +30062,6 @@ spec:
   serviceMonitorSelector: {}
   version: v2.23.0
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.allow-http: "false"
-    kubernetes.io/ingress.class: gce
-    kubernetes.io/ingress.global-static-ip-name: affable
-  name: load-balancer-affable
-spec:
-  defaultBackend:
-    service:
-      name: affable
-      port:
-        number: 80
-  rules:
-  - host: images.affable.app
-    http:
-      paths:
-      - backend:
-          service:
-            name: imgproxy
-            port:
-              number: 80
-        path: /*
-        pathType: ImplementationSpecific
-  tls:
-  - secretName: affable-www
----
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
