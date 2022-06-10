@@ -21,8 +21,4 @@ RUN apk add --no-cache erlang
 
 WORKDIR /app
 
-RUN chown nobody:nobody /app
-
-USER nobody:nobody
-
-COPY --from=build --chown=nobody:nobody /app/tls_lb_operator hooks/
+COPY --from=build /app/tls_lb_operator hooks/
