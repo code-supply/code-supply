@@ -23,7 +23,8 @@ defmodule TlsLbOperator.MixProject do
   defp deps do
     [
       {:jason, "~> 1.3"},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:k8s, "~> 1.1"}
     ]
   end
 
