@@ -20,7 +20,8 @@ defmodule TlsLbOperator.Runner do
       "apiVersion" => "networking.k8s.io/v1",
       "kind" => "Ingress",
       "metadata" => %{
-        "name" => "load-balancer-affable"
+        "name" => "load-balancer-affable",
+        "namespace" => "affable"
       },
       "spec" => %{
         "tls" =>
@@ -41,7 +42,8 @@ defmodule TlsLbOperator.Runner do
   #         "kubernetes.io/ingress.allow-http" => "false",
   #         "kubernetes.io/ingress.global-static-ip-name" => "affable"
   #       },
-  #       "name" => "load-balancer-affable"
+  #       "name" => "load-balancer-affable",
+  #       "namespace" => "affable"
   #     },
   #     "spec" => %{
   #       "tls" => [
