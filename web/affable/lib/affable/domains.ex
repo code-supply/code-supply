@@ -6,8 +6,14 @@ defmodule Affable.Domains do
   alias Affable.Sites.Site
   alias Affable.Sites.SiteMember
 
-  def servable?(name) do
-    Repo.get_by(Domain, name: name)
+  def by_name(name) do
+    without_www = String.replace_leading(name, "www.", "")
+    with_www = "www.#{without_www}"
+
+    Repo.one(
+      from d in Domain,
+        where: d.name == ^with_www or d.name == ^without_www
+    )
   end
 
   def affable_suffix() do

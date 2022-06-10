@@ -5,6 +5,6 @@ defmodule AffableWeb.Origin do
 
   def check_origin(%URI{host: host}) do
     host in ["localhost", @control_plane_host] or
-      Domains.servable?(host)
+      Domains.by_name(host) != nil
   end
 end

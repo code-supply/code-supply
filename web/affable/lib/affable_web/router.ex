@@ -15,6 +15,10 @@ defmodule AffableWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :www_redirect do
+    plug AffableWeb.Plugs.WwwRedirect
+  end
+
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
@@ -99,7 +103,7 @@ defmodule AffableWeb.Router do
   end
 
   scope path: "/", alias: AffableWeb do
-    pipe_through([:site_browser])
+    pipe_through([:site_browser, :www_redirect])
     live("/*path", PageLive, :index)
   end
 end
