@@ -10,6 +10,6 @@ commonLabels:
 images:
 - name: tls-lb-operator
   newName: eu.gcr.io/code-supply/tls-lb-operator
-  newTag: b4f88f0
+  newTag: bf5ac78
 patchesStrategicMerge:
 - version.yaml
