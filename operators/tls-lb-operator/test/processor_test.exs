@@ -35,6 +35,23 @@ defmodule ProcessorTest do
            |> process() == {:ok, {:replace_certs, ["tls-foo"]}}
   end
 
+  test "when doing something unrecognised, just logs" do
+    assert [
+             %{
+               "binding" => "kubernetes",
+               "type" => "UnknownThingy"
+             }
+           ]
+           |> process() ==
+             {:ok, :unrecognised_binding_context,
+              inspect([
+                %{
+                  "binding" => "kubernetes",
+                  "type" => "UnknownThingy"
+                }
+              ])}
+  end
+
   test "when told of a new cert secret, adds to load balancer" do
     assert [
              %{
