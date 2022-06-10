@@ -1,7 +1,9 @@
 defmodule Affable.PagesTest do
   use Affable.DataCase, async: true
-  alias Affable.Sites.Page
+
   alias Affable.Pages
+  alias Affable.Sites.Page
+
   import Affable.SitesFixtures
 
   @valid_page %Page{title: "hi", path: "/"}
@@ -10,15 +12,15 @@ defmodule Affable.PagesTest do
     site = site_fixture()
     [homepage] = site.pages
     [domain] = site.domains
-    page = Pages.get(domain.name, "/")
+    page = Pages.get_for_route(domain.name, "/")
 
     assert homepage.id == page.id
 
-    assert nil == Pages.get(domain.name, "/not-a-path")
+    assert nil == Pages.get_for_route(domain.name, "/not-a-path")
   end
 
   test "attempting to retrieve with non-existent host returns nil" do
-    assert nil == Pages.get("not-a-real-host", "/")
+    assert nil == Pages.get_for_route("not-a-real-host", "/")
   end
 
   test "paths must begin with a slash" do

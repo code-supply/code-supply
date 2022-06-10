@@ -4,7 +4,7 @@ defmodule Affable.Pages do
   alias Affable.Repo
   alias Affable.Sites.Page
 
-  def get(host, path) do
+  def get_for_route(host, path) do
     Repo.one(
       from(p in Page,
         join: s in assoc(p, :site),

@@ -16,7 +16,7 @@ defmodule AffableWeb.PageLive do
   def handle_params(_params, uri, socket) do
     %URI{host: host, path: path} = URI.parse(uri)
 
-    case Pages.get(host, path) do
+    case Pages.get_for_route(host, path) do
       nil ->
         raise MissingPage
 
