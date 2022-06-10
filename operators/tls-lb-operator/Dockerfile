@@ -21,4 +21,4 @@ RUN apk add --no-cache erlang
 
 WORKDIR /app
 
-COPY --from=build /app/tls_lb_operator hooks/
+COPY --from=build /app/tls_lb_operator /hooks/
