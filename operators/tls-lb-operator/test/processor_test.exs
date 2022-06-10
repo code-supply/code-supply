@@ -48,7 +48,7 @@ defmodule ProcessorTest do
                [%{"binding" => "kubernetes", "type" => "UnknownThingy"}]}}
   end
 
-  test "when told of a new cert secret, adds to load balancer" do
+  test "when told of a new cert secret, replaces certs in the load balancer" do
     assert [
              %{
                "binding" => "kubernetes",
@@ -61,10 +61,32 @@ defmodule ProcessorTest do
                    "name" => "some-tls",
                    "namespace" => "affable"
                  }
+               },
+               "snapshots" => %{
+                 "affable secrets" => [
+                   %{
+                     "object" => %{
+                       "type" => "kubernetes.io/tls",
+                       "metadata" => %{
+                         "name" => "existing-thing",
+                         "namespace" => "affable"
+                       }
+                     }
+                   },
+                   %{
+                     "object" => %{
+                       "type" => "Opaque",
+                       "metadata" => %{
+                         "name" => "no-thanks",
+                         "namespace" => "affable"
+                       }
+                     }
+                   }
+                 ]
                }
              }
            ]
-           |> process() == {:ok, {:add_cert, "some-tls"}}
+           |> process() == {:ok, {:replace_certs, ["existing-thing", "some-tls"]}}
   end
 
   test "when told of a new non-cert secret, does nothing" do
@@ -86,7 +108,7 @@ defmodule ProcessorTest do
            |> process() == {:ok, :nothing_to_do}
   end
 
-  test "when told of a cert secret deletion, updates the ingress" do
+  test "when told of a cert secret deletion, replaces certs in the load balancer" do
     assert [
              %{
                "binding" => "kubernetes",
@@ -99,10 +121,41 @@ defmodule ProcessorTest do
                    "name" => "some-tls",
                    "namespace" => "affable"
                  }
+               },
+               "snapshots" => %{
+                 "affable secrets" => [
+                   %{
+                     "object" => %{
+                       "type" => "kubernetes.io/tls",
+                       "metadata" => %{
+                         "name" => "existing-thing",
+                         "namespace" => "affable"
+                       }
+                     }
+                   },
+                   %{
+                     "object" => %{
+                       "type" => "Opaque",
+                       "metadata" => %{
+                         "name" => "no-thanks",
+                         "namespace" => "affable"
+                       }
+                     }
+                   },
+                   %{
+                     "object" => %{
+                       "type" => "kubernetes.io/tls",
+                       "metadata" => %{
+                         "name" => "some-tls",
+                         "namespace" => "affable"
+                       }
+                     }
+                   }
+                 ]
                }
              }
            ]
-           |> process() == {:ok, {:remove_cert, "some-tls"}}
+           |> process() == {:ok, {:replace_certs, ["existing-thing"]}}
   end
 
   test "when told of a non-cert secret deletion, does nothing" do

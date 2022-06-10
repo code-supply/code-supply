@@ -8,14 +8,6 @@ defmodule TlsLbOperator.Runner do
     IO.puts("Successfully replaced certs in LB: #{inspect(names)}")
   end
 
-  def run({:ok, {:add_cert, name}}) do
-    {:ok, conn} = K8s.Conn.from_service_account()
-    ingress = patch_replace([name])
-    operation = K8s.Client.patch(ingress)
-    {:ok, _patched} = K8s.Client.run(conn, operation)
-    IO.puts("Successfully added cert to LB: #{inspect(name)}")
-  end
-
   def run({:ok, operation}) do
     IO.inspect(operation)
     :ok
