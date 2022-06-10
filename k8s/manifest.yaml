@@ -29732,10 +29732,10 @@ spec:
     metadata:
       labels:
         app: tls-lb-operator
-        version: 6f52ce0
+        version: 042ce98
     spec:
       containers:
-      - image: eu.gcr.io/code-supply/tls-lb-operator:6f52ce0
+      - image: eu.gcr.io/code-supply/tls-lb-operator:042ce98
         name: tls-lb-operator
       serviceAccountName: tls-lb-operator
 ---
