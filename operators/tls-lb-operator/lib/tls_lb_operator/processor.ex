@@ -49,6 +49,6 @@ defmodule TlsLbOperator.Processor do
   end
 
   def process(context) do
-    {:ok, :unrecognised_binding_context, inspect(context)}
+    {:ok, {:unrecognised_binding_context, context}}
   end
 end
