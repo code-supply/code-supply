@@ -1,13 +1,19 @@
 defmodule TlsLbOperator.Runner do
   @spec run({:ok, TlsLbOperator.Processor.operation()}) :: :ok
   def run({:ok, {:replace_certs, names}}) do
-    IO.puts("Replacing certs: #{inspect(names)}")
     {:ok, conn} = K8s.Conn.from_service_account()
     ingress = patch_replace(names)
     operation = K8s.Client.patch(ingress)
-    {:ok, patched} = K8s.Client.run(conn, operation)
-    IO.puts("Success! #{inspect(patched)}")
-    :ok
+    {:ok, _patched} = K8s.Client.run(conn, operation)
+    IO.puts("Successfully replaced certs in LB: #{inspect(names)}")
+  end
+
+  def run({:ok, {:add_cert, name}}) do
+    {:ok, conn} = K8s.Conn.from_service_account()
+    ingress = patch_replace([name])
+    operation = K8s.Client.patch(ingress)
+    {:ok, _patched} = K8s.Client.run(conn, operation)
+    IO.puts("Successfully added cert to LB: #{inspect(name)}")
   end
 
   def run({:ok, operation}) do
