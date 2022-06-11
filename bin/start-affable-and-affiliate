@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-cwd="$(cd "$(dirname "$0")" && pwd)"
-
-tmux \
-    new-session "cd $cwd/../web/affable && iex --sname affable -S mix phx.server; bash" \; \
-    split-window -h "sleep 2; cd $cwd/../web/affiliate && PORT=4001 iex --sname affiliate -S mix phx.server; bash"
