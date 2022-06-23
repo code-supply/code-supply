@@ -6,6 +6,14 @@ defmodule AffableWeb.WwwRedirectTest do
   alias Affable.Domains
   alias AffableWeb.Plugs.WwwRedirect
 
+  test "redirected to www.affable.app if on affable.app" do
+    assert redirected_to(
+             build_conn(:get, "https://affable.app/something")
+             |> WwwRedirect.call(%{}),
+             :moved_permanently
+           ) =~ "https://www.affable.app/something"
+  end
+
   test "redirected when stored domain has www, but requested without" do
     Domains.create_domain(site_fixture(), %{name: "www.poop.com"})
 
