@@ -28,7 +28,7 @@ config :affable, AffableWeb.Endpoint,
 config :libcluster, topologies: []
 
 config :tailwind,
-  version: "3.0.15",
+  version: "3.1.4",
   default: [
     args: ~w(
         --config=tailwind.config.js
