@@ -40,7 +40,6 @@ defmodule Affable.MixProject do
       {:ecto_sql, "~> 3.8"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_live_view, "~> 0.17.0"},
-      {:floki, ">= 0.31.0", only: :test},
       {:gcs_signed_url,
        github: "alexandrubagu/gcs_signed_url", ref: "56b3c0c531151c2b69ee54b3cc12957b6d7ab732"},
       {:phoenix_html, "~> 3.0"},
@@ -67,7 +66,8 @@ defmodule Affable.MixProject do
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:earmark, "~> 1.4.15"},
       {:k8s, "~> 1.1"},
-      {:hammox, "~> 0.6", only: :test}
+      {:hammox, "~> 0.6", only: :test},
+      {:floki, "~> 0.33.0"}
     ]
   end
 
