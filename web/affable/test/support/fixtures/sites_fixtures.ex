@@ -13,7 +13,6 @@ defmodule Affable.SitesFixtures do
   def unpersisted_site_fixture() do
     %Site{
       latest_publication: %Publication{},
-      layout: nil,
       pages: [%Page{}]
     }
   end

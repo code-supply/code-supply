@@ -104,6 +104,6 @@ defmodule AffableWeb.Router do
 
   scope path: "/", alias: AffableWeb do
     pipe_through([:site_browser, :www_redirect])
-    live("/*path", PageLive, :index)
+    get("/*path", PageController, :show)
   end
 end

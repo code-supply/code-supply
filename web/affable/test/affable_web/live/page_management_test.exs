@@ -47,9 +47,6 @@ defmodule AffableWeb.PageManagementTest do
 
     id = new_page(view, site)
 
-    assert view
-           |> has_element?("#no-layout")
-
     view
     |> element(select_main_site_tab(), "Site")
     |> render_click()
@@ -87,33 +84,6 @@ defmodule AffableWeb.PageManagementTest do
 
     assert {:error, {:live_redirect, %{to: ^expected_redirect_path}}} =
              live(conn, Routes.editor_path(conn, :edit, site.id, id) |> control_plane_path())
-  end
-
-  test "can add a section, set its attributes and delete it", %{
-    conn: conn,
-    site: site,
-    page: page
-  } do
-    {:ok, view, _html} = live(conn, path(conn, site))
-
-    view
-    |> element("#new-section")
-    |> render_click()
-
-    view
-    |> change_form(page, page: %{sections: ["0": %{name: "my-new-name"}]})
-    |> render_change()
-
-    assert view
-           |> element("#page-#{page.id}_sections_0_name")
-           |> render() =~ "my-new-name"
-
-    view
-    |> element(".delete-section")
-    |> render_click()
-
-    refute view
-           |> has_element?("#page-#{page.id}_sections_0_name")
   end
 
   test "invalid page attributes cause errors to be shown / cleared", %{

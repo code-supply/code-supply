@@ -4,8 +4,6 @@ defmodule AffableWeb.AssetsLiveTest do
 
   alias Affable.Accounts.User
   alias Affable.Sites
-  alias Affable.Sections
-  alias Affable.Repo
 
   @content File.read!("test/support/fixtures/tiny.png")
 
@@ -105,25 +103,6 @@ defmodule AffableWeb.AssetsLiveTest do
         type: "image/png"
       }
     ])
-  end
-
-  test "informs the user when an asset is in use", %{conn: conn, user: user} do
-    user = user |> Repo.preload(sites: [assets: [], pages: [:sections]])
-    [site] = user.sites
-    [asset | _] = site.assets
-    [page] = site.pages
-    {:ok, page} = Sites.add_page_section(page, user)
-    [section] = page.sections
-
-    {:ok, _section} = Sections.update(section, %{image_id: asset.id})
-
-    {:ok, view, _html} = live(conn, path(conn))
-
-    refute view
-           |> has_element?("#delete-asset-#{asset.id}")
-
-    assert view
-           |> has_element?("#asset-in-use-#{asset.id}")
   end
 
   defp path(conn) do

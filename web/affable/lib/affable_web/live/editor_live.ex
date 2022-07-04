@@ -5,9 +5,7 @@ defmodule AffableWeb.EditorLive do
 
   alias Affable.Accounts
   alias Affable.Sites
-  alias Affable.Sites.{Page, Section, Site}
-
-  import AffableWeb.EditorHelpers
+  alias Affable.Sites.{Page, Site}
 
   def mount(%{"id" => id}, %{"user_token" => token}, socket) do
     user = Accounts.get_user_by_session_token(token)
@@ -34,30 +32,13 @@ defmodule AffableWeb.EditorLive do
   end
 
   def handle_params(
-        %{"id" => _id, "layout_id" => layout_id, "section_id" => section_id},
-        _uri,
-        socket
-      ) do
-    {layout_id, _junk} = Integer.parse(layout_id)
-    {:noreply, assign(socket, layout_id: layout_id, section_id: section_id)}
-  end
-
-  def handle_params(
-        %{"id" => _id, "layout_id" => layout_id},
-        _uri,
-        socket
-      ) do
-    {:noreply, assign(socket, layout_id: layout_id, section_id: nil)}
-  end
-
-  def handle_params(
         %{"id" => _id},
         _uri,
         %{assigns: %{preview_url: preview_url, pages: pages}} = socket
       ) do
     {:noreply,
      socket
-     |> assign(page: nil, section_id: nil, layout_id: nil)
+     |> assign(page: nil)
      |> assign_preview_url(preview_url, Sites.default_path(for {p, _} <- pages, do: p.path))}
   end
 
@@ -90,16 +71,6 @@ defmodule AffableWeb.EditorLive do
       |> assign_page(nil)
       |> push_patch(to: Routes.editor_path(socket, :edit, site.id))
     )
-  end
-
-  def handle_info(
-        {:deleted_section, %Section{page_id: page_id}},
-        %{assigns: %{changeset: %{data: site}}} = socket
-      ) do
-    site = Sites.get_site!(site.id)
-    [page] = site.pages |> Enum.filter(&(&1.id == page_id))
-
-    reset_site(site, assign_page(socket, page))
   end
 
   def handle_info(
@@ -162,7 +133,6 @@ defmodule AffableWeb.EditorLive do
       user: user,
       site_id: id,
       pages: Enum.map(site.pages, fn page -> {page, Page.changeset(page, %{})} end),
-      layout_pairs: Enum.map(site.layouts, &{&1.name, &1.id}),
       asset_pairs: Enum.map(site.assets, &{&1.name, &1.id}),
       changeset: Site.changeset(site, %{}),
       published: Sites.is_published?(site),
@@ -175,7 +145,6 @@ defmodule AffableWeb.EditorLive do
   defp reset_site(%Site{} = site, socket) do
     {:noreply,
      assign(socket,
-       layout_id: nil,
        changeset: Site.changeset(site, %{}),
        published: Sites.is_published?(site),
        pages:

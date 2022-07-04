@@ -5,10 +5,8 @@ defmodule Affable.SitesTest do
   import Affable.Sites.Raw
 
   alias Affable.Accounts.User
-  alias Affable.Assets.Asset
-  alias Affable.Layouts.Layout
   alias Affable.Sites
-  alias Affable.Sites.{Page, Section, Site, SiteMember}
+  alias Affable.Sites.{Page, Site, SiteMember}
   alias Affable.Domains.Domain
 
   describe "pages" do
@@ -31,22 +29,6 @@ defmodule Affable.SitesTest do
       {:ok, page} = Sites.update_page(page, %{title: "my new title"}, user)
 
       assert "my new title" == page.title
-    end
-
-    test "can add multiple sections and delete them" do
-      {page, user} = page_fixture()
-
-      {:ok, page} = Sites.add_page_section(page, user)
-
-      {:ok, page} = Sites.add_page_section(page, user)
-
-      assert ["untitled-section", "untitled-section-2"] == Enum.map(page.sections, & &1.name)
-
-      [first_section, _] = page.sections
-      Sites.delete_page_section(first_section.id, user)
-
-      %Site{pages: [%Page{sections: [section]}]} = Sites.get_site!(page.site_id)
-      assert section.name == "untitled-section-2"
     end
 
     test "updating a page with incorrect user is not allowed" do
@@ -81,94 +63,7 @@ defmodule Affable.SitesTest do
       assert %{"pages" => [%{"path" => "/contact"}]} =
                %{
                  unpersisted_site_fixture()
-                 | pages: [%Page{path: "/contact", sections: []}]
-               }
-               |> raw()
-    end
-
-    test "raw representation includes layout, sections and grid stuff" do
-      assert %{
-               "layout" => %{
-                 "grid_template_areas" => "head head\nnav main\nfooter footer",
-                 "grid_template_rows" => "50px 1fr 30px",
-                 "grid_template_columns" => "150px 1fr",
-                 "sections" => [
-                   %{},
-                   %{},
-                   %{},
-                   %{}
-                 ]
-               },
-               "pages" => [
-                 %{
-                   "grid_template_areas" => "head head\nnav main\nnav foot",
-                   "grid_template_rows" => "50px 1fr 30px",
-                   "grid_template_columns" => "150px 1fr",
-                   "sections" => [
-                     %{
-                       "name" => "my-section",
-                       "element" => "header",
-                       "background_colour" => "FF0000",
-                       "image_url" =>
-                         "https://images.affable.app/nosignature/fill/567/341/ce/0/plain/http://example.com/foo.jpg",
-                       "image_name" => "Image of a Foo"
-                     }
-                   ]
-                 }
-               ]
-             } =
-               %Site{
-                 unpersisted_site_fixture()
-                 | layout: %Layout{
-                     grid_template_areas: "head head\nnav main\nfooter footer",
-                     grid_template_rows: "50px 1fr 30px",
-                     grid_template_columns: "150px 1fr",
-                     sections: [
-                       %Section{
-                         name: "header",
-                         element: "header",
-                         background_colour: "FF0000",
-                         image: nil
-                       },
-                       %Section{
-                         name: "nav",
-                         element: "nav",
-                         background_colour: "FF0000",
-                         image: nil
-                       },
-                       %Section{
-                         name: "main",
-                         element: "main",
-                         background_colour: "FF0000",
-                         image: nil
-                       },
-                       %Section{
-                         name: "footer",
-                         element: "footer",
-                         background_colour: "FF0000",
-                         image: nil
-                       }
-                     ]
-                   },
-                   pages: [
-                     %Page{
-                       path: "/contact",
-                       grid_template_areas: "head head\nnav main\nnav foot",
-                       grid_template_rows: "50px 1fr 30px",
-                       grid_template_columns: "150px 1fr",
-                       sections: [
-                         %Section{
-                           name: "my-section",
-                           element: "header",
-                           background_colour: "FF0000",
-                           image: %Asset{
-                             url: "http://example.com/foo.jpg",
-                             name: "Image of a Foo"
-                           }
-                         }
-                       ]
-                     }
-                   ]
+                 | pages: [%Page{path: "/contact"}]
                }
                |> raw()
     end

@@ -5,7 +5,6 @@ defmodule Affable.Sites do
     Page,
     Publication,
     Raw,
-    Section,
     Site,
     SiteMember,
     TitleUtils
@@ -20,15 +19,13 @@ defmodule Affable.Sites do
 
   alias Ecto.Multi
 
-  @section_preloads [image: []]
-
   def update_page(%Page{} = page, attrs, %User{} = user) do
     with :ok <- must_be_site_member(user, page),
          {:ok, page} <-
            page
            |> Page.changeset(attrs)
            |> Repo.update() do
-      {:ok, page |> Repo.preload(page_preloads())}
+      {:ok, page}
     else
       err -> err
     end
@@ -50,7 +47,7 @@ defmodule Affable.Sites do
              path: TitleUtils.to_path(page_title)
            })
            |> Repo.insert() do
-      {:ok, page |> Repo.preload(page_preloads())}
+      {:ok, page}
     else
       err -> err
     end
@@ -69,42 +66,6 @@ defmodule Affable.Sites do
   def page_ids(%Site{} = site) do
     for p <- Repo.all(Ecto.assoc(site, :pages) |> order_by(:id)) do
       p.id
-    end
-  end
-
-  def add_page_section(page, user) do
-    update_page(
-      page,
-      %{
-        sections:
-          Enum.map(page.sections, &Map.from_struct/1) ++
-            [
-              %{
-                name:
-                  TitleUtils.generate(
-                    for(s <- page.sections, do: s.name),
-                    "untitled-section",
-                    "untitled-section"
-                  )
-                  |> Enum.join("-"),
-                image: nil
-              }
-            ]
-      },
-      user
-    )
-  end
-
-  def delete_page_section(id, user) do
-    %Section{page_id: page_id} = section = Repo.get(Section, id)
-
-    page = Repo.get!(Page, page_id)
-
-    with :ok <- must_be_site_member(user, page),
-         {:ok, section} <- Repo.delete(section) do
-      {:ok, section}
-    else
-      err -> err
     end
   end
 
@@ -214,8 +175,6 @@ defmodule Affable.Sites do
     site
     |> Repo.preload(
       [
-        layouts: [],
-        layout: [sections: @section_preloads],
         pages: page_query()
       ],
       attrs
@@ -223,11 +182,7 @@ defmodule Affable.Sites do
   end
 
   defp page_query() do
-    from p in Page, order_by: p.id, preload: ^page_preloads()
-  end
-
-  defp page_preloads() do
-    [sections: @section_preloads]
+    from p in Page, order_by: p.id
   end
 
   def unshared(user) do

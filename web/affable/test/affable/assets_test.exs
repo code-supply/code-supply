@@ -6,25 +6,13 @@ defmodule Affable.AssetsTest do
   alias Affable.Assets
   alias Affable.Assets.Asset
   alias Affable.Accounts.User
-  alias Affable.Sites.{Page, Site, Section}
+  alias Affable.Sites.Site
 
   setup do
     %{wrong_user: %User{id: 9999}}
   end
 
   describe "assets" do
-    test "can determine if it's in use by the site" do
-      refute Assets.in_use?(
-               %Asset{id: 1},
-               %Site{pages: [%Page{sections: [%Section{}]}]}
-             )
-
-      assert Assets.in_use?(
-               %Asset{id: 1},
-               %Site{pages: [%Page{sections: [%Section{image_id: 1}]}]}
-             )
-    end
-
     test "can get an imgproxy URL for an Asset" do
       assert Assets.to_imgproxy_url(%Asset{url: "https://example.com/some-image.jpeg"}) =~
                ~r|https://images\.affable\.app/nosignature/fit/[0-9]+/[0-9]+/ce/0/plain/https://example\.com/some-image\.jpeg|

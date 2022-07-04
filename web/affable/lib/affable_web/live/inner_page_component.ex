@@ -6,25 +6,8 @@ defmodule AffableWeb.InnerPageComponent do
      assign(socket,
        site: assigns.site,
        page: assigns.page,
-       menu: menu(assigns.site.pages),
-       sections_style: sections_style(assigns.site.layout)
+       menu: menu(assigns.site.pages)
      )}
-  end
-
-  defp sections_style(%{
-         grid_template_areas: grid_template_areas,
-         grid_template_rows: grid_template_rows,
-         grid_template_columns: grid_template_columns
-       }) do
-    """
-      grid-template-areas: #{grid_template_areas};
-      grid-template-rows: #{grid_template_rows};
-      grid-template-columns: #{grid_template_columns};
-    """
-  end
-
-  defp sections_style(nil) do
-    nil
   end
 
   def menu(pages) do

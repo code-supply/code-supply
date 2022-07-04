@@ -10,7 +10,7 @@ defmodule Affable.Pages do
         join: s in assoc(p, :site),
         join: d in assoc(s, :domains),
         where: d.name == ^host and p.path == ^path,
-        preload: [sections: [], site: [pages: [], layout: [sections: [:image]]]]
+        preload: [site: [pages: []]]
       )
     )
   end

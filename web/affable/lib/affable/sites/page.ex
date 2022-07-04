@@ -8,17 +8,9 @@ defmodule Affable.Sites.Page do
 
   schema "pages" do
     belongs_to(:site, Sites.Site)
-    has_many(:sections, Sites.Section)
 
     field(:title, :string)
-    field(:meta_description, :string, default: "")
     field(:path, :string, default: "/")
-
-    field(:grid_template_areas, :string, default: "")
-    field(:grid_template_rows, :string, default: "")
-    field(:grid_template_columns, :string, default: "")
-
-    field(:text, :string, default: "")
 
     timestamps()
   end
@@ -30,15 +22,9 @@ defmodule Affable.Sites.Page do
       attrs,
       [
         :title,
-        :meta_description,
-        :path,
-        :grid_template_areas,
-        :grid_template_rows,
-        :grid_template_columns,
-        :text
+        :path
       ]
     )
-    |> cast_assoc(:sections, with: &Sites.Section.changeset/2)
     |> validate_required([
       :title,
       :path

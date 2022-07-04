@@ -38,7 +38,7 @@ defmodule AffableWeb.EditorLiveTest do
 
       view
       |> element("form#site")
-      |> render_change(%{"site" => %{"custom_head_html" => "<script>alert('hi')</script>"}})
+      |> render_change(%{"site" => %{"name" => "<script>alert('hi')</script>"}})
 
       assert view
              |> has_element?("#publish")

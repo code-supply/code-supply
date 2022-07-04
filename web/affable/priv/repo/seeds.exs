@@ -11,7 +11,6 @@
 # and so on) as they will fail if something goes wrong.
 
 alias Affable.Accounts
-alias Affable.Layouts
 alias Affable.Sites.Site
 alias Affable.Domains.Domain
 alias Affable.Repo
@@ -40,8 +39,6 @@ if Mix.env() == :dev do
 
   [site] = user.sites
   [domain] = site.domains
-
-  {:ok, layout} = Layouts.create_layout(site, %{name: "my layout"})
 
   # subvert validation for the special-case localhost entry
   from(d in Domain, where: d.id == ^domain.id)

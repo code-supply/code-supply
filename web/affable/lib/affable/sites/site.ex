@@ -4,21 +4,14 @@ defmodule Affable.Sites.Site do
 
   alias Affable.Domains.Domain
   alias Affable.Assets.Asset
-  alias Affable.Layouts.Layout
   alias Affable.Sites.{Page, Publication, SiteMember}
 
   schema "sites" do
     field(:name, :string)
 
-    # chosen global layout for site
-    belongs_to(:layout, Layout)
-    # available layouts, created by any site member
-    has_many(:layouts, Layout)
-
     field(:internal_name, :string)
     field(:internal_hostname, :string)
     field(:made_available_at, :utc_datetime)
-    field(:custom_head_html, :string, default: "")
     has_many(:pages, Page)
     has_many(:assets, Asset)
     has_many(:members, SiteMember)
@@ -37,9 +30,7 @@ defmodule Affable.Sites.Site do
     |> cast(
       attrs,
       [
-        :name,
-        :layout_id,
-        :custom_head_html
+        :name
       ]
     )
     |> validate_required([
