@@ -40,13 +40,6 @@
            changeset={@page_changeset}
            asset_pairs={@asset_pairs}
            />
-<% assigns[:section_id] -> %>
-  <.live_component 
-           module={AffableWeb.SectionEditorComponent}
-           id={@section_id}
-           user={@user}
-           site={@changeset.data}
-           />
 <% true -> %>
 <.form let={outer_form}
        for={@changeset}
