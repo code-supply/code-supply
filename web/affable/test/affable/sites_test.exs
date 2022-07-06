@@ -115,10 +115,16 @@ defmodule Affable.SitesTest do
                |> Sites.preview_url()
     end
 
+    test "canonical URL appends custom port" do
+      assert "//something.affable.app:4000/" ==
+               %Site{domains: [%Domain{name: "something.affable.app"}]}
+               |> Sites.canonical_url("4000")
+    end
+
     test "canonical URL with a single domain uses that domain" do
       assert "//something.affable.app/" ==
                %Site{domains: [%Domain{name: "something.affable.app"}]}
-               |> Sites.canonical_url()
+               |> Sites.canonical_url(nil)
     end
 
     test "canonical URL with a custom domain is the custom domain" do
@@ -129,7 +135,7 @@ defmodule Affable.SitesTest do
                    %Domain{name: "my.domain.example.com"}
                  ]
                }
-               |> Sites.canonical_url()
+               |> Sites.canonical_url(nil)
     end
 
     test "sites start with a publication" do

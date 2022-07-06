@@ -137,7 +137,8 @@ defmodule AffableWeb.EditorLive do
       changeset: Site.changeset(site, %{}),
       published: Sites.is_published?(site),
       preview_url: Sites.preview_url(site),
-      canonical_url: Sites.canonical_url(site)
+      canonical_url: Sites.canonical_url(site, Application.get_env(:affable, :sites_port)),
+      port: Application.get_env(:affable, :sites_port)
     )
     |> assign_page(nil)
   end

@@ -62,4 +62,12 @@ defmodule AffableWeb.ConnCase do
   def control_plane_path(path) do
     "http://localhost#{path}"
   end
+
+  def select_page_tab(n) do
+    select_page_menu_item(n + 1)
+  end
+
+  def select_page_menu_item(n) do
+    "#page-nav ul li:nth-child(#{n}) a"
+  end
 end

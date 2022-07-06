@@ -1,7 +1,9 @@
 import Config
 
 config :affable,
-  k8s: Affable.FakeK8s
+  k8s: Affable.FakeK8s,
+  sites_port: 4000,
+  frame_ancestor: "localhost:4000"
 
 # Configure your database
 config :affable, Affable.Repo,

@@ -35,7 +35,7 @@
           <div class="self-end">
             <ul class="float-right">
               <li class="float-left mr-4">
-                <a target="_blank" rel="noopener" href={canonical_url(site)}>Visit</a>
+                <a target="_blank" rel="noopener" href={canonical_url(site, Application.get_env(:affable, :sites_port))}>Visit</a>
               </li>
               <li class="float-left mr-4">
                 <a href={Routes.editor_path(@socket, :edit, site.id)}>Edit</a>

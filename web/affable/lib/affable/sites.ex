@@ -97,11 +97,15 @@ defmodule Affable.Sites do
     |> Raw.raw()
   end
 
-  def canonical_url(%Site{domains: [%Domain{name: name}]}) do
+  def canonical_url(%Site{domains: [%Domain{name: name}]}, _port = nil) do
     "//#{name}/"
   end
 
-  def canonical_url(%Site{domains: domains}) do
+  def canonical_url(%Site{domains: [%Domain{name: name}]}, port) do
+    "//#{name}:#{port}/"
+  end
+
+  def canonical_url(%Site{domains: domains}, _port = nil) do
     domain = Enum.find(domains, &(!Domains.affable_domain?(&1)))
 
     "//#{domain.name}/"

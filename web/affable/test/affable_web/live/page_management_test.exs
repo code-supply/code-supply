@@ -107,16 +107,22 @@ defmodule AffableWeb.PageManagementTest do
     refute view |> has_element?(".invalid-feedback")
   end
 
+  test "valid page attributes are persisted", %{
+    conn: conn,
+    site: site,
+    page: page
+  } do
+    {:ok, view, _html} = live(conn, path(conn, site))
+
+    view
+    |> change_form(page, page: %{title: "new page title"})
+    |> render_submit()
+
+    refute view |> has_element?(".invalid-feedback")
+  end
+
   defp select_main_site_tab() do
     select_page_menu_item(1)
-  end
-
-  defp select_page_tab(n) do
-    select_page_menu_item(n + 1)
-  end
-
-  defp select_page_menu_item(n) do
-    "#page-nav ul li:nth-child(#{n}) a"
   end
 
   defp change_form(view, page, attrs) do

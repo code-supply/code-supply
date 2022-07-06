@@ -11,6 +11,7 @@ defmodule Affable.Sites.Page do
 
     field(:title, :string)
     field(:path, :string, default: "/")
+    field(:raw, :string)
 
     timestamps()
   end
@@ -22,7 +23,8 @@ defmodule Affable.Sites.Page do
       attrs,
       [
         :title,
-        :path
+        :path,
+        :raw
       ]
     )
     |> validate_required([

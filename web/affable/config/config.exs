@@ -14,7 +14,8 @@ config :affable,
   pubsub_topic_requests: "devsiterequests",
   bucket_name: "affable-uploads-dev",
   access_key_id: "affable-dev@code-supply.iam.gserviceaccount.com",
-  children: []
+  children: [],
+  frame_ancestor: "www.affable.app"
 
 # Configures the endpoint
 config :affable, AffableWeb.Endpoint,
