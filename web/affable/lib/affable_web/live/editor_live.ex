@@ -127,6 +127,7 @@ defmodule AffableWeb.EditorLive do
 
   defp retrieve_state(user, socket, id) do
     site = Sites.get_site!(user, id)
+    canonical_url = Sites.canonical_url(site, Application.get_env(:affable, :sites_port))
 
     assign(socket,
       checked: true,
@@ -136,8 +137,8 @@ defmodule AffableWeb.EditorLive do
       asset_pairs: Enum.map(site.assets, &{&1.name, &1.id}),
       changeset: Site.changeset(site, %{}),
       published: Sites.is_published?(site),
-      preview_url: Sites.preview_url(site),
-      canonical_url: Sites.canonical_url(site, Application.get_env(:affable, :sites_port)),
+      preview_url: Sites.preview_url(site, Application.get_env(:affable, :sites_port)),
+      canonical_url: canonical_url,
       port: Application.get_env(:affable, :sites_port)
     )
     |> assign_page(nil)
@@ -172,17 +173,11 @@ defmodule AffableWeb.EditorLive do
   end
 
   defp assign_preview_url(socket, preview_url, page_path) do
-    uri = URI.parse(preview_url)
+    uri =
+      URI.parse(preview_url)
+      |> Map.put(:query, "preview")
+      |> Map.put(:path, page_path)
 
-    preview_path =
-      case page_path do
-        "/" ->
-          "/preview"
-
-        p ->
-          "/preview#{p}"
-      end
-
-    assign(socket, preview_url: uri |> URI.merge(preview_path) |> URI.to_string())
+    assign(socket, preview_url: URI.to_string(uri))
   end
 end

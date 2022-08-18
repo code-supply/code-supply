@@ -111,8 +111,16 @@ defmodule Affable.Sites do
     "//#{domain.name}/"
   end
 
+  def preview_url(site, port) do
+    preview_url(site)
+    |> URI.parse()
+    |> Map.put(:port, port)
+    |> URI.to_string()
+  end
+
   def preview_url(%Site{domains: [%Domain{name: name}]}) do
-    "//#{name}/preview"
+    %{URI.parse("//#{name}") | query: "preview", path: "/"}
+    |> URI.to_string()
   end
 
   def preview_url(%Site{domains: domains} = site) do
@@ -121,7 +129,7 @@ defmodule Affable.Sites do
         preview_url(%{site | domains: Enum.drop(domains, 1)})
 
       domain ->
-        "//#{domain.name}/preview"
+        preview_url(%Site{site | domains: [domain]})
     end
   end
 

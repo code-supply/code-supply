@@ -58,6 +58,11 @@ defmodule AffableWeb.PageManagementTest do
     assert view
            |> has_element?("a", "Home")
 
+    assert view
+           |> element("iframe")
+           |> render()
+           |> String.contains?(~s(src="#{Sites.preview_url(site)}"))
+
     view
     |> element("a", "Delete page")
     |> render_click()
@@ -72,6 +77,13 @@ defmodule AffableWeb.PageManagementTest do
     view
     |> element(select_page_tab(1), "Untitled page")
     |> render_click()
+
+    assert view
+           |> element("iframe")
+           |> render()
+           |> String.contains?(
+             ~s(src="#{%{URI.parse(Sites.preview_url(site)) | path: "/untitled-page"}}")
+           )
 
     view
     |> element("a", "Delete page")

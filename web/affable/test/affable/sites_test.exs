@@ -84,7 +84,7 @@ defmodule Affable.SitesTest do
     end
 
     test "preview URL chooses affable domain" do
-      assert "//something.affable.app/preview" ==
+      assert "//something.affable.app/?preview" ==
                %Site{
                  domains: [
                    %Domain{name: "something.affable.app"},
@@ -95,17 +95,17 @@ defmodule Affable.SitesTest do
     end
 
     test "preview URL chooses only domain if there are no affable ones" do
-      assert "//my.domain.example.com/preview" ==
+      assert "//my.domain.example.com:4000/?preview" ==
                %Site{
                  domains: [
                    %Domain{name: "my.domain.example.com"}
                  ]
                }
-               |> Sites.preview_url()
+               |> Sites.preview_url(4000)
     end
 
     test "preview URL chooses last domain if there are multiple, and none are affable domains" do
-      assert "//ohhi/preview" ==
+      assert "//ohhi/?preview" ==
                %Site{
                  domains: [
                    %Domain{name: "my.domain.example.com"},
