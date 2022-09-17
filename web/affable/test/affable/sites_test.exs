@@ -84,10 +84,10 @@ defmodule Affable.SitesTest do
     end
 
     test "preview URL chooses affable domain" do
-      assert "//something.affable.app/?preview" ==
+      assert "//something.#{app_domain()}/?preview" ==
                %Site{
                  domains: [
-                   %Domain{name: "something.affable.app"},
+                   %Domain{name: "something.#{app_domain()}"},
                    %Domain{name: "my.domain.example.com"}
                  ]
                }
@@ -116,8 +116,8 @@ defmodule Affable.SitesTest do
     end
 
     test "canonical URL appends custom port" do
-      assert "//something.affable.app:4000/" ==
-               %Site{domains: [%Domain{name: "something.affable.app"}]}
+      assert "//something.#{app_domain()}:4000/" ==
+               %Site{domains: [%Domain{name: "something.#{app_domain()}"}]}
                |> Sites.canonical_url("4000")
     end
 
@@ -131,7 +131,7 @@ defmodule Affable.SitesTest do
       assert "//my.domain.example.com/" ==
                %Site{
                  domains: [
-                   %Domain{name: "something.affable.app"},
+                   %Domain{name: "something.#{app_domain()}"},
                    %Domain{name: "my.domain.example.com"}
                  ]
                }
@@ -201,7 +201,7 @@ defmodule Affable.SitesTest do
       assert site.name == "some name !@#!@#$@#%#$"
       assert site.internal_name =~ ~r/site[a-z0-9]+/
       assert site.internal_hostname =~ ~r/^app\.site[a-z0-9]+$/
-      assert domain_name == "#{site.internal_name}.affable.app"
+      assert domain_name == "#{site.internal_name}.#{app_domain()}"
       assert received_user_id == user.id
 
       assert Sites.is_published?(site)

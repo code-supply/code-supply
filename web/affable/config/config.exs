@@ -7,6 +7,8 @@
 # General application configuration
 import Config
 
+host = "affable.test"
+
 config :affable,
   ecto_repos: [Affable.Repo],
   k8s: Affable.RealK8s,
@@ -15,11 +17,11 @@ config :affable,
   bucket_name: "affable-uploads-dev",
   access_key_id: "affable-dev@code-supply.iam.gserviceaccount.com",
   children: [],
-  frame_ancestor: "www.affable.app"
+  frame_ancestor: "www.#{host}"
 
 # Configures the endpoint
 config :affable, AffableWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: host],
   secret_key_base: "xmJOBP9bmljDpmDuE5AUTOt1ryhJ4Tqteqfoz7BEZQozBIQUU2a1ggTI9+nuAQ8u",
   render_errors: [view: AffableWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: :affable,

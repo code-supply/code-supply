@@ -1,5 +1,8 @@
 import Config
 
+config :affable,
+  frame_ancestor: "www.affable.app"
+
 # For production, don't forget to configure the url host
 # to something meaningful, Phoenix uses this information
 # when generating URLs.

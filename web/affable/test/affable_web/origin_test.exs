@@ -14,26 +14,19 @@ defmodule AffableWeb.OriginTest do
            })
   end
 
-  test "localhost is allowed on any port" do
+  test "site's domain is allowed on any port" do
+    host = Application.get_env(:affable, AffableWeb.Endpoint)[:url][:host]
+
     assert check_origin(%URI{
-             authority: "localhost:4000",
-             host: "localhost",
+             authority: "#{host}:4000",
+             host: "#{host}",
              port: 4000,
              scheme: "http"
            })
 
     assert check_origin(%URI{
-             authority: "localhost:1234",
-             host: "localhost",
-             port: 4000,
-             scheme: "http"
-           })
-  end
-
-  test "www.affable.app is allowed" do
-    assert check_origin(%URI{
-             authority: "www.affable.app",
-             host: "localhost",
+             authority: "#{host}:1234",
+             host: "#{host}",
              port: 4000,
              scheme: "http"
            })

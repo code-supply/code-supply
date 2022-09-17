@@ -100,7 +100,7 @@ defmodule Affable.DomainsTest do
     end
 
     test "cannot delete affable domains", %{site: site, user: user} do
-      domain = domain_fixture(site, %{name: "foobar.affable.app"})
+      domain = domain_fixture(site, %{name: "foobar.#{app_domain()}"})
 
       assert_raise(Ecto.NoResultsError, fn ->
         Domains.delete_domain!(user, "#{domain.id}")

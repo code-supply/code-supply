@@ -52,4 +52,8 @@ defmodule Affable.DataCase do
       end)
     end)
   end
+
+  def app_domain() do
+    Application.get_env(:affable, AffableWeb.Endpoint)[:url][:host]
+  end
 end

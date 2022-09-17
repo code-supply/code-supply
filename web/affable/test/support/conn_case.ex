@@ -60,7 +60,7 @@ defmodule AffableWeb.ConnCase do
   end
 
   def control_plane_path(path) do
-    "http://localhost#{path}"
+    "http://#{Application.get_env(:affable, AffableWeb.Endpoint)[:url][:host]}#{path}"
   end
 
   def select_page_tab(n) do
@@ -69,5 +69,9 @@ defmodule AffableWeb.ConnCase do
 
   def select_page_menu_item(n) do
     "#page-nav ul li:nth-child(#{n}) a"
+  end
+
+  def app_domain() do
+    Application.get_env(:affable, AffableWeb.Endpoint)[:url][:host]
   end
 end

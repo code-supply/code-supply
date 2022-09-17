@@ -50,7 +50,9 @@ defmodule AffableWeb.PageControllerTest do
     headers = Enum.into(conn.resp_headers, %{})
 
     assert nil == headers["x-frame-options"]
-    assert "frame-ancestors www.affable.app" == headers["content-security-policy"]
+
+    assert "frame-ancestors #{Application.get_env(:affable, :frame_ancestor)}" ==
+             headers["content-security-policy"]
   end
 
   # test "does not render unpublished stuff" do
