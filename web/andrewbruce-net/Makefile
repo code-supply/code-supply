@@ -11,6 +11,7 @@ dist/index.html:
 
 dist/app.css:
 	tailwind-linux-x64 \
-		-i src/input.css \
-		-o $@ \
-		--content src/index.html
+		--input src/input.css \
+		--output $@ \
+		--content src/index.html \
+		--minify
