@@ -8,6 +8,10 @@ defmodule AffableWeb.PageUploadTest do
   <html><h1>Hi there!</h1></html>
   """
 
+  @css """
+  p { font-weight: bold }
+  """
+
   setup context do
     %{conn: conn, user: user} = register_and_log_in_user(context)
     [site] = user.sites
@@ -23,6 +27,7 @@ defmodule AffableWeb.PageUploadTest do
 
   test "can upload content for a page", %{conn: conn, site: site} do
     [page] = site.pages
+    [domain] = site.domains
     {:ok, view, _html} = live(conn, path(conn, :edit, site.id))
 
     view
@@ -43,6 +48,10 @@ defmodule AffableWeb.PageUploadTest do
     view
     |> form("#page-#{page.id}")
     |> render_submit
+
+    assert build_conn()
+           |> get("http://#{domain.name}/")
+           |> html_response(200) =~ @content
   end
 
   defp path(conn, action, id) do
