@@ -33,22 +33,20 @@ defmodule AffableWeb.EditorLiveTest do
     } do
       {:ok, view, _html} = live(conn, path(conn, site))
 
-      refute view
-             |> has_element?("#publish")
+      refute has_element?(view, "#publish")
 
-      view
-      |> element("form#site")
-      |> render_change(%{"site" => %{"name" => "<script>alert('hi')</script>"}})
+      form = element(view, "form#site")
 
-      assert view
-             |> has_element?("#publish")
+      render_change(form, %{"site" => %{"name" => "<script>alert('hi')</script>"}})
+      render_submit(form, %{"site" => %{"name" => "<script>alert('hi')</script>"}})
+
+      assert has_element?(view, "#publish")
 
       view
       |> element("#publish")
       |> render_click()
 
-      refute view
-             |> has_element?("#publish")
+      refute has_element?(view, "#publish")
     end
 
     test "raises exception when site doesn't belong to user", %{conn: conn} do

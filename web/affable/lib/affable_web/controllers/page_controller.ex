@@ -29,7 +29,7 @@ defmodule AffableWeb.PageController do
             "content-security-policy",
             "frame-ancestors #{frame_ancestor()}"
           ),
-          page.raw
+          Pages.stripped(page)
         )
     end
   end

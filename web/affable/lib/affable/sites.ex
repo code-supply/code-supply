@@ -144,6 +144,15 @@ defmodule Affable.Sites do
     end
   end
 
+  def get_for_host(host) do
+    Repo.one(
+      from(s in Site,
+        join: d in assoc(s, :domains),
+        where: d.name == ^host
+      )
+    )
+  end
+
   def get_site!(user, id) do
     site_query(id)
     |> join(:inner, [s], m in SiteMember, on: s.id == m.site_id)

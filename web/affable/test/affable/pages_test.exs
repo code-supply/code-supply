@@ -8,6 +8,16 @@ defmodule Affable.PagesTest do
 
   @valid_page %Page{title: "hi", path: "/"}
 
+  test "can strip the scripts and stylesheets from a page's markup" do
+    page = %Page{
+      raw: """
+      <html><link rel="stYLeSheEt" href="/some-styles.css"><script src="foo.js"></script><h1>Hi there!</h1></html>
+      """
+    }
+
+    assert "<html><h1>Hi there!</h1></html>" == Pages.stripped(page)
+  end
+
   test "can retrieve with host and path, but not a bogus path" do
     site = site_fixture()
     [homepage] = site.pages

@@ -15,6 +15,10 @@ defmodule AffableWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :stylesheet do
+    plug(:accepts, ["css"])
+  end
+
   pipeline :www_redirect do
     plug AffableWeb.Plugs.WwwRedirect
   end
@@ -93,6 +97,11 @@ defmodule AffableWeb.Router do
     get("/users/confirm", UserConfirmationController, :new)
     post("/users/confirm", UserConfirmationController, :create)
     get("/users/confirm/:token", UserConfirmationController, :confirm)
+  end
+
+  scope path: "/stylesheets", alias: AffableWeb do
+    pipe_through([:stylesheet, :www_redirect])
+    get("/*path", StylesheetController, :show)
   end
 
   scope path: "/", alias: AffableWeb do

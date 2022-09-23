@@ -115,12 +115,29 @@ defmodule AffableWeb.EditorLive do
     |> reset_site(socket)
   end
 
+  def handle_event("validate", _params, socket) do
+    {:noreply, socket}
+  end
+
   def handle_event(
         "save",
         %{"site" => attrs},
         %{assigns: %{site_id: id, user: user}} = socket
       ) do
-    Sites.get_site!(user, id)
+    site = Sites.get_site!(user, id)
+
+    attrs =
+      case consume_uploaded_entries(socket, :stylesheet, fn %{path: path}, _entry ->
+             File.read(path)
+           end) do
+        [raw] ->
+          Map.put(attrs, "stylesheet", raw)
+
+        [] ->
+          attrs
+      end
+
+    site
     |> Sites.update_site(attrs)
     |> reset_site(socket)
   end
@@ -142,6 +159,11 @@ defmodule AffableWeb.EditorLive do
       port: Application.get_env(:affable, :sites_port)
     )
     |> assign_page(nil)
+    |> allow_upload(
+      :stylesheet,
+      accept: ~w(.css),
+      max_entries: 1
+    )
   end
 
   defp reset_site(%Site{} = site, socket) do

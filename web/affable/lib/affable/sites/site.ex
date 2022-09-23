@@ -8,10 +8,11 @@ defmodule Affable.Sites.Site do
 
   schema "sites" do
     field(:name, :string)
-
     field(:internal_name, :string)
     field(:internal_hostname, :string)
     field(:made_available_at, :utc_datetime)
+    field(:stylesheet, :string)
+
     has_many(:pages, Page)
     has_many(:assets, Asset)
     has_many(:members, SiteMember)
@@ -30,7 +31,8 @@ defmodule Affable.Sites.Site do
     |> cast(
       attrs,
       [
-        :name
+        :name,
+        :stylesheet
       ]
     )
     |> validate_required([

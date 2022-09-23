@@ -6,7 +6,7 @@ phx_target={@myself}
 phx_change={:validate}
 phx_submit={:save}>
   <div class="py-4">
-    <h2 class="text-xl font-bold bg-gray-100">General</h2>
+    <h2 class="text-xl font-bold bg-gray-100">Content</h2>
 
     <div class="field">
       <%= label f, :title %>
@@ -21,7 +21,7 @@ phx_submit={:save}>
     </div>
 
     <div class="field">
-      <label>Content
+      <label>Uploads
       <%= live_file_input @uploads.content %>
       </label>
 
@@ -30,18 +30,18 @@ phx_submit={:save}>
       <% end %>
     </div>
 
-    <%= submit "Save", phx_disable_with: "Saving…", class: "btn btn-spaced" %>
+    <%= submit "Start Upload", phx_disable_with: "Uploading…", class: "btn btn-spaced" %>
   </div>
 
-  <p class="pb-48">
-  <a id={"delete-page-#{@page.id}"}
-     class="btn"
-     phx-target={@myself}
-     phx-click="delete"
-     phx-value-id={@page.id}
-     data-confirm="Really delete this page?"
-     href="#"
-     >Delete page</a>
+  <p>
+    <a id={"delete-page-#{@page.id}"}
+       class="btn"
+       phx-target={@myself}
+       phx-click="delete"
+       phx-value-id={@page.id}
+       data-confirm="Really delete this page?"
+       href="#"
+       >Delete page</a>
   </p>
 </.form>
 </div>

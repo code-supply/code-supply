@@ -46,7 +46,7 @@
        url="#"
        id="site"
        csrf_token={false}
-       phx_change={:save}
+       phx_change={:validate}
        phx_submit={:save}
        class="clear-left">
   <div>
@@ -58,6 +58,18 @@
         <%= text_input outer_form, :name, phx_debounce: 250 %>
         <%= error_tag outer_form, :name %>
       </div>
+
+      <div class="field" id="stylesheet-upload">
+        <label>Stylesheet
+        <%= live_file_input @uploads.stylesheet %>
+        </label>
+
+        <%= for entry <- @uploads.stylesheet.entries do %>
+          <%= inspect entry %>
+        <% end %>
+      </div>
+
+      <%= submit "Start Upload", phx_disable_with: "Uploading…", class: "btn btn-spaced" %>
     </div>
   </div>
 </.form>
