@@ -1,13 +1,13 @@
 .PHONY: all
-all: dist/index.html dist/app.css
+all: dist/*.html dist/app.css
 
 .PHONY: clean
 clean:
 	rm -rf dist/
 	mkdir dist
 
-dist/index.html:
-	cp src/index.html $@
+dist/*.html:
+	cp src/*.html dist/
 
 dist/app.css:
 	tailwind-linux-x64 \
