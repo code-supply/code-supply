@@ -7,14 +7,14 @@ defmodule Affable.Domains do
   alias Affable.Sites.SiteMember
 
   def by_name(name) do
+    without_www = String.replace_leading(name, "www.", "")
+    with_www = "www.#{without_www}"
+
     case Application.get_env(:affable, AffableWeb.Endpoint)[:url][:host] do
-      ^name ->
-        %Domain{name: "www.#{name}", site: nil}
+      ^with_www ->
+        %Domain{name: with_www, site: nil}
 
       _ ->
-        without_www = String.replace_leading(name, "www.", "")
-        with_www = "www.#{without_www}"
-
         Repo.one(
           from d in Domain,
             where: d.name == ^with_www or d.name == ^without_www
