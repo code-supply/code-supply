@@ -108,7 +108,7 @@ defmodule Affable.AccountsTest do
 
       assert [_home_page_id] = Sites.page_ids(site)
       assert internal_name =~ ~r/site[a-z0-9]+/
-      assert domain.name =~ ~r/site[a-z0-9]+\.#{app_domain()}/
+      assert domain.name =~ ~r/site[a-z0-9]+\.affable\.test/
     end
 
     test "requires email and password to be set" do

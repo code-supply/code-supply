@@ -30,6 +30,15 @@ defmodule Affable.DomainsTest do
       domain
     end
 
+    test "affable suffix doesn't include www" do
+      assert String.starts_with?(
+               Application.get_env(:affable, AffableWeb.Endpoint)[:url][:host],
+               "www."
+             )
+
+      refute String.contains?(Domains.affable_suffix(), "www.")
+    end
+
     test "can insert a domain into a list prior to first domain with same site" do
       assert [
                %Domain{site_id: 1, name: "site_a_initial"},

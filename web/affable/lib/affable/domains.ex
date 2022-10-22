@@ -7,7 +7,7 @@ defmodule Affable.Domains do
   alias Affable.Sites.SiteMember
 
   def by_name(name) do
-    without_www = String.replace_leading(name, "www.", "")
+    without_www = strip_www(name)
     with_www = "www.#{without_www}"
 
     case Application.get_env(:affable, AffableWeb.Endpoint)[:url][:host] do
@@ -23,7 +23,7 @@ defmodule Affable.Domains do
   end
 
   def affable_suffix() do
-    ".#{Application.get_env(:affable, AffableWeb.Endpoint)[:url][:host]}"
+    ".#{strip_www(Application.get_env(:affable, AffableWeb.Endpoint)[:url][:host])}"
   end
 
   def affable_domain?(%Domain{name: name}) do
@@ -107,6 +107,10 @@ defmodule Affable.Domains do
         "dnsNames" => [domain_name, www_flipped(domain_name)]
       }
     }
+  end
+
+  defp strip_www(s) do
+    String.replace_leading(s, "www.", "")
   end
 
   defp www_flipped("www." <> rest) do
