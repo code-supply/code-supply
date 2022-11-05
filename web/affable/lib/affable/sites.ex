@@ -3,8 +3,6 @@ defmodule Affable.Sites do
 
   alias Affable.Sites.{
     Page,
-    Publication,
-    Raw,
     Site,
     SiteMember,
     TitleUtils
@@ -67,34 +65,6 @@ defmodule Affable.Sites do
     for p <- Repo.all(Ecto.assoc(site, :pages) |> order_by(:id)) do
       p.id
     end
-  end
-
-  def publish(site) do
-    site
-    |> Ecto.build_assoc(:publications, %{data: raw(site)})
-    |> Repo.insert()
-
-    {:ok, site}
-  end
-
-  def is_published?(%Site{id: id} = site) do
-    latest_publication =
-      from(p in Publication, where: [site_id: ^id], order_by: [desc: p.id], limit: 1)
-      |> Repo.one()
-
-    case latest_publication do
-      nil ->
-        false
-
-      latest ->
-        latest.data ==
-          raw(site)
-    end
-  end
-
-  defp raw(%Site{} = site) do
-    site
-    |> Raw.raw()
   end
 
   def canonical_url(%Site{domains: [%Domain{name: name}]}, _port = nil) do
@@ -169,7 +139,6 @@ defmodule Affable.Sites do
     site_query(id)
     |> Repo.one!()
     |> with_pages()
-    |> preload_latest_publication()
   end
 
   defp site_query(id) do
@@ -187,11 +156,6 @@ defmodule Affable.Sites do
     Repo.preload(site, [assets: Assets.default_query()], force: true)
   end
 
-  defp preload_latest_publication(site) do
-    site
-    |> Repo.preload(latest_publication: from(p in Publication, order_by: [desc: p.id]))
-  end
-
   def with_pages(site, attrs \\ []) do
     site
     |> Repo.preload(
@@ -203,7 +167,7 @@ defmodule Affable.Sites do
   end
 
   defp page_query() do
-    from p in Page, order_by: p.id
+    from(p in Page, order_by: p.id)
   end
 
   def unshared(user) do
@@ -231,7 +195,6 @@ defmodule Affable.Sites do
     Multi.new()
     |> site_with_name_multi(user, attrs)
     |> add_homepage_multi()
-    |> Multi.insert(:publish, &build_publication(&1.site))
   end
 
   def create_site_multi(user, attrs) do
@@ -239,7 +202,6 @@ defmodule Affable.Sites do
     |> site_with_name_multi(user, attrs)
     |> add_homepage_multi(%{})
     |> default_assets_multi()
-    |> Multi.insert(:publish, &build_publication(&1.site_with_internal_name))
   end
 
   defp handle_create_site_multi(result, site_multi_key) do
@@ -249,7 +211,6 @@ defmodule Affable.Sites do
           :ok,
           multis[site_multi_key]
           |> Repo.preload(:domains)
-          |> preload_latest_publication()
         }
 
       {:error, :site, site, %{} = _domain} ->
@@ -261,10 +222,6 @@ defmodule Affable.Sites do
     Multi.insert(multi, :homepage, fn %{site: site} ->
       Ecto.build_assoc(site, :pages, Map.merge(%{title: "Home"}, attrs))
     end)
-  end
-
-  defp build_publication(site) do
-    Ecto.build_assoc(site, :publications, %{data: raw(site |> with_pages())})
   end
 
   defp site_with_name_multi(%Multi{} = multi, user, attrs) do

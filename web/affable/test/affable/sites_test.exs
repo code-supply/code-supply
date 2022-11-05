@@ -2,7 +2,6 @@ defmodule Affable.SitesTest do
   use Affable.DataCase, async: true
 
   import Affable.{AccountsFixtures, SitesFixtures}
-  import Affable.Sites.Raw
 
   alias Affable.Accounts.User
   alias Affable.Sites
@@ -57,15 +56,6 @@ defmodule Affable.SitesTest do
 
     test "default path is / when there are no more pages" do
       assert "/" == Sites.default_path([])
-    end
-
-    test "raw representation includes path" do
-      assert %{"pages" => [%{"path" => "/contact"}]} =
-               %{
-                 unpersisted_site_fixture()
-                 | pages: [%Page{path: "/contact"}]
-               }
-               |> raw()
     end
   end
 
@@ -138,45 +128,6 @@ defmodule Affable.SitesTest do
                |> Sites.canonical_url(nil)
     end
 
-    test "sites start with a publication" do
-      %{
-        sites: [
-          %Site{
-            name: name,
-            publications: [publication]
-          }
-        ]
-      } =
-        user_fixture()
-        |> Repo.preload(sites: [:publications])
-
-      assert name == publication.data["name"]
-    end
-
-    test "site is published when latest publication is same as current raw representation" do
-      site = site_fixture()
-      Repo.delete(site.latest_publication)
-
-      refute Sites.is_published?(site)
-
-      {:ok, published_site} = Sites.publish(site)
-
-      assert Sites.is_published?(published_site)
-
-      {:ok, published_again_site} = Sites.publish(site)
-
-      assert Sites.is_published?(published_again_site)
-
-      %{pages: [page]} = published_again_site
-
-      refute Sites.is_published?(%{published_again_site | pages: [%{page | title: "hi"}]})
-    end
-
-    test "get_site!/1 preloads latest publication" do
-      site = site_fixture()
-      assert Sites.get_site!(site.id).latest_publication.data
-    end
-
     test "get_site!/2 returns the site with given user id and id" do
       user = user_fixture()
       site = site_fixture(user)
@@ -203,8 +154,6 @@ defmodule Affable.SitesTest do
       assert site.internal_hostname =~ ~r/^app\.site[a-z0-9]+$/
       assert domain_name == "#{site.internal_name}.affable.test"
       assert received_user_id == user.id
-
-      assert Sites.is_published?(site)
     end
 
     test "create_site/1 with invalid data returns error changeset" do

@@ -105,16 +105,6 @@ defmodule AffableWeb.EditorLive do
     |> reset_site(push_patch(socket, to: Routes.editor_path(socket, :edit, site.id, page.id)))
   end
 
-  def handle_event(
-        "publish",
-        _params,
-        %{assigns: %{user: user, site_id: site_id}} = socket
-      ) do
-    Sites.get_site!(user, site_id)
-    |> Sites.publish()
-    |> reset_site(socket)
-  end
-
   def handle_event("validate", _params, socket) do
     {:noreply, socket}
   end
@@ -153,7 +143,6 @@ defmodule AffableWeb.EditorLive do
       pages: Enum.map(site.pages, fn page -> {page, Page.changeset(page, %{})} end),
       asset_pairs: Enum.map(site.assets, &{&1.name, &1.id}),
       changeset: Site.changeset(site, %{}),
-      published: Sites.is_published?(site),
       preview_url: Sites.preview_url(site, Application.get_env(:affable, :sites_port)),
       canonical_url: canonical_url,
       port: Application.get_env(:affable, :sites_port)
@@ -170,7 +159,6 @@ defmodule AffableWeb.EditorLive do
     {:noreply,
      assign(socket,
        changeset: Site.changeset(site, %{}),
-       published: Sites.is_published?(site),
        pages:
          for page <- site.pages do
            {page, Page.changeset(page, %{})}

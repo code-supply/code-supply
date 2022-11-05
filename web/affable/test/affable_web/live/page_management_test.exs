@@ -109,7 +109,6 @@ defmodule AffableWeb.PageManagementTest do
     |> change_form(page, page: %{title: ""})
     |> render_change()
 
-    refute view |> has_element?("#publish")
     assert view |> has_element?(".invalid-feedback")
 
     view

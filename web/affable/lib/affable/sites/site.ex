@@ -4,7 +4,7 @@ defmodule Affable.Sites.Site do
 
   alias Affable.Domains.Domain
   alias Affable.Assets.Asset
-  alias Affable.Sites.{Page, Publication, SiteMember}
+  alias Affable.Sites.{Page, SiteMember}
 
   schema "sites" do
     field(:name, :string)
@@ -18,9 +18,6 @@ defmodule Affable.Sites.Site do
     has_many(:members, SiteMember)
     has_many(:users, through: [:members, :user])
     has_many(:domains, Domain)
-    has_many(:publications, Publication)
-
-    has_one(:latest_publication, Publication)
 
     timestamps()
   end

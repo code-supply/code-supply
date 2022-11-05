@@ -27,28 +27,6 @@ defmodule AffableWeb.EditorLiveTest do
       assert view |> has_element?(~s{label[for="site_name"]})
     end
 
-    test "can publish the changes", %{
-      conn: conn,
-      site: site
-    } do
-      {:ok, view, _html} = live(conn, path(conn, site))
-
-      refute has_element?(view, "#publish")
-
-      form = element(view, "form#site")
-
-      render_change(form, %{"site" => %{"name" => "<script>alert('hi')</script>"}})
-      render_submit(form, %{"site" => %{"name" => "<script>alert('hi')</script>"}})
-
-      assert has_element?(view, "#publish")
-
-      view
-      |> element("#publish")
-      |> render_click()
-
-      refute has_element?(view, "#publish")
-    end
-
     test "raises exception when site doesn't belong to user", %{conn: conn} do
       site = site_fixture()
 

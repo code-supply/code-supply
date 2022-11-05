@@ -6,7 +6,7 @@ defmodule AffableWeb.PageControllerTest do
   import Affable.AccountsFixtures
   import Affable.SitesFixtures
 
-  test "renders a published site" do
+  test "renders a site" do
     user = user_fixture()
     site = site_fixture(user, %{name: "my site"})
 
@@ -16,8 +16,6 @@ defmodule AffableWeb.PageControllerTest do
 
     {:ok, _page} =
       Sites.update_page(page, %{"raw" => "<html><title>my site</title></html>"}, user)
-
-    assert Sites.is_published?(site)
 
     conn = build_conn()
     conn = get(conn, "http://#{domain.name}" <> Routes.page_path(conn, :show, []))
@@ -54,7 +52,4 @@ defmodule AffableWeb.PageControllerTest do
     assert "frame-ancestors #{Application.get_env(:affable, :frame_ancestor)}" ==
              headers["content-security-policy"]
   end
-
-  # test "does not render unpublished stuff" do
-  # end
 end

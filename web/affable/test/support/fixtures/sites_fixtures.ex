@@ -4,7 +4,6 @@ defmodule Affable.SitesFixtures do
   alias Affable.Accounts.User
   alias Affable.Sites
   alias Affable.Sites.{Page, Site}
-  alias Affable.Sites.Publication
 
   def site_fixture() do
     site_fixture(user_fixture())
@@ -12,7 +11,6 @@ defmodule Affable.SitesFixtures do
 
   def unpersisted_site_fixture() do
     %Site{
-      latest_publication: %Publication{},
       pages: [%Page{}]
     }
   end
