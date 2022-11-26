@@ -6,7 +6,7 @@ while inotifywait -qq -e attrib src/*
 do
   cp src/*.html dev-dist/
   active_window_id="$(xdotool getwindowfocus)"
-  target_window_id="$(xdotool search --name index.html)"
+  target_window_id="$(xdotool search --classname Navigator)"
 
   xdotool windowactivate "$target_window_id"
   xdotool key F5
