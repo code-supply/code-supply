@@ -8,8 +8,6 @@ Things in here:
 - packer/ : VM images - currently a GCP free-tier thing
 - terraform/ : Infra config for all clusters, VMs, domain names etc.
 - web/ : Websites that I work on
-  - affable/ : A work-in-progress point-n-click, non-WYSIWIG website builder
-  - affiliate/ : The sites that get deployed by affable
-  - andrewbruce-net/ : My homepage written in Idris. It'll hopefully soon be replaced by an affable site
-  - code-supply/ : code.supply homepage, which is already replaced by an affable site
-  - fixtures/ : Shared JSON transport fixtures between affable and affiliate
+  - affable/ : A work-in-progress 'enhanced' static site host.
+  - andrewbruce-net/ : My homepage, hosted by affable.
+  - code-supply/ : code.supply homepage, hosted by affable.
