@@ -4,7 +4,7 @@ defmodule Affable.Sites.Page do
 
   alias Affable.Sites
 
-  @path_format ~r/^\/[a-z0-9-_\+]*$/
+  @path_format ~r/^\/[a-z0-9-_\+.]*$/
 
   schema "pages" do
     belongs_to(:site, Sites.Site)

@@ -2,8 +2,10 @@ defmodule Affable.PagesTest do
   use Affable.DataCase, async: true
 
   alias Affable.Pages
+  alias Affable.Sites
   alias Affable.Sites.{Site, Page}
 
+  import Affable.AccountsFixtures
   import Affable.SitesFixtures
 
   @valid_page %Page{title: "hi", path: "/"}
@@ -56,6 +58,31 @@ defmodule Affable.PagesTest do
     assert homepage.id == page.id
 
     assert nil == Pages.get_for_route(domain.name, "/not-a-path")
+  end
+
+  test "can retrieve pages without html suffix" do
+    user = user_fixture()
+    site = site_fixture(user)
+    [homepage] = site.pages
+
+    {:ok, homepage} =
+      Sites.update_page(
+        homepage,
+        %{path: "/index.html"},
+        user
+      )
+
+    {:ok, new_page} = Sites.add_page(site, user)
+    {:ok, new_page} = Sites.update_page(
+      new_page,
+      %{path: "/untitled-page.html"},
+      user
+    )
+
+    [domain] = site.domains
+
+    assert homepage.id == Pages.get_for_route(domain.name, "/").id
+    assert new_page.id == Pages.get_for_route(domain.name, "/untitled-page").id
   end
 
   test "attempting to retrieve with non-existent host returns nil" do

@@ -41,13 +41,23 @@ defmodule Affable.Pages do
   end
 
   def get_for_route(host, path) do
+    suffixed_path = add_html_suffix(path)
+
     Repo.one(
       from(p in Page,
         join: s in assoc(p, :site),
         join: d in assoc(s, :domains),
-        where: d.name == ^host and p.path == ^path,
+        where: d.name == ^host and (p.path == ^path or p.path == ^suffixed_path),
         preload: [site: [pages: []]]
       )
     )
+  end
+
+  defp add_html_suffix("/") do
+    "/index.html"
+  end
+
+  defp add_html_suffix(path) do
+    path <> ".html"
   end
 end
