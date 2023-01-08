@@ -1,16 +1,16 @@
-use affable::Client;
-use affable::Site;
+use affable::*;
 use pact_consumer::prelude::*;
 
 #[test]
 fn can_list_sites() {
     let stubbed_sites = vec![Site {
-        name: "My Site".to_owned(),
+        name: String::from("My Site"),
     }];
     let serialised_sites = &serde_json::to_string(&stubbed_sites).unwrap();
     let affable_service = PactBuilder::new("Consumer", "Affable Service")
         .interaction("a list sites request", "", |mut i| {
-            i.given("there is a site");
+            i.given("user exists with API key abcdefg");
+            i.given("site exists for user with API key abcdefg");
             i.request.path("/sites");
             i.response
                 .content_type("application/json")
@@ -23,5 +23,5 @@ fn can_list_sites() {
 
     let response_sites = client.list_sites();
 
-    assert_eq!(response_sites, Ok(stubbed_sites));
+    assert_eq!(Ok(stubbed_sites), response_sites);
 }
