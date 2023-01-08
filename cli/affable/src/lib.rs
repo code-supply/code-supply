@@ -13,7 +13,7 @@ impl<'a> Client<'a> {
         Client { url }
     }
 
-    pub fn list_sites(self: &Self) -> Result<Vec<Site>, RequesterError> {
+    pub fn list_sites(&self) -> Result<Vec<Site>, RequesterError> {
         let endpoint_url = self.url.join("sites")?;
         let response = reqwest::blocking::get(endpoint_url.as_str())?;
         parsing::parse(&response.text()?)
