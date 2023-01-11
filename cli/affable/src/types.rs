@@ -9,7 +9,7 @@ pub struct Site {
 pub enum RequesterError {
     URLParseError(String),
     IOError(String),
-    MalformedResponse(String),
+    MalformedResponse { body: String, backtrace: String },
 }
 
 impl From<url::ParseError> for RequesterError {
