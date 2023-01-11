@@ -167,8 +167,8 @@ resource "google_dns_record_set" "ab-dkim3" {
   type = "CNAME"
 }
 
-resource "google_dns_record_set" "ab-rdale" {
-  name         = "rdale.${google_dns_managed_zone.ab.dns_name}"
+resource "google_dns_record_set" "ab-main" {
+  name         = "main.${google_dns_managed_zone.ab.dns_name}"
   managed_zone = google_dns_managed_zone.ab.name
 
   rrdatas = ["81.187.237.24"]
