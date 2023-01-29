@@ -39,3 +39,5 @@ npm-debug.log
 
 # Our custom dir for writing un-minified CSS to, before processing by esbuild.
 /assets/build
+
+/.postgres

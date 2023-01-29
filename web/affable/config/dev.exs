@@ -7,10 +7,9 @@ config :affable,
 
 # Configure your database
 config :affable, Affable.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "affable",
   database: "affable_dev",
-  hostname: "localhost",
+  socket_dir: ".postgres",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 

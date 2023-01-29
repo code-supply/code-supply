@@ -9,10 +9,9 @@ config :bcrypt_elixir, :log_rounds, 1
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :affable, Affable.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "affable",
   database: "affable_test#{System.get_env("MIX_TEST_PARTITION")}",
-  hostname: "localhost",
+  socket_dir: ".postgres",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10,
   queue_target: 5000
