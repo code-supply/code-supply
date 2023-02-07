@@ -35,7 +35,7 @@ defmodule Affable.MixProject do
   defp deps do
     [
       {:bcrypt_elixir, "~> 2.0"},
-      {:phoenix, "~> 1.6.2", override: true},
+      {:phoenix, "~> 1.6.15", override: true},
       {:phoenix_ecto, "~> 4.4.0"},
       {:ecto_sql, "~> 3.8"},
       {:postgrex, ">= 0.0.0"},
