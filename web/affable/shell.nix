@@ -1,4 +1,4 @@
-with import <nixpkgs> {};
+with import <nixpkgs> { };
 
 mkShell {
   packages = [
@@ -7,6 +7,7 @@ mkShell {
     elixir_ls
     inotify-tools
     postgresql_15
+    nodePackages."@tailwindcss/language-server"
   ];
   shellHook = ''
     initdb -D .postgres/db
