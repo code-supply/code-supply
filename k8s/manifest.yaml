@@ -29653,10 +29653,10 @@ spec:
             port: http
         resources:
           limits:
-            cpu: 200m
+            cpu: 1
             memory: 250Mi
           requests:
-            cpu: 2m
+            cpu: 100m
             memory: 55Mi
       serviceAccountName: affable
 ---
