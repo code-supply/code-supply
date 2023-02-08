@@ -6,6 +6,7 @@ mkShell {
     elixir_1_12
     elixir_ls
     inotify-tools
+    jq
     kubectl
     kustomize
     nodePackages."@tailwindcss/language-server"
