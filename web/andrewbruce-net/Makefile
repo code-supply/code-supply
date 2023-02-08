@@ -11,7 +11,7 @@ dist/*.html:
 	cp src/*.html dist/
 
 dist/app.css:
-	tailwind-linux-x64 \
+	tailwindcss \
 		--input src/input.css \
 		--output $@ \
 		--content src/index.html,src/contact.html,src/cv.html \
