@@ -72,11 +72,3 @@ k8s/affable/version.yaml: web/affable/VERSION_PUSHED
 	echo "    metadata:" >> $@
 	echo "      labels:" >> $@
 	echo "        version: \"$$(cat $<)\"" >> $@
-
-.PHONY: kubectl_set_contexts
-kubectl_set_contexts:
-	kubectl config set-context \
-		affable \
-		--cluster=gke_code-supply_europe-west1-b_pink \
-		--user=gke_code-supply_europe-west1-b_pink \
-		--namespace=affable
