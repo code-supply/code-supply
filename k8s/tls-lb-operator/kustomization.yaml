@@ -9,7 +9,7 @@ commonLabels:
   app: tls-lb-operator
 images:
 - name: tls-lb-operator
-  newName: eu.gcr.io/code-supply/tls-lb-operator
+  newName: codesupplydocker/tls-lb-operator
   newTag: 042ce98
 patchesStrategicMerge:
 - version.yaml

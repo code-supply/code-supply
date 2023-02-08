@@ -16,7 +16,7 @@ commonLabels:
   app: affable
 images:
 - name: affable
-  newName: eu.gcr.io/code-supply/affable
-  newTag: 385fea0
+  newName: codesupplydocker/affable
+  newTag: af4753c
 patchesStrategicMerge:
 - version.yaml

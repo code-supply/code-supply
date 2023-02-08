@@ -10,7 +10,7 @@ k8s/manifest.yaml: \
 apply: \
 	k8s/manifest.yaml
 	kubectl \
-		--context=affable \
+		--context=unhinged \
 		apply \
 		-f k8s/manifest.yaml
 
@@ -25,16 +25,16 @@ operators/tls-lb-operator/VERSION:
 operators/tls-lb-operator/VERSION_BUILT: operators/tls-lb-operator/VERSION
 	cd operators/tls-lb-operator/; mix dialyzer
 	cd operators/tls-lb-operator/; mix test
-	docker build -t eu.gcr.io/code-supply/tls-lb-operator:$$(cat $<) operators/tls-lb-operator
+	docker build -t codesupplydocker/tls-lb-operator:$$(cat $<) operators/tls-lb-operator
 	cp $< $@
 
 operators/tls-lb-operator/VERSION_PUSHED: operators/tls-lb-operator/VERSION_BUILT
-	docker push eu.gcr.io/code-supply/tls-lb-operator:$$(cat $<)
+	docker push codesupplydocker/tls-lb-operator:$$(cat $<)
 	cp $< $@
 
 k8s/tls-lb-operator/version.yaml: operators/tls-lb-operator/VERSION_PUSHED
 	cd k8s/tls-lb-operator && \
-		kustomize edit set image tls-lb-operator=eu.gcr.io/code-supply/tls-lb-operator:$$(cat ../../$<)
+		kustomize edit set image tls-lb-operator=codesupplydocker/tls-lb-operator:$$(cat ../../$<)
 	> $@
 	echo "apiVersion: apps/v1" >> $@
 	echo "kind: Deployment" >> $@
@@ -51,17 +51,17 @@ web/affable/VERSION:
 
 web/affable/VERSION_BUILT: web/affable/VERSION
 	cd web/affable; mix dialyzer
-	cd web/affable; ./tests
-	docker build -t eu.gcr.io/code-supply/affable:$$(cat $<) web/affable
+	cd web/affable; mix test
+	docker build -t codesupplydocker/affable:$$(cat $<) web/affable
 	cat $< > $@
 
 web/affable/VERSION_PUSHED: web/affable/VERSION_BUILT
-	docker push eu.gcr.io/code-supply/affable:$$(cat $<)
+	docker push codesupplydocker/affable:$$(cat $<)
 	cat $< > $@
 
 k8s/affable/version.yaml: web/affable/VERSION_PUSHED
 	cd k8s/affable && \
-		kustomize edit set image affable=eu.gcr.io/code-supply/affable:$$(cat ../../$<)
+		kustomize edit set image affable=codesupplydocker/affable:$$(cat ../../$<)
 	> $@
 	echo "apiVersion: apps/v1" >> $@
 	echo "kind: Deployment" >> $@

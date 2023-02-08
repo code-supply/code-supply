@@ -29616,7 +29616,7 @@ spec:
     metadata:
       labels:
         app: affable
-        version: 385fea0
+        version: af4753c
     spec:
       containers:
       - env:
@@ -29635,7 +29635,7 @@ spec:
         envFrom:
         - secretRef:
             name: affable
-        image: eu.gcr.io/code-supply/affable:385fea0
+        image: codesupplydocker/affable:af4753c
         name: affable
         ports:
         - containerPort: 4000
@@ -29736,7 +29736,7 @@ spec:
         version: 042ce98
     spec:
       containers:
-      - image: eu.gcr.io/code-supply/tls-lb-operator:042ce98
+      - image: codesupplydocker/tls-lb-operator:042ce98
         name: tls-lb-operator
       serviceAccountName: tls-lb-operator
 ---
