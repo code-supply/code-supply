@@ -9,7 +9,7 @@ config :affable,
 config :affable, Affable.Repo,
   username: "affable",
   database: "affable_dev",
-  socket_dir: ".postgres",
+  socket_dir: "../../.postgres",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 

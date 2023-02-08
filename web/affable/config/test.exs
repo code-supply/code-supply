@@ -11,7 +11,7 @@ config :bcrypt_elixir, :log_rounds, 1
 config :affable, Affable.Repo,
   username: "affable",
   database: "affable_test#{System.get_env("MIX_TEST_PARTITION")}",
-  socket_dir: ".postgres",
+  socket_dir: "../../.postgres",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10,
   queue_target: 5000

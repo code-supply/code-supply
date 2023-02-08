@@ -3,3 +3,4 @@ playbook.retry
 TAGS
 service-account.json
 target
+/.postgres
