@@ -29658,22 +29658,6 @@ spec:
           requests:
             cpu: 2m
             memory: 55Mi
-      - command:
-        - /cloud_sql_proxy
-        env:
-        - name: INSTANCES
-          value: code-supply:europe-west1:shared-belgium=tcp:5432
-        image: eu.gcr.io/cloudsql-docker/gce-proxy:1.22.0
-        name: cloudsql-proxy
-        resources:
-          limits:
-            cpu: 20m
-            memory: 48Mi
-          requests:
-            cpu: 1m
-            memory: 8Mi
-        securityContext:
-          allowPrivilegeEscalation: false
       serviceAccountName: affable
 ---
 apiVersion: apps/v1
