@@ -6,8 +6,10 @@ mkShell {
     elixir_1_12
     elixir_ls
     inotify-tools
-    postgresql_15
+    kubectl
+    kustomize
     nodePackages."@tailwindcss/language-server"
+    postgresql_15
   ];
   shellHook = ''
     initdb -D .postgres/db
