@@ -7,6 +7,7 @@ clean:
 	mkdir dist
 
 dist/*.html:
+	mkdir -p dist
 	cp src/*.html dist/
 
 dist/app.css:
