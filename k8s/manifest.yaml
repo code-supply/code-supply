@@ -29620,6 +29620,8 @@ spec:
     spec:
       containers:
       - env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /gcloud-credentials/code-supply-67cb20b97305.json
         - name: ELIXIR_ERL_OPTIONS
           value: -kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556
         - name: POD_IP
@@ -29658,7 +29660,15 @@ spec:
           requests:
             cpu: 100m
             memory: 55Mi
+        volumeMounts:
+        - mountPath: /gcloud-credentials
+          name: gcloud-credentials
+          readOnly: true
       serviceAccountName: affable
+      volumes:
+      - name: gcloud-credentials
+        secret:
+          secretName: gcloud-credentials
 ---
 apiVersion: apps/v1
 kind: Deployment
