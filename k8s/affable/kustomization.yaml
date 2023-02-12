@@ -17,6 +17,6 @@ commonLabels:
 images:
 - name: affable
   newName: codesupplydocker/affable
-  newTag: af4753c
+  newTag: 638ffd4
 patchesStrategicMerge:
 - version.yaml
