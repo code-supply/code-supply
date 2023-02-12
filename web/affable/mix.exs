@@ -57,7 +57,7 @@ defmodule Affable.MixProject do
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:libcluster, "~> 3.2"},
-      {:goth, "~> 1.3-rc"},
+      {:goth, "~> 1.3"},
       {:hackney, "~> 1.17"},
       {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
