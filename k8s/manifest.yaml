@@ -29686,6 +29686,9 @@ spec:
           value: 0.0.0.0:9000
         - name: IMGPROXY_TTL
           value: "31536000"
+        envFrom:
+        - secretRef:
+            name: imgproxy
         image: darthsim/imgproxy:v2.16.4@sha256:160db382092e9d00d84337d4569e09031138d2cadc62b8571d0714d36211ec1a
         name: imgproxy
         ports:
