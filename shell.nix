@@ -3,7 +3,7 @@ with import <nixpkgs> { };
 mkShell {
   packages = [
     dnsmasq
-    elixir_1_12
+    elixir_1_13
     elixir_ls
     inotify-tools
     jq
