@@ -48,8 +48,6 @@ if config_env() == :prod do
         environment variable SENDGRID_API_KEY is missing.
         """)
 
-  config :goth, source: {:metadata, []}
-
   config :bamboo,
     sendgrid_base_uri: "https://api.sendgrid.com/v3/"
 end
