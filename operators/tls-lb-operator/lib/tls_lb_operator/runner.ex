@@ -19,9 +19,7 @@ defmodule TlsLbOperator.Runner do
       "kind" => "Ingress",
       "metadata" => %{
         "annotations" => %{
-          "kubernetes.io/ingress.class" => "gce",
-          "kubernetes.io/ingress.allow-http" => "false",
-          "kubernetes.io/ingress.global-static-ip-name" => "affable"
+          "kubernetes.io/ingress.allow-http" => "false"
         },
         "name" => "load-balancer-affable",
         "namespace" => "affable"
