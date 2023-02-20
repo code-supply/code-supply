@@ -29998,6 +29998,9 @@ spec:
     - dns01:
         cloudDNS:
           project: code-supply
+          serviceAccountSecretRef:
+            key: code-supply-cc2de6fd7943.json
+            name: clouddns
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -30016,6 +30019,9 @@ spec:
     - dns01:
         cloudDNS:
           project: code-supply
+          serviceAccountSecretRef:
+            key: code-supply-cc2de6fd7943.json
+            name: clouddns
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: Prometheus

@@ -12,3 +12,6 @@ spec:
     - dns01:
         cloudDNS:
           project: code-supply
+          serviceAccountSecretRef:
+            name: clouddns
+            key: code-supply-cc2de6fd7943.json
