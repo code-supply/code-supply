@@ -3,10 +3,16 @@
 set -e
 
 cwd="$(cd "$(dirname "$0")" && pwd)"
-password="$("$cwd/show-affable-db-password")"
-
-"$cwd/sql_proxy" &
 cd "$cwd/../web/affable" || exit
-MIX_ENV=prod-migrate PASSWORD="$password" mix ecto.migrate
 
-wait
+export DATABASE_URL="$("$cwd/show-credential" affable affable DATABASE_URL)"
+
+export ACCESS_KEY_ID=
+export BUCKET_NAME=
+export ID_SALT=
+export LIVE_VIEW_SIGNING_SALT=
+export MIX_ENV=prod
+export SECRET_KEY_BASE=
+export SENDGRID_API_KEY=
+
+mix ecto.migrate
