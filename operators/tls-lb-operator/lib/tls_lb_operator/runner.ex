@@ -9,7 +9,7 @@ defmodule TlsLbOperator.Runner do
   end
 
   def run({:ok, operation}) do
-    IO.inspect(operation)
+    IO.puts(Jason.encode!(operation))
     :ok
   end
 
