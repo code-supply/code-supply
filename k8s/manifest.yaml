@@ -30023,6 +30023,19 @@ spec:
             key: code-supply-cc2de6fd7943.json
             name: clouddns
 ---
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    logs:
+      access:
+        enabled: true
+      general:
+        level: DEBUG
+---
 apiVersion: monitoring.coreos.com/v1
 kind: Prometheus
 metadata:
