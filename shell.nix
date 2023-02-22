@@ -11,6 +11,7 @@ mkShell {
     kustomize
     nodePackages."@tailwindcss/language-server"
     postgresql_15
+    terraform-lsp
   ];
   shellHook = ''
     initdb -D .postgres/db
