@@ -1,5 +1,6 @@
-variable "cluster-ingress-address" {
-  default = "35.195.27.167"
+locals {
+  cluster-ingress-address = "35.195.27.167"
+  main-address            = "81.187.237.24"
 }
 
 resource "google_dns_managed_zone" "root" {
@@ -89,7 +90,7 @@ resource "google_dns_managed_zone" "ab" {
 resource "google_dns_record_set" "ab-root" {
   name         = google_dns_managed_zone.ab.dns_name
   managed_zone = google_dns_managed_zone.ab.name
-  rrdatas      = [google_compute_global_address.affable.address]
+  rrdatas      = [local.main-address]
   ttl          = 300
   type         = "A"
 }
@@ -105,7 +106,7 @@ resource "google_dns_record_set" "ab-www" {
 resource "google_dns_record_set" "ab-wildcard" {
   name         = "*.${google_dns_managed_zone.ab.dns_name}"
   managed_zone = google_dns_managed_zone.ab.name
-  rrdatas      = [var.cluster-ingress-address]
+  rrdatas      = [local.cluster-ingress-address]
   ttl          = 300
   type         = "A"
 }
@@ -171,7 +172,7 @@ resource "google_dns_record_set" "ab-main" {
   name         = "main.${google_dns_managed_zone.ab.dns_name}"
   managed_zone = google_dns_managed_zone.ab.name
 
-  rrdatas = ["81.187.237.24"]
+  rrdatas = [local.main-address]
   ttl     = 86400
   type    = "A"
 }
