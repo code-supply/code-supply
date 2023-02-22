@@ -41,9 +41,9 @@ defmodule TlsLbOperator.Processor do
      {:replace_certs,
       for binding <- binding_context, reduce: [] do
         acc ->
-          acc ++
-            names(binding["objects"])
-      end}}
+          acc ++ names(binding["objects"])
+      end
+      |> Enum.uniq()}}
   end
 
   def process(context) do

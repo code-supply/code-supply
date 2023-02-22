@@ -22,6 +22,16 @@ defmodule ProcessorTest do
                  %{
                    "object" => %{
                      "kind" => "Secret",
+                     "type" => "kubernetes.io/tls",
+                     "metadata" => %{
+                       "name" => "tls-foo",
+                       "namespace" => "affable"
+                     }
+                   }
+                 },
+                 %{
+                   "object" => %{
+                     "kind" => "Secret",
                      "type" => "something/else",
                      "metadata" => %{
                        "name" => "not-tls",
