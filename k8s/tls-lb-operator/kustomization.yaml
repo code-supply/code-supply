@@ -10,6 +10,6 @@ commonLabels:
 images:
 - name: tls-lb-operator
   newName: codesupplydocker/tls-lb-operator
-  newTag: 850a787
+  newTag: e6d85c1
 patchesStrategicMerge:
 - version.yaml
