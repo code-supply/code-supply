@@ -15,7 +15,10 @@ defmodule TlsLbOperator.Processor do
           "snapshots" => snapshots
         }
       ]) do
-    {:ok, {:replace_certs, names(snapshots["affable secrets"]) ++ [name]}}
+    {:ok,
+     {:replace_certs,
+      (names(snapshots["affable secrets"]) ++ [name])
+      |> Enum.uniq()}}
   end
 
   def process([
@@ -29,7 +32,11 @@ defmodule TlsLbOperator.Processor do
           "snapshots" => snapshots
         }
       ]) do
-    {:ok, {:replace_certs, snapshots["affable secrets"] |> names() |> List.delete(name)}}
+    {:ok,
+     {:replace_certs,
+      snapshots["affable secrets"]
+      |> names()
+      |> List.delete(name)}}
   end
 
   def process([%{"type" => "Event"}]) do

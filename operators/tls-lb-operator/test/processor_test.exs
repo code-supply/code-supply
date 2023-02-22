@@ -99,6 +99,47 @@ defmodule ProcessorTest do
            |> process() == {:ok, {:replace_certs, ["existing-thing", "some-tls"]}}
   end
 
+  test "when told of a duplicate cert secret, is a no-op" do
+    assert [
+             %{
+               "binding" => "kubernetes",
+               "type" => "Event",
+               "watchEvent" => "Added",
+               "object" => %{
+                 "kind" => "Secret",
+                 "type" => "kubernetes.io/tls",
+                 "metadata" => %{
+                   "name" => "existing-thing",
+                   "namespace" => "affable"
+                 }
+               },
+               "snapshots" => %{
+                 "affable secrets" => [
+                   %{
+                     "object" => %{
+                       "type" => "kubernetes.io/tls",
+                       "metadata" => %{
+                         "name" => "existing-thing",
+                         "namespace" => "affable"
+                       }
+                     }
+                   },
+                   %{
+                     "object" => %{
+                       "type" => "Opaque",
+                       "metadata" => %{
+                         "name" => "no-thanks",
+                         "namespace" => "affable"
+                       }
+                     }
+                   }
+                 ]
+               }
+             }
+           ]
+           |> process() == {:ok, {:replace_certs, ["existing-thing"]}}
+  end
+
   test "when told of a new non-cert secret, does nothing" do
     assert [
              %{
