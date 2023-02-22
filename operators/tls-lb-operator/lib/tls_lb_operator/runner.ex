@@ -26,15 +26,25 @@ defmodule TlsLbOperator.Runner do
           for name <- secret_names do
             %{"secretName" => name}
           end,
-        "defaultBackend" => %{
-          "service" => %{
-            "name" => "affable",
-            "port" => %{
-              "number" => 80
-            }
-          }
-        },
         "rules" => [
+          %{
+            "http" => %{
+              "paths" => [
+                %{
+                  "path" => "/",
+                  "pathType" => "Prefix",
+                  "backend" => %{
+                    "service" => %{
+                      "name" => "affable",
+                      "port" => %{
+                        "number" => 80
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
           %{
             "host" => "images.affable.app",
             "http" => %{
