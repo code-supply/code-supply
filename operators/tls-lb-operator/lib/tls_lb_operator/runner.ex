@@ -18,9 +18,6 @@ defmodule TlsLbOperator.Runner do
       "apiVersion" => "networking.k8s.io/v1",
       "kind" => "Ingress",
       "metadata" => %{
-        "annotations" => %{
-          "kubernetes.io/ingress.allow-http" => "false"
-        },
         "name" => "load-balancer-affable",
         "namespace" => "affable"
       },
@@ -43,8 +40,8 @@ defmodule TlsLbOperator.Runner do
             "http" => %{
               "paths" => [
                 %{
-                  "path" => "/*",
-                  "pathType" => "ImplementationSpecific",
+                  "path" => "/",
+                  "pathType" => "Prefix",
                   "backend" => %{
                     "service" => %{
                       "name" => "imgproxy",
