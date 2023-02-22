@@ -30035,6 +30035,9 @@ spec:
         enabled: true
       general:
         level: DEBUG
+    ports:
+      web:
+        redirectTo: websecure
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: Prometheus
