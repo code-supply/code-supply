@@ -29720,10 +29720,10 @@ spec:
     metadata:
       labels:
         app: tls-lb-operator
-        version: 3fedc73
+        version: 850a787
     spec:
       containers:
-      - image: codesupplydocker/tls-lb-operator:3fedc73
+      - image: codesupplydocker/tls-lb-operator:850a787
         name: tls-lb-operator
       serviceAccountName: tls-lb-operator
 ---
