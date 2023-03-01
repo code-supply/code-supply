@@ -41,19 +41,6 @@ defmodule TlsLbOperator.Runner do
                       }
                     }
                   }
-                },
-                %{
-                  "path" => "/users/register",
-                  "pathType" => "Prefix",
-                  "backend" => %{
-                    "service" => %{
-                      # hack for 404
-                      "name" => "imgproxy",
-                      "port" => %{
-                        "number" => 80
-                      }
-                    }
-                  }
                 }
               ]
             }
