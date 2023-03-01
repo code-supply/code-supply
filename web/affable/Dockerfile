@@ -1,4 +1,4 @@
-FROM elixir:1.13.1-alpine@sha256:139a9d96206904a337c08d1c4889b596587c93422050d13bb8d77a773a7450ce AS build
+FROM elixir:1.14.3-alpine@sha256:533332aabb572cb902a47564f0c67b599ee6423e40796fb732e8992eb967e452 AS build
 
 RUN apk add --no-cache build-base git python2
 
@@ -20,7 +20,7 @@ COPY assets assets
 COPY lib lib
 RUN mix do assets.deploy, compile, release
 
-FROM alpine:3.13.6@sha256:e15947432b813e8ffa90165da919953e2ce850bef511a0ad1287d7cb86de84b5 AS app
+FROM alpine:3.17.2@sha256:e2e16842c9b54d985bf1ef9242a313f36b856181f188de21313820e177002501 AS app
 RUN apk add --no-cache openssl ncurses-libs libstdc++ lsof
 
 WORKDIR /app
