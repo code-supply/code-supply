@@ -38,13 +38,12 @@
            asset_pairs={@asset_pairs}
            />
 <% true -> %>
-<.form let={outer_form}
+<.form :let={outer_form}
        for={@changeset}
-       url="#"
        id="site"
        csrf_token={false}
-       phx_change={:validate}
-       phx_submit={:save}
+       phx-change={:validate}
+       phx-submit={:save}
        class="clear-left">
   <div>
     <div class="py-4">
@@ -58,7 +57,7 @@
 
       <div class="field" id="stylesheet-upload">
         <label>Stylesheet
-        <%= live_file_input @uploads.stylesheet %>
+          <.live_file_input upload={@uploads.stylesheet} />
         </label>
 
         <%= for entry <- @uploads.stylesheet.entries do %>
