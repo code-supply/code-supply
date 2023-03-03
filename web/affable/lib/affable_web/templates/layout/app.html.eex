@@ -1,11 +1,11 @@
 <main role="main" class="container">
   <div class="flash">
-    <%= if error_message = get_flash(@conn, :error) do %>
+    <%= if error_message = Phoenix.Flash.get(@flash, :error) do %>
       <p class="flash-error" role="alert">
         <%= error_message %>
       </p>
     <% end %>
-    <%= if info_message = get_flash(@conn, :info) do %>
+    <%= if info_message = Phoenix.Flash.get(@flash, :info) do %>
       <p class="flash-info" role="alert">
         <%= info_message %>
       </p>

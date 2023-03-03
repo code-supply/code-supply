@@ -1,7 +1,6 @@
 <h1>Reset password</h1>
 
-<.form let={f} for={@changeset}
-  action={Routes.user_reset_password_path(@conn, :update, @token)}>
+<.form :let={f} for={@changeset} action={Routes.user_reset_password_path(@conn, :update, @token)}>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
       <p>Oops, something went wrong! Please check the errors below.</p>
@@ -9,23 +8,24 @@
   <% end %>
 
   <div class="field">
-    <%= label f, :password, "New password" %>
-    <%= password_input f, :password, required: true, autofocus: true %>
-    <%= error_tag f, :password %>
+    <%= label(f, :password, "New password") %>
+    <%= password_input(f, :password, required: true, autofocus: true) %>
+    <%= error_tag(f, :password) %>
   </div>
 
   <div class="field">
-    <%= label f, :password_confirmation, "Confirm new password" %>
-    <%= password_input f, :password_confirmation, required: true %>
-    <%= error_tag f, :password_confirmation %>
+    <%= label(f, :password_confirmation, "Confirm new password") %>
+    <%= password_input(f, :password_confirmation, required: true) %>
+    <%= error_tag(f, :password_confirmation) %>
   </div>
 
   <div>
-    <%= submit "Reset password", class: "btn btn-spaced" %>
+    <%= submit("Reset password", class: "btn btn-spaced") %>
   </div>
 </.form>
 
 <p>
-  <%= link "Register", to: Routes.user_registration_path(@conn, :new) %> |
-  <%= link "Log in", to: Routes.user_session_path(@conn, :new) %>
+  <%= link("Register", to: Routes.user_registration_path(@conn, :new)) %> | <%= link("Log in",
+    to: Routes.user_session_path(@conn, :new)
+  ) %>
 </p>

@@ -17,6 +17,8 @@ defmodule AffableWeb do
   and import those modules here.
   """
 
+  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+
   def controller do
     quote do
       use Phoenix.Controller, namespace: AffableWeb
@@ -24,6 +26,8 @@ defmodule AffableWeb do
       import Plug.Conn
       import AffableWeb.Gettext
       alias AffableWeb.Router.Helpers, as: Routes
+
+      unquote(verified_routes())
     end
   end
 
@@ -91,6 +95,17 @@ defmodule AffableWeb do
       import AffableWeb.ErrorHelpers
       import AffableWeb.Gettext
       alias AffableWeb.Router.Helpers, as: Routes
+
+      unquote(verified_routes())
+    end
+  end
+
+  def verified_routes do
+    quote do
+      use Phoenix.VerifiedRoutes,
+        endpoint: AffableWeb.Endpoint,
+        router: AffableWeb.Router,
+        statics: AffableWeb.static_paths()
     end
   end
 

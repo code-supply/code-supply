@@ -4,12 +4,12 @@ defmodule AffableWeb.PageManagementTest do
 
   alias Affable.Sites
 
-  defp path(conn, %Sites.Site{pages: [page | _]} = site) do
+  defp test_path(conn, %Sites.Site{pages: [page | _]} = site) do
     Routes.editor_path(conn, :edit, site.id, page.id)
     |> control_plane_path()
   end
 
-  defp path(conn, action, id) do
+  defp test_path(conn, action, id) do
     Routes.editor_path(conn, action, id)
     |> control_plane_path()
   end
@@ -42,7 +42,7 @@ defmodule AffableWeb.PageManagementTest do
     {:ok, view, _html} =
       live(
         conn,
-        path(conn, :edit, site.id)
+        test_path(conn, :edit, site.id)
       )
 
     id = new_page(view, site)
@@ -103,7 +103,7 @@ defmodule AffableWeb.PageManagementTest do
     site: site,
     page: page
   } do
-    {:ok, view, _html} = live(conn, path(conn, site))
+    {:ok, view, _html} = live(conn, test_path(conn, site))
 
     view
     |> change_form(page, page: %{title: ""})
@@ -123,7 +123,7 @@ defmodule AffableWeb.PageManagementTest do
     site: site,
     page: page
   } do
-    {:ok, view, _html} = live(conn, path(conn, site))
+    {:ok, view, _html} = live(conn, test_path(conn, site))
 
     view
     |> change_form(page, page: %{title: "new page title"})

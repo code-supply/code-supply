@@ -18,7 +18,7 @@ defmodule AffableWeb.EditorLiveTest do
     end
 
     test "can navigate back to site editing", %{conn: conn, site: site} do
-      {:ok, view, _html} = live(conn, path(conn, site))
+      {:ok, view, _html} = live(conn, test_path(conn, site))
 
       view
       |> element("#site-choice a")
@@ -30,18 +30,18 @@ defmodule AffableWeb.EditorLiveTest do
     test "raises exception when site doesn't belong to user", %{conn: conn} do
       site = site_fixture()
 
-      assert_raise Ecto.NoResultsError, fn -> get(conn, path(conn, site)) end
+      assert_raise Ecto.NoResultsError, fn -> get(conn, test_path(conn, site)) end
     end
 
     test "redirects to login page when token is bogus", %{conn: conn, user: user, site: site} do
       Accounts.delete_user(user)
 
-      conn = get(conn, path(conn, site))
+      conn = get(conn, test_path(conn, site))
       assert html_response(conn, 302)
 
       expected_path = Routes.user_session_path(conn, :new)
 
-      {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn, site))
+      {:error, {:redirect, %{to: actual_path}}} = live(conn, test_path(conn, site))
 
       assert actual_path == expected_path
     end
@@ -53,18 +53,18 @@ defmodule AffableWeb.EditorLiveTest do
     end
 
     test "redirects to login page when not logged in", %{conn: conn, site: site} do
-      conn = get(conn, path(conn, site))
+      conn = get(conn, test_path(conn, site))
       assert html_response(conn, 302)
 
       expected_path = Routes.user_session_path(conn, :new)
 
-      {:error, {:redirect, %{to: actual_path}}} = live(conn, path(conn, site))
+      {:error, {:redirect, %{to: actual_path}}} = live(conn, test_path(conn, site))
 
       assert actual_path == expected_path
     end
   end
 
-  defp path(conn, site) do
+  defp test_path(conn, site) do
     Routes.editor_path(conn, :edit, site.id)
     |> control_plane_path()
   end

@@ -31,7 +31,7 @@ defmodule AffableWeb.PageUploadTest do
   } do
     [page] = site.pages
     [domain] = site.domains
-    {:ok, view, _html} = live(conn, path(conn, :edit, site.id))
+    {:ok, view, _html} = live(conn, test_path(conn, :edit, site.id))
 
     view
     |> element(select_page_tab(1), "Home")
@@ -59,7 +59,7 @@ defmodule AffableWeb.PageUploadTest do
 
   test "can upload a stylesheet for a site", %{conn: conn, site: site} do
     [domain] = site.domains
-    {:ok, view, _html} = live(conn, path(conn, :edit, site.id))
+    {:ok, view, _html} = live(conn, test_path(conn, :edit, site.id))
 
     view
     |> element(select_page_tab(0), "Site")
@@ -98,7 +98,7 @@ defmodule AffableWeb.PageUploadTest do
     assert response(conn, 200) == @css
   end
 
-  defp path(conn, action, id) do
+  defp test_path(conn, action, id) do
     Routes.editor_path(conn, action, id)
     |> control_plane_path()
   end

@@ -133,7 +133,9 @@ defmodule AffableWeb.UserAuthTest do
       conn = conn |> fetch_flash() |> UserAuth.require_authenticated_user([])
       assert conn.halted
       assert redirected_to(conn) == Routes.user_session_path(conn, :new)
-      assert get_flash(conn, :error) == "You must log in to access this page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "You must log in to access this page."
     end
 
     test "redirects if user is not confirmed", %{conn: conn, user: user} do
@@ -145,7 +147,7 @@ defmodule AffableWeb.UserAuthTest do
 
       assert conn.halted
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :info) =~ "Please check your email"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Please check your email"
     end
 
     test "stores the path to redirect to on GET", %{conn: conn} do

@@ -34,7 +34,7 @@ defmodule AffableWeb.UserConfirmationControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :info) =~ "If your e-mail is in our system"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "If your e-mail is in our system"
       assert Repo.get_by!(Accounts.UserToken, user_id: user.id).context == "confirm"
 
       assert_email_delivered_with(
@@ -56,7 +56,7 @@ defmodule AffableWeb.UserConfirmationControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :info) =~ "If your e-mail is in our system"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "If your e-mail is in our system"
       refute Repo.get_by(Accounts.UserToken, user_id: user.id)
       refute_email_delivered_with(subject: expected_subject)
     end
@@ -68,7 +68,7 @@ defmodule AffableWeb.UserConfirmationControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :info) =~ "If your e-mail is in our system"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "If your e-mail is in our system"
       assert Repo.all(Accounts.UserToken) == []
     end
   end
@@ -79,20 +79,25 @@ defmodule AffableWeb.UserConfirmationControllerTest do
 
       conn = get(conn, control_plane_path(Routes.user_confirmation_path(conn, :confirm, token)))
       assert redirected_to(conn) == Routes.sites_path(conn, :index)
-      assert get_flash(conn, :info) =~ "Account confirmed successfully"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Account confirmed successfully"
       assert Accounts.get_user!(user.id).confirmed_at
       refute get_session(conn, :user_token)
       assert Repo.all(Accounts.UserToken) == []
 
       conn = get(conn, control_plane_path(Routes.user_confirmation_path(conn, :confirm, token)))
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :error) =~ "Confirmation link is invalid or it has expired"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Confirmation link is invalid or it has expired"
     end
 
     test "does not confirm email with invalid token", %{conn: conn, user: user} do
       conn = get(conn, control_plane_path(Routes.user_confirmation_path(conn, :confirm, "oops")))
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :error) =~ "Confirmation link is invalid or it has expired"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Confirmation link is invalid or it has expired"
+
       refute Accounts.get_user!(user.id).confirmed_at
     end
 

@@ -12,7 +12,7 @@ defmodule AffableWeb.UserResetPasswordControllerTest do
 
   describe "GET /users/reset_password" do
     test "renders the reset password page", %{conn: conn} do
-      conn = get(conn, path(conn, :new))
+      conn = get(conn, test_path(conn, :new))
       response = html_response(conn, 200)
       assert response =~ "<h1>Forgot your password?</h1>"
     end
@@ -29,12 +29,12 @@ defmodule AffableWeb.UserResetPasswordControllerTest do
       expected_subject: expected_subject
     } do
       conn =
-        post(conn, path(conn, :create), %{
+        post(conn, test_path(conn, :create), %{
           "user" => %{"email" => user.email}
         })
 
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :info) =~ "If your e-mail is in our system"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "If your e-mail is in our system"
       assert Repo.get_by!(Accounts.UserToken, user_id: user.id).context == "reset_password"
 
       assert_email_delivered_with(
@@ -48,12 +48,12 @@ defmodule AffableWeb.UserResetPasswordControllerTest do
       expected_subject: expected_subject
     } do
       conn =
-        post(conn, path(conn, :create), %{
+        post(conn, test_path(conn, :create), %{
           "user" => %{"email" => "unknown@example.com"}
         })
 
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :info) =~ "If your e-mail is in our system"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "If your e-mail is in our system"
       assert Repo.all(Accounts.UserToken) == []
 
       refute_email_delivered_with(subject: expected_subject)
@@ -71,14 +71,16 @@ defmodule AffableWeb.UserResetPasswordControllerTest do
     end
 
     test "renders reset password", %{conn: conn, token: token} do
-      conn = get(conn, path(conn, :edit, token))
+      conn = get(conn, test_path(conn, :edit, token))
       assert html_response(conn, 200) =~ "<h1>Reset password</h1>"
     end
 
     test "does not render reset password with invalid token", %{conn: conn} do
-      conn = get(conn, path(conn, :edit, "oops"))
+      conn = get(conn, test_path(conn, :edit, "oops"))
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :error) =~ "Reset password link is invalid or it has expired"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Reset password link is invalid or it has expired"
     end
   end
 
@@ -94,7 +96,7 @@ defmodule AffableWeb.UserResetPasswordControllerTest do
 
     test "resets password once", %{conn: conn, user: user, token: token} do
       conn =
-        put(conn, path(conn, :update, token), %{
+        put(conn, test_path(conn, :update, token), %{
           "user" => %{
             "password" => "new valid password",
             "password_confirmation" => "new valid password"
@@ -103,13 +105,13 @@ defmodule AffableWeb.UserResetPasswordControllerTest do
 
       assert redirected_to(conn) == Routes.user_session_path(conn, :new)
       refute get_session(conn, :user_token)
-      assert get_flash(conn, :info) =~ "Password reset successfully"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Password reset successfully"
       assert Accounts.get_user_by_email_and_password(user.email, "new valid password")
     end
 
     test "does not reset password on invalid data", %{conn: conn, token: token} do
       conn =
-        put(conn, path(conn, :update, token), %{
+        put(conn, test_path(conn, :update, token), %{
           "user" => %{
             "password" => "too short",
             "password_confirmation" => "does not match"
@@ -123,19 +125,21 @@ defmodule AffableWeb.UserResetPasswordControllerTest do
     end
 
     test "does not reset password with invalid token", %{conn: conn} do
-      conn = put(conn, path(conn, :update, "oops"))
+      conn = put(conn, test_path(conn, :update, "oops"))
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :error) =~ "Reset password link is invalid or it has expired"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Reset password link is invalid or it has expired"
     end
   end
 
-  defp path(conn, action) do
+  defp test_path(conn, action) do
     conn
     |> Routes.user_reset_password_path(action)
     |> control_plane_path()
   end
 
-  defp path(conn, action, token) do
+  defp test_path(conn, action, token) do
     conn
     |> Routes.user_reset_password_path(action, token)
     |> control_plane_path()

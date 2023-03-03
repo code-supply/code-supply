@@ -28,6 +28,8 @@ defmodule AffableWeb.ConnCase do
 
       # The default endpoint for testing
       @endpoint AffableWeb.Endpoint
+
+      use AffableWeb, :verified_routes
     end
   end
 
