@@ -1,27 +1,14 @@
 defmodule AffableWeb do
-  @moduledoc """
-  The entrypoint for defining your web interface, such
-  as controllers, views, channels and so on.
-
-  This can be used in your application as:
-
-      use AffableWeb, :controller
-      use AffableWeb, :view
-
-  The definitions below will be executed for every view,
-  controller, etc, so keep them short and clean, focused
-  on imports, uses and aliases.
-
-  Do NOT define functions inside the quoted expressions
-  below. Instead, define any helper function in modules
-  and import those modules here.
-  """
-
   def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
 
   def controller do
     quote do
       use Phoenix.Controller, namespace: AffableWeb
+
+      # TODO Migrate to the following when views are switched to components, and rename views to BlahHTML
+      # use Phoenix.Controller,
+      #   formats: [:html, :json],
+      #   layouts: [html: AffableWeb.Layouts]
 
       import Plug.Conn
       import AffableWeb.Gettext
