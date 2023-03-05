@@ -9,6 +9,8 @@ mkShell {
     kubectl
     kustomize
     nodePackages."@tailwindcss/language-server"
+    nodePackages.typescript
+    nodePackages.typescript-language-server
     postgresql_15
     terraform
     terraform-lsp
