@@ -53,9 +53,10 @@ config :affable, Affable.Mailer, adapter: Bamboo.LocalAdapter
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.12.18",
+  version: "0.14.41",
   default: [
-    args: ~w(src/app.ts --bundle --target=es2016 --outdir=../priv/static/assets),
+    args:
+      ~w(src/app.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
