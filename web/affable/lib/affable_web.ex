@@ -62,12 +62,21 @@ defmodule AffableWeb do
     end
   end
 
-  def live_view do
+  def old_live_view do
     quote do
       use Phoenix.LiveView,
         layout: {AffableWeb.LayoutView, :live}
 
       unquote(view_helpers())
+    end
+  end
+
+  def live_view do
+    quote do
+      use Phoenix.LiveView,
+        layout: {AffableWeb.LayoutView, :live}
+
+      unquote(html_helpers())
     end
   end
 

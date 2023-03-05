@@ -1,5 +1,5 @@
 defmodule AffableWeb.AssetsLive do
-  use AffableWeb, :live_view
+  use AffableWeb, :old_live_view
 
   alias Affable.{Accounts, Assets}
   alias Affable.Assets.Asset

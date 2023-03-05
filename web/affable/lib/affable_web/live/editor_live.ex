@@ -1,7 +1,7 @@
 defmodule AffableWeb.EditorLive do
   require Logger
 
-  use AffableWeb, :live_view
+  use AffableWeb, :old_live_view
 
   alias Affable.Accounts
   alias Affable.Sites

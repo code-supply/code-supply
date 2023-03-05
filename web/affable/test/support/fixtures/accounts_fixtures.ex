@@ -44,4 +44,11 @@ defmodule Affable.AccountsFixtures do
   def wrong_user do
     %User{id: 99_999}
   end
+
+  def valid_user_attributes(attrs \\ %{}) do
+    Enum.into(attrs, %{
+      email: unique_user_email(),
+      password: valid_user_password()
+    })
+  end
 end

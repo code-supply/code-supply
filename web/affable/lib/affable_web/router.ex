@@ -61,42 +61,48 @@ defmodule AffableWeb.Router do
 
   ## Authentication routes
 
-  scope control_plane ++ [path: "/"] do
+  # not currently scoped to control_plane as test helpers like follow_redirect won't work with hosts
+  scope path: "/" do
     pipe_through([:browser, :redirect_if_user_is_authenticated])
 
-    get("/users/register", UserRegistrationController, :new)
-    post("/users/register", UserRegistrationController, :create)
-    get("/users/log_in", UserSessionController, :new)
-    post("/users/log_in", UserSessionController, :create)
-    get("/users/reset_password", UserResetPasswordController, :new)
-    post("/users/reset_password", UserResetPasswordController, :create)
-    get("/users/reset_password/:token", UserResetPasswordController, :edit)
-    put("/users/reset_password/:token", UserResetPasswordController, :update)
+    live_session :redirect_if_user_is_authenticated,
+      on_mount: [{AffableWeb.UserAuth, :redirect_if_user_is_authenticated}] do
+      live "/users/register", AffableWeb.UserRegistrationLive, :new
+      live "/users/log_in", AffableWeb.UserLoginLive, :new
+      live "/users/reset_password", AffableWeb.UserForgotPasswordLive, :new
+      live "/users/reset_password/:token", AffableWeb.UserResetPasswordLive, :edit
+    end
+
+    post "/users/log_in", AffableWeb.UserSessionController, :create
   end
 
   scope control_plane ++ [path: "/"] do
     pipe_through([:browser, :require_authenticated_user])
 
-    live("/sites", SitesLive, :index)
-    live("/sites/:id/edit", EditorLive, :edit)
+    live_session :require_authenticated_user,
+      on_mount: [{AffableWeb.UserAuth, :ensure_authenticated}] do
+      live("/sites", SitesLive, :index)
+      live("/sites/:id/edit", EditorLive, :edit)
 
-    live("/sites/:id/pages/:page_id/edit", EditorLive, :edit)
-    live("/assets", AssetsLive, :index)
-    live("/domains", DomainsLive, :index)
-    get("/users/settings", UserSettingsController, :edit)
-    put("/users/settings/update_password", UserSettingsController, :update_password)
-    put("/users/settings/update_email", UserSettingsController, :update_email)
-    get("/users/settings/confirm_email/:token", UserSettingsController, :confirm_email)
-    delete("/users/settings/delete_account", UserSettingsController, :delete_account)
+      live("/sites/:id/pages/:page_id/edit", EditorLive, :edit)
+      live("/assets", AssetsLive, :index)
+      live("/domains", DomainsLive, :index)
+
+      live "/users/settings", UserSettingsLive, :edit
+      live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+    end
   end
 
   scope control_plane ++ [path: "/"] do
     pipe_through([:browser])
 
     delete("/users/log_out", UserSessionController, :delete)
-    get("/users/confirm", UserConfirmationController, :new)
-    post("/users/confirm", UserConfirmationController, :create)
-    get("/users/confirm/:token", UserConfirmationController, :confirm)
+
+    live_session :current_user,
+      on_mount: [{AffableWeb.UserAuth, :mount_current_user}] do
+      live "/users/confirm/:token", UserConfirmationLive, :edit
+      live "/users/confirm", UserConfirmationInstructionsLive, :new
+    end
   end
 
   scope path: "/stylesheets", alias: AffableWeb do

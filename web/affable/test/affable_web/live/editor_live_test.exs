@@ -39,7 +39,7 @@ defmodule AffableWeb.EditorLiveTest do
       conn = get(conn, test_path(conn, site))
       assert html_response(conn, 302)
 
-      expected_path = Routes.user_session_path(conn, :new)
+      expected_path = ~p"/users/log_in"
 
       {:error, {:redirect, %{to: actual_path}}} = live(conn, test_path(conn, site))
 
@@ -56,7 +56,7 @@ defmodule AffableWeb.EditorLiveTest do
       conn = get(conn, test_path(conn, site))
       assert html_response(conn, 302)
 
-      expected_path = Routes.user_session_path(conn, :new)
+      expected_path = ~p"/users/log_in"
 
       {:error, {:redirect, %{to: actual_path}}} = live(conn, test_path(conn, site))
 

@@ -1,5 +1,5 @@
 defmodule AffableWeb.SitesLive do
-  use AffableWeb, :live_view
+  use AffableWeb, :old_live_view
 
   require Logger
 

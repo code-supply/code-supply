@@ -226,9 +226,9 @@ defmodule AffableWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="space-y-8 bg-white mt-10">
+      <div class="standard-w">
         <%= render_slot(@inner_block, f) %>
-        <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
+        <div :for={action <- @actions}>
           <%= render_slot(action, f) %>
         </div>
       </div>
@@ -255,8 +255,7 @@ defmodule AffableWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 btn btn-spaced",
         @class
       ]}
       {@rest}
@@ -314,18 +313,18 @@ defmodule AffableWeb.CoreComponents do
       assign_new(assigns, :checked, fn -> Phoenix.HTML.Form.normalize_value("checkbox", value) end)
 
     ~H"""
-    <div phx-feedback-for={@name}>
-      <label class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
-        <input type="hidden" name={@name} value="false" />
-        <input
-          type="checkbox"
-          id={@id || @name}
-          name={@name}
-          value="true"
-          checked={@checked}
-          class="rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
-          {@rest}
-        />
+    <div class="pt-4" phx-feedback-for={@name}>
+      <input type="hidden" name={@name} value="false" />
+      <input
+        type="checkbox"
+        id={@id || @name}
+        name={@name}
+        value="true"
+        checked={@checked}
+        class="rounded focus:ring-zinc-900"
+        {@rest}
+      />
+      <label class="pl-1" for={@id || @name}>
         <%= @label %>
       </label>
       <.error :for={msg <- @errors}><%= msg %></.error>
@@ -375,7 +374,7 @@ defmodule AffableWeb.CoreComponents do
 
   def input(assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
+    <div class="field" phx-feedback-for={@name}>
       <.label for={@id}><%= @label %></.label>
       <input
         type={@type}
@@ -383,10 +382,6 @@ defmodule AffableWeb.CoreComponents do
         id={@id || @name}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg border-zinc-300 py-[7px] px-[11px]",
-          "text-zinc-900 focus:outline-none focus:ring-4 sm:text-sm sm:leading-6",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400 phx-no-feedback:focus:ring-zinc-800/5",
-          "border-zinc-300 focus:border-zinc-400 focus:ring-zinc-800/5",
           @errors != [] && "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10"
         ]}
         {@rest}
@@ -404,7 +399,7 @@ defmodule AffableWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for}>
       <%= render_slot(@inner_block) %>
     </label>
     """

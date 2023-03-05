@@ -1,19 +1,13 @@
 <main role="main">
   <div class="flash">
     <%= if error_message = live_flash(@flash, :error) do %>
-      <p class="flash-error"
-         role="alert"
-         phx-click="lv:clear-flash"
-         phx-value-key="error">
+      <p class="flash-error" role="alert" phx-click="lv:clear-flash" phx-value-key="error">
         <%= error_message %>
       </p>
     <% end %>
 
     <%= if info_message = live_flash(@flash, :info) do %>
-      <p class="flash-info"
-         role="alert"
-         phx-click="lv:clear-flash"
-         phx-value-key="info">
+      <p class="flash-info" role="alert" phx-click="lv:clear-flash" phx-value-key="info">
         <%= info_message %>
       </p>
     <% end %>

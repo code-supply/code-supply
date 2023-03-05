@@ -1,5 +1,5 @@
 defmodule AffableWeb.DomainsLive do
-  use AffableWeb, :live_view
+  use AffableWeb, :old_live_view
   require Logger
 
   alias Affable.Accounts

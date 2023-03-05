@@ -133,7 +133,7 @@ defmodule Affable.AccountsTest do
       too_long = String.duplicate("db", 100)
       {:error, changeset} = Accounts.register_user(%{email: too_long, password: too_long})
       assert "should be at most 160 character(s)" in errors_on(changeset).email
-      assert "should be at most 80 character(s)" in errors_on(changeset).password
+      assert "should be at most 72 character(s)" in errors_on(changeset).password
     end
 
     test "validates e-mail uniqueness" do
@@ -160,6 +160,22 @@ defmodule Affable.AccountsTest do
     test "returns a changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_user_registration(%User{})
       assert changeset.required == [:password, :email]
+    end
+
+    test "allows fields to be set" do
+      email = unique_user_email()
+      password = valid_user_password()
+
+      changeset =
+        Accounts.change_user_registration(
+          %User{},
+          valid_user_attributes(email: email, password: password)
+        )
+
+      assert changeset.valid?
+      assert get_change(changeset, :email) == email
+      assert get_change(changeset, :password) == password
+      assert is_nil(get_change(changeset, :hashed_password))
     end
   end
 
@@ -196,11 +212,11 @@ defmodule Affable.AccountsTest do
       assert "should be at most 160 character(s)" in errors_on(changeset).email
     end
 
-    test "validates e-mail uniqueness", %{user: user} do
+    test "validates email uniqueness", %{user: user} do
       %{email: email} = user_fixture()
+      password = valid_user_password()
 
-      {:error, changeset} =
-        Accounts.apply_user_email(user, valid_user_password(), %{email: email})
+      {:error, changeset} = Accounts.apply_user_email(user, password, %{email: email})
 
       assert "has already been taken" in errors_on(changeset).email
     end
@@ -220,7 +236,7 @@ defmodule Affable.AccountsTest do
     end
   end
 
-  describe "deliver_update_email_instructions/3" do
+  describe "deliver_user_update_email_instructions/3" do
     setup do
       %{user: user_fixture()}
     end
@@ -228,7 +244,7 @@ defmodule Affable.AccountsTest do
     test "sends token through notification", %{user: user} do
       token =
         extract_user_token(fn url ->
-          Accounts.deliver_update_email_instructions(user, "current@example.com", url)
+          Accounts.deliver_user_update_email_instructions(user, "current@example.com", url)
         end)
 
       {:ok, token} = Base.url_decode64(token, padding: false)
@@ -246,13 +262,13 @@ defmodule Affable.AccountsTest do
 
       token =
         extract_user_token(fn url ->
-          Accounts.deliver_update_email_instructions(%{user | email: email}, user.email, url)
+          Accounts.deliver_user_update_email_instructions(%{user | email: email}, user.email, url)
         end)
 
       %{user: user, token: token, email: email}
     end
 
-    test "updates the e-mail with a valid token", %{user: user, token: token, email: email} do
+    test "updates the email with a valid token", %{user: user, token: token, email: email} do
       assert Accounts.update_user_email(user, token) == :ok
       changed_user = Repo.get!(User, user.id)
       assert changed_user.email != user.email
@@ -262,19 +278,19 @@ defmodule Affable.AccountsTest do
       refute Repo.get_by(UserToken, user_id: user.id)
     end
 
-    test "does not update e-mail with invalid token", %{user: user} do
+    test "does not update email with invalid token", %{user: user} do
       assert Accounts.update_user_email(user, "oops") == :error
       assert Repo.get!(User, user.id).email == user.email
       assert Repo.get_by(UserToken, user_id: user.id)
     end
 
-    test "does not update e-mail if user e-mail changed", %{user: user, token: token} do
+    test "does not update email if user email changed", %{user: user, token: token} do
       assert Accounts.update_user_email(%{user | email: "current@example.com"}, token) == :error
       assert Repo.get!(User, user.id).email == user.email
       assert Repo.get_by(UserToken, user_id: user.id)
     end
 
-    test "does not update e-mail if token expired", %{user: user, token: token} do
+    test "does not update email if token expired", %{user: user, token: token} do
       {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2020-01-01 00:00:00]])
       assert Accounts.update_user_email(user, token) == :error
       assert Repo.get!(User, user.id).email == user.email
@@ -286,6 +302,17 @@ defmodule Affable.AccountsTest do
     test "returns a user changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_user_password(%User{})
       assert changeset.required == [:password]
+    end
+
+    test "allows fields to be set" do
+      changeset =
+        Accounts.change_user_password(%User{}, %{
+          "password" => "new valid password"
+        })
+
+      assert changeset.valid?
+      assert get_change(changeset, :password) == "new valid password"
+      assert is_nil(get_change(changeset, :hashed_password))
     end
   end
 
@@ -313,7 +340,7 @@ defmodule Affable.AccountsTest do
       {:error, changeset} =
         Accounts.update_user_password(user, valid_user_password(), %{password: too_long})
 
-      assert "should be at most 80 character(s)" in errors_on(changeset).password
+      assert "should be at most 72 character(s)" in errors_on(changeset).password
     end
 
     test "validates current password", %{user: user} do
@@ -388,11 +415,11 @@ defmodule Affable.AccountsTest do
     end
   end
 
-  describe "delete_session_token/1" do
+  describe "delete_user_session_token/1" do
     test "deletes the token" do
       user = user_fixture()
       token = Accounts.generate_user_session_token(user)
-      assert Accounts.delete_session_token(token) == :ok
+      assert Accounts.delete_user_session_token(token) == :ok
       refute Accounts.get_user_by_session_token(token)
     end
   end
@@ -469,7 +496,7 @@ defmodule Affable.AccountsTest do
     end
   end
 
-  describe "get_user_by_reset_password_token/2" do
+  describe "get_user_by_reset_password_token/1" do
     setup do
       user = user_fixture()
 
@@ -498,7 +525,7 @@ defmodule Affable.AccountsTest do
     end
   end
 
-  describe "reset_user_password/3" do
+  describe "reset_user_password/2" do
     setup do
       %{user: user_fixture()}
     end
@@ -519,7 +546,7 @@ defmodule Affable.AccountsTest do
     test "validates maximum values for password for security", %{user: user} do
       too_long = String.duplicate("db", 100)
       {:error, changeset} = Accounts.reset_user_password(user, %{password: too_long})
-      assert "should be at most 80 character(s)" in errors_on(changeset).password
+      assert "should be at most 72 character(s)" in errors_on(changeset).password
     end
 
     test "updates the password", %{user: user} do

@@ -25,9 +25,9 @@ defmodule AffableWeb.PageControllerTest do
     assert response =~ "<title>my site"
   end
 
-  test "404s for things like favicons" do
+  test "404s for arbitrary missing stuff at root" do
     assert_error_sent 404, fn ->
-      get(build_conn(), "http://localhost:4000/favicon.ico")
+      get(build_conn(), "http://localhost:4000/not-there.png")
     end
   end
 
