@@ -46,7 +46,7 @@ defmodule Affable.MixProject do
       {:phoenix_live_dashboard, "~> 0.7.2"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.11"},
+      {:gettext, "~> 0.22"},
       {:jason, "~> 1.4"},
       {:plug_cowboy, "~> 2.5"},
       {:httpoison, "~> 1.7"},
