@@ -52,7 +52,7 @@ defmodule Affable.MixProject do
       {:httpoison, "~> 1.7"},
       {:bamboo, "~> 2.3.0"},
       {:bamboo_phoenix, "~> 1.0.0"},
-      {:hashids, "~> 2.0"},
+      {:hashids, "~> 2.1.0"},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:libcluster, "~> 3.3.0"},
