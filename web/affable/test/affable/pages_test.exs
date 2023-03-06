@@ -73,16 +73,60 @@ defmodule Affable.PagesTest do
       )
 
     {:ok, new_page} = Sites.add_page(site, user)
-    {:ok, new_page} = Sites.update_page(
-      new_page,
-      %{path: "/untitled-page.html"},
-      user
-    )
+
+    {:ok, new_page} =
+      Sites.update_page(
+        new_page,
+        %{path: "/untitled-page.html"},
+        user
+      )
 
     [domain] = site.domains
 
     assert homepage.id == Pages.get_for_route(domain.name, "/").id
     assert new_page.id == Pages.get_for_route(domain.name, "/untitled-page").id
+  end
+
+  test "renders index.html links as /" do
+    rendered =
+      Pages.render(
+        %Page{
+          raw: """
+          nonsense
+          <a href="donttouch.zip">a zip file</a>
+          <a href="index.html">Home</a>
+          <a href="index.html#some-place">Inside the home</a>
+          more nonsense
+          """
+        },
+        %Site{stylesheet: ""}
+      )
+
+    assert rendered =~ ~s(<a href="/">Home</a>)
+    assert rendered =~ ~s(<a href="/#some-place">Inside the home</a>)
+    assert rendered =~ ~s(<a href="donttouch.zip">a zip file</a>)
+  end
+
+  test "renders blah.html as /blah" do
+    rendered =
+      Pages.render(
+        %Page{
+          raw: """
+          nonsense
+          <a href="donttouch.zip">a zip file</a>
+          <a href="http://www.example.com/donttouch.zip">another zip file</a>
+          <a href="contact.html">Contact</a>
+          <a href="contact.html#email">Contact by email</a>
+          more nonsense
+          """
+        },
+        %Site{stylesheet: ""}
+      )
+
+    assert rendered =~ ~s(<a href="/contact">Contact</a>)
+    assert rendered =~ ~s(<a href="/contact#email">Contact by email</a>)
+    assert rendered =~ ~s(<a href="donttouch.zip">a zip file</a>)
+    assert rendered =~ ~s(<a href="http://www.example.com/donttouch.zip">another zip file</a>)
   end
 
   test "attempting to retrieve with non-existent host returns nil" do

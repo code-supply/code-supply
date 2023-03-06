@@ -3,6 +3,7 @@ defmodule Affable.Pages do
 
   alias Affable.Repo
   alias Affable.Sites.{Site, Page}
+  alias Affable.URIRewriter
 
   @site_stylesheet {"link",
                     [
@@ -19,8 +20,9 @@ defmodule Affable.Pages do
     {:ok, doc} = Floki.parse_document(raw)
 
     doc
-    |> Floki.filter_out("script")
-    |> Floki.filter_out("link[rel=stylesheet i]")
+    |> remove_scripts()
+    |> remove_stylesheets()
+    |> rewrite_links()
   end
 
   defp process(%Page{} = page, _stylesheet_present) do
@@ -38,6 +40,36 @@ defmodule Affable.Pages do
       other ->
         other
     end)
+  end
+
+  defp rewrite_links(doc) do
+    Floki.traverse_and_update(doc, fn
+      {"a", attrs, children} ->
+        {
+          "a",
+          for {"href", url} <- attrs do
+            {
+              "href",
+              url
+              |> URI.parse()
+              |> URIRewriter.rewrite()
+              |> URI.to_string()
+            }
+          end,
+          children
+        }
+
+      other ->
+        other
+    end)
+  end
+
+  defp remove_scripts(doc) do
+    Floki.filter_out(doc, "script")
+  end
+
+  defp remove_stylesheets(doc) do
+    Floki.filter_out(doc, "link[rel=stylesheet i]")
   end
 
   def get_for_route(host, path) do
