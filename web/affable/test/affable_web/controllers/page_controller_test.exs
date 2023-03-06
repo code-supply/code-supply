@@ -26,9 +26,9 @@ defmodule AffableWeb.PageControllerTest do
   end
 
   test "404s for arbitrary missing stuff at root" do
-    assert_error_sent 404, fn ->
+    assert_error_sent(404, fn ->
       get(build_conn(), "http://localhost:4000/not-there.png")
-    end
+    end)
   end
 
   test "only permits iframing inside control site" do
