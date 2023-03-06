@@ -1,18 +1,19 @@
-<.form :let={f} for={@changeset}
-    id="asset-form"
-    class="container"
-    phx-drop-target={@uploads.asset.ref}
-    phx-change="validate"
-    phx-submit="save"
-    ondragover="this.classList.add('animate-pulse')"
-    ondragenter="this.classList.add('animate-pulse')"
-    ondragleave="this.classList.remove('animate-pulse')"
-    ondrop="this.classList.remove('animate-pulse')">
-
+<.form
+  :let={f}
+  for={@changeset}
+  id="asset-form"
+  class="container"
+  phx-drop-target={@uploads.asset.ref}
+  phx-change="validate"
+  phx-submit="save"
+  ondragover="this.classList.add('animate-pulse')"
+  ondragenter="this.classList.add('animate-pulse')"
+  ondragleave="this.classList.remove('animate-pulse')"
+  ondrop="this.classList.remove('animate-pulse')"
+>
   <h1>My Assets</h1>
 
   <div class="p-8 text-white bg-blue-300 border-8 border-blue-100 border-double rounded-xl">
-
     <div class="mt-4">
       <%= for entry <- @uploads.asset.entries do %>
         <ul class="px-6 py-2 text-black bg-white rounded-md">
@@ -26,12 +27,26 @@
               </progress>
             </p>
             <p class="text-right">
-            <button class="underline" type="button" phx-click="cancel-upload" phx-value-ref={entry.ref}>Cancel</button>
+              <button
+                class="underline"
+                type="button"
+                phx-click="cancel-upload"
+                phx-value-ref={entry.ref}
+              >
+                Cancel
+              </button>
             </p>
           <% else %>
             <p>
               (Invalid file)
-              <button class="underline" type="button" phx-click="cancel-upload" phx-value-ref={entry.ref}>Remove</button>
+              <button
+                class="underline"
+                type="button"
+                phx-click="cancel-upload"
+                phx-value-ref={entry.ref}
+              >
+                Remove
+              </button>
             </p>
           <% end %>
         </ul>
@@ -40,32 +55,33 @@
 
     <div class="px-6 py-2 mt-4 text-black bg-white rounded-md">
       <div class="mt-6">
-        <.live_file_input upload={@uploads.asset},
-           class={"shadow-sm #{@uploads.asset.entries |> Enum.any? && "invisible absolute top-0"}"} />
+        <.live_file_input
+          upload={@uploads.asset}
+          class={"shadow-sm #{@uploads.asset.entries |> Enum.any? && "invisible absolute top-0"}"}
+        />
       </div>
 
       <%= if @uploads.asset.entries |> Enum.empty? do %>
-        <%= error_tag f, :url %>
+        <%= error_tag(f, :url) %>
         <p class="pt-2 text-gray-800">
           (or drag a file into this box)
         </p>
       <% end %>
 
       <div class="field">
-        <%= label f, :site_id %>
-        <%= select f, :site_id, Enum.map(@sites, &{&1.name, &1.id}) %>
-        <%= error_tag f, :site_id %>
+        <%= label(f, :site_id) %>
+        <%= select(f, :site_id, Enum.map(@sites, &{&1.name, &1.id})) %>
+        <%= error_tag(f, :site_id) %>
       </div>
 
       <div class="field">
-        <%= label f, :name, "Asset name" %>
-        <%= text_input f, :name, placeholder: "ACME wonderduster" %>
-        <%= error_tag f, :name %>
+        <%= label(f, :name, "Asset name") %>
+        <%= text_input(f, :name, placeholder: "ACME wonderduster") %>
+        <%= error_tag(f, :name) %>
       </div>
 
-      <%= submit "Upload", phx_disable_with: "Uploading…", class: "btn btn-spaced" %>
+      <%= submit("Upload", phx_disable_with: "Uploading…", class: "btn btn-spaced") %>
     </div>
-
   </div>
 </.form>
 
@@ -81,16 +97,24 @@
           <li class="mb-8 mr-8">
             <%= asset.name %>
             <%= if Assets.in_use?(asset, site) do %>
-              <span id={"asset-in-use-#{asset.id}"} class="float-right px-4 bg-gray-300">In use</span>
+              <span id={"asset-in-use-#{asset.id}"} class="float-right px-4 bg-gray-300">
+                In use
+              </span>
             <% else %>
-              <a id={"delete-asset-#{asset.id}"}
-                 href="#"
-                 class="block float-right w-8 h-12 m-auto bg-center bg-no-repeat bg-contain trash"
-                 phx-click="delete-asset"
-                 phx-value-id={asset.id}
-                 ></a>
+              <a
+                id={"delete-asset-#{asset.id}"}
+                href="#"
+                class="block float-right w-8 h-12 m-auto bg-center bg-no-repeat bg-contain trash"
+                phx-click="delete-asset"
+                phx-value-id={asset.id}
+              >
+              </a>
             <% end %>
-            <img width="300" height="300" src={to_imgproxy_url(asset, width: 300, height: 300, resizing_type: "fill")} />
+            <img
+              width="300"
+              height="300"
+              src={to_imgproxy_url(asset, width: 300, height: 300, resizing_type: "fill")}
+            />
           </li>
         <% end %>
       </ul>

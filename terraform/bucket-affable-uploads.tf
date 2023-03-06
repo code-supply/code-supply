@@ -66,7 +66,7 @@ resource "google_storage_bucket" "affable-uploads-dev" {
   uniform_bucket_level_access = true
 
   cors {
-    origin          = ["http://localhost:4000"]
+    origin          = ["http://www.affable.test:4000"]
     method          = ["POST"]
     response_header = ["*"]
     max_age_seconds = 1
