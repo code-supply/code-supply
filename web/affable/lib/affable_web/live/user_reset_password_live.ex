@@ -30,7 +30,7 @@ defmodule AffableWeb.UserResetPasswordLive do
         </:actions>
       </.simple_form>
 
-      <p class="text-center mt-4">
+      <p>
         <.link href={~p"/users/register"}>Register</.link>
         |
         <.link href={~p"/users/log_in"}>Log in</.link>
