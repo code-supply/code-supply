@@ -29616,7 +29616,7 @@ spec:
     metadata:
       labels:
         app: affable
-        version: 98466c0
+        version: 1e1ad00
     spec:
       containers:
       - env:
@@ -29635,7 +29635,7 @@ spec:
         envFrom:
         - secretRef:
             name: affable
-        image: codesupplydocker/affable:98466c0
+        image: codesupplydocker/affable:1e1ad00
         name: affable
         ports:
         - containerPort: 4000
