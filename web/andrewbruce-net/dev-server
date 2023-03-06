@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
 
-tailwind-linux-x64 -i src/input.css -o dev-dist/app.css --watch --content src/index.html &
-
 while inotifywait -qq -e attrib src/*
 do
   cp src/*.html dev-dist/
-  active_window_id="$(xdotool getwindowfocus)"
-  target_window_id="$(xdotool search --classname Navigator)"
+  echo "Copied stuff to dev-dist"
+done &
 
-  xdotool windowactivate "$target_window_id"
-  xdotool key F5
-  xdotool windowactivate "$active_window_id"
-done
+tailwindcss -i src/input.css -o dev-dist/app.css --watch --content src/index.html
 
 wait
