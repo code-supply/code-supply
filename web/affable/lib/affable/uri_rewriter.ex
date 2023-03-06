@@ -1,16 +1,5 @@
 defmodule Affable.URIRewriter do
-  def rewrite(
-        %URI{
-          scheme: nil,
-          userinfo: nil,
-          host: nil,
-          port: nil,
-          path: nil,
-          query: nil,
-          fragment: nil
-        } = uri
-      ),
-      do: uri
+  def rewrite(%URI{path: nil} = uri), do: uri
 
   def rewrite(
         %URI{
