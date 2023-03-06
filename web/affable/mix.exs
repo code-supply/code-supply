@@ -36,7 +36,7 @@ defmodule Affable.MixProject do
       {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.7.0"},
       {:phoenix_ecto, "~> 4.4.0"},
-      {:ecto_sql, "~> 3.8"},
+      {:ecto_sql, "~> 3.9.2"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_live_view, "~> 0.18.3"},
       {:phoenix_view, "~> 2.0"},
