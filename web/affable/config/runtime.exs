@@ -41,13 +41,10 @@ if config_env() == :prod do
     server: true
 
   config :affable, Affable.Mailer,
-    adapter: Bamboo.SendGridAdapter,
+    adapter: Swoosh.Adapters.SendGrid,
     api_key:
       System.get_env("SENDGRID_API_KEY") ||
         raise("""
         environment variable SENDGRID_API_KEY is missing.
         """)
-
-  config :bamboo,
-    sendgrid_base_uri: "https://api.sendgrid.com/v3/"
 end

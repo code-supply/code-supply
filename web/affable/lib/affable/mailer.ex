@@ -1,3 +1,3 @@
 defmodule Affable.Mailer do
-  use Bamboo.Mailer, otp_app: :affable
+  use Swoosh.Mailer, otp_app: :affable
 end

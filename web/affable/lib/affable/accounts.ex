@@ -6,7 +6,7 @@ defmodule Affable.Accounts do
   import Ecto.Query, warn: false
 
   alias Ecto.Multi
-  alias Affable.{Email, Mailer, Repo, Sites}
+  alias Affable.{Repo, Sites}
   alias Affable.Accounts.{User, UserToken, UserNotifier}
   alias Affable.Assets
   alias Affable.Sites.SiteMember
@@ -309,10 +309,7 @@ defmodule Affable.Accounts do
     else
       {encoded_token, user_token} = UserToken.build_email_token(user, "confirm")
       Repo.insert!(user_token)
-      email = Email.confirmation_instructions(user, confirmation_url_fun.(encoded_token))
-      email |> Mailer.deliver_later!()
-
-      {:ok, %{to: email.to, body: email.text_body}}
+      UserNotifier.deliver_confirmation_instructions(user, confirmation_url_fun.(encoded_token))
     end
   end
 
@@ -353,11 +350,7 @@ defmodule Affable.Accounts do
       when is_function(reset_password_url_fun, 1) do
     {encoded_token, user_token} = UserToken.build_email_token(user, "reset_password")
     Repo.insert!(user_token)
-
-    email = Email.reset_password_instructions(user, reset_password_url_fun.(encoded_token))
-    email |> Mailer.deliver_later()
-
-    {:ok, %{to: email.to, body: email.text_body}}
+    UserNotifier.deliver_reset_password_instructions(user, reset_password_url_fun.(encoded_token))
   end
 
   @doc """

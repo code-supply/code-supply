@@ -39,24 +39,21 @@ defmodule AffableWeb.Router do
     get("/", HomeController, :show)
   end
 
-  # Enables LiveDashboard only for development
-  #
-  # If you want to use the LiveDashboard in production, you should put
-  # it behind authentication and allow only admins to access it.
-  # If your application does not have an admins-only section yet,
-  # you can use Plug.BasicAuth to set up some basic authentication
-  # as long as you are also using SSL (which you should anyway).
-  if Mix.env() in [:dev, :test] do
+  # Enable LiveDashboard and Swoosh mailbox preview in development
+  if Application.compile_env(:affable, :dev_routes) do
+    # If you want to use the LiveDashboard in production, you should put
+    # it behind authentication and allow only admins to access it.
+    # If your application does not have an admins-only section yet,
+    # you can use Plug.BasicAuth to set up some basic authentication
+    # as long as you are also using SSL (which you should anyway).
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
       pipe_through(:browser)
-      live_dashboard("/dashboard", metrics: AffableWeb.Telemetry)
-    end
-  end
 
-  if Mix.env() == :dev do
-    forward("/sent_emails", Bamboo.SentEmailViewerPlug)
+      live_dashboard("/dashboard", metrics: AffableWeb.Telemetry)
+      forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
   end
 
   ## Authentication routes

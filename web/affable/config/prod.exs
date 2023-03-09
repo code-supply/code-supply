@@ -16,6 +16,9 @@ config :affable, AffableWeb.Endpoint,
   url: [host: "www.affable.app", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
+# Configures Swoosh API Client
+config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Affable.Finch
+
 config :libcluster,
   topologies: [
     affable: [

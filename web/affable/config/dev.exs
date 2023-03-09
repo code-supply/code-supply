@@ -28,8 +28,6 @@ config :affable, AffableWeb.Endpoint,
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
-config :affable, Affable.Mailer, adapter: Bamboo.LocalAdapter
-
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
@@ -75,3 +73,6 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Disable swoosh api client as it is only required for production adapters.
+config :swoosh, :api_client, false

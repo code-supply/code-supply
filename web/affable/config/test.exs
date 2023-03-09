@@ -22,7 +22,11 @@ config :affable, AffableWeb.Endpoint,
   http: [port: 4002],
   server: false
 
-config :affable, Affable.Mailer, adapter: Bamboo.TestAdapter
+# In test we don't send emails.
+config :affable, Justatest.Mailer, adapter: Swoosh.Adapters.Test
+
+# Disable swoosh api client as it is only required for production adapters.
+config :swoosh, :api_client, false
 
 config :affable,
   k8s: Affable.MockK8s
