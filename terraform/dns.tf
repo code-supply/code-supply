@@ -1,7 +1,6 @@
 locals {
-  cluster-ingress-address = "35.195.27.167"
-  main-ipv4-address       = "81.187.237.24"
-  unhinged-ipv6-address   = "2001:8b0:b184:5567:2c26:39c0:7c01:4a28"
+  main-ipv4-address     = "81.187.237.24"
+  unhinged-ipv6-address = "2001:8b0:b184:5567:2c26:39c0:7c01:4a28"
 }
 
 resource "google_dns_managed_zone" "root" {
@@ -15,6 +14,14 @@ resource "google_dns_record_set" "root" {
   rrdatas      = [local.main-ipv4-address]
   ttl          = 60
   type         = "A"
+}
+
+resource "google_dns_record_set" "root-ipv6" {
+  name         = google_dns_managed_zone.root.dns_name
+  managed_zone = google_dns_managed_zone.root.name
+  rrdatas      = [local.unhinged-ipv6-address]
+  ttl          = 60
+  type         = "AAAA"
 }
 
 resource "google_dns_record_set" "www" {
@@ -96,6 +103,14 @@ resource "google_dns_record_set" "ab-root" {
   type         = "A"
 }
 
+resource "google_dns_record_set" "ab-root-ipv6" {
+  name         = google_dns_managed_zone.ab.dns_name
+  managed_zone = google_dns_managed_zone.ab.name
+  rrdatas      = [local.unhinged-ipv6-address]
+  ttl          = 300
+  type         = "AAAA"
+}
+
 resource "google_dns_record_set" "ab-www" {
   name         = "www.${google_dns_managed_zone.ab.dns_name}"
   managed_zone = google_dns_managed_zone.ab.name
@@ -107,9 +122,17 @@ resource "google_dns_record_set" "ab-www" {
 resource "google_dns_record_set" "ab-wildcard" {
   name         = "*.${google_dns_managed_zone.ab.dns_name}"
   managed_zone = google_dns_managed_zone.ab.name
-  rrdatas      = [local.cluster-ingress-address]
+  rrdatas      = [local.main-ipv4-address]
   ttl          = 300
   type         = "A"
+}
+
+resource "google_dns_record_set" "ab-wildcard-ipv6" {
+  name         = "*.${google_dns_managed_zone.ab.dns_name}"
+  managed_zone = google_dns_managed_zone.ab.name
+  rrdatas      = [local.unhinged-ipv6-address]
+  ttl          = 300
+  type         = "AAAA"
 }
 
 resource "google_dns_record_set" "ab-mx" {
