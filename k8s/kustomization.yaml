@@ -9,3 +9,4 @@ resources:
 - imgproxy
 - letsencrypt
 - tls-lb-operator
+- concourse

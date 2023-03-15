@@ -1,0 +1,27 @@
+web:
+  ingress:
+    enabled: true
+    hosts:
+    - concourse.code.supply
+    tls:
+    - secretName: concourse-web-tls
+concourse:
+  web:
+    externalUrl: https://concourse.code.supply
+    encryption:
+      enabled: true
+    auth:
+      github:
+        enabled: true
+      mainTeam:
+        localUser: ""
+        github:
+          enabled: true
+          org: code-supply
+    postgres:
+      host: unhinged
+postgresql:
+  enabled: false
+secrets:
+  postgresUser: concourse
+  localUsers: ""

@@ -1,0 +1,12 @@
+kind: Certificate
+apiVersion: cert-manager.io/v1
+metadata:
+  name: concourse
+spec:
+  secretName: concourse-web-tls
+  issuerRef:
+    name: letsencrypt-production-dns
+    kind: ClusterIssuer
+  commonName: concourse.code.supply
+  dnsNames:
+  - concourse.code.supply
