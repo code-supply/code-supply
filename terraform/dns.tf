@@ -12,7 +12,7 @@ resource "google_dns_record_set" "root" {
   name         = google_dns_managed_zone.root.dns_name
   managed_zone = google_dns_managed_zone.root.name
   rrdatas      = [local.main-ipv4-address]
-  ttl          = 60
+  ttl          = 86400
   type         = "A"
 }
 
@@ -20,7 +20,7 @@ resource "google_dns_record_set" "root-ipv6" {
   name         = google_dns_managed_zone.root.dns_name
   managed_zone = google_dns_managed_zone.root.name
   rrdatas      = [local.unhinged-ipv6-address]
-  ttl          = 60
+  ttl          = 86400
   type         = "AAAA"
 }
 
