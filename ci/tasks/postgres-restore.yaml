@@ -1,0 +1,28 @@
+---
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: postgres
+    tag: 14.6-alpine3.17
+  version:
+    digest: sha256:a0f7890719c3c42b9f78f1ad98b2cd45aa2ee3472da12f9d2d3bfbc07f421146
+params:
+  POSTGRES_DB: ((database))
+  POSTGRES_HOST_AUTH_METHOD: trust
+inputs:
+- name: docker-entrypoint-initdb.d
+  path: ../../../docker-entrypoint-initdb.d
+run:
+  user: postgres
+  path: sh
+  args:
+  - -c
+  - |-
+    docker-entrypoint.sh postgres &
+    until [[ -e /tmp/test-result ]]
+    do
+      sleep 1
+    done
+    pg_ctl stop
+    exit "$(cat /tmp/test-result)"

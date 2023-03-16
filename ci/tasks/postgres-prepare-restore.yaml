@@ -1,0 +1,46 @@
+---
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: postgres
+    tag: 14.6-alpine3.17
+  version:
+    digest: sha256:a0f7890719c3c42b9f78f1ad98b2cd45aa2ee3472da12f9d2d3bfbc07f421146
+inputs:
+- name: backups
+outputs:
+- name: docker-entrypoint-initdb.d
+run:
+  path: sh
+  args:
+  - -c
+  - |-
+    tar -xf backups/*.tar.bz2
+    mv backup docker-entrypoint-initdb.d/
+    > docker-entrypoint-initdb.d/restore.sh cat <<EOF
+    echo "--------------------- BEGIN TEST ---------------------"
+    echo "Creating user ((user))"
+    createuser ((user))
+
+    echo "Attempting restore"
+    pg_restore -d ((database)) /docker-entrypoint-initdb.d/backup/
+
+    echo "Testing with ((test-query))"
+    results="\$(psql -d ((database)) -c "((test-query))" --csv)"
+
+    num_rows_inc_headers="\$(echo "\$results" | wc -l)"
+    if [[ "\$num_rows_inc_headers" > 1 ]]
+    then
+      echo "Test query had at least one result."
+      echo "------------------- TEST SUCCESS -------------------"
+      echo 0 > /tmp/test-result
+      exit 0
+    else
+      echo "Test query didn't return any results."
+      echo "------------------- TEST FAILURE -------------------"
+      echo 1 > /tmp/test-result
+      exit 1
+    fi
+    EOF
+    chmod +x docker-entrypoint-initdb.d/restore.sh
