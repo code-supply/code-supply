@@ -18,6 +18,7 @@ run:
   args:
   - -c
   - |-
+    chown -R postgres:postgres /docker-entrypoint-initdb.d/backup/
     docker-entrypoint.sh postgres &
     until [[ -e /tmp/test-result ]]
     do
