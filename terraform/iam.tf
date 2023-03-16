@@ -1,3 +1,8 @@
+resource "google_service_account" "concourse" {
+  account_id   = "concourse"
+  display_name = "Concourse"
+}
+
 resource "google_service_account" "dns-cert-manager" {
   account_id   = "dns-cert-manager"
   display_name = "DNS modifier for Cert Manager"
