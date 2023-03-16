@@ -10,7 +10,3 @@ patches:
   target:
     kind: Deployment
     labelSelector: app=cert-manager
-- path: workload-identity.yaml
-  target:
-    kind: ServiceAccount
-    name: cert-manager

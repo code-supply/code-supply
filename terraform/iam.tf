@@ -3,14 +3,6 @@ resource "google_service_account" "dns-cert-manager" {
   display_name = "DNS modifier for Cert Manager"
 }
 
-resource "google_service_account_iam_binding" "dns-cert-manager-workload-identity" {
-  service_account_id = google_service_account.dns-cert-manager.name
-  role               = "roles/iam.workloadIdentityUser"
-  members = [
-    "serviceAccount:${data.google_project.project.project_id}.svc.id.goog[cert-manager/cert-manager]",
-  ]
-}
-
 resource "google_project_iam_binding" "dns-cert-manager" {
   project = data.google_project.project.id
   role    = "roles/dns.admin"
@@ -48,25 +40,7 @@ resource "google_project_iam_member" "affable-dev-signblob" {
   member  = "serviceAccount:${google_service_account.affable-dev.email}"
 }
 
-resource "google_service_account_iam_binding" "affable-workload-identity" {
-  service_account_id = google_service_account.affable.name
-  role               = "roles/iam.workloadIdentityUser"
-
-  members = [
-    "serviceAccount:${data.google_project.project.project_id}.svc.id.goog[affable/affable]",
-  ]
-}
-
 resource "google_service_account" "imgproxy" {
   account_id   = "imgproxy"
   display_name = "imgproxy application"
-}
-
-resource "google_service_account_iam_binding" "imgproxy-workload-identity" {
-  service_account_id = google_service_account.imgproxy.name
-  role               = "roles/iam.workloadIdentityUser"
-
-  members = [
-    "serviceAccount:${data.google_project.project.project_id}.svc.id.goog[affable/imgproxy]",
-  ]
 }
