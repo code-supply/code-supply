@@ -14,7 +14,6 @@ inputs:
 - name: docker-entrypoint-initdb.d
   path: ../../../docker-entrypoint-initdb.d
 run:
-  user: postgres
   path: sh
   args:
   - -c
@@ -24,5 +23,4 @@ run:
     do
       sleep 1
     done
-    pg_ctl stop
     exit "$(cat /tmp/test-result)"
