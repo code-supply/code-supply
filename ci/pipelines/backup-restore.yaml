@@ -5,7 +5,7 @@ jobs:
   plan:
   - get: repo
   - task: backup
-    file: repo/ci/tasks/backup-postgres.yaml
+    file: repo/ci/tasks/postgres-backup.yaml
     params:
       PGDATABASE: affable
       PGHOST: unhinged
@@ -13,6 +13,24 @@ jobs:
   - put: code-supply-backups
     params:
       file: backups/*.tar.bz2
+
+- name: test-restore-postgres-databases
+  plan:
+  - get: repo
+  - get: backups
+    resource: code-supply-backups
+    trigger: true
+    passed: [backup-postgres-databases]
+  - task: prepare
+    file: repo/ci/tasks/postgres-prepare-restore.yaml
+    vars:
+      database: affable
+      user: affable
+      test-query: select * from users where email = 'me@andrewbruce.net'
+  - task: restore-test
+    file: repo/ci/tasks/postgres-restore.yaml
+    vars:
+      database: affable
 
 resources:
 
