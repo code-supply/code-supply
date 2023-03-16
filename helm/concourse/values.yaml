@@ -20,6 +20,8 @@ concourse:
           org: code-supply
     postgres:
       host: unhinged
+  worker:
+    runtime: containerd
 postgresql:
   enabled: false
 secrets:
