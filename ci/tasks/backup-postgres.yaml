@@ -1,0 +1,23 @@
+---
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: postgres
+    tag: 14.6-alpine3.17
+  version:
+    digest: sha256:a0f7890719c3c42b9f78f1ad98b2cd45aa2ee3472da12f9d2d3bfbc07f421146
+params:
+  PGDATABASE:
+  PGHOST:
+  PGPORT: 5432
+  PGUSER:
+outputs:
+- name: backups
+run:
+  path: sh
+  args:
+  - -c
+  - |-
+    pg_dump --format=directory --file=backup
+    tar -jcf backups/backup.tar.bz2 backup
