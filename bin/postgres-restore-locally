@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+db=$1
+user=$2
+dir=/tmp/postgres-restore-locally
+
+if [[ -z "$db" || -z "$user" ]]
+then
+  echo "Usage: postgres-restore-locally DB USER"
+  exit 1
+fi
+
+export PGHOST="$(realpath .postgres)"
+
+rm -rf $dir
+mkdir $dir
+(
+cd $dir
+gsutil cp gs://code-supply-backups/postgres/$db.tar.bz2 /dev/stdout \
+  | tar -jx
+)
+dropdb "$db"
+createdb "$db"
+createuser "$user"
+pg_restore -d "$db" "$dir/backup"
