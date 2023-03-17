@@ -16,7 +16,7 @@
   <div class="p-8 text-white bg-blue-300 border-8 border-blue-100 border-double rounded-xl">
     <div class="mt-4">
       <%= for entry <- @uploads.asset.entries do %>
-        <ul class="px-6 py-2 text-black bg-white rounded-md">
+        <div class="px-6 py-2 text-black bg-white rounded-md">
           <%= if entry.valid? do %>
             <p class="mt-8 mb-4">
               <.live_img_preview entry={entry} class="w-auto max-h-64" />
@@ -49,7 +49,7 @@
               </button>
             </p>
           <% end %>
-        </ul>
+        </div>
       <% end %>
     </div>
 
