@@ -3,6 +3,8 @@ jobs:
 
 - name: backup-postgres-databases
   plan:
+  - get: daily
+    trigger: true
   - get: repo
   - task: backup
     file: repo/ci/tasks/postgres-backup.yaml
@@ -46,6 +48,9 @@ resources:
     bucket: code-supply-backups
     json_key: ((google-key))
     versioned_file: postgres/backup.tar.bz2
+
+- name: daily
+  type: time
 
 resource_types:
 
