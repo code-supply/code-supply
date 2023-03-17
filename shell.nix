@@ -13,6 +13,7 @@ mkShell {
     nodePackages.typescript
     nodePackages.typescript-language-server
     postgresql_15
+    shellcheck
     terraform
     terraform-lsp
   ];
