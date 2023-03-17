@@ -1,7 +1,7 @@
 ---
 jobs:
 
-- name: backup-postgres-databases
+- name: backup-affable
   plan:
   - get: daily
     trigger: true
@@ -12,17 +12,17 @@ jobs:
       PGDATABASE: affable
       PGHOST: unhinged
       PGUSER: affable
-  - put: code-supply-backups
+  - put: backup-affable
     params:
       file: backups/*.tar.bz2
 
-- name: test-restore-postgres-databases
+- name: test-restore-affable
   plan:
   - get: repo
   - get: backups
-    resource: code-supply-backups
+    resource: backup-affable
     trigger: true
-    passed: [backup-postgres-databases]
+    passed: [backup-affable]
   - task: prepare
     file: repo/ci/tasks/postgres-prepare-restore.yaml
     vars:
@@ -34,6 +34,39 @@ jobs:
     vars:
       database: affable
 
+- name: backup-atc
+  plan:
+  - get: daily
+    trigger: true
+  - get: repo
+  - task: backup
+    file: repo/ci/tasks/postgres-backup.yaml
+    params:
+      PGDATABASE: atc
+      PGHOST: unhinged
+      PGUSER: concourse
+  - put: backup-atc
+    params:
+      file: backups/*.tar.bz2
+
+- name: test-restore-atc
+  plan:
+  - get: repo
+  - get: backups
+    resource: backup-atc
+    trigger: true
+    passed: [backup-atc]
+  - task: prepare
+    file: repo/ci/tasks/postgres-prepare-restore.yaml
+    vars:
+      database: atc
+      user: concourse
+      test-query: select * from users where username = 'camelpunch'
+  - task: restore-test
+    file: repo/ci/tasks/postgres-restore.yaml
+    vars:
+      database: atc
+
 resources:
 
 - name: repo
@@ -42,12 +75,19 @@ resources:
     uri: https://github.com/code-supply/code-supply
     branch: main
 
-- name: code-supply-backups
+- name: backup-affable
   type: gcs
   source:
     bucket: code-supply-backups
     json_key: ((google-key))
-    versioned_file: postgres/backup.tar.bz2
+    versioned_file: postgres/affable.tar.bz2
+
+- name: backup-atc
+  type: gcs
+  source:
+    bucket: code-supply-backups
+    json_key: ((google-key))
+    versioned_file: postgres/atc.tar.bz2
 
 - name: daily
   type: time
