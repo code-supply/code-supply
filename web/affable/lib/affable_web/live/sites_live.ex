@@ -15,12 +15,6 @@ defmodule AffableWeb.SitesLive do
       Accounts.get_user_by_session_token(token)
       |> Accounts.preload_for_sites()
 
-    if connected?(socket) do
-      for site <- user.sites do
-        Phoenix.PubSub.subscribe(:affable, site.internal_name)
-      end
-    end
-
     {:ok,
      assign(
        socket,
@@ -63,8 +57,6 @@ defmodule AffableWeb.SitesLive do
        %Site{
          internal_name: internal_name
        } = site} ->
-        Phoenix.PubSub.subscribe(:affable, internal_name)
-
         {:noreply, update(socket, :sites, fn sites -> [site | sites] end)}
 
       {:error, changeset} ->
