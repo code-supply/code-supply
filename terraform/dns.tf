@@ -1,6 +1,6 @@
 locals {
   main-ipv4-address     = "81.187.237.24"
-  unhinged-ipv6-address = "2001:8b0:b184:5567:2c26:39c0:7c01:4a28"
+  unhinged-ipv6-address = "2001:8b0:b184:5567::2"
 }
 
 resource "google_dns_managed_zone" "root" {
