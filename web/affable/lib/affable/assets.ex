@@ -5,7 +5,6 @@ defmodule Affable.Assets do
   alias Affable.Repo
   alias Affable.Accounts.User
   alias Affable.Assets.Asset
-  alias Affable.Sites.Site
 
   def default_query() do
     from(a in Asset, order_by: [desc: a.updated_at])
@@ -64,9 +63,5 @@ defmodule Affable.Assets do
     else
       {:error, "Not a member of the site"}
     end
-  end
-
-  def in_use?(%Asset{id: _id}, %Site{}) do
-    false
   end
 end
