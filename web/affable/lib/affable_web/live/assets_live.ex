@@ -4,8 +4,7 @@ defmodule AffableWeb.AssetsLive do
   alias Affable.{Accounts, Assets}
   alias Affable.Assets.Asset
   alias Affable.Sites
-  alias Affable.Uploads
-  alias Affable.Uploads.UploadRequest
+  alias Affable.Uploader
   alias Phoenix.LiveView.UploadEntry
 
   import Affable.Assets, only: [to_imgproxy_url: 2]
@@ -22,7 +21,7 @@ defmodule AffableWeb.AssetsLive do
       |> allow_upload(
         :asset,
         progress: &handle_progress/3,
-        external: &presign_upload/2,
+        external: &Uploader.presign_upload/2,
         accept: ~w(.gif .png .jpeg .jpg),
         max_entries: 1
       )
@@ -50,7 +49,7 @@ defmodule AffableWeb.AssetsLive do
 
     case Assets.create_uploaded(
            user: user,
-           bucket_name: bucket_name(),
+           bucket_name: Uploader.bucket_name(),
            key: uuid,
            params: %{"site_id" => site_id} = params
          ) do
@@ -94,33 +93,6 @@ defmodule AffableWeb.AssetsLive do
     {:noreply, cancel_upload(socket, :asset, ref)}
   end
 
-  defp presign_upload(%UploadEntry{uuid: uuid}, socket) do
-    upload_request = %UploadRequest{
-      algorithm: "GOOG4-RSA-SHA256",
-      access_key_id: access_key_id(),
-      bucket_name: bucket_name(),
-      key: uuid,
-      now: DateTime.now!("Etc/UTC")
-    }
-
-    signed_upload = Uploads.sign(upload_request)
-
-    meta = %{
-      uploader: "GCS",
-      url: "https://#{bucket_name()}.storage.googleapis.com/",
-      fields: %{
-        key: uuid,
-        policy: signed_upload.policy,
-        "x-goog-algorithm": signed_upload.algorithm,
-        "x-goog-credential": signed_upload.credential,
-        "x-goog-date": signed_upload.date,
-        "x-goog-signature": signed_upload.signature
-      }
-    }
-
-    {:ok, meta, socket}
-  end
-
   defp assign_vars(socket, user) do
     socket
     |> assign(
@@ -136,13 +108,5 @@ defmodule AffableWeb.AssetsLive do
     else
       {:noreply, socket}
     end
-  end
-
-  defp access_key_id do
-    Application.fetch_env!(:affable, :access_key_id)
-  end
-
-  defp bucket_name do
-    Application.fetch_env!(:affable, :bucket_name)
   end
 end
