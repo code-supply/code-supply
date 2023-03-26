@@ -80,8 +80,8 @@ defmodule AffableWeb.Router do
       on_mount: [{AffableWeb.UserAuth, :ensure_authenticated}] do
       live("/sites", SitesLive, :index)
       live("/sites/:id/edit", EditorLive, :edit)
-
       live("/sites/:id/pages/:page_id/edit", EditorLive, :edit)
+      live("/sites/:site_id/uploader", UploaderLive, :new)
       live("/assets", AssetsLive, :index)
       live("/domains", DomainsLive, :index)
 

@@ -63,7 +63,8 @@ defmodule Affable.MixProject do
       {:earmark, "~> 1.4.15"},
       {:k8s, "~> 1.1"},
       {:hammox, "~> 0.6", only: :test},
-      {:floki, "~> 0.33.0"}
+      {:floki, "~> 0.33.0"},
+      {:size, "~> 0.1.0"}
     ]
   end
 

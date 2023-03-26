@@ -1,23 +1,23 @@
 <div class="container">
   <h1>My Sites</h1>
 
-  <.form :let={f} for={@changeset}
-     id="new-site"
-     phx-submit="create"
-     class="w-full xl:w-1/2">
-  <div class="block px-6 pt-5 pb-4 overflow-hidden bg-white rounded shadow-lg" href="#">
-    <h2 class="text-3xl align-middle">
-      Add Site
-    </h2>
-    <div class="pr-2 sm:float-left sm:w-5/12 field">
-      <%= label f, :name %>
-      <%= text_input f, :name, placeholder: "My favourite bikes" %>
-      <%= error_tag f, :name %>
+  <.form :let={f} for={@changeset} id="new-site" phx-submit="create" class="w-full xl:w-1/2">
+    <div class="block px-6 pt-5 pb-4 overflow-hidden bg-white rounded shadow-lg" href="#">
+      <h2 class="text-3xl align-middle">
+        Add Site
+      </h2>
+      <div class="pr-2 sm:float-left sm:w-5/12 field">
+        <%= label(f, :name) %>
+        <%= text_input(f, :name, placeholder: "My favourite bikes") %>
+        <%= error_tag(f, :name) %>
+      </div>
+      <div class="sm:w-2/12 sm:pt-6 sm:float-left">
+        <%= submit("Add",
+          class:
+            "block w-full px-2 py-2 mt-6 text-lg font-bold text-center text-white bg-gradient-to-br from-blue-400 to-blue-600 rounded-md"
+        ) %>
+      </div>
     </div>
-    <div class="sm:w-2/12 sm:pt-6 sm:float-left">
-      <%= submit "Add", class: "block w-full px-2 py-2 mt-6 text-lg font-bold text-center text-white bg-gradient-to-br from-blue-400 to-blue-600 rounded-md" %>
-    </div>
-  </div>
   </.form>
 
   <ul class="resources grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -28,20 +28,40 @@
           <div class="domains">
             <ul>
               <%= for domain <- site.domains do %>
-              <li><a target="_blank" rel="noopener" href={"https://#{domain.name}/"}><%= domain.name %></a></li>
+                <li>
+                  <a target="_blank" rel="noopener" href={"https://#{domain.name}/"}>
+                    <%= domain.name %>
+                  </a>
+                </li>
               <% end %>
             </ul>
           </div>
           <div class="self-end">
             <ul class="float-right">
               <li class="float-left mr-4">
-                <a target="_blank" rel="noopener" href={canonical_url(site, Application.get_env(:affable, :sites_port))}>Visit</a>
+                <a
+                  target="_blank"
+                  rel="noopener"
+                  href={canonical_url(site, Application.get_env(:affable, :sites_port))}
+                >
+                  Visit
+                </a>
+              </li>
+              <li class="float-left mr-4">
+                <a href={url(~p"/sites/#{site.id}/uploader")}>Upload</a>
               </li>
               <li class="float-left mr-4">
                 <a href={Routes.editor_path(@socket, :edit, site.id)}>Edit</a>
               </li>
               <li class="float-left">
-                <a id={"delete-site-#{site.id}"} href="#" phx-click="delete" phx-value-id={site.id}>Delete</a>
+                <a
+                  id={"delete-site-#{site.id}"}
+                  href="#"
+                  phx-click="delete"
+                  phx-value-id={site.id}
+                >
+                  Delete
+                </a>
               </li>
             </ul>
           </div>
