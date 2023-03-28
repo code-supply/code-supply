@@ -17,6 +17,12 @@ data "google_iam_policy" "uploads" {
       "serviceAccount:${google_service_account.affable.email}"
     ]
   }
+  binding {
+    role = "roles/storage.objectViewer"
+    members = [
+      "serviceAccount:${google_service_account.affable.email}"
+    ]
+  }
 }
 
 data "google_iam_policy" "uploads-dev" {
