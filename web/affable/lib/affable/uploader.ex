@@ -2,6 +2,64 @@ defmodule Affable.Uploader do
   alias Phoenix.LiveView.UploadEntry
   alias Affable.Uploads.UploadRequest
   alias Affable.Uploads
+  alias Affable.Assets
+  alias Affable.Sites.Site
+
+  @type record_option ::
+          {:site, map()}
+          | {:user, map()}
+          | {:key, String.t()}
+          | {:params, map()}
+          | {:type, String.t()}
+          | {:last_modified, String.t()}
+  @spec record(Ecto.Multi.t(), [record_option]) :: Ecto.Multi.t()
+  def record(
+        multi,
+        site: site,
+        user: user,
+        key: key,
+        params: params,
+        type: type,
+        last_modified: _last_modified
+      ) do
+    case type do
+      "text/html" ->
+        record_page(multi, key, site, params["name"], params["name"], params["content"])
+
+      "text/css" ->
+        record_css(multi, site, params["content"])
+
+      _ ->
+        record_asset(multi, user, site, bucket_name(), key, params)
+    end
+  end
+
+  defp record_page(multi, key, site, title, "/" <> path, content) do
+    Ecto.Multi.insert(
+      multi,
+      "record_page_#{key}",
+      site
+      |> Ecto.build_assoc(:pages, %{title: title, path: "/" <> path, raw: content})
+    )
+  end
+
+  defp record_page(multi, key, site, title, path, content) do
+    record_page(multi, key, site, title, "/" <> path, content)
+  end
+
+  defp record_css(multi, site, content) do
+    Ecto.Multi.update(multi, site, Site.changeset(site, %{stylesheet: content}))
+  end
+
+  defp record_asset(multi, user, site, bucket_name, key, params) do
+    Assets.create_uploaded_multi(
+      multi,
+      user: user,
+      bucket_name: bucket_name,
+      key: key,
+      params: Map.put(params, "site_id", site.id)
+    )
+  end
 
   def strip_root(path) do
     case Path.dirname(path) do

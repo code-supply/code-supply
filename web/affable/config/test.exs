@@ -29,7 +29,8 @@ config :affable, Justatest.Mailer, adapter: Swoosh.Adapters.Test
 config :swoosh, :api_client, false
 
 config :affable,
-  k8s: Affable.MockK8s
+  k8s: Affable.MockK8s,
+  storage: Affable.FakeStorage
 
 # capture all logs
 config :logger, level: :debug

@@ -64,7 +64,8 @@ defmodule Affable.MixProject do
       {:k8s, "~> 1.1"},
       {:hammox, "~> 0.6", only: :test},
       {:floki, "~> 0.33.0"},
-      {:size, "~> 0.1.0"}
+      {:size, "~> 0.1.0"},
+      {:google_api_storage, "~> 0.34.0"}
     ]
   end
 

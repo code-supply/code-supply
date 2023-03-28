@@ -1,7 +1,94 @@
 defmodule Affable.UploaderTest do
   use Affable.DataCase, async: true
 
+  import Affable.AccountsFixtures
+
+  alias Affable.Sites
   alias Affable.Uploader
+
+  test "recording HTML makes page but not asset" do
+    user = user_fixture()
+    [site] = user.sites
+
+    multi =
+      Uploader.record(
+        Ecto.Multi.new(),
+        site: site,
+        user: user,
+        key: "a key",
+        params: %{"name" => "stuff.html", "content" => "the content"},
+        type: "text/html",
+        last_modified: nil
+      )
+
+    site = Sites.get_site!(site)
+    stylesheet_before = site.stylesheet
+    assets_before = site.assets
+
+    Affable.Repo.transaction(multi)
+
+    site = Sites.get_site!(site)
+    assert "/stuff.html" in Enum.map(site.pages, & &1.path)
+    assert site.assets == assets_before
+    assert site.stylesheet == stylesheet_before
+  end
+
+  test "recording CSS only sets single stylesheet on site, for now" do
+    user = user_fixture()
+    [site] = user.sites
+
+    multi =
+      Uploader.record(
+        Ecto.Multi.new(),
+        site: site,
+        user: user,
+        key: "a key",
+        params: %{"name" => "app.css", "content" => "the content"},
+        type: "text/css",
+        last_modified: nil
+      )
+
+    site = Sites.get_site!(site)
+    assets_before = site.assets
+    pages_before = Sites.with_pages(site).pages
+
+    Affable.Repo.transaction(multi)
+
+    site = Sites.get_site!(site)
+
+    assert site.stylesheet == "the content"
+    assert site.pages == pages_before
+    assert site.assets == assets_before
+  end
+
+  test "recording invalid upload doesn't make asset, page or stylesheet" do
+    user = user_fixture()
+    [site] = user.sites
+
+    multi =
+      Uploader.record(
+        Ecto.Multi.new(),
+        site: site,
+        user: user,
+        key: "a key",
+        params: %{"name" => ""},
+        type: "image/jpeg",
+        last_modified: nil
+      )
+
+    site = Sites.get_site!(site)
+    assets_before = site.assets
+    pages_before = Sites.with_pages(site).pages
+    stylesheet_before = site.stylesheet
+
+    Affable.Repo.transaction(multi)
+
+    site = Sites.get_site!(site)
+
+    assert site.pages == pages_before
+    assert site.assets == assets_before
+    assert site.stylesheet == stylesheet_before
+  end
 
   test "can strip the root directory from relative paths" do
     assert Uploader.strip_root("") == ""

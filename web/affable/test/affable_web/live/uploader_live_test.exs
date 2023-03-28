@@ -2,7 +2,7 @@ defmodule AffableWeb.UploaderLiveTest do
   use AffableWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
 
-  alias Affable.Assets
+  alias Affable.Sites
 
   setup context do
     {:ok, register_and_log_in_user(context)}
@@ -12,9 +12,8 @@ defmodule AffableWeb.UploaderLiveTest do
     conn: conn,
     user: user
   } do
-    content = "<html><h1>Hi there</h1></html>"
-
     [site] = user.sites
+    site = Sites.get_site!(site)
 
     {:ok, view, _html} = live(conn, url(~p"/sites/#{site.id}/uploader"))
 
@@ -23,34 +22,41 @@ defmodule AffableWeb.UploaderLiveTest do
       |> file_input("#upload-form", :files, [
         %{
           name: "index.html",
-          content: content,
-          size: :erlang.byte_size(content),
+          content: "<h1>Home page</h1>",
           type: "text/html"
         },
         %{
           name: "contact.html",
-          content: content,
+          content: "<h1>Contact me</h1>",
           type: "text/html"
         }
       ])
 
-    input |> render_upload("index.html")
-    input |> render_upload("contact.html")
+    render_upload(input, "index.html")
+    render_upload(input, "contact.html")
 
-    names_before = all_asset_names_and_site_ids()
+    assets_before = site.assets
+    page_paths_before = Enum.map(site.pages, & &1.path)
 
-    refute {"index.html", site.id} in names_before
-    refute {"contact.html", site.id} in names_before
+    assert page_paths_before == ~w(/)
+    refute Enum.map(site.pages, & &1.raw) == ["<h1>Home page</h1>"]
 
     view
     |> element("#upload-form")
     |> render_submit()
     |> follow_redirect(conn, url(~p"/sites"))
 
-    names_after = all_asset_names_and_site_ids()
+    site = Sites.get_site!(site)
+    page_paths_after = Enum.map(site.pages, & &1.path)
 
-    assert {"index.html", site.id} in names_after
-    assert {"contact.html", site.id} in names_after
+    assert site.assets == assets_before
+
+    assert Enum.sort(page_paths_after) == Enum.sort(~w(/index.html /contact.html))
+
+    assert Enum.map(site.pages, & &1.raw) == [
+             "the static test fixture",
+             "the static test fixture"
+           ]
   end
 
   test "file types that aren't allowed are rejected", %{
@@ -60,6 +66,7 @@ defmodule AffableWeb.UploaderLiveTest do
     content = ~s'document.write("hi")'
 
     [site] = user.sites
+    site = Sites.get_site!(site)
 
     {:ok, view, _html} = live(conn, url(~p"/sites/#{site.id}/uploader"))
 
@@ -75,18 +82,13 @@ defmodule AffableWeb.UploaderLiveTest do
 
     input |> render_upload("app.js")
 
-    names_before = all_asset_names_and_site_ids()
+    asset_names_before = Enum.map(site.assets, & &1.name)
 
     view
     |> element("#upload-form")
     |> render_submit() =~ "Unacceptable"
 
-    assert all_asset_names_and_site_ids() == names_before
-  end
-
-  defp all_asset_names_and_site_ids() do
-    for asset <- Affable.Repo.all(Assets.default_query()) do
-      {asset.name, asset.site_id}
-    end
+    site = Sites.get_site!(site)
+    assert Enum.map(site.assets, & &1.name) == asset_names_before
   end
 end

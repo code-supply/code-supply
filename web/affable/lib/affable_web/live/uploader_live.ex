@@ -1,10 +1,10 @@
 defmodule AffableWeb.UploaderLive do
   use AffableWeb, :live_view
 
-  alias Phoenix.LiveView.UploadEntry
   alias Affable.Uploader
-  alias Affable.Assets
   alias Affable.Accounts
+  alias Affable.Sites
+  alias Affable.Storage
 
   @accepted_types ~w(.css .gif .htm .html .jpeg .jpg .png .svg)
 
@@ -23,7 +23,7 @@ defmodule AffableWeb.UploaderLive do
   end
 
   def handle_params(%{"site_id" => site_id} = _params, _b, socket) do
-    {:noreply, assign(socket, form: to_form(%{"site_id" => site_id}))}
+    {:noreply, assign(socket, site_id: site_id, form: to_form(%{"site_id" => site_id}))}
   end
 
   def render(%{live_action: :new} = assigns) do
@@ -77,42 +77,55 @@ defmodule AffableWeb.UploaderLive do
     """
   end
 
-  def handle_event("save", params, %{assigns: %{user: user}} = socket) do
+  def handle_event("save", params, %{assigns: %{site_id: site_id, user: user}} = socket) do
     case uploaded_entries(socket, :files) do
-      {[_ | _] = _completed, []} ->
-        for {uuid, name} <- consume_uuids_and_names(socket) do
-          {:ok, _} =
-            Assets.create_uploaded(
-              user: user,
-              bucket_name: Uploader.bucket_name(),
-              key: uuid,
-              params: Map.put(params, "name", name)
-            )
-        end
+      {[_ | _] = _complete, [] = _incomplete} ->
+        site = Sites.get_site!(site_id)
+
+        multi = deletions_multi(Ecto.Multi.new(), site.pages)
+
+        multi =
+          for entry <- consume_uploaded_entries(socket, :files, fn _, entry -> {:ok, entry} end),
+              reduce: multi do
+            m ->
+              {:ok, downloaded_content} = storage().poll(Uploader.bucket_name(), entry.uuid)
+
+              Uploader.record(
+                m,
+                site: site,
+                user: user,
+                key: entry.uuid,
+                params:
+                  params
+                  |> Map.put("name", entry.client_name)
+                  |> Map.put("content", downloaded_content),
+                type: entry.client_type,
+                last_modified: entry.client_last_modified
+              )
+          end
+
+        {:ok, _} = Affable.Repo.transaction(multi)
 
         {:noreply,
          socket
          |> put_flash(:info, "Upload complete!")
          |> redirect(external: url(~p"/sites"))}
 
-      _ ->
+      {_ = _complete, [_ | _] = _incomplete} ->
         {:noreply, socket}
+    end
+  end
+
+  defp deletions_multi(multi, pages) do
+    for page <- pages, reduce: multi do
+      m ->
+        Ecto.Multi.delete(m, "page#{page.id}", page)
     end
   end
 
   def handle_event("validate", _params, socket) do
     grouped_entries = Uploader.group_directory_entries(socket.assigns.uploads.files.entries)
     {:noreply, assign(socket, grouped_entries: grouped_entries)}
-  end
-
-  defp consume_uuids_and_names(socket) do
-    consume_uploaded_entries(
-      socket,
-      :files,
-      fn _, %UploadEntry{uuid: uuid, client_name: name} ->
-        {:ok, {uuid, name}}
-      end
-    )
   end
 
   def error_to_string(:too_large), do: "One or more files is too large."
@@ -151,6 +164,10 @@ defmodule AffableWeb.UploaderLive do
 
   defp format_path(path) do
     Uploader.strip_root(path)
+  end
+
+  defp storage() do
+    Application.get_env(:affable, :storage)
   end
 
   # @entries_fixture [

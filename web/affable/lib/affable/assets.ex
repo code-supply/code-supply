@@ -10,20 +10,35 @@ defmodule Affable.Assets do
     from(a in Asset, order_by: [desc: a.updated_at])
   end
 
-  def create_uploaded(
+  def create_uploaded(kwargs) do
+    case Ecto.Multi.new()
+         |> create_uploaded_multi(kwargs)
+         |> Affable.Repo.transaction() do
+      {:ok, %{asset: asset}} ->
+        {:ok, asset}
+
+      {:error, :asset, changeset, _others} ->
+        {:error, changeset}
+    end
+  end
+
+  def create_uploaded_multi(
+        multi,
         user: user,
         bucket_name: bucket_name,
         key: key,
         params: %{"site_id" => site_id} = params
       ) do
     changeset =
-      %Asset{}
-      |> Asset.changeset(params |> Map.put("url", "gs://#{bucket_name}/#{key}"))
+      Asset.changeset(
+        %Asset{},
+        Map.put(params, "url", "gs://#{bucket_name}/#{key}")
+      )
 
-    if user |> site_member?(site_id) do
-      Repo.insert(changeset)
+    if site_member?(user, site_id) do
+      Ecto.Multi.insert(multi, :asset, changeset)
     else
-      {:error, changeset}
+      Ecto.Multi.error(multi, :asset, changeset)
     end
   end
 
