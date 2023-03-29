@@ -21,7 +21,7 @@ if Mix.env() == :dev do
 
   extract_user_token = fn fun ->
     {:ok, captured} = fun.(&"[TOKEN]#{&1}[TOKEN]")
-    [_, token, _] = String.split(captured.body, "[TOKEN]")
+    [_, token, _] = String.split(captured.text_body, "[TOKEN]")
     token
   end
 
