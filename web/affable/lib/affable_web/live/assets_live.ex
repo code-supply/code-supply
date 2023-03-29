@@ -4,8 +4,6 @@ defmodule AffableWeb.AssetsLive do
   alias Affable.{Accounts, Assets}
   alias Affable.Assets.Asset
   alias Affable.Sites
-  alias Affable.Uploader
-  alias Phoenix.LiveView.UploadEntry
 
   import Affable.Assets, only: [to_imgproxy_url: 2]
 
@@ -47,13 +45,5 @@ defmodule AffableWeb.AssetsLive do
       changeset: Asset.changeset(%Asset{}, %{}),
       sites: user.sites
     )
-  end
-
-  defp handle_progress(:asset, entry, socket) do
-    if entry.done? do
-      {:noreply, socket}
-    else
-      {:noreply, socket}
-    end
   end
 end

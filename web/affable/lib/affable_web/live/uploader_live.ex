@@ -4,7 +4,6 @@ defmodule AffableWeb.UploaderLive do
   alias Affable.Uploader
   alias Affable.Accounts
   alias Affable.Sites
-  alias Affable.Storage
 
   @accepted_types ~w(.css .gif .htm .html .jpeg .jpg .png .svg)
 
@@ -116,16 +115,16 @@ defmodule AffableWeb.UploaderLive do
     end
   end
 
+  def handle_event("validate", _params, socket) do
+    grouped_entries = Uploader.group_directory_entries(socket.assigns.uploads.files.entries)
+    {:noreply, assign(socket, grouped_entries: grouped_entries)}
+  end
+
   defp deletions_multi(multi, pages) do
     for page <- pages, reduce: multi do
       m ->
         Ecto.Multi.delete(m, "page#{page.id}", page)
     end
-  end
-
-  def handle_event("validate", _params, socket) do
-    grouped_entries = Uploader.group_directory_entries(socket.assigns.uploads.files.entries)
-    {:noreply, assign(socket, grouped_entries: grouped_entries)}
   end
 
   def error_to_string(:too_large), do: "One or more files is too large."
