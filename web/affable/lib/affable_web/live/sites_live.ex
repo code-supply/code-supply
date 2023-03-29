@@ -53,10 +53,7 @@ defmodule AffableWeb.SitesLive do
         %{assigns: %{user: user}} = socket
       ) do
     case Sites.create_bare_site(user, attrs) do
-      {:ok,
-       %Site{
-         internal_name: internal_name
-       } = site} ->
+      {:ok, site} ->
         {:noreply, update(socket, :sites, fn sites -> [site | sites] end)}
 
       {:error, changeset} ->
