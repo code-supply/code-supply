@@ -3,74 +3,30 @@
 </div>
 
 <div class="fixed px-4 mt-1 overflow-y-scroll top-12 h-body lg:z-0 lg:w-1/3">
-  <nav id="page-nav" class="pt-4">
-    <ul>
-      <li id="site-choice"
-          class={"rounded-t-md float-left border-b-2 " <> if @page, do: "border-gray-100", else: "border-gray-400"}>
-        <%= live_patch "Site", to: Routes.editor_path(@socket, :edit, @changeset.data.id),
-      class: "focus:outline-none bg-gradient-to-t from-gray-100 to-gray-100 focus:to-white block p-3" %>
-      </li>
-      <%= for {page, _} <- @pages do %>
-        <li id={"page-choice-#{page.id}"}
-            class={"rounded-t-md float-left border-b-2 " <> if @page == page, do: "border-gray-400", else: "border-gray-100"}
-            >
-            <%= live_patch page.title, to: Routes.editor_path(@socket, :edit, @changeset.data.id, page.id),
-          class: "focus:outline-none overflow-ellipsis overflow-hidden max-w-xs whitespace-nowrap bg-gradient-to-t from-gray-100 to-gray-100 focus:to-white block p-3" %>
-        </li>
-      <% end %>
-      <li class="float-left rounded-t-md">
-        <a id="new-page"
-           class="block p-3"
-           href="#"
-           phx-click="new-page"
-           >+ Add</a>
-      </li>
-    </ul>
-  </nav>
-<%= cond do %>
-<% @page -> %>
-  <.live_component module={AffableWeb.PageEditorComponent}
-           id={@page.id}
-           site={@changeset.data}
-           user={@user}
-           page={@page}
-           changeset={@page_changeset}
-           asset_pairs={@asset_pairs}
-           />
-<% true -> %>
-<.form :let={outer_form}
-       for={@changeset}
-       id="site"
-       csrf_token={false}
-       phx-change={:validate}
-       phx-submit={:save}
-       class="clear-left">
-  <div>
-    <div class="py-4">
-      <h2 class="text-xl font-bold bg-gray-100">Site</h2>
+  <.form
+    :let={outer_form}
+    for={@changeset}
+    id="site"
+    csrf_token={false}
+    phx-change={:validate}
+    phx-submit={:save}
+    class="clear-left"
+  >
+    <div>
+      <div class="py-4">
+        <h2 class="text-xl font-bold bg-gray-100">Site</h2>
 
-      <div class="field">
-        <%= label outer_form, :name, "Site name" %>
-        <%= text_input outer_form, :name, phx_debounce: 250 %>
-        <%= error_tag outer_form, :name %>
+        <div class="field">
+          <%= label(outer_form, :name, "Site name") %>
+          <%= text_input(outer_form, :name, phx_debounce: 250) %>
+          <%= error_tag(outer_form, :name) %>
+        </div>
+
+        <%= submit("Save", phx_disable_with: "Saving…", class: "btn btn-spaced") %>
       </div>
-
-      <div class="field" id="stylesheet-upload">
-        <label>Stylesheet
-          <.live_file_input upload={@uploads.stylesheet} />
-        </label>
-
-        <%= for entry <- @uploads.stylesheet.entries do %>
-          <%= inspect entry %>
-        <% end %>
-      </div>
-
-      <%= submit "Save", phx_disable_with: "Saving…", class: "btn btn-spaced" %>
     </div>
-  </div>
-</.form>
-<% end %>
-
+  </.form>
 </div>
 
-<iframe class="h-body top-12 mt-1 fixed left-1/3 w-2/3 overflow-scroll" src={@preview_url}></iframe>
+<iframe class="h-body top-12 mt-1 fixed left-1/3 w-2/3 overflow-scroll" src={@preview_url}>
+</iframe>

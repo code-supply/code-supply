@@ -17,16 +17,6 @@ defmodule AffableWeb.EditorLiveTest do
       }
     end
 
-    test "can navigate back to site editing", %{conn: conn, site: site} do
-      {:ok, view, _html} = live(conn, test_path(conn, site))
-
-      view
-      |> element("#site-choice a")
-      |> render_click()
-
-      assert view |> has_element?(~s{label[for="site_name"]})
-    end
-
     test "raises exception when site doesn't belong to user", %{conn: conn} do
       site = site_fixture()
 
