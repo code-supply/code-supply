@@ -24,7 +24,7 @@ mkShell {
     createuser affable --createdb
     if ! pgrep dnsmasq
     then
-      sudo dnsmasq --server='/*/8.8.8.8' --address='/*.affable.test/127.0.0.1'
+      sudo dnsmasq --server='/*/8.8.8.8' --address='/*.affable.test/127.0.0.1' --address '/*.affable.app/81.187.237.24'
     fi
   '';
 }
