@@ -15,7 +15,7 @@ defmodule ProcessorTest do
                      "type" => "kubernetes.io/tls",
                      "metadata" => %{
                        "name" => "tls-foo",
-                       "namespace" => "affable"
+                       "namespace" => "hosting"
                      }
                    }
                  },
@@ -25,7 +25,7 @@ defmodule ProcessorTest do
                      "type" => "kubernetes.io/tls",
                      "metadata" => %{
                        "name" => "tls-foo",
-                       "namespace" => "affable"
+                       "namespace" => "hosting"
                      }
                    }
                  },
@@ -35,7 +35,7 @@ defmodule ProcessorTest do
                      "type" => "something/else",
                      "metadata" => %{
                        "name" => "not-tls",
-                       "namespace" => "affable"
+                       "namespace" => "hosting"
                      }
                    }
                  }
@@ -69,17 +69,17 @@ defmodule ProcessorTest do
                  "type" => "kubernetes.io/tls",
                  "metadata" => %{
                    "name" => "some-tls",
-                   "namespace" => "affable"
+                   "namespace" => "hosting"
                  }
                },
                "snapshots" => %{
-                 "affable secrets" => [
+                 "hosting secrets" => [
                    %{
                      "object" => %{
                        "type" => "kubernetes.io/tls",
                        "metadata" => %{
                          "name" => "existing-thing",
-                         "namespace" => "affable"
+                         "namespace" => "hosting"
                        }
                      }
                    },
@@ -88,7 +88,7 @@ defmodule ProcessorTest do
                        "type" => "Opaque",
                        "metadata" => %{
                          "name" => "no-thanks",
-                         "namespace" => "affable"
+                         "namespace" => "hosting"
                        }
                      }
                    }
@@ -110,17 +110,17 @@ defmodule ProcessorTest do
                  "type" => "kubernetes.io/tls",
                  "metadata" => %{
                    "name" => "existing-thing",
-                   "namespace" => "affable"
+                   "namespace" => "hosting"
                  }
                },
                "snapshots" => %{
-                 "affable secrets" => [
+                 "hosting secrets" => [
                    %{
                      "object" => %{
                        "type" => "kubernetes.io/tls",
                        "metadata" => %{
                          "name" => "existing-thing",
-                         "namespace" => "affable"
+                         "namespace" => "hosting"
                        }
                      }
                    },
@@ -129,7 +129,7 @@ defmodule ProcessorTest do
                        "type" => "Opaque",
                        "metadata" => %{
                          "name" => "no-thanks",
-                         "namespace" => "affable"
+                         "namespace" => "hosting"
                        }
                      }
                    }
@@ -151,7 +151,7 @@ defmodule ProcessorTest do
                  "type" => "Opaque",
                  "metadata" => %{
                    "name" => "not-a-tls",
-                   "namespace" => "affable"
+                   "namespace" => "hosting"
                  }
                }
              }
@@ -170,17 +170,17 @@ defmodule ProcessorTest do
                  "type" => "kubernetes.io/tls",
                  "metadata" => %{
                    "name" => "some-tls",
-                   "namespace" => "affable"
+                   "namespace" => "hosting"
                  }
                },
                "snapshots" => %{
-                 "affable secrets" => [
+                 "hosting secrets" => [
                    %{
                      "object" => %{
                        "type" => "kubernetes.io/tls",
                        "metadata" => %{
                          "name" => "existing-thing",
-                         "namespace" => "affable"
+                         "namespace" => "hosting"
                        }
                      }
                    },
@@ -189,7 +189,7 @@ defmodule ProcessorTest do
                        "type" => "Opaque",
                        "metadata" => %{
                          "name" => "no-thanks",
-                         "namespace" => "affable"
+                         "namespace" => "hosting"
                        }
                      }
                    },
@@ -198,7 +198,7 @@ defmodule ProcessorTest do
                        "type" => "kubernetes.io/tls",
                        "metadata" => %{
                          "name" => "some-tls",
-                         "namespace" => "affable"
+                         "namespace" => "hosting"
                        }
                      }
                    }
@@ -220,7 +220,7 @@ defmodule ProcessorTest do
                  "type" => "Opaque",
                  "metadata" => %{
                    "name" => "not-a-tls",
-                   "namespace" => "affable"
+                   "namespace" => "hosting"
                  }
                }
              }

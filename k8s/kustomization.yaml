@@ -5,7 +5,7 @@ resources:
 - cert-manager
 - prometheus-operator
 - prometheus
-- affable
+- hosting
 - imgproxy
 - letsencrypt
 - tls-lb-operator

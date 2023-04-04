@@ -1,13 +1,12 @@
 kind: Certificate
 apiVersion: cert-manager.io/v1
 metadata:
-  name: affable-www
+  name: hosting-www
 spec:
-  secretName: affable-www
+  secretName: hosting-www
   issuerRef:
     name: letsencrypt-production-dns
     kind: ClusterIssuer
-  commonName: "*.affable.app"
+  commonName: "*.code.supply"
   dnsNames:
-  - "*.affable.app"
-  - affable.app
+  - "*.code.supply"

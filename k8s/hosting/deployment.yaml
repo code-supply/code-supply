@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: affable
+  name: hosting
 spec:
   template:
     metadata:
     spec:
-      serviceAccountName: affable
+      serviceAccountName: hosting
 
       containers:
 
-      - name: affable
-        image: affable:0
+      - name: hosting
+        image: hosting:0
         envFrom:
         - secretRef:
-            name: affable
+            name: hosting
 
         ports:
         - name: http
@@ -32,11 +32,11 @@ spec:
             fieldRef:
               fieldPath: status.podIP
         - name: RELEASE_NODE
-          value: "affable@$(POD_IP)"
+          value: "hosting@$(POD_IP)"
         - name: RELEASE_DISTRIBUTION
           value: name
         - name: BUCKET_NAME
-          value: affable-uploads
+          value: hosting-uploads
 
         readinessProbe:
           httpGet:
@@ -44,7 +44,7 @@ spec:
             port: http
             httpHeaders:
             - name: Host
-              value: www.affable.app
+              value: hosting.code.supply
 
         resources:
           requests:

@@ -17,8 +17,8 @@ then
 fi
 
 psql \
-    --host /tmp/cloudsql/code-supply:europe-west1:shared-belgium/ \
-    --username affable \
+    --host unhinged \
+    --username hosting \
     --variable=sitename="$1" \
     --no-align \
     --tuples-only \

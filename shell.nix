@@ -21,10 +21,10 @@ mkShell {
     initdb -D .postgres/db
     pg_ctl -D .postgres/db -l .postgres/log -o "--unix_socket_directories='$PWD/.postgres'" start
     export PGHOST="$PWD/.postgres"
-    createuser affable --createdb
+    createuser hosting --createdb
     if ! pgrep dnsmasq
     then
-      sudo dnsmasq --server='/*/8.8.8.8' --address='/*.affable.test/127.0.0.1' --address '/*.affable.app/81.187.237.24'
+      sudo dnsmasq --server='/*/8.8.8.8' --address='/*.hosting.test/127.0.0.1' --address '/*.affable.app/81.187.237.24'
     fi
   '';
 }

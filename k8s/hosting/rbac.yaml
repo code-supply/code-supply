@@ -2,7 +2,7 @@
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: affable
+  name: hosting
 rules:
 - apiGroups:
   - cert-manager.io
@@ -21,11 +21,11 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: affable-can-manage-sites
+  name: hosting-can-manage-sites
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: affable
+  name: hosting
 subjects:
 - kind: ServiceAccount
-  name: affable
+  name: hosting

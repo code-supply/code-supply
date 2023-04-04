@@ -30,3 +30,5 @@ hosting-*.tar
 
 # Ignore digested assets cache.
 /priv/static/cache_manifest.json
+
+.postgres

@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-PGPASSWORD=postgres \
-    psql \
-    -U postgres \
-    affable_dev

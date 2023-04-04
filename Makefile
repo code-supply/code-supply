@@ -1,5 +1,5 @@
 .POSIX:
-affable_version = k8s/affable/version.yaml
+hosting_version = k8s/hosting/version.yaml
 
 k8s/manifest.yaml: \
 	k8s/kustomization.yaml \
@@ -46,27 +46,27 @@ k8s/tls-lb-operator/version.yaml: operators/tls-lb-operator/VERSION_PUSHED
 	echo "      labels:" >> $@
 	echo "        version: \"$$(cat $<)\"" >> $@
 
-web/affable/VERSION:
+web/hosting/VERSION:
 	git rev-parse --short HEAD > $@
 
-web/affable/VERSION_BUILT: web/affable/VERSION
-	cd web/affable; mix dialyzer
-	cd web/affable; mix test
-	docker build -t codesupplydocker/affable:$$(cat $<) web/affable
+web/hosting/VERSION_BUILT: web/hosting/VERSION
+	cd web/hosting; mix dialyzer
+	cd web/hosting; mix test
+	docker build -t codesupplydocker/hosting:$$(cat $<) web/hosting
 	cat $< > $@
 
-web/affable/VERSION_PUSHED: web/affable/VERSION_BUILT
-	docker push codesupplydocker/affable:$$(cat $<)
+web/hosting/VERSION_PUSHED: web/hosting/VERSION_BUILT
+	docker push codesupplydocker/hosting:$$(cat $<)
 	cat $< > $@
 
-k8s/affable/version.yaml: web/affable/VERSION_PUSHED
-	cd k8s/affable && \
-		kustomize edit set image affable=codesupplydocker/affable:$$(cat ../../$<)
+k8s/hosting/version.yaml: web/hosting/VERSION_PUSHED
+	cd k8s/hosting && \
+		kustomize edit set image hosting=codesupplydocker/hosting:$$(cat ../../$<)
 	> $@
 	echo "apiVersion: apps/v1" >> $@
 	echo "kind: Deployment" >> $@
 	echo "metadata:" >> $@
-	echo "  name: affable" >> $@
+	echo "  name: hosting" >> $@
 	echo "spec:" >> $@
 	echo "  template:" >> $@
 	echo "    metadata:" >> $@

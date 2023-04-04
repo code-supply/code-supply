@@ -8,11 +8,11 @@ defmodule TlsLbOperator do
       "configVersion" => "v1",
       "kubernetes" => [
         %{
-          "name" => "affable secrets",
+          "name" => "hosting secrets",
           "kind" => "Secret",
           "executeHookOnEvent" => ["Added", "Deleted"],
-          "namespace" => %{"nameSelector" => %{"matchNames" => ["affable"]}},
-          "includeSnapshotsFrom" => ["affable secrets"]
+          "namespace" => %{"nameSelector" => %{"matchNames" => ["hosting"]}},
+          "includeSnapshotsFrom" => ["hosting secrets"]
         }
       ]
     }

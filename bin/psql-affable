@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-password="$(show-credential affable affable DATABASE_URL \
-    | sed 's/.*affable://;s/@localhost.*//')"
-
-PGPASSWORD="$password" \
-    psql \
-    -U affable \
-    -h /tmp/cloudsql/code-supply:europe-west1:shared-belgium/

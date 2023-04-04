@@ -18,8 +18,8 @@ defmodule TlsLbOperator.Runner do
       "apiVersion" => "networking.k8s.io/v1",
       "kind" => "Ingress",
       "metadata" => %{
-        "name" => "load-balancer-affable",
-        "namespace" => "affable"
+        "name" => "load-balancer-hosting",
+        "namespace" => "hosting"
       },
       "spec" => %{
         "tls" =>
@@ -35,7 +35,7 @@ defmodule TlsLbOperator.Runner do
                   "pathType" => "Prefix",
                   "backend" => %{
                     "service" => %{
-                      "name" => "affable",
+                      "name" => "hosting",
                       "port" => %{
                         "number" => 80
                       }
@@ -46,7 +46,7 @@ defmodule TlsLbOperator.Runner do
             }
           },
           %{
-            "host" => "images.affable.app",
+            "host" => "hosting-images.code.supply",
             "http" => %{
               "paths" => [
                 %{

@@ -3,9 +3,9 @@
 set -e
 
 cwd="$(cd "$(dirname "$0")" && pwd)"
-cd "$cwd/../web/affable" || exit
+cd "$cwd/../web/hosting" || exit
 
-export DATABASE_URL="$("$cwd/show-credential" affable affable DATABASE_URL)"
+export DATABASE_URL="$("$cwd/show-credential" hosting hosting DATABASE_URL)"
 
 export ACCESS_KEY_ID=
 export BUCKET_NAME=

@@ -17,7 +17,7 @@ defmodule TlsLbOperator.Processor do
       ]) do
     {:ok,
      {:replace_certs,
-      (names(snapshots["affable secrets"]) ++ [name])
+      (names(snapshots["hosting secrets"]) ++ [name])
       |> Enum.uniq()}}
   end
 
@@ -34,7 +34,7 @@ defmodule TlsLbOperator.Processor do
       ]) do
     {:ok,
      {:replace_certs,
-      snapshots["affable secrets"]
+      snapshots["hosting secrets"]
       |> names()
       |> List.delete(name)}}
   end
