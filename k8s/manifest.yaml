@@ -1,19 +1,19 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  labels:
-    app: affable
-  name: affable
----
-apiVersion: v1
-kind: Namespace
-metadata:
   name: cert-manager
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: concourse
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: hosting
+  name: hosting
 ---
 apiVersion: v1
 kind: Namespace
@@ -28203,30 +28203,6 @@ status:
   storedVersions: []
 ---
 apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app: affable
-  name: affable
-  namespace: affable
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app: imgproxy
-  name: imgproxy
-  namespace: affable
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app: tls-lb-operator
-  name: tls-lb-operator
-  namespace: affable
----
-apiVersion: v1
 automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
@@ -28264,6 +28240,30 @@ metadata:
     app.kubernetes.io/version: v1.8.0
   name: cert-manager-webhook
   namespace: cert-manager
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: hosting
+  name: hosting
+  namespace: hosting
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: imgproxy
+  name: imgproxy
+  namespace: hosting
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: tls-lb-operator
+  name: tls-lb-operator
+  namespace: hosting
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -28369,27 +28369,6 @@ rules:
   - leases
   verbs:
   - create
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  labels:
-    app: affable
-  name: affable
-rules:
-- apiGroups:
-  - cert-manager.io
-  resources:
-  - certificates
-  verbs:
-  - create
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - endpoints
-  verbs:
-  - list
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -29019,6 +28998,27 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    app: hosting
+  name: hosting
+rules:
+- apiGroups:
+  - cert-manager.io
+  resources:
+  - certificates
+  verbs:
+  - create
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
   name: prometheus
 rules:
 - apiGroups:
@@ -29221,21 +29221,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app: affable
-  name: affable-can-manage-sites
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: affable
-subjects:
-- kind: ServiceAccount
-  name: affable
-  namespace: affable
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  labels:
     app: cainjector
     app.kubernetes.io/component: cainjector
     app.kubernetes.io/instance: cert-manager
@@ -29426,6 +29411,21 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    app: hosting
+  name: hosting-can-manage-sites
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: hosting
+subjects:
+- kind: ServiceAccount
+  name: hosting
+  namespace: hosting
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
   name: prometheus
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -29466,7 +29466,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: tls-lb-operator
-  namespace: affable
+  namespace: hosting
 ---
 apiVersion: v1
 data: null
@@ -29479,64 +29479,6 @@ metadata:
     app.kubernetes.io/name: webhook
   name: cert-manager-webhook
   namespace: cert-manager
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: affable
-  name: affable
-  namespace: affable
-spec:
-  ipFamilies:
-  - IPv4
-  - IPv6
-  ipFamilyPolicy: PreferDualStack
-  ports:
-  - name: http
-    port: 80
-    targetPort: http
-  selector:
-    app: affable
-  type: ClusterIP
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: affable
-  name: affable-headless
-  namespace: affable
-spec:
-  clusterIP: None
-  ports:
-  - name: tcp-erlang
-    port: 5555
-    targetPort: tcp-erlang
-  - name: tcp-epmd
-    port: 4369
-    targetPort: tcp-epmd
-  selector:
-    app: affable
-  type: ClusterIP
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: imgproxy
-  name: imgproxy
-  namespace: affable
-spec:
-  ports:
-  - name: http
-    port: 80
-    targetPort: http
-  - name: http-prometheus
-    port: 9000
-  selector:
-    app: imgproxy
-  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
@@ -29588,6 +29530,64 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
+    app: hosting
+  name: hosting
+  namespace: hosting
+spec:
+  ipFamilies:
+  - IPv4
+  - IPv6
+  ipFamilyPolicy: PreferDualStack
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  selector:
+    app: hosting
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hosting
+  name: hosting-headless
+  namespace: hosting
+spec:
+  clusterIP: None
+  ports:
+  - name: tcp-erlang
+    port: 5555
+    targetPort: tcp-erlang
+  - name: tcp-epmd
+    port: 4369
+    targetPort: tcp-epmd
+  selector:
+    app: hosting
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: imgproxy
+  name: imgproxy
+  namespace: hosting
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  - name: http-prometheus
+    port: 9000
+  selector:
+    app: imgproxy
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: prometheus-operator
     app.kubernetes.io/version: v0.44.1
@@ -29602,133 +29602,6 @@ spec:
   selector:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: prometheus-operator
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: affable
-  name: affable
-  namespace: affable
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: affable
-  template:
-    metadata:
-      labels:
-        app: affable
-        version: c67ca55
-    spec:
-      containers:
-      - env:
-        - name: ELIXIR_ERL_OPTIONS
-          value: -kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        - name: RELEASE_NODE
-          value: affable@$(POD_IP)
-        - name: RELEASE_DISTRIBUTION
-          value: name
-        - name: BUCKET_NAME
-          value: affable-uploads
-        envFrom:
-        - secretRef:
-            name: affable
-        image: codesupplydocker/affable:c67ca55
-        name: affable
-        ports:
-        - containerPort: 4000
-          name: http
-        - containerPort: 5555
-          name: tcp-erlang
-        - containerPort: 4369
-          name: tcp-epmd
-        readinessProbe:
-          httpGet:
-            httpHeaders:
-            - name: Host
-              value: www.affable.app
-            path: /
-            port: http
-        resources:
-          limits:
-            cpu: 1
-            memory: 250Mi
-          requests:
-            cpu: 100m
-            memory: 55Mi
-      serviceAccountName: affable
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: imgproxy
-  name: imgproxy
-  namespace: affable
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: imgproxy
-  template:
-    metadata:
-      labels:
-        app: imgproxy
-        version: 5c844dd
-    spec:
-      containers:
-      - env:
-        - name: IMGPROXY_USE_GCS
-          value: "true"
-        - name: IMGPROXY_PROMETHEUS_BIND
-          value: 0.0.0.0:9000
-        - name: IMGPROXY_TTL
-          value: "31536000"
-        envFrom:
-        - secretRef:
-            name: imgproxy
-        image: darthsim/imgproxy:v2.16.4@sha256:160db382092e9d00d84337d4569e09031138d2cadc62b8571d0714d36211ec1a
-        name: imgproxy
-        ports:
-        - containerPort: 8080
-          name: http
-        - containerPort: 9000
-          name: http-prometheus
-        resources:
-          limits:
-            cpu: 1
-            memory: 200Mi
-          requests:
-            cpu: 5m
-            memory: 100Mi
-      serviceAccountName: imgproxy
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: tls-lb-operator
-  name: tls-lb-operator
-  namespace: affable
-spec:
-  selector:
-    matchLabels:
-      app: tls-lb-operator
-  template:
-    metadata:
-      labels:
-        app: tls-lb-operator
-        version: de4e648
-    spec:
-      containers:
-      - image: codesupplydocker/tls-lb-operator:de4e648
-        name: tls-lb-operator
-      serviceAccountName: tls-lb-operator
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -29912,6 +29785,133 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    app: hosting
+  name: hosting
+  namespace: hosting
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hosting
+  template:
+    metadata:
+      labels:
+        app: hosting
+        version: 9ea2eb7
+    spec:
+      containers:
+      - env:
+        - name: ELIXIR_ERL_OPTIONS
+          value: -kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: RELEASE_NODE
+          value: hosting@$(POD_IP)
+        - name: RELEASE_DISTRIBUTION
+          value: name
+        - name: BUCKET_NAME
+          value: hosting-uploads
+        envFrom:
+        - secretRef:
+            name: hosting
+        image: codesupplydocker/hosting:9ea2eb7
+        name: hosting
+        ports:
+        - containerPort: 4000
+          name: http
+        - containerPort: 5555
+          name: tcp-erlang
+        - containerPort: 4369
+          name: tcp-epmd
+        readinessProbe:
+          httpGet:
+            httpHeaders:
+            - name: Host
+              value: hosting.code.supply
+            path: /
+            port: http
+        resources:
+          limits:
+            cpu: 1
+            memory: 250Mi
+          requests:
+            cpu: 100m
+            memory: 55Mi
+      serviceAccountName: hosting
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: imgproxy
+  name: imgproxy
+  namespace: hosting
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: imgproxy
+  template:
+    metadata:
+      labels:
+        app: imgproxy
+        version: 5c844dd
+    spec:
+      containers:
+      - env:
+        - name: IMGPROXY_USE_GCS
+          value: "true"
+        - name: IMGPROXY_PROMETHEUS_BIND
+          value: 0.0.0.0:9000
+        - name: IMGPROXY_TTL
+          value: "31536000"
+        envFrom:
+        - secretRef:
+            name: imgproxy
+        image: darthsim/imgproxy:v2.16.4@sha256:160db382092e9d00d84337d4569e09031138d2cadc62b8571d0714d36211ec1a
+        name: imgproxy
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 9000
+          name: http-prometheus
+        resources:
+          limits:
+            cpu: 1
+            memory: 200Mi
+          requests:
+            cpu: 5m
+            memory: 100Mi
+      serviceAccountName: imgproxy
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tls-lb-operator
+  name: tls-lb-operator
+  namespace: hosting
+spec:
+  selector:
+    matchLabels:
+      app: tls-lb-operator
+  template:
+    metadata:
+      labels:
+        app: tls-lb-operator
+        version: de4e648
+    spec:
+      containers:
+      - image: codesupplydocker/tls-lb-operator:de4e648
+        name: tls-lb-operator
+      serviceAccountName: tls-lb-operator
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: prometheus-operator
     app.kubernetes.io/version: v0.44.1
@@ -29958,23 +29958,6 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  labels:
-    app: affable
-  name: affable-www
-  namespace: affable
-spec:
-  commonName: '*.affable.app'
-  dnsNames:
-  - '*.affable.app'
-  - affable.app
-  issuerRef:
-    kind: ClusterIssuer
-    name: letsencrypt-production-dns
-  secretName: affable-www
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
   name: concourse
   namespace: concourse
 spec:
@@ -29985,6 +29968,22 @@ spec:
     kind: ClusterIssuer
     name: letsencrypt-production-dns
   secretName: concourse-web-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    app: hosting
+  name: hosting-www
+  namespace: hosting
+spec:
+  commonName: '*.code.supply'
+  dnsNames:
+  - '*.code.supply'
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-production-dns
+  secretName: hosting-www
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -29999,7 +29998,7 @@ spec:
     solvers:
     - http01:
         ingress:
-          name: load-balancer-affable
+          name: load-balancer-hosting
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -30032,7 +30031,7 @@ spec:
     solvers:
     - http01:
         ingress:
-          name: load-balancer-affable
+          name: load-balancer-hosting
     - dns01:
         cloudDNS:
           project: code-supply
