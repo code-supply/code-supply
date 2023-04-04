@@ -1,0 +1,4 @@
+steps:
+- name: gcr.io/cloud-builders/docker
+  args: [build, -t, 'eu.gcr.io/code-supply/hosting:$SHORT_SHA', web/hosting]
+images: [eu.gcr.io/code-supply/hosting]
