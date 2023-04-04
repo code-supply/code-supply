@@ -1,9 +1,9 @@
 variable "sites" {
   type = map(any)
   default = {
-    affable = {
-      display_name = "Affable"
-      host         = "www.affable.app"
+    hosting = {
+      display_name = "Hosting"
+      host         = "hosting.code.supply"
       path         = "/"
     },
     code-supply = {
@@ -14,11 +14,6 @@ variable "sites" {
     andrewbruce = {
       display_name = "Andrew Bruce"
       host         = "www.andrewbruce.net"
-      path         = "/"
-    },
-    vegancomparestuff = {
-      display_name = "Vegan Compare Stuff"
-      host         = "vegan.comparestuff.co"
       path         = "/"
     }
   }
