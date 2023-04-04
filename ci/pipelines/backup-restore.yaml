@@ -1,7 +1,7 @@
 ---
 jobs:
 
-- name: backup-affable
+- name: backup-hosting
   plan:
   - get: daily
     trigger: true
@@ -9,30 +9,30 @@ jobs:
   - task: backup
     file: repo/ci/tasks/postgres-backup.yaml
     params:
-      PGDATABASE: affable
+      PGDATABASE: hosting
       PGHOST: unhinged
-      PGUSER: affable
-  - put: backup-affable
+      PGUSER: hosting
+  - put: backup-hosting
     params:
       file: backups/*.tar.bz2
 
-- name: test-restore-affable
+- name: test-restore-hosting
   plan:
   - get: repo
   - get: backups
-    resource: backup-affable
+    resource: backup-hosting
     trigger: true
-    passed: [backup-affable]
+    passed: [backup-hosting]
   - task: prepare
     file: repo/ci/tasks/postgres-prepare-restore.yaml
     vars:
-      database: affable
-      user: affable
+      database: hosting
+      user: hosting
       test-query: select * from users where email = 'me@andrewbruce.net'
   - task: restore-test
     file: repo/ci/tasks/postgres-restore.yaml
     vars:
-      database: affable
+      database: hosting
 
 - name: backup-atc
   plan:
@@ -75,12 +75,12 @@ resources:
     uri: https://github.com/code-supply/code-supply
     branch: main
 
-- name: backup-affable
+- name: backup-hosting
   type: gcs
   source:
     bucket: code-supply-backups
     json_key: ((google-key))
-    versioned_file: postgres/affable.tar.bz2
+    versioned_file: postgres/hosting.tar.bz2
 
 - name: backup-atc
   type: gcs
