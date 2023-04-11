@@ -20,12 +20,12 @@
           mixRelease {
             pname = "hosting";
             src = ./web/hosting;
-            version = "0.0.0";
+            version = builtins.readFile ./web/hosting/VERSION;
             mixNixDeps = import ./web/hosting/deps.nix { inherit lib beamPackages; };
           };
         dockerImageHosting = pkgs.dockerTools.buildImage
           {
-            name = "hosting";
+            name = "codesupplydocker/hosting";
             config = {
               Cmd = [ "${buildHosting}/bin/hosting" "start" ];
               Env = [ "PATH=/bin:$PATH" ];
