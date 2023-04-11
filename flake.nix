@@ -8,16 +8,45 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        hostingBuild = with pkgs; with beamPackages;
+        beamPkgs = with pkgs.beam_minimal; packagesWith interpreters.erlangR25;
+        erlang = beamPkgs.erlang;
+        elixir = beamPkgs.elixir_1_14;
+
+        fetchMixDeps = beamPkgs.fetchMixDeps.override { inherit elixir; };
+        buildMix' = beamPkgs.buildMix'.override { inherit fetchMixDeps; };
+        mixRelease = beamPkgs.mixRelease.override { inherit elixir erlang fetchMixDeps; };
+
+        buildHosting = with pkgs; with beamPackages;
           mixRelease {
             pname = "hosting";
             src = ./web/hosting;
             version = "0.0.0";
             mixNixDeps = import ./web/hosting/deps.nix { inherit lib beamPackages; };
           };
+        dockerImageHosting = pkgs.dockerTools.buildImage
+          {
+            name = "hosting";
+            config = {
+              Cmd = [ "${buildHosting}/bin/hosting" "start" ];
+              Env = [ "PATH=/bin:$PATH" ];
+            };
+            copyToRoot = pkgs.buildEnv {
+              name = "image-root";
+              paths = with pkgs; [
+                bash
+                coreutils
+                gnused
+              ];
+              pathsToLink = [ "/bin" ];
+            };
+          };
       in
       {
-        defaultPackage = hostingBuild;
+        packages = {
+          hosting = buildHosting;
+          docker = dockerImageHosting;
+        };
+        defaultPackage = buildHosting;
         devShells.default = import ./shell.nix { inherit pkgs; };
       }
     );
