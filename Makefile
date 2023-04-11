@@ -46,6 +46,9 @@ k8s/tls-lb-operator/version.yaml: operators/tls-lb-operator/VERSION_PUSHED
 	echo "      labels:" >> $@
 	echo "        version: \"$$(cat $<)\"" >> $@
 
+web/hosting/deps.nix: web/hosting/mix.lock
+	mix2nix web/hosting/mix.lock > $@
+
 web/hosting/VERSION:
 	git rev-parse --short HEAD > $@
 

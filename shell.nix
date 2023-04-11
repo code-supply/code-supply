@@ -11,6 +11,7 @@ mkShell {
     jq
     kubectl
     kustomize
+    mix2nix
     nodePackages."@tailwindcss/language-server"
     nodePackages.typescript
     nodePackages.typescript-language-server
