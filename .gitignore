@@ -5,3 +5,4 @@ service-account.json
 target
 /.postgres
 helm/*/secrets.yaml
+/.direnv
