@@ -37,6 +37,7 @@
               paths = with pkgs; [
                 bash
                 coreutils
+                gnugrep
                 gnused
               ];
               pathsToLink = [ "/bin" ];
