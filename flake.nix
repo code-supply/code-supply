@@ -15,7 +15,7 @@
         fetchMixDeps = beamPkgs.fetchMixDeps.override { inherit elixir; };
         buildMix' = beamPkgs.buildMix'.override { inherit fetchMixDeps; };
         mixRelease = beamPkgs.mixRelease.override { inherit elixir erlang fetchMixDeps; };
-        version = builtins.readFile ./web/hosting/VERSION;
+        version = nixpkgs.lib.strings.removeSuffix "\n" (builtins.readFile ./web/hosting/VERSION);
 
         buildHosting = with pkgs; with beamPackages;
           mixRelease {
