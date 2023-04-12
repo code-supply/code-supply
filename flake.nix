@@ -42,14 +42,7 @@
               pathsToLink = [ "/bin" ];
             };
           };
-      in
-      {
-        packages = {
-          hosting = buildHosting;
-          docker = dockerImageHosting;
-        };
-        defaultPackage = buildHosting;
-        devShells.default = with pkgs;
+        devShell = with pkgs;
           mkShell {
             packages = [
               dnsmasq
@@ -83,6 +76,14 @@
             '';
           }
         ;
+      in
+      {
+        packages = {
+          hosting = buildHosting;
+          docker = dockerImageHosting;
+        };
+        defaultPackage = buildHosting;
+        devShells.default = devShell;
       }
     );
 }
