@@ -29797,7 +29797,7 @@ spec:
     metadata:
       labels:
         app: hosting
-        version: 256e943
+        version: 33c4499
     spec:
       containers:
       - env:
@@ -29816,7 +29816,7 @@ spec:
         envFrom:
         - secretRef:
             name: hosting
-        image: codesupplydocker/hosting:256e943
+        image: codesupplydocker/hosting:33c4499
         name: hosting
         ports:
         - containerPort: 4000
