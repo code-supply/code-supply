@@ -53,7 +53,7 @@
           mkShell {
             packages = [
               dnsmasq
-              elixir_1_14
+              elixir
               elixir_ls
               inotify-tools
               jq
