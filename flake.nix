@@ -15,17 +15,19 @@
         fetchMixDeps = beamPkgs.fetchMixDeps.override { inherit elixir; };
         buildMix' = beamPkgs.buildMix'.override { inherit fetchMixDeps; };
         mixRelease = beamPkgs.mixRelease.override { inherit elixir erlang fetchMixDeps; };
+        version = builtins.readFile ./web/hosting/VERSION;
 
         buildHosting = with pkgs; with beamPackages;
           mixRelease {
             pname = "hosting";
             src = ./web/hosting;
-            version = builtins.readFile ./web/hosting/VERSION;
+            version = version;
             mixNixDeps = import ./web/hosting/deps.nix { inherit lib beamPackages; };
           };
         dockerImageHosting = pkgs.dockerTools.buildImage
           {
             name = "codesupplydocker/hosting";
+            tag = version;
             config = {
               Cmd = [ "${buildHosting}/bin/hosting" "start" ];
               Env = [ "PATH=/bin:$PATH" ];
