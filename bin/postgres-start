@@ -1,0 +1,14 @@
+#!/bin/sh
+
+dir="$(realpath $(dirname $0))/.."
+
+(
+cd "$dir"
+initdb -D .postgres/db
+pg_ctl \
+  -D .postgres/db \
+  -l .postgres/log \
+  -o "--unix_socket_directories='$dir/.postgres'" \
+  -o "--listen_addresses=" \
+  start
+)

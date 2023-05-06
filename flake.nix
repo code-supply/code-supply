@@ -63,11 +63,7 @@
               terraform-lsp
             ];
             shellHook = ''
-              if [ ! -e .postgres ]
-              then
-                initdb -D .postgres/db
-                pg_ctl -D .postgres/db -l .postgres/log -o "--unix_socket_directories='$PWD/.postgres'" -o --max_connections=200 start
-              fi
+              [ ! -e .postgres ] && bin/postgres-start
               export PGHOST="$PWD/.postgres"
               createuser hosting --createdb
               if ! pgrep dnsmasq
