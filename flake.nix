@@ -23,6 +23,7 @@
             src = ./web/hosting;
             version = version;
             mixNixDeps = import ./web/hosting/deps.nix { inherit lib beamPackages; };
+            postBuild = "mix assets.deploy";
           };
         dockerImageHosting = pkgs.dockerTools.buildImage
           {
