@@ -11,22 +11,23 @@ defmodule Hosting.Pages do
                       {"href", "/stylesheets/app.css"}
                     ], []}
 
-  def render(page, %Site{stylesheet: stylesheet}) do
-    process(page, stylesheet)
+  def render(page, %Site{stylesheet: stylesheet}, current_datetime) do
+    process(page, stylesheet, current_datetime)
     |> Floki.raw_html()
   end
 
-  defp process(%Page{raw: raw}, "") do
+  defp process(%Page{raw: raw}, "", current_datetime) do
     {:ok, doc} = Floki.parse_document(raw)
 
     doc
     |> remove_scripts()
     |> remove_stylesheets()
     |> rewrite_links()
+    |> write_dynamic_data(current_datetime)
   end
 
-  defp process(%Page{} = page, _stylesheet_present) do
-    process(page, "")
+  defp process(%Page{} = page, _stylesheet_present, current_datetime) do
+    process(page, "", current_datetime)
     |> Floki.traverse_and_update(fn
       {"html", _attrs, [{"head", _, _} | _]} = html ->
         html
@@ -36,6 +37,28 @@ defmodule Hosting.Pages do
 
       {"head", attrs, children} ->
         {"head", attrs, [@site_stylesheet | children]}
+
+      other ->
+        other
+    end)
+  end
+
+  defp write_dynamic_data(doc, current_datetime) do
+    Floki.traverse_and_update(doc, fn
+      {el, attrs, children} ->
+        if {"data-dynamic", "year"} in attrs do
+          {
+            el,
+            attrs,
+            ["#{current_datetime.year}"]
+          }
+        else
+          {
+            el,
+            attrs,
+            children
+          }
+        end
 
       other ->
         other

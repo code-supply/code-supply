@@ -15,7 +15,11 @@ defmodule HostingWeb.PageControllerTest do
     [page] = site.pages
 
     {:ok, _page} =
-      Sites.update_page(page, %{"raw" => "<html><title>my site</title></html>"}, user)
+      Sites.update_page(
+        page,
+        %{"raw" => ~s(<html><title>my site</title><p data-dynamic="year">poop</html>)},
+        user
+      )
 
     conn = build_conn()
     conn = get(conn, "http://#{domain.name}" <> Routes.page_path(conn, :show, []))

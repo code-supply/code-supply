@@ -9,6 +9,20 @@ defmodule Hosting.PagesTest do
   import Hosting.SitesFixtures
 
   @valid_page %Page{title: "hi", path: "/"}
+  @irrelevant_datetime ~U[2001-01-01 00:00:00Z]
+
+  describe "dynamic" do
+    test "replacement of year" do
+      page = %Page{
+        raw: """
+        <html><p data-dynamic="year"></html>
+        """
+      }
+
+      assert Pages.render(page, %Site{}, ~U[1983-04-25 03:00:00Z]) =~
+               ~r(<p data-dynamic="year">1983</p>)
+    end
+  end
 
   describe "when head element is present" do
     test "can strip the scripts and replace stylesheets with site's" do
@@ -18,7 +32,7 @@ defmodule Hosting.PagesTest do
         """
       }
 
-      assert Pages.render(page, %Site{stylesheet: "* {}"}) ==
+      assert Pages.render(page, %Site{stylesheet: "* {}"}, @irrelevant_datetime) ==
                ~s(<html><head><link rel="stylesheet" href="/stylesheets/app.css"/></head><h1>Hi there!</h1></html>)
     end
   end
@@ -31,7 +45,7 @@ defmodule Hosting.PagesTest do
         """
       }
 
-      assert Pages.render(page, %Site{stylesheet: "* {}"}) ==
+      assert Pages.render(page, %Site{stylesheet: "* {}"}, @irrelevant_datetime) ==
                ~s(<html><head><link rel="stylesheet" href="/stylesheets/app.css"/></head><h1>Hi there!</h1></html>)
     end
   end
@@ -44,7 +58,7 @@ defmodule Hosting.PagesTest do
         """
       }
 
-      assert Pages.render(page, %Site{stylesheet: ""}) ==
+      assert Pages.render(page, %Site{stylesheet: ""}, @irrelevant_datetime) ==
                ~s(<html><h1>Hi there!</h1></html>)
     end
   end
@@ -99,7 +113,8 @@ defmodule Hosting.PagesTest do
           more nonsense
           """
         },
-        %Site{stylesheet: ""}
+        %Site{stylesheet: ""},
+        @irrelevant_datetime
       )
 
     assert rendered =~ ~s(<a href="/">Home</a>)
@@ -120,7 +135,8 @@ defmodule Hosting.PagesTest do
           more nonsense
           """
         },
-        %Site{stylesheet: ""}
+        %Site{stylesheet: ""},
+        @irrelevant_datetime
       )
 
     assert rendered =~ ~s(<a href="/contact">Contact</a>)
