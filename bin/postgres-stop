@@ -5,8 +5,8 @@ dir="$(realpath $(dirname $0))/.."
 (
 cd "$dir"
 pg_ctl \
-  -D .postgres/db \
-  -l .postgres/log \
+  -D "$dir/.postgres/db" \
+  -l "$dir/.postgres/log" \
   -o "--unix_socket_directories='$dir/.postgres'" \
   stop
 )
