@@ -17,6 +17,6 @@ commonLabels:
 images:
 - name: hosting
   newName: codesupplydocker/hosting
-  newTag: 2fe236f
+  newTag: a4f6ffc
 patchesStrategicMerge:
 - version.yaml
