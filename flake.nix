@@ -17,14 +17,71 @@
         mixRelease = beamPkgs.mixRelease.override { inherit elixir erlang fetchMixDeps; };
         version = nixpkgs.lib.strings.removeSuffix "\n" (builtins.readFile ./web/hosting/VERSION);
 
+        esbuildBinary = pkgs.stdenv.mkDerivation {
+          name = "esbuildbinary";
+          src = pkgs.fetchzip {
+            url = "https://registry.npmjs.org/esbuild-linux-64/-/esbuild-linux-64-0.14.41.tgz";
+            sha256 = "sha256-0UHSZspwruv+87yfJJyySqVm28iPA5WI4PyAeL03Cfg=";
+          };
+          installPhase = ''
+            mkdir -p $out/bin
+            cp $src/bin/esbuild $out/bin/
+          '';
+        };
+
+        tailwindBinary = pkgs.stdenv.mkDerivation {
+          name = "tailwindbinary";
+          src = pkgs.fetchurl {
+            url = "https://github.com/tailwindlabs/tailwindcss/releases/download/v3.1.4/tailwindcss-linux-x64";
+            sha256 = "sha256-3aw8TZ1dpsvziSPYeu89QKO/iciGIAtvEAu/j8GdWm8=";
+          };
+          dontUnpack = true;
+          dontStrip = true;
+          installPhase = "install -m755 -D $src $out/bin/tailwindcss-linux-x64";
+        };
+
         buildHosting = with pkgs; with beamPackages;
+          let
+            mixDeps = import ./web/hosting/deps.nix { inherit lib beamPackages; };
+          in
+
           mixRelease {
             pname = "hosting";
             src = ./web/hosting;
             version = version;
-            mixNixDeps = import ./web/hosting/deps.nix { inherit lib beamPackages; };
-            postBuild = "mix assets.deploy";
+            buildInputs = [ esbuildBinary tailwindBinary ];
+            mixNixDeps = mixDeps;
+            preConfigure = ''
+              js_files="$(find ${builtins.concatStringsSep " " (builtins.attrValues mixDeps)} -name '*.js')"
+              mkdir deps
+              cp $js_files deps/
+
+              (
+              cd assets
+              ${tailwindBinary}/bin/tailwindcss-linux-x64 \
+                --config=tailwind.config.js \
+                --input=css/app.css \
+                --output=../priv/static/assets/app.css \
+                --minify
+              )
+
+              (
+              cd assets
+              export NODE_PATH=../deps
+              ${esbuildBinary}/bin/esbuild \
+                src/app.ts \
+                --bundle \
+                --target=es2017 \
+                --outdir=../priv/static/assets \
+                --external:/fonts/* \
+                --external:/images/* \
+                --minify
+              )
+
+              cp -a assets/static/* priv/static/
+            '';
           };
+
         dockerImageHosting = pkgs.dockerTools.buildImage
           {
             name = "codesupplydocker/hosting";
@@ -44,15 +101,18 @@
               pathsToLink = [ "/bin" ];
             };
           };
+
         devShell = with pkgs;
           mkShell {
             packages = [
               dnsmasq
               elixir
               elixir_ls
+              esbuildBinary
               inotify-tools
               jq
               kubectl
+              kustomize
               kustomize
               mix2nix
               nodePackages."@tailwindcss/language-server"
@@ -60,10 +120,14 @@
               nodePackages.typescript-language-server
               postgresql_15
               shellcheck
+              tailwindBinary
               terraform
               terraform-lsp
             ];
             shellHook = ''
+              export MIX_ESBUILD_PATH=${esbuildBinary}/bin/esbuild
+              export MIX_TAILWIND_PATH=${tailwindBinary}/bin/tailwindcss-linux-x64
+
               [ ! -e .postgres ] && bin/postgres-start
               export PGHOST="$PWD/.postgres"
               createuser hosting --createdb
