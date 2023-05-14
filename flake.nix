@@ -42,7 +42,7 @@
             tag = version;
             config = {
               Cmd = [ "${buildHosting}/bin/hosting" "start" ];
-              Env = [ "PATH=/bin:$PATH" ];
+              Env = [ "PATH=/bin:$PATH" "LC_ALL=C.UTF-8" ];
             };
             copyToRoot = pkgs.buildEnv {
               name = "image-root";
