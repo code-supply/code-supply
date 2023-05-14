@@ -55,8 +55,7 @@ web/hosting/VERSION:
 web/hosting/VERSION_BUILT: web/hosting/VERSION
 	cd web/hosting; mix dialyzer
 	cd web/hosting; mix test
-	nix build .\#docker
-	docker load < result
+	docker build -t codesupplydocker/hosting:$$(cat $<) web/hosting
 	cat $< > $@
 
 web/hosting/VERSION_PUSHED: web/hosting/VERSION_BUILT
