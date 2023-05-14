@@ -257,12 +257,12 @@ let
 
     esbuild = buildMix rec {
       name = "esbuild";
-      version = "0.3.1";
+      version = "0.7.0";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "0jm1d7i5fqx6cw1bq8naylb0zprcsn4r6640clr12hn6n87csb1l";
+        sha256 = "0ll7zvxhcyibd7qx3qrz9yq2pyqjbakavf4h2c0cpsy56zrg9saa";
       };
 
       beamDeps = [ castore ];

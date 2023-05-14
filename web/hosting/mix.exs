@@ -56,7 +56,7 @@ defmodule Hosting.MixProject do
       {:libcluster, "~> 3.3.0"},
       {:goth, "~> 1.3"},
       {:hackney, "~> 1.17"},
-      {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
+      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
