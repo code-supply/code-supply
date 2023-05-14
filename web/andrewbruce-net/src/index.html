@@ -21,10 +21,18 @@
       <main class="border-4 border-slate-200 p-10 rounded-xl text-xl">
         <div class="max-w-2xl">
           <h1 class="text-4xl font-semibold pb-4">A software person</h1>
-          <p>
-          <a href="https://medium.com/@andrewofbruce">Blog posts on Medium</a></p>
-          <p>
-          Buzzwords:</p>
+          <h2 class="text-2xl font-semibold pt-4 pb-2">Blog posts</h2>
+          <ol class="pt-4 pb-4" data-dynamic="dir-links" data-dir="blog">
+            <li class="pb-4" data-dynamic="item">
+              <a data-dynamic="link" href="#">Some blog post</a>
+            </li>
+            <li data-dynamic="item">
+              <a data-dynamic="link" href="#">Another post</a>
+            </li>
+          </ol>
+          <p class="pt-4">
+          <a href="https://medium.com/@andrewofbruce">Other blog posts on Medium</a></p>
+          <h2 class="text-2xl font-semibold pt-4">Buzzwords</h2>
           <ul class="list-disc pl-4">
             <li>Extreme Programming</li>
             <li>Test Driven Development</li>
@@ -41,7 +49,7 @@
           languages than the above but have hidden the ones I don’t want to
           work in anymore.
           </p>
-          <h2 class="font-bold pt-4">Interests</h2>
+          <h2 class="text-2xl font-semibold pt-4">Interests</h2>
           <p>Tetris, string instruments, music recording in FOSS, <span class="text-4xl">🚲</span> cycling.</p>
         </div>
       </main>
