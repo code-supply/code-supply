@@ -38,12 +38,20 @@ defmodule Hosting.UploaderTest do
     [site] = user.sites
 
     multi =
-      Uploader.record(
-        Ecto.Multi.new(),
+      Ecto.Multi.new()
+      |> Uploader.record(
         site: site,
         user: user,
         key: "a key",
         params: %{"name" => "app.css", "content" => "the content"},
+        type: "text/css",
+        last_modified: nil
+      )
+      |> Uploader.record(
+        site: site,
+        user: user,
+        key: "another key",
+        params: %{"name" => "another.css", "content" => "should be ignored"},
         type: "text/css",
         last_modified: nil
       )

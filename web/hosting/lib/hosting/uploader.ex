@@ -48,7 +48,11 @@ defmodule Hosting.Uploader do
   end
 
   defp record_css(multi, site, content) do
-    Ecto.Multi.update(multi, site, Site.changeset(site, %{stylesheet: content}))
+    if Keyword.has_key?(Ecto.Multi.to_list(multi), :update_stylesheet) do
+      multi
+    else
+      Ecto.Multi.update(multi, :update_stylesheet, Site.changeset(site, %{stylesheet: content}))
+    end
   end
 
   defp record_asset(multi, user, site, bucket_name, key, params) do
