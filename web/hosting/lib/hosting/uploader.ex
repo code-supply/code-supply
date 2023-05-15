@@ -8,29 +8,27 @@ defmodule Hosting.Uploader do
   @type record_option ::
           {:site, map()}
           | {:user, map()}
-          | {:key, String.t()}
+          | {:entry, Phoenix.LiveView.UploadEntry.t()}
           | {:params, map()}
-          | {:type, String.t()}
-          | {:last_modified, String.t()}
+          | {:content, String.t()}
   @spec record(Ecto.Multi.t(), [record_option]) :: Ecto.Multi.t()
   def record(
         multi,
         site: site,
         user: user,
-        key: key,
+        entry: entry,
         params: params,
-        type: type,
-        last_modified: _last_modified
+        content: content
       ) do
-    case type do
+    case entry.client_type do
       "text/html" ->
-        record_page(multi, key, site, params["name"], params["name"], params["content"])
+        record_page(multi, entry.uuid, site, entry.client_name, entry.client_name, content)
 
       "text/css" ->
-        record_css(multi, site, params["content"])
+        record_css(multi, site, content)
 
       _ ->
-        record_asset(multi, user, site, bucket_name(), key, params)
+        record_asset(multi, user, site, bucket_name(), entry.uuid, params)
     end
   end
 

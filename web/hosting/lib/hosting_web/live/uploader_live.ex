@@ -93,13 +93,9 @@ defmodule HostingWeb.UploaderLive do
                 m,
                 site: site,
                 user: user,
-                key: entry.uuid,
-                params:
-                  params
-                  |> Map.put("name", entry.client_name)
-                  |> Map.put("content", downloaded_content),
-                type: entry.client_type,
-                last_modified: entry.client_last_modified
+                entry: entry,
+                params: params,
+                content: downloaded_content
               )
           end
 

@@ -6,19 +6,22 @@ defmodule Hosting.UploaderTest do
   alias Hosting.Sites
   alias Hosting.Uploader
 
-  test "recording HTML makes page but not asset" do
+  test "recording HTML makes pages but not assets" do
     user = user_fixture()
     [site] = user.sites
 
     multi =
-      Uploader.record(
-        Ecto.Multi.new(),
+      Ecto.Multi.new()
+      |> Uploader.record(
         site: site,
         user: user,
-        key: "a key",
-        params: %{"name" => "stuff.html", "content" => "the content"},
-        type: "text/html",
-        last_modified: nil
+        entry: %Phoenix.LiveView.UploadEntry{
+          uuid: "a key",
+          client_name: "stuff.html",
+          client_type: "text/html"
+        },
+        params: %{},
+        content: "the content"
       )
 
     site = Sites.get_site!(site)
@@ -42,18 +45,24 @@ defmodule Hosting.UploaderTest do
       |> Uploader.record(
         site: site,
         user: user,
-        key: "a key",
-        params: %{"name" => "app.css", "content" => "the content"},
-        type: "text/css",
-        last_modified: nil
+        entry: %Phoenix.LiveView.UploadEntry{
+          uuid: "a key",
+          client_name: "app.css",
+          client_type: "text/css"
+        },
+        params: %{},
+        content: "the content"
       )
       |> Uploader.record(
         site: site,
         user: user,
-        key: "another key",
-        params: %{"name" => "another.css", "content" => "should be ignored"},
-        type: "text/css",
-        last_modified: nil
+        entry: %Phoenix.LiveView.UploadEntry{
+          uuid: "another key",
+          client_name: "another.css",
+          client_type: "text/css"
+        },
+        params: %{},
+        content: "should be ignored"
       )
 
     site = Sites.get_site!(site)
@@ -78,10 +87,13 @@ defmodule Hosting.UploaderTest do
         Ecto.Multi.new(),
         site: site,
         user: user,
-        key: "a key",
-        params: %{"name" => ""},
-        type: "image/jpeg",
-        last_modified: nil
+        entry: %Phoenix.LiveView.UploadEntry{
+          uuid: "a key",
+          client_name: "",
+          client_type: "image/jpeg"
+        },
+        params: %{},
+        content: nil
       )
 
     site = Sites.get_site!(site)
