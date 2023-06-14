@@ -20,6 +20,7 @@
               dnsmasq
               elixir
               elixir_ls
+              google-cloud-sdk
               inotify-tools
               jq
               kubectl
