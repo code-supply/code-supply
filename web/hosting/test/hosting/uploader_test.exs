@@ -18,6 +18,19 @@ defmodule Hosting.UploaderTest do
         entry: %Phoenix.LiveView.UploadEntry{
           uuid: "a key",
           client_name: "stuff.html",
+          client_relative_path: "dist/stuff.html",
+          client_type: "text/html"
+        },
+        params: %{},
+        content: "the content"
+      )
+      |> Uploader.record(
+        site: site,
+        user: user,
+        entry: %Phoenix.LiveView.UploadEntry{
+          uuid: "another key",
+          client_name: "welcome-to-my-blog.html",
+          client_relative_path: "dist/blog/welcome-to-my-blog.html",
           client_type: "text/html"
         },
         params: %{},
@@ -32,6 +45,7 @@ defmodule Hosting.UploaderTest do
 
     site = Sites.get_site!(site)
     assert "/stuff.html" in Enum.map(site.pages, & &1.path)
+    assert "/blog/welcome-to-my-blog.html" in Enum.map(site.pages, & &1.path)
     assert site.assets == assets_before
     assert site.stylesheet == stylesheet_before
   end
@@ -111,6 +125,7 @@ defmodule Hosting.UploaderTest do
   end
 
   test "can strip the root directory from relative paths" do
+    assert Uploader.strip_root(nil) == ""
     assert Uploader.strip_root("") == ""
     assert Uploader.strip_root("index.html") == "index.html"
     assert Uploader.strip_root("dist/index.html") == "index.html"

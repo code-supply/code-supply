@@ -22,7 +22,14 @@ defmodule Hosting.Uploader do
       ) do
     case entry.client_type do
       "text/html" ->
-        record_page(multi, entry.uuid, site, entry.client_name, entry.client_name, content)
+        record_page(
+          multi,
+          entry.uuid,
+          site,
+          entry.client_name,
+          strip_root(entry.client_relative_path),
+          content
+        )
 
       "text/css" ->
         record_css(multi, site, content)
@@ -64,6 +71,8 @@ defmodule Hosting.Uploader do
   end
 
   def strip_root(path) do
+    path = path || Path.join([""])
+
     case Path.dirname(path) do
       "." ->
         path

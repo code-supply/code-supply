@@ -22,11 +22,13 @@ defmodule HostingWeb.UploaderLiveTest do
       |> file_input("#upload-form", :files, [
         %{
           name: "index.html",
+          relative_path: "index.html",
           content: "<h1>Home page</h1>",
           type: "text/html"
         },
         %{
           name: "contact.html",
+          relative_path: "contact.html",
           content: "<h1>Contact me</h1>",
           type: "text/html"
         }
