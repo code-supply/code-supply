@@ -8,7 +8,7 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        beamPkgs = with pkgs.beam_minimal; packagesWith interpreters.erlangR25;
+        beamPkgs = pkgs.beam_minimal.packages.erlang_25;
         minimalElixir = beamPkgs.elixir_1_14;
         version = nixpkgs.lib.strings.removeSuffix "\n" (builtins.readFile ./web/hosting/VERSION);
         dnsmasqStart = with pkgs;
