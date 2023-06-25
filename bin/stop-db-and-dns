@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-pg_ctl -D .postgres/db stop
-sudo pkill dnsmasq
