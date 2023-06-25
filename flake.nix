@@ -9,26 +9,32 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         beamPkgs = with pkgs.beam_minimal; packagesWith interpreters.erlangR25;
-        erlang = beamPkgs.erlang;
-        elixir = beamPkgs.elixir_1_14;
+        minimalElixir = beamPkgs.elixir_1_14;
         version = nixpkgs.lib.strings.removeSuffix "\n" (builtins.readFile ./web/hosting/VERSION);
+        dnsmasqStart = with pkgs;
+          writeShellScriptBin "dnsmasq-start" ''
+            sudo dnsmasq \
+              --server='/*/8.8.8.8' \
+              --address='/*.code.test/127.0.0.1' \
+              --address '/*.code.supply/81.187.237.24'
+          '';
         postgresStart = with pkgs;
           writeShellScriptBin "postgres-start" ''
-            [[ -d "$PROJECT_ROOT/.postgres" ]] || \
-              ${postgresql_15}/bin/initdb -D "$PROJECT_ROOT/.postgres/db"
+            [[ -d "$PGHOST" ]] || \
+              ${postgresql_15}/bin/initdb -D "$PGHOST/db"
             ${postgresql_15}/bin/pg_ctl \
-              -D "$PROJECT_ROOT/.postgres/db" \
-              -l "$PROJECT_ROOT/.postgres/log" \
-              -o "--unix_socket_directories='$PROJECT_ROOT/.postgres'" \
+              -D "$PGHOST/db" \
+              -l "$PGHOST/log" \
+              -o "--unix_socket_directories='$PGHOST'" \
               -o "--listen_addresses=" \
               start
           '';
         postgresStop = with pkgs;
           writeShellScriptBin "postgres-stop" ''
             pg_ctl \
-              -D "$PROJECT_ROOT/.postgres/db" \
-              -l "$PROJECT_ROOT/.postgres/log" \
-              -o "--unix_socket_directories=$PROJECT_ROOT/.postgres" \
+              -D "$PGHOST/db" \
+              -l "$PGHOST/log" \
+              -o "--unix_socket_directories=$PGHOST" \
               stop
           '';
 
@@ -36,7 +42,7 @@
           mkShell {
             packages = [
               dnsmasq
-              elixir
+              dnsmasqStart
               elixir_ls
               google-cloud-sdk
               inotify-tools
@@ -44,6 +50,7 @@
               kubectl
               kustomize
               kustomize
+              minimalElixir
               mix2nix
               nodePackages."@tailwindcss/language-server"
               nodePackages.typescript
@@ -56,14 +63,7 @@
               terraform-lsp
             ];
             shellHook = ''
-              export PROJECT_ROOT="$(git rev-parse --show-toplevel)"
-              [ ! -e .postgres ] && bin/postgres-start
-              export PGHOST="$PWD/.postgres"
-              createuser hosting --createdb
-              if ! pgrep dnsmasq
-              then
-                sudo dnsmasq --server='/*/8.8.8.8' --address='/*.code.test/127.0.0.1' --address '/*.code.supply/81.187.237.24'
-              fi
+              export PGHOST="$(git rev-parse --show-toplevel)/.postgres"
             '';
           }
         ;
