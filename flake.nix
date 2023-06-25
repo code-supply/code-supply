@@ -14,13 +14,22 @@
         version = nixpkgs.lib.strings.removeSuffix "\n" (builtins.readFile ./web/hosting/VERSION);
         postgresStart = with pkgs;
           writeShellScriptBin "postgres-start" ''
-            [[ -d "$PROJECT_ROOT/.postgres" ]] || ${postgresql_15}/bin/initdb -D "$PROJECT_ROOT/.postgres/db"
+            [[ -d "$PROJECT_ROOT/.postgres" ]] || \
+              ${postgresql_15}/bin/initdb -D "$PROJECT_ROOT/.postgres/db"
             ${postgresql_15}/bin/pg_ctl \
               -D "$PROJECT_ROOT/.postgres/db" \
               -l "$PROJECT_ROOT/.postgres/log" \
               -o "--unix_socket_directories='$PROJECT_ROOT/.postgres'" \
               -o "--listen_addresses=" \
               start
+          '';
+        postgresStop = with pkgs;
+          writeShellScriptBin "postgres-stop" ''
+            pg_ctl \
+              -D "$PROJECT_ROOT/.postgres/db" \
+              -l "$PROJECT_ROOT/.postgres/log" \
+              -o "--unix_socket_directories=$PROJECT_ROOT/.postgres" \
+              stop
           '';
 
         devShell = with pkgs;
@@ -41,6 +50,7 @@
               nodePackages.typescript-language-server
               postgresql_15
               postgresStart
+              postgresStop
               shellcheck
               terraform
               terraform-lsp
