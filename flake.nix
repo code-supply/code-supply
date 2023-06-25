@@ -10,7 +10,6 @@
         pkgs = nixpkgs.legacyPackages.${system};
         beamPkgs = pkgs.beam_minimal.packages.erlang_25;
         minimalElixir = beamPkgs.elixir_1_14;
-        version = nixpkgs.lib.strings.removeSuffix "\n" (builtins.readFile ./web/hosting/VERSION);
         dnsmasqStart = with pkgs;
           writeShellScriptBin "dnsmasq-start" ''
             sudo dnsmasq \
