@@ -11,8 +11,17 @@
         beamPkgs = with pkgs.beam_minimal; packagesWith interpreters.erlangR25;
         erlang = beamPkgs.erlang;
         elixir = beamPkgs.elixir_1_14;
-
         version = nixpkgs.lib.strings.removeSuffix "\n" (builtins.readFile ./web/hosting/VERSION);
+        postgresStart = with pkgs;
+          writeShellScriptBin "postgres-start" ''
+            [[ -d "$PROJECT_ROOT/.postgres" ]] || ${postgresql_15}/bin/initdb -D "$PROJECT_ROOT/.postgres/db"
+            ${postgresql_15}/bin/pg_ctl \
+              -D "$PROJECT_ROOT/.postgres/db" \
+              -l "$PROJECT_ROOT/.postgres/log" \
+              -o "--unix_socket_directories='$PROJECT_ROOT/.postgres'" \
+              -o "--listen_addresses=" \
+              start
+          '';
 
         devShell = with pkgs;
           mkShell {
@@ -31,11 +40,13 @@
               nodePackages.typescript
               nodePackages.typescript-language-server
               postgresql_15
+              postgresStart
               shellcheck
               terraform
               terraform-lsp
             ];
             shellHook = ''
+              export PROJECT_ROOT="$(git rev-parse --show-toplevel)"
               [ ! -e .postgres ] && bin/postgres-start
               export PGHOST="$PWD/.postgres"
               createuser hosting --createdb
