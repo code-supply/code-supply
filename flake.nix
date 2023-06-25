@@ -4,12 +4,17 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+  }:
+    flake-utils.lib.eachDefaultSystem (
+      system: let
         pkgs = nixpkgs.legacyPackages.${system};
         beamPkgs = pkgs.beam_minimal.packages.erlang_25;
         minimalElixir = beamPkgs.elixir_1_14;
+
         dnsmasqStart = with pkgs;
           writeShellScriptBin "dnsmasq-start" ''
             sudo dnsmasq \
@@ -17,6 +22,7 @@
               --address='/*.code.test/127.0.0.1' \
               --address '/*.code.supply/81.187.237.24'
           '';
+
         postgresStart = with pkgs;
           writeShellScriptBin "postgres-start" ''
             [[ -d "$PGHOST" ]] || \
@@ -64,10 +70,8 @@
             shellHook = ''
               export PGHOST="$(git rev-parse --show-toplevel)/.postgres"
             '';
-          }
-        ;
-      in
-      {
+          };
+      in {
         devShells.default = devShell;
       }
     );
