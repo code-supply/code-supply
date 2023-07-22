@@ -47,17 +47,39 @@
             };
           };
 
+        dockerImageFullName = with dockerImage; "${imageName}:${imageTag}";
+
+        webAppDockerPush = pkgs.writeShellApplication {
+          name = "hosting-docker-push";
+          text =
+            if dockerImage.imageTag == "dirty"
+            then ''echo "Commit first!"; exit 1''
+            else ''
+              docker load < ${dockerImage}
+              docker push ${dockerImageFullName}
+            '';
+        };
+
         webAppK8sManifests = pkgs.stdenv.mkDerivation {
           name = "code-supply-hosting-k8s";
           src = ./k8s/hosting;
           buildInputs = [
             pkgs.kustomize
           ];
-          installPhase = with dockerImage; ''
-            kustomize edit set image hosting=${imageName}:${imageTag}
+          installPhase = ''
+            kustomize edit set image hosting=${dockerImageFullName}
             mkdir $out
             kustomize build . > $out/manifest.yaml
           '';
+        };
+
+        webAppK8sDiff = pkgs.writeShellApplication {
+          name = "hosting-k8s-diff";
+          runtimeInputs = [
+            pkgs.kubectl
+            webAppK8sManifests
+          ];
+          text = "kubectl diff -f ${webAppK8sManifests}/manifest.yaml";
         };
 
         dnsmasqStart = with pkgs;
@@ -100,7 +122,6 @@
               kubectl
               kustomize
               kustomize
-              webApp.elixir
               mix2nix
               nodePackages."@tailwindcss/language-server"
               nodePackages.typescript
@@ -111,6 +132,8 @@
               shellcheck
               terraform
               terraform-lsp
+              webApp.elixir
+              webAppK8sDiff
             ];
             shellHook = ''
               export PGHOST="$(git rev-parse --show-toplevel)/.postgres"
@@ -118,7 +141,7 @@
           };
       in {
         packages = {
-          inherit dockerImage webAppK8sManifests;
+          inherit dockerImage webAppK8sManifests webAppK8sDiff webAppDockerPush;
           default = webApp.app;
         };
         devShells.default = devShell;
