@@ -47,6 +47,19 @@
             };
           };
 
+        webAppK8sManifests = pkgs.stdenv.mkDerivation {
+          name = "code-supply-hosting-k8s";
+          src = ./k8s/hosting;
+          buildInputs = [
+            pkgs.kustomize
+          ];
+          installPhase = with dockerImage; ''
+            kustomize edit set image hosting=${imageName}:${imageTag}
+            mkdir $out
+            kustomize build . > $out/manifest.yaml
+          '';
+        };
+
         dnsmasqStart = with pkgs;
           writeShellScriptBin "dnsmasq-start" ''
             sudo dnsmasq \
@@ -105,7 +118,7 @@
           };
       in {
         packages = {
-          inherit dockerImage;
+          inherit dockerImage webAppK8sManifests;
           default = webApp.app;
         };
         devShells.default = devShell;
