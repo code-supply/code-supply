@@ -14,14 +14,38 @@
     flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = nixpkgs.legacyPackages.${system};
+        version =
+          if self ? rev
+          then self.rev
+          else "dirty";
 
         webApp = phoenix-utils.lib.buildPhoenixApp {
-          inherit pkgs system;
+          inherit pkgs system version;
           src = ./web/hosting;
-          version = builtins.readFile ./web/hosting/VERSION;
           pname = "code-supply-hosting";
           mixDepsSha256 = "sha256-BPuN5Ss6SeXPCQ/zh2SldIpxIry/zi3YYgKYPHnPRd0=";
         };
+
+        dockerImage =
+          pkgs.dockerTools.buildImage
+          {
+            name = "codesupplydocker/hosting";
+            tag = version;
+            config = {
+              Cmd = ["${webApp.app}/bin/hosting start"];
+              Env = ["PATH=/bin:$PATH" "LC_ALL=C.UTF-8"];
+            };
+            copyToRoot = pkgs.buildEnv {
+              name = "image-root";
+              paths = with pkgs; [
+                bash
+                coreutils
+                gnugrep
+                gnused
+              ];
+              pathsToLink = ["/bin"];
+            };
+          };
 
         dnsmasqStart = with pkgs;
           writeShellScriptBin "dnsmasq-start" ''
@@ -80,7 +104,10 @@
             '';
           };
       in {
-        packages.default = webApp.app;
+        packages = {
+          inherit dockerImage;
+          default = webApp.app;
+        };
         devShells.default = devShell;
       }
     );
