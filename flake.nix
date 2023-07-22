@@ -2,18 +2,26 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/master";
     flake-utils.url = "github:numtide/flake-utils";
+    phoenix-utils.url = "/home/andrew/workspace/phoenix-utils";
   };
 
   outputs = {
     self,
     nixpkgs,
     flake-utils,
+    phoenix-utils,
   }:
     flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = nixpkgs.legacyPackages.${system};
-        beamPkgs = pkgs.beam_minimal.packages.erlang_25;
-        minimalElixir = beamPkgs.elixir_1_14;
+
+        webApp = phoenix-utils.lib.buildPhoenixApp {
+          inherit pkgs system;
+          src = ./web/hosting;
+          version = builtins.readFile ./web/hosting/VERSION;
+          pname = "code-supply-hosting";
+          mixDepsSha256 = "sha256-BPuN5Ss6SeXPCQ/zh2SldIpxIry/zi3YYgKYPHnPRd0=";
+        };
 
         dnsmasqStart = with pkgs;
           writeShellScriptBin "dnsmasq-start" ''
@@ -55,7 +63,7 @@
               kubectl
               kustomize
               kustomize
-              minimalElixir
+              webApp.elixir
               mix2nix
               nodePackages."@tailwindcss/language-server"
               nodePackages.typescript
@@ -72,6 +80,7 @@
             '';
           };
       in {
+        packages.default = webApp.app;
         devShells.default = devShell;
       }
     );
