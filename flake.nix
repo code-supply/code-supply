@@ -70,14 +70,15 @@
       '';
     };
 
-    hostingK8sDiff = pkgs.writeShellApplication {
-      name = "hosting-k8s-diff";
-      runtimeInputs = [
-        pkgs.kubectl
-        hostingK8sManifests
-      ];
-      text = "kubectl diff -f ${hostingK8sManifests}/manifest.yaml";
-    };
+    hostingK8sScript = verb:
+      pkgs.writeShellApplication {
+        name = "hosting-k8s-diff";
+        runtimeInputs = [
+          pkgs.kubectl
+          hostingK8sManifests
+        ];
+        text = "kubectl ${verb} -f ${hostingK8sManifests}/manifest.yaml";
+      };
 
     dnsmasqStart = with pkgs;
       writeShellScriptBin "dnsmasq-start" ''
@@ -137,7 +138,9 @@
       };
   in {
     packages.${system} = {
-      inherit dockerImage hostingK8sManifests hostingK8sDiff hostingDockerPush;
+      inherit dockerImage hostingK8sManifests hostingDockerPush;
+      hostingK8sDiff = hostingK8sScript "diff";
+      hostingK8sApply = hostingK8sScript "apply";
       default = hosting.app;
     };
     devShells.${system}.default = devShell;
