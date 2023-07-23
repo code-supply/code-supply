@@ -16,7 +16,7 @@
       then self.rev
       else "dirty";
 
-    webApp = phoenix-utils.lib.buildPhoenixApp {
+    hosting = phoenix-utils.lib.buildPhoenixApp {
       inherit pkgs system version;
       src = ./web/hosting;
       pname = "code-supply-hosting";
@@ -29,7 +29,7 @@
         name = "codesupplydocker/hosting";
         tag = version;
         config = {
-          Cmd = ["${webApp.app}/bin/hosting start"];
+          Cmd = ["${hosting.app}/bin/hosting start"];
           Env = ["PATH=/bin:$PATH" "LC_ALL=C.UTF-8"];
         };
         copyToRoot = pkgs.buildEnv {
@@ -46,7 +46,7 @@
 
     dockerImageFullName = with dockerImage; "${imageName}:${imageTag}";
 
-    webAppDockerPush = pkgs.writeShellApplication {
+    hostingDockerPush = pkgs.writeShellApplication {
       name = "hosting-docker-push";
       text =
         if dockerImage.imageTag == "dirty"
@@ -57,7 +57,7 @@
         '';
     };
 
-    webAppK8sManifests = pkgs.stdenv.mkDerivation {
+    hostingK8sManifests = pkgs.stdenv.mkDerivation {
       name = "code-supply-hosting-k8s";
       src = ./k8s/hosting;
       buildInputs = [
@@ -70,13 +70,13 @@
       '';
     };
 
-    webAppK8sDiff = pkgs.writeShellApplication {
+    hostingK8sDiff = pkgs.writeShellApplication {
       name = "hosting-k8s-diff";
       runtimeInputs = [
         pkgs.kubectl
-        webAppK8sManifests
+        hostingK8sManifests
       ];
-      text = "kubectl diff -f ${webAppK8sManifests}/manifest.yaml";
+      text = "kubectl diff -f ${hostingK8sManifests}/manifest.yaml";
     };
 
     dnsmasqStart = with pkgs;
@@ -129,8 +129,7 @@
           shellcheck
           terraform
           terraform-lsp
-          webApp.elixir
-          webAppK8sDiff
+          hosting.elixir
         ];
         shellHook = ''
           export PGHOST="$(git rev-parse --show-toplevel)/.postgres"
@@ -138,8 +137,8 @@
       };
   in {
     packages.${system} = {
-      inherit dockerImage webAppK8sManifests webAppK8sDiff webAppDockerPush;
-      default = webApp.app;
+      inherit dockerImage hostingK8sManifests hostingK8sDiff hostingDockerPush;
+      default = hosting.app;
     };
     devShells.${system}.default = devShell;
   };
