@@ -29,7 +29,7 @@
         name = "codesupplydocker/hosting";
         tag = version;
         config = {
-          Cmd = ["${hosting.app}/bin/hosting start"];
+          Cmd = ["${hosting.app}/bin/hosting" "start"];
           Env = ["PATH=/bin:$PATH" "LC_ALL=C.UTF-8"];
         };
         copyToRoot = pkgs.buildEnv {
