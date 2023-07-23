@@ -19,7 +19,7 @@
     hosting = phoenix-utils.lib.buildPhoenixApp {
       inherit pkgs system version;
       src = ./web/hosting;
-      pname = "code-supply-hosting";
+      pname = "hosting";
       mixDepsSha256 = "sha256-BPuN5Ss6SeXPCQ/zh2SldIpxIry/zi3YYgKYPHnPRd0=";
     };
 
