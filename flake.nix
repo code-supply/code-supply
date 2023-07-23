@@ -1,7 +1,10 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/master";
-    phoenix-utils.url = "/home/andrew/workspace/phoenix-utils";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    phoenix-utils = {
+      url = "/home/andrew/workspace/phoenix-utils";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
