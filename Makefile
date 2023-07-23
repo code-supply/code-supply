@@ -1,5 +1,4 @@
 .POSIX:
-hosting_version = k8s/hosting/version.yaml
 
 k8s/manifest.yaml: \
 	k8s/kustomization.yaml \
@@ -46,32 +45,3 @@ k8s/tls-lb-operator/version.yaml: operators/tls-lb-operator/VERSION_PUSHED
 	echo "      labels:" >> $@
 	echo "        version: \"$$(cat $<)\"" >> $@
 
-web/hosting/deps.nix: web/hosting/mix.lock
-	mix2nix web/hosting/mix.lock > $@
-
-web/hosting/VERSION:
-	git rev-parse --short HEAD > $@
-
-web/hosting/VERSION_BUILT: web/hosting/VERSION
-	cd web/hosting; mix dialyzer
-	cd web/hosting; mix test
-	docker build -t codesupplydocker/hosting:$$(cat $<) web/hosting
-	cat $< > $@
-
-web/hosting/VERSION_PUSHED: web/hosting/VERSION_BUILT
-	docker push codesupplydocker/hosting:$$(cat $<)
-	cat $< > $@
-
-k8s/hosting/version.yaml: web/hosting/VERSION_PUSHED
-	cd k8s/hosting && \
-		kustomize edit set image hosting=codesupplydocker/hosting:$$(cat ../../$<)
-	> $@
-	echo "apiVersion: apps/v1" >> $@
-	echo "kind: Deployment" >> $@
-	echo "metadata:" >> $@
-	echo "  name: hosting" >> $@
-	echo "spec:" >> $@
-	echo "  template:" >> $@
-	echo "    metadata:" >> $@
-	echo "      labels:" >> $@
-	echo "        version: \"$$(cat $<)\"" >> $@
