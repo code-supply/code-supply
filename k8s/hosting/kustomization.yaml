@@ -18,5 +18,3 @@ images:
 - name: hosting
   newName: codesupplydocker/hosting
   newTag: 1b45b80
-patchesStrategicMerge:
-- version.yaml
