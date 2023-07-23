@@ -20,7 +20,7 @@
       inherit pkgs system version;
       src = ./web/hosting;
       pname = "hosting";
-      mixDepsSha256 = "sha256-BPuN5Ss6SeXPCQ/zh2SldIpxIry/zi3YYgKYPHnPRd0=";
+      mix2NixOutput = ./web/hosting/deps.nix;
     };
 
     hostingDockerImage =

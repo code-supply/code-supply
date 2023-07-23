@@ -38,7 +38,7 @@
       },
       "locked": {
         "lastModified": 1689980543,
-        "narHash": "sha256-CrI4Ttetojc4LLmTsCCHkUJt+3NnNcK26rXu4uD0gaI=",
+        "narHash": "sha256-mrCYjVGi0PiPeKblwD4vmvk0mKawExtonDB4/ebuK5o=",
         "type": "git",
         "url": "file:///home/andrew/workspace/phoenix-utils"
       },
