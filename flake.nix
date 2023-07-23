@@ -23,7 +23,7 @@
       mixDepsSha256 = "sha256-BPuN5Ss6SeXPCQ/zh2SldIpxIry/zi3YYgKYPHnPRd0=";
     };
 
-    dockerImage =
+    hostingDockerImage =
       pkgs.dockerTools.buildImage
       {
         name = "codesupplydocker/hosting";
@@ -44,15 +44,15 @@
         };
       };
 
-    dockerImageFullName = with dockerImage; "${imageName}:${imageTag}";
+    dockerImageFullName = with hostingDockerImage; "${imageName}:${imageTag}";
 
     hostingDockerPush = pkgs.writeShellApplication {
       name = "hosting-docker-push";
       text =
-        if dockerImage.imageTag == "dirty"
+        if hostingDockerImage.imageTag == "dirty"
         then ''echo "Commit first!"; exit 1''
         else ''
-          docker load < ${dockerImage}
+          docker load < ${hostingDockerImage}
           docker push ${dockerImageFullName}
         '';
     };
@@ -138,7 +138,7 @@
       };
   in {
     packages.${system} = {
-      inherit dockerImage hostingK8sManifests hostingDockerPush;
+      inherit hostingDockerImage hostingK8sManifests hostingDockerPush;
       hostingK8sDiff = hostingK8sScript "diff";
       hostingK8sApply = hostingK8sScript "apply";
       default = hosting.app;
