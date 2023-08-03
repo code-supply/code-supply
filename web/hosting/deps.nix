@@ -177,32 +177,6 @@ let
       beamDeps = [ erlex ];
     };
 
-    earmark = buildMix rec {
-      name = "earmark";
-      version = "1.4.39";
-
-      src = fetchHex {
-        pkg = "${name}";
-        version = "${version}";
-        sha256 = "0h547ri1nbxyaisyx7jddg3wib7fpm3q4v914szwvv6bqf79sv0m";
-      };
-
-      beamDeps = [ earmark_parser ];
-    };
-
-    earmark_parser = buildMix rec {
-      name = "earmark_parser";
-      version = "1.4.33";
-
-      src = fetchHex {
-        pkg = "${name}";
-        version = "${version}";
-        sha256 = "13qvlqnii8g6bcz6cl330vjwaan7jy30g1app3yvjncvf8rnhlid";
-      };
-
-      beamDeps = [];
-    };
-
     ecto = buildMix rec {
       name = "ecto";
       version = "3.9.6";

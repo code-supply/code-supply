@@ -60,7 +60,6 @@ defmodule Hosting.MixProject do
       {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
-      {:earmark, "~> 1.4.15"},
       {:k8s, "~> 1.1"},
       {:hammox, "~> 0.6", only: :test},
       {:floki, "~> 0.33.0"},
