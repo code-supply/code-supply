@@ -43,8 +43,8 @@
           };
       };
       postUnpack = ''
-        tailwind_version="$(${pkgs.lib.getExe elixir} ${self}/nix/extract_version.ex ${src}/config/config.exs tailwind)"
-        esbuild_version="$(${pkgs.lib.getExe elixir} ${self}/nix/extract_version.ex ${src}/config/config.exs esbuild)"
+        tailwind_version="$(${elixir}/bin/elixir ${self}/nix/extract_version.ex ${src}/config/config.exs tailwind)"
+        esbuild_version="$(${elixir}/bin/elixir ${self}/nix/extract_version.ex ${src}/config/config.exs esbuild)"
 
         errors=0
 
