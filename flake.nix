@@ -23,9 +23,15 @@
     tailwindPath = "_build/tailwind-linux-x64";
     esbuildPath = "_build/esbuild-linux-x64";
 
+    pname = "hosting";
+
     hosting = mixRelease {
-      inherit src version;
-      pname = "hosting";
+      inherit pname src version;
+
+      meta.mainProgram = pname;
+
+      stripDebug = true;
+
       mixNixDeps = (import ./web/hosting/deps.nix) {
         inherit beamPackages;
         lib = pkgs.lib;
@@ -42,6 +48,7 @@
             phoenix_live_view = prev.phoenix_live_view.overrideAttrs overrideFun;
           };
       };
+
       postUnpack = ''
         tailwind_version="$(${elixir}/bin/elixir ${self}/nix/extract_version.ex ${src}/config/config.exs tailwind)"
         esbuild_version="$(${elixir}/bin/elixir ${self}/nix/extract_version.ex ${src}/config/config.exs esbuild)"
