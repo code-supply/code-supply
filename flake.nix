@@ -79,8 +79,8 @@
       '';
 
       postBuild = ''
-        install ${pkgs.lib.getExe pkgs.tailwindcss} ${tailwindPath}
-        install ${pkgs.lib.getExe pkgs.esbuild} ${esbuildPath}
+        ln -sfv ${pkgs.tailwindcss}/bin/tailwindcss ${tailwindPath}
+        ln -sfv ${pkgs.esbuild}/bin/esbuild ${esbuildPath}
 
         mix assets.deploy --no-deps-check
       '';
