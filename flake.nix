@@ -206,6 +206,7 @@
       '';
     };
   in {
+    formatter.${system} = pkgs.alejandra;
     packages.${system} = {
       inherit hostingDockerImage hostingK8sManifests hostingDockerPush;
       hostingK8sDiff = hostingK8sScript "diff";
