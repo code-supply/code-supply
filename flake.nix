@@ -1,11 +1,13 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    kubenix.url = "github:hall/kubenix";
   };
 
   outputs = {
     self,
     nixpkgs,
+    kubenix,
   }: let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
@@ -124,18 +126,27 @@
         '';
     };
 
-    hostingK8sManifests = pkgs.stdenv.mkDerivation {
-      name = "code-supply-hosting-k8s";
-      src = ./k8s/hosting;
-      buildInputs = [
-        pkgs.kustomize
-      ];
-      installPhase = ''
-        kustomize edit set image hosting=${dockerImageFullName}
-        mkdir $out
-        kustomize build . > $out/manifest.yaml
-      '';
-    };
+    hostingK8sManifests =
+      (kubenix.evalModules.${system} {
+        module = {kubenix, ...}: {
+          imports = [kubenix.modules.k8s];
+          kubernetes = {
+            namespace = "hosting";
+            resources = {
+              namespaces.hosting = {};
+              deployments = {
+                hosting = import ./k8s/hosting/deployment.nix {
+                  lib = pkgs.lib;
+                  image = dockerImageFullName;
+                };
+              };
+            };
+          };
+        };
+      })
+      .config
+      .kubernetes
+      .result;
 
     hostingK8sScript = verb:
       pkgs.writeShellApplication {
@@ -144,7 +155,7 @@
           pkgs.kubectl
           hostingK8sManifests
         ];
-        text = "kubectl ${verb} -f ${hostingK8sManifests}/manifest.yaml";
+        text = "kubectl ${verb} -f ${hostingK8sManifests}";
       };
 
     dnsmasqStart = with pkgs;
