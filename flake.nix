@@ -14,83 +14,21 @@
         else "dirty";
 
       beamPackages = with pkgs.beam_minimal; packagesWith interpreters.erlangR25;
-      erlang = beamPackages.erlang;
       elixir = beamPackages.elixir_1_14;
-      fetchMixDeps = beamPackages.fetchMixDeps.override { inherit elixir; };
-      mixRelease = beamPackages.mixRelease.override { inherit elixir erlang fetchMixDeps; };
-      src = ./web/hosting;
-      tailwindPath = "_build/tailwind-linux-x64";
-      esbuildPath = "_build/esbuild-linux-x64";
 
-      pname = "hosting";
+      hosting = import ./web/hosting/default.nix {
+        inherit pkgs beamPackages version;
 
-      hosting = mixRelease {
-        inherit pname src version;
+        src = ./web/hosting;
+        pname = "hosting";
+        extractVersion = "${elixir}/bin/elixir ${self}/nix/extract_version.ex";
 
-        meta.mainProgram = pname;
-
-        stripDebug = true;
-
-        mixNixDeps = (import ./web/hosting/deps.nix) {
-          inherit beamPackages;
-          lib = pkgs.lib;
-          overrides =
-            let
-              overrideFun = old: {
-                postInstall = ''
-                  cp -v package.json "$out/lib/erlang/lib/${old.name}"
-                '';
-              };
-            in
-            _: prev: {
-              phoenix = prev.phoenix.overrideAttrs overrideFun;
-              phoenix_html = prev.phoenix_html.overrideAttrs overrideFun;
-              phoenix_live_view = prev.phoenix_live_view.overrideAttrs overrideFun;
-            };
-        };
-
-        postUnpack = ''
-          tailwind_version="$(${elixir}/bin/elixir ${self}/nix/extract_version.ex ${src}/config/config.exs tailwind)"
-          esbuild_version="$(${elixir}/bin/elixir ${self}/nix/extract_version.ex ${src}/config/config.exs esbuild)"
-
-          errors=0
-
-          if [[ -z "$tailwind_version" ]]
-          then
-            echo "No Tailwind version found in config/config.exs - continuing without Tailwind."
-          elif [[ "$tailwind_version" != "${pkgs.tailwindcss.version}" ]]
-          then
-            errors+=1
-            echo "error: Tailwind version mismatch: using ${pkgs.tailwindcss.version} from nix but $tailwind_version in your app!"
-          fi
-
-          if [[ -z "$esbuild_version" ]]
-          then
-            echo "No esbuild version found in config/config.exs - continuing without esbuild."
-          elif [[ "$esbuild_version" != "${pkgs.esbuild.version}" ]]
-          then
-            errors+=1
-            echo "error: esbuild version mismatch: using ${pkgs.esbuild.version} from nix but $esbuild_version in your app!"
-          fi
-
-          if [[ "$errors" > 0 ]]
-          then
-            echo "Please fix the above errors and try again."
-            exit 1
-          fi
-        '';
-
-        preBuild = ''
-          mkdir ./deps
-          cp -a _build/prod/lib/. ./deps/
-        '';
-
-        postBuild = ''
-          ln -sfv ${pkgs.tailwindcss}/bin/tailwindcss ${tailwindPath}
-          ln -sfv ${pkgs.esbuild}/bin/esbuild ${esbuildPath}
-
-          mix assets.deploy --no-deps-check
-        '';
+        mixRelease =
+          beamPackages.mixRelease.override {
+            inherit elixir;
+            fetchMixDeps = beamPackages.fetchMixDeps.override { inherit elixir; };
+            erlang = beamPackages.erlang;
+          };
       };
 
       hostingDockerImage =
