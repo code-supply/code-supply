@@ -37,13 +37,14 @@
             name = "codesupplydocker/hosting";
             tag = version;
             config = {
-              Cmd = [ "${pkgs.lib.getExe hosting}" "start" ];
-              Env = [ "PATH=/bin:$PATH" "LC_ALL=C.UTF-8" ];
+              Cmd = [ "hosting" "start" ];
+              Env = [ "LC_ALL=C.UTF-8" ];
             };
             copyToRoot = pkgs.buildEnv {
               name = "image-root";
-              paths = with pkgs; [
-                busybox
+              paths = [
+                hosting
+                pkgs.busybox
               ];
               pathsToLink = [ "/bin" ];
             };
