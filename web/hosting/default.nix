@@ -63,8 +63,7 @@ mixRelease {
   '';
 
   preBuild = ''
-    mkdir ./deps
-    cp -a _build/prod/lib/. ./deps/
+    ln -sfv _build/prod/lib deps
   '';
 
   postBuild = ''
