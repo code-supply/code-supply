@@ -1,4 +1,4 @@
-{}:
+{ namespace }:
 {
   roleRef = {
     apiGroup = "rbac.authorization.k8s.io";
@@ -7,6 +7,7 @@
   };
   subjects = [
     {
+      inherit namespace;
       kind = "ServiceAccount";
       name = "hosting";
     }

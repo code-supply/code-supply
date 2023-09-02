@@ -65,35 +65,39 @@
 
       hostingK8sManifests =
         (kubenix.evalModules.${system} {
-          module = { kubenix, ... }: {
-            imports = [ kubenix.modules.k8s ];
-            kubernetes = {
-              customTypes = [{
-                group = "cert-manager.io";
-                version = "v1";
-                kind = "Certificate";
-                attrName = "certificates";
-                module = { };
-              }];
-
+          module = { kubenix, ... }:
+            let
               namespace = "hosting";
+            in
+            {
+              imports = [ kubenix.modules.k8s ];
+              kubernetes = {
+                inherit namespace;
 
-              resources = {
-                namespaces.hosting = { };
+                customTypes = [{
+                  group = "cert-manager.io";
+                  version = "v1";
+                  kind = "Certificate";
+                  attrName = "certificates";
+                  module = { };
+                }];
 
-                clusterRoles.hosting = import ./k8s/hosting/clusterRole.nix { };
-                clusterRoleBindings.hosting-can-manage-sites = import ./k8s/hosting/clusterRoleBinding.nix { };
-                certificates.hosting-www = import ./k8s/hosting/certificate.nix { };
-                deployments.hosting = import ./k8s/hosting/deployment.nix {
-                  lib = pkgs.lib;
-                  image = dockerImageFullName;
+                resources = {
+                  namespaces.${namespace} = { };
+
+                  clusterRoles.hosting = import ./k8s/hosting/clusterRole.nix { };
+                  clusterRoleBindings.hosting-can-manage-sites = import ./k8s/hosting/clusterRoleBinding.nix { inherit namespace; };
+                  certificates.hosting-www = import ./k8s/hosting/certificate.nix { };
+                  deployments.hosting = import ./k8s/hosting/deployment.nix {
+                    lib = pkgs.lib;
+                    image = dockerImageFullName;
+                  };
+                  services.hosting = import ./k8s/hosting/service.nix { };
+                  services.hosting-headless = import ./k8s/hosting/headless-service.nix { };
+                  serviceAccounts.hosting = { };
                 };
-                services.hosting = import ./k8s/hosting/service.nix { };
-                services.hosting-headless = import ./k8s/hosting/headless-service.nix { };
-                serviceAccounts.hosting = { };
               };
             };
-          };
         }).config.kubernetes.result;
 
       hostingK8sScript = verb:

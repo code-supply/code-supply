@@ -3,6 +3,9 @@
   spec = {
     type = "ClusterIP";
     clusterIP = "None";
+    selector = {
+      app = "hosting";
+    };
     ports = [
       {
         name = "tcp-erlang";
