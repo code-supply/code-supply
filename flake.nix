@@ -14,7 +14,7 @@
         else "dirty";
 
       beamPackages = with pkgs.beam_minimal; packagesWith interpreters.erlangR25;
-      elixir = beamPackages.elixir_1_14;
+      elixir = beamPackages.elixir_1_15;
 
       hosting = import ./web/hosting/default.nix {
         inherit pkgs beamPackages version;
