@@ -13,7 +13,7 @@
         then self.rev
         else "dirty";
 
-      beamPackages = with pkgs.beam_minimal; packagesWith interpreters.erlangR25;
+      beamPackages = with pkgs.beam_minimal; packagesWith interpreters.erlangR26;
       elixir = beamPackages.elixir_1_15;
 
       hosting = import ./web/hosting/default.nix {
