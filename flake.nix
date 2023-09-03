@@ -37,7 +37,7 @@
             name = "codesupplydocker/hosting";
             tag = version;
             config = {
-              Cmd = [ "hosting" "start" ];
+              Cmd = [ "server" ];
               Env = [ "LC_ALL=C.UTF-8" ];
             };
             copyToRoot = pkgs.buildEnv {
