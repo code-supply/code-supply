@@ -16,9 +16,9 @@
       beamPackages = with pkgs.beam_minimal; packagesWith interpreters.erlangR26;
       elixir = beamPackages.elixir_1_15;
 
-      callPackage = pkgs.lib.callPackageWith (pkgs // packages);
-      callPackages = pkgs.lib.callPackagesWith (pkgs // packages);
-      packages = {
+      callPackage = pkgs.lib.callPackageWith (pkgs // common);
+      callPackages = pkgs.lib.callPackagesWith (pkgs // common);
+      common = {
         inherit
           beamPackages
           elixir
