@@ -18,11 +18,9 @@
 
       callPackage = pkgs.lib.callPackageWith (pkgs // packages);
       callPackages = pkgs.lib.callPackagesWith (pkgs // packages);
-      packages = { inherit beamPackages elixir; };
+      packages = { inherit beamPackages elixir version; };
 
       hosting = callPackage ./web/hosting/default.nix {
-        inherit version;
-
         mixRelease =
           beamPackages.mixRelease.override {
             inherit elixir;
@@ -31,24 +29,7 @@
         mixNixDeps = callPackages ./web/hosting/deps.nix { };
       };
 
-      hostingDockerImage =
-        pkgs.dockerTools.buildImage
-          {
-            name = "codesupplydocker/hosting";
-            tag = version;
-            config = {
-              Cmd = [ "server" ];
-              Env = [ "LC_ALL=C.UTF-8" ];
-            };
-            copyToRoot = pkgs.buildEnv {
-              name = "image-root";
-              paths = [
-                hosting
-                pkgs.busybox
-              ];
-              pathsToLink = [ "/bin" ];
-            };
-          };
+      hostingDockerImage = callPackage ./web/hosting/docker.nix { inherit hosting; };
 
       dockerImageFullName = with hostingDockerImage; "${imageName}:${imageTag}";
 
