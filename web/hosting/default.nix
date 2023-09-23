@@ -1,4 +1,5 @@
-{ mixRelease
+{ lib
+, mixRelease
 , mixNixDeps
 , version
 , elixir
@@ -9,7 +10,7 @@
 let
   pname = "hosting";
   src = ./.;
-  extractVersion = "${elixir}/bin/elixir ${../../nix/extract_version.ex}";
+  extractVersion = "${lib.getExe' elixir "elixir"} ${../../nix/extract_version.ex}";
 in
 mixRelease {
   inherit pname src version mixNixDeps;
@@ -50,8 +51,8 @@ mixRelease {
   '';
 
   postBuild = ''
-    ln -sfv ${tailwindcss}/bin/tailwindcss _build/tailwind-linux-x64
-    ln -sfv ${esbuild}/bin/esbuild _build/esbuild-linux-x64
+    ln -sfv ${lib.getExe tailwindcss} _build/tailwind-linux-x64
+    ln -sfv ${lib.getExe esbuild} _build/esbuild-linux-x64
 
     mix assets.deploy --no-deps-check
   '';
