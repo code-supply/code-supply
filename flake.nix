@@ -16,19 +16,23 @@
       beamPackages = with pkgs.beam_minimal; packagesWith interpreters.erlangR26;
       elixir = beamPackages.elixir_1_15;
 
-      hosting = import ./web/hosting/default.nix {
-        inherit pkgs beamPackages version;
-
-        src = ./web/hosting;
-        pname = "hosting";
-        extractVersion = "${elixir}/bin/elixir ${self}/nix/extract_version.ex";
-
+      callPackage = pkgs.lib.callPackageWith (pkgs // packages);
+      packages = {
+        inherit beamPackages elixir;
         mixRelease =
           beamPackages.mixRelease.override {
             inherit elixir;
             fetchMixDeps = beamPackages.fetchMixDeps.override { inherit elixir; };
             erlang = beamPackages.erlang;
           };
+      };
+
+      hosting = callPackage ./web/hosting/default.nix {
+        inherit version;
+
+        src = ./web/hosting;
+        pname = "hosting";
+        extractVersion = "${elixir}/bin/elixir ${self}/nix/extract_version.ex";
       };
 
       hostingDockerImage =

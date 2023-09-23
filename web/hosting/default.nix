@@ -1,10 +1,12 @@
-{ pkgs
+{ lib
 , beamPackages
 , mixRelease
 , pname
 , src
 , version
 , extractVersion
+, tailwindcss
+, esbuild
 }:
 mixRelease {
   inherit pname src version;
@@ -14,8 +16,7 @@ mixRelease {
   stripDebug = true;
 
   mixNixDeps = (import ./deps.nix) {
-    inherit beamPackages;
-    lib = pkgs.lib;
+    inherit lib beamPackages;
     overrides =
       let
         overrideFun = old: {
@@ -40,19 +41,19 @@ mixRelease {
     if [[ -z "$tailwind_version" ]]
     then
       echo "No Tailwind version found in config/config.exs - continuing without Tailwind."
-    elif [[ "$tailwind_version" != "${pkgs.tailwindcss.version}" ]]
+    elif [[ "$tailwind_version" != "${tailwindcss.version}" ]]
     then
       errors+=1
-      echo "error: Tailwind version mismatch: using ${pkgs.tailwindcss.version} from nix but $tailwind_version in your app!"
+      echo "error: Tailwind version mismatch: using ${tailwindcss.version} from nix but $tailwind_version in your app!"
     fi
 
     if [[ -z "$esbuild_version" ]]
     then
       echo "No esbuild version found in config/config.exs - continuing without esbuild."
-    elif [[ "$esbuild_version" != "${pkgs.esbuild.version}" ]]
+    elif [[ "$esbuild_version" != "${esbuild.version}" ]]
     then
       errors+=1
-      echo "error: esbuild version mismatch: using ${pkgs.esbuild.version} from nix but $esbuild_version in your app!"
+      echo "error: esbuild version mismatch: using ${esbuild.version} from nix but $esbuild_version in your app!"
     fi
 
     if [[ "$errors" > 0 ]]
@@ -67,8 +68,8 @@ mixRelease {
   '';
 
   postBuild = ''
-    ln -sfv ${pkgs.tailwindcss}/bin/tailwindcss _build/tailwind-linux-x64
-    ln -sfv ${pkgs.esbuild}/bin/esbuild _build/esbuild-linux-x64
+    ln -sfv ${tailwindcss}/bin/tailwindcss _build/tailwind-linux-x64
+    ln -sfv ${esbuild}/bin/esbuild _build/esbuild-linux-x64
 
     mix assets.deploy --no-deps-check
   '';
