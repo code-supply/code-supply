@@ -18,7 +18,16 @@
 
       callPackage = pkgs.lib.callPackageWith (pkgs // packages);
       callPackages = pkgs.lib.callPackagesWith (pkgs // packages);
-      packages = { inherit beamPackages elixir version hostingK8sManifests; };
+      packages = {
+        inherit
+          beamPackages
+          elixir
+          hostingDockerImage
+          hostingK8sManifests
+          kubenix
+          version
+          ;
+      };
 
       hosting = callPackage ./web/hosting/default.nix {
         mixRelease =
@@ -31,23 +40,9 @@
 
       hostingDockerImage = callPackage ./web/hosting/docker.nix { inherit hosting; };
 
-      dockerImageFullName = with hostingDockerImage; "${imageName}:${imageTag}";
+      hostingDockerPush = callPackage ./web/hosting/docker-push.nix { };
 
-      hostingDockerPush = pkgs.writeShellApplication {
-        name = "hosting-docker-push";
-        text =
-          if hostingDockerImage.imageTag == "dirty"
-          then ''echo "Commit first!"; exit 1''
-          else ''
-            docker load < ${hostingDockerImage}
-            docker push ${dockerImageFullName}
-          '';
-      };
-
-      hostingK8sManifests = (kubenix.evalModules.${system} (
-        (import ./web/hosting/k8s.nix) {
-          inherit pkgs dockerImageFullName;
-        })).config.kubernetes.result;
+      hostingK8sManifests = callPackage ./web/hosting/k8s.nix { };
 
       dnsmasqStart = with pkgs;
         writeShellScriptBin "dnsmasq-start" ''
