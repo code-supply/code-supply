@@ -27,6 +27,7 @@
           kubenix
           version
           ;
+        postgresql = pkgs.postgresql_15;
       };
 
       hosting = callPackage ./web/hosting/default.nix {
@@ -39,69 +40,15 @@
       };
 
       hostingDockerImage = callPackage ./web/hosting/docker.nix { inherit hosting; };
-
       hostingDockerPush = callPackage ./web/hosting/docker-push.nix { };
-
       hostingK8sManifests = callPackage ./web/hosting/k8s.nix { };
 
-      dnsmasqStart = with pkgs;
-        writeShellScriptBin "dnsmasq-start" ''
-          sudo dnsmasq \
-            --server='/*/8.8.8.8' \
-            --address='/*.code.test/127.0.0.1' \
-            --address '/*.code.supply/81.187.237.24'
-        '';
-
-      postgresStart = with pkgs;
-        writeShellScriptBin "postgres-start" ''
-          [[ -d "$PGHOST" ]] || \
-            ${postgresql_15}/bin/initdb -D "$PGHOST/db"
-          ${postgresql_15}/bin/pg_ctl \
-            -D "$PGHOST/db" \
-            -l "$PGHOST/log" \
-            -o "--unix_socket_directories='$PGHOST'" \
-            -o "--listen_addresses=" \
-            start
-        '';
-      postgresStop = with pkgs;
-        writeShellScriptBin "postgres-stop" ''
-          pg_ctl \
-            -D "$PGHOST/db" \
-            -l "$PGHOST/log" \
-            -o "--unix_socket_directories=$PGHOST" \
-            stop
-        '';
-
-      devShell = pkgs.mkShell {
-        packages =
-          [
-            dnsmasqStart
-            elixir
-            postgresStart
-            postgresStop
-          ]
-          ++ (with pkgs; [
-            dnsmasq
-            (elixir_ls.override { inherit elixir; })
-            google-cloud-sdk
-            nixpkgs-fmt
-            inotify-tools
-            jq
-            kubectl
-            kustomize
-            kustomize
-            mix2nix
-            nodePackages."@tailwindcss/language-server"
-            nodePackages.typescript
-            nodePackages.typescript-language-server
-            postgresql_15
-            shellcheck
-            terraform
-            terraform-lsp
-          ]);
-        shellHook = ''
-          export PGHOST="$(git rev-parse --show-toplevel)/.postgres"
-        '';
+      devShell = callPackage ./nix/shell.nix {
+        extraPackages = [
+          (callPackage ./nix/dnsmasq-start.nix { })
+          (callPackage ./nix/postgres-start.nix { })
+          (callPackage ./nix/postgres-stop.nix { })
+        ];
       };
     in
     {
