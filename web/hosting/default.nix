@@ -1,6 +1,5 @@
-{ lib
-, beamPackages
-, mixRelease
+{ mixRelease
+, mixNixDeps
 , version
 , elixir
 , tailwindcss
@@ -13,13 +12,11 @@ let
   extractVersion = "${elixir}/bin/elixir ${../../nix/extract_version.ex}";
 in
 mixRelease {
-  inherit pname src version;
+  inherit pname src version mixNixDeps;
 
   meta.mainProgram = pname;
 
   stripDebug = true;
-
-  mixNixDeps = (import ./deps.nix) { inherit lib beamPackages; };
 
   postUnpack = ''
     tailwind_version="$(${extractVersion} ${src}/config/config.exs tailwind)"

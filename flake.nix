@@ -17,16 +17,19 @@
       elixir = beamPackages.elixir_1_15;
 
       callPackage = pkgs.lib.callPackageWith (pkgs // packages);
-      packages = {
-        inherit beamPackages elixir;
+      callPackages = pkgs.lib.callPackagesWith (pkgs // packages);
+      packages = { inherit beamPackages elixir; };
+
+      hosting = callPackage ./web/hosting/default.nix {
+        inherit version;
+
         mixRelease =
           beamPackages.mixRelease.override {
             inherit elixir;
             fetchMixDeps = beamPackages.fetchMixDeps.override { inherit elixir; };
           };
+        mixNixDeps = callPackages ./web/hosting/deps.nix { };
       };
-
-      hosting = callPackage ./web/hosting/default.nix { inherit version; };
 
       hostingDockerImage =
         pkgs.dockerTools.buildImage
