@@ -1,13 +1,17 @@
 { lib
 , beamPackages
 , mixRelease
-, pname
-, src
 , version
-, extractVersion
+, elixir
 , tailwindcss
 , esbuild
 }:
+
+let
+  pname = "hosting";
+  src = ./.;
+  extractVersion = "${elixir}/bin/elixir ${../../nix/extract_version.ex}";
+in
 mixRelease {
   inherit pname src version;
 

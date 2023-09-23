@@ -27,13 +27,7 @@
           };
       };
 
-      hosting = callPackage ./web/hosting/default.nix {
-        inherit version;
-
-        src = ./web/hosting;
-        pname = "hosting";
-        extractVersion = "${elixir}/bin/elixir ${self}/nix/extract_version.ex";
-      };
+      hosting = callPackage ./web/hosting/default.nix { inherit version; };
 
       hostingDockerImage =
         pkgs.dockerTools.buildImage
