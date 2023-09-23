@@ -18,7 +18,7 @@
 
       callPackage = pkgs.lib.callPackageWith (pkgs // packages);
       callPackages = pkgs.lib.callPackagesWith (pkgs // packages);
-      packages = { inherit beamPackages elixir version; };
+      packages = { inherit beamPackages elixir version hostingK8sManifests; };
 
       hosting = callPackage ./web/hosting/default.nix {
         mixRelease =
@@ -48,16 +48,6 @@
         (import ./web/hosting/k8s.nix) {
           inherit pkgs dockerImageFullName;
         })).config.kubernetes.result;
-
-      hostingK8sScript = verb:
-        pkgs.writeShellApplication {
-          name = "hosting-k8s-${verb}";
-          runtimeInputs = [
-            pkgs.kubectl
-            hostingK8sManifests
-          ];
-          text = "kubectl ${verb} -f ${hostingK8sManifests}";
-        };
 
       dnsmasqStart = with pkgs;
         writeShellScriptBin "dnsmasq-start" ''
@@ -123,8 +113,8 @@
       formatter.${system} = pkgs.nixpkgs-fmt;
       packages.${system} = {
         inherit hostingDockerImage hostingK8sManifests hostingDockerPush;
-        hostingK8sDiff = hostingK8sScript "diff";
-        hostingK8sApply = hostingK8sScript "apply";
+        hostingK8sDiff = callPackage ./web/hosting/make-k8s-script.nix { verb = "diff"; };
+        hostingK8sApply = callPackage ./web/hosting/make-k8s-script.nix { verb = "apply"; };
         default = hosting;
       };
       devShells.${system}.default = devShell;
