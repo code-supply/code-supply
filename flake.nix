@@ -23,7 +23,6 @@
           beamPackages.mixRelease.override {
             inherit elixir;
             fetchMixDeps = beamPackages.fetchMixDeps.override { inherit elixir; };
-            erlang = beamPackages.erlang;
           };
       };
 
