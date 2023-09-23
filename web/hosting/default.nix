@@ -19,22 +19,7 @@ mixRelease {
 
   stripDebug = true;
 
-  mixNixDeps = (import ./deps.nix) {
-    inherit lib beamPackages;
-    overrides =
-      let
-        overrideFun = old: {
-          postInstall = ''
-            cp -v package.json "$out/lib/erlang/lib/${old.name}"
-          '';
-        };
-      in
-      _: prev: {
-        phoenix = prev.phoenix.overrideAttrs overrideFun;
-        phoenix_html = prev.phoenix_html.overrideAttrs overrideFun;
-        phoenix_live_view = prev.phoenix_live_view.overrideAttrs overrideFun;
-      };
-  };
+  mixNixDeps = (import ./deps.nix) { inherit lib beamPackages; };
 
   postUnpack = ''
     tailwind_version="$(${extractVersion} ${src}/config/config.exs tailwind)"
@@ -65,10 +50,6 @@ mixRelease {
       echo "Please fix the above errors and try again."
       exit 1
     fi
-  '';
-
-  preBuild = ''
-    ln -sfv _build/prod/lib deps
   '';
 
   postBuild = ''
