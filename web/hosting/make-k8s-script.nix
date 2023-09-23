@@ -5,9 +5,6 @@
 }:
 writeShellApplication {
   name = "hosting-k8s-${verb}";
-  runtimeInputs = [
-    kubectl
-    hostingK8sManifests
-  ];
+  runtimeInputs = [ kubectl ];
   text = "kubectl ${verb} -f ${hostingK8sManifests}";
 }

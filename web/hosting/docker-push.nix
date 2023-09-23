@@ -1,8 +1,10 @@
 { writeShellApplication
 , hostingDockerImage
+, docker
 }:
 writeShellApplication {
   name = "hosting-docker-push";
+  runtimeInputs = [ docker ];
   text =
     if hostingDockerImage.imageTag == "dirty"
     then ''echo "Commit first!"; exit 1''
