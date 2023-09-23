@@ -48,7 +48,6 @@
           (callPackage ./nix/dnsmasq-start.nix { })
           (callPackage ./nix/postgres-start.nix { })
           (callPackage ./nix/postgres-stop.nix { })
-          elixir
         ];
       };
     in
