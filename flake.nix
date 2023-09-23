@@ -114,7 +114,7 @@
           ]
           ++ (with pkgs; [
             dnsmasq
-            elixir_ls
+            (elixir_ls.override { inherit elixir; })
             google-cloud-sdk
             nixpkgs-fmt
             inotify-tools
