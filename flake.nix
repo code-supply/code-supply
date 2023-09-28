@@ -7,38 +7,40 @@
   outputs = { self, nixpkgs, kubenix }:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
       version =
         if self ? rev
         then self.rev
         else "dirty";
 
-      beamPackages = with pkgs.beam_minimal; packagesWith interpreters.erlangR26;
-      elixir = beamPackages.elixir_1_15;
+      pkgs = nixpkgs.legacyPackages.${system};
+
+      common =
+        let
+          beamPackages = with pkgs.beam_minimal; packagesWith interpreters.erlangR26;
+          elixir = beamPackages.elixir_1_15;
+        in
+        {
+          inherit
+            beamPackages
+            elixir
+            hostingDockerImage
+            hostingK8sManifests
+            kubenix
+            version
+            ;
+          postgresql = pkgs.postgresql_15;
+          mixRelease =
+            beamPackages.mixRelease.override {
+              inherit elixir;
+              fetchMixDeps = beamPackages.fetchMixDeps.override { inherit elixir; };
+            };
+          mixNixDeps = callPackages ./web/hosting/deps.nix { };
+        };
 
       callPackage = pkgs.lib.callPackageWith (pkgs // common);
       callPackages = pkgs.lib.callPackagesWith (pkgs // common);
-      common = {
-        inherit
-          beamPackages
-          elixir
-          hostingDockerImage
-          hostingK8sManifests
-          kubenix
-          version
-          ;
-        postgresql = pkgs.postgresql_15;
-      };
 
-      hosting = callPackage ./web/hosting/default.nix {
-        mixRelease =
-          beamPackages.mixRelease.override {
-            inherit elixir;
-            fetchMixDeps = beamPackages.fetchMixDeps.override { inherit elixir; };
-          };
-        mixNixDeps = callPackages ./web/hosting/deps.nix { };
-      };
-
+      hosting = callPackage ./web/hosting/default.nix { };
       hostingDockerImage = callPackage ./web/hosting/docker.nix { inherit hosting; };
       hostingDockerPush = callPackage ./web/hosting/docker-push.nix { };
       hostingK8sManifests = callPackage ./web/hosting/k8s.nix { };
