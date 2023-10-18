@@ -18,6 +18,7 @@
         let
           beamPackages = with pkgs.beam_minimal; packagesWith interpreters.erlangR26;
           elixir = beamPackages.elixir_1_15;
+          postgresql = pkgs.postgresql_15;
         in
         {
           inherit
@@ -26,9 +27,9 @@
             hostingDockerImage
             hostingK8sManifests
             kubenix
+            postgresql
             version
             ;
-          postgresql = pkgs.postgresql_15;
           mixRelease =
             beamPackages.mixRelease.override {
               inherit elixir;
