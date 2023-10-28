@@ -8,7 +8,11 @@ defmodule TlsLbOperator.MixProject do
       elixir: "~> 1.12",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      escript: escript()
+      releases: [
+        tls_lb_operator: [
+          include_executables_for: [:unix]
+        ]
+      ]
     ]
   end
 
@@ -26,9 +30,5 @@ defmodule TlsLbOperator.MixProject do
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:k8s, "~> 1.1"}
     ]
-  end
-
-  defp escript do
-    [main_module: TlsLbOperator]
   end
 end

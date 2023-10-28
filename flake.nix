@@ -54,6 +54,7 @@
       tlsLbOperator = callPackage ./operators/tls-lb-operator/default.nix {
         mixNixDeps = callPackages ./operators/tls-lb-operator/deps.nix { };
       };
+      tlsLbOperatorDockerImage = callPackage ./operators/tls-lb-operator/docker.nix { inherit tlsLbOperator; };
 
       devShell = callPackage ./nix/shell.nix {
         extraPackages = [
@@ -72,6 +73,7 @@
           hostingDockerPush
 
           tlsLbOperator
+          tlsLbOperatorDockerImage
           ;
         hostingK8sDiff = callPackage ./web/hosting/make-k8s-script.nix { verb = "diff"; };
         hostingK8sApply = callPackage ./web/hosting/make-k8s-script.nix { verb = "apply"; };
