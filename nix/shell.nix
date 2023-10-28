@@ -1,6 +1,7 @@
 { pkgs
 , mkShell
 , elixir
+, erlang
 , postgresql
 , extraPackages
 }:
@@ -22,7 +23,7 @@ mkShell {
       terraform
       terraform-lsp
     ])
-    ++ [ elixir postgresql ]
+    ++ [ elixir erlang postgresql ]
     ++ extraPackages;
   shellHook = ''
     export PGHOST="$(git rev-parse --show-toplevel)/.postgres"
