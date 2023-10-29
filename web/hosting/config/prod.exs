@@ -1,6 +1,7 @@
 import Config
 
 config :hosting,
+  host: "hosting.code.supply",
   frame_ancestor: "hosting.code.supply"
 
 # For production, don't forget to configure the url host

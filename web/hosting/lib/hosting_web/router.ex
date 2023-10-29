@@ -3,7 +3,7 @@ defmodule HostingWeb.Router do
 
   import HostingWeb.UserAuth
 
-  control_plane_host = Application.fetch_env!(:hosting, HostingWeb.Endpoint)[:url][:host]
+  control_plane_host = Application.compile_env!(:hosting, :host)
   control_plane = [host: control_plane_host, alias: HostingWeb]
 
   pipeline :site_browser do

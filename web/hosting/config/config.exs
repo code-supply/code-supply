@@ -18,6 +18,7 @@ config :hosting,
   bucket_name: "hosting-uploads-dev",
   access_key_id: "hosting-dev@code-supply.iam.gserviceaccount.com",
   children: [],
+  host: host,
   frame_ancestor: host
 
 # Configures the endpoint
