@@ -35,4 +35,4 @@ config :hosting,
 # capture all logs
 config :logger, level: :debug
 # but only show warnings and up on the console
-config :logger, :console, level: :warn
+config :logger, :console, level: :warning
