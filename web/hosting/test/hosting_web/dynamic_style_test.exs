@@ -8,22 +8,26 @@ defmodule HostingWeb.DynamicStyleTest do
              "background-color:#FFFF00",
              "background-image:url(\"http://example.com/foo.jpeg\")"
            ] ==
-             DynamicStyle.as_list(%{
+             %{
                image_url: "http://example.com/foo.jpeg",
                name: "",
                text_color: nil,
                background_colour: "FFFF00"
-             })
+             }
+             |> DynamicStyle.as_list()
+             |> Enum.sort()
   end
 
   test "colours are prefixed with hash" do
     assert [
-             "color:#00FF00",
-             "background-color:#FFFF00"
+             "background-color:#FFFF00",
+             "color:#00FF00"
            ] ==
-             DynamicStyle.as_list(%{
+             %{
                text_colour: "00FF00",
                background_colour: "FFFF00"
-             })
+             }
+             |> DynamicStyle.as_list()
+             |> Enum.sort()
   end
 end
