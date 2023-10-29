@@ -35,7 +35,14 @@ defmodule Hosting.Uploader do
         record_css(multi, site, content)
 
       _ ->
-        record_asset(multi, user, site, bucket_name(), entry.uuid, params)
+        record_asset(
+          multi,
+          user,
+          site,
+          bucket_name(),
+          entry.uuid,
+          Map.put(params, "name", entry.client_name)
+        )
     end
   end
 

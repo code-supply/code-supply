@@ -92,6 +92,30 @@ defmodule Hosting.UploaderTest do
     assert site.assets == assets_before
   end
 
+  test "recording an image creates an asset" do
+    user = user_fixture()
+    [site] = user.sites
+
+    multi =
+      Ecto.Multi.new()
+      |> Uploader.record(
+        site: site,
+        user: user,
+        entry: %Phoenix.LiveView.UploadEntry{
+          uuid: "a key",
+          client_name: "favicon.png",
+          client_type: "image/png"
+        },
+        params: %{},
+        content: "the content"
+      )
+
+    assert {:ok, _} = Hosting.Repo.transaction(multi)
+
+    site = Sites.get_site!(site)
+    assert "favicon.png" in (site.assets |> Enum.map(fn a -> a.name end))
+  end
+
   test "recording invalid upload doesn't make asset, page or stylesheet" do
     user = user_fixture()
     [site] = user.sites
