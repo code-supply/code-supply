@@ -48,7 +48,7 @@
         mixNixDeps = callPackages ./web/hosting/deps.nix { };
       };
       hostingDockerImage = callPackage ./web/hosting/docker.nix { inherit hosting; };
-      hostingDockerPush = callPackage ./web/hosting/docker-push.nix { };
+      hostingDockerPush = callPackage ./nix/docker-push.nix { image = hostingDockerImage; };
       hostingK8sManifests = callPackage ./web/hosting/k8s.nix { };
 
       tlsLbOperator = callPackage ./operators/tls-lb-operator/default.nix {
