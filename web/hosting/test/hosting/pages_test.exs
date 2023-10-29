@@ -25,15 +25,22 @@ defmodule Hosting.PagesTest do
   end
 
   describe "when head element is present" do
-    test "can strip the scripts and replace stylesheets with site's" do
+    test "strips scripts and replaces site stylesheets with DB stylesheets, leaving external web stylesheets intact" do
       page = %Page{
         raw: """
-        <html><head><link rel="stYLeSheEt" href="/some-styles.css"></head><script src="foo.js"></script><h1>Hi there!</h1></html>
+        <html>
+        <head>
+        <link rel="stYLeSheEt" href="/some-styles.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+        </head>
+        <script src="foo.js"></script>
+        <h1>Hi there!</h1>
+        </html>
         """
       }
 
       assert Pages.render(page, %Site{stylesheet: "* {}"}, @irrelevant_datetime) ==
-               ~s(<html><head><link rel="stylesheet" href="/stylesheets/app.css"/></head><h1>Hi there!</h1></html>)
+               ~s(<html><head><link rel="stylesheet" href="/stylesheets/app.css"/><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/></head><h1>Hi there!</h1></html>)
     end
   end
 

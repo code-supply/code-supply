@@ -21,8 +21,7 @@ defmodule Hosting.Pages do
 
     doc
     |> remove_scripts()
-    |> remove_stylesheets()
-    |> rewrite_links()
+    |> rewrite_links_and_remove_internal_stylesheets()
     |> write_dynamic_data(current_datetime)
   end
 
@@ -65,7 +64,7 @@ defmodule Hosting.Pages do
     end)
   end
 
-  defp rewrite_links(doc) do
+  defp rewrite_links_and_remove_internal_stylesheets(doc) do
     Floki.traverse_and_update(doc, fn
       {"a", attrs, children} ->
         {
@@ -82,17 +81,17 @@ defmodule Hosting.Pages do
           children
         }
 
-      other ->
-        other
+      el ->
+        if internal_stylesheet?(el) do
+          nil
+        else
+          el
+        end
     end)
   end
 
   defp remove_scripts(doc) do
     Floki.filter_out(doc, "script")
-  end
-
-  defp remove_stylesheets(doc) do
-    Floki.filter_out(doc, "link[rel=stylesheet i]")
   end
 
   def get_for_route(host, path) do
@@ -106,6 +105,17 @@ defmodule Hosting.Pages do
         preload: [site: [pages: []]]
       )
     )
+  end
+
+  defp internal_stylesheet?({"link", attrs_tuples, _children}) do
+    attrs = Enum.into(attrs_tuples, %{})
+
+    String.downcase(attrs["rel"]) == "stylesheet" and
+      !String.starts_with?(attrs["href"], "http")
+  end
+
+  defp internal_stylesheet?(_el) do
+    false
   end
 
   defp add_html_suffix("/") do
