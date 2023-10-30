@@ -9,6 +9,14 @@ defmodule Hosting.AccountsTest do
 
   import Hosting.AccountsFixtures
 
+  test "can change a user's API key" do
+    user = user_fixture()
+    {:ok, user} = Accounts.apply_api_key(user, "a-new-one")
+
+    assert user.api_key == "a-new-one"
+    assert Accounts.get_user!(user.id).api_key == "a-new-one"
+  end
+
   describe "delete_user/1" do
     test "deletes the user, its site and domains if it's not been shared" do
       user = user_fixture() |> Accounts.preload_for_assets()

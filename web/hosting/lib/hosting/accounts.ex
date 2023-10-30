@@ -11,6 +11,12 @@ defmodule Hosting.Accounts do
   alias Hosting.Assets
   alias Hosting.Sites.SiteMember
 
+  def apply_api_key(user, api_key) do
+    user
+    |> User.api_key_changeset(%{api_key: api_key})
+    |> Repo.update()
+  end
+
   def preload_for_sites(%User{} = user) do
     user
     |> Hosting.Repo.preload(

@@ -8,6 +8,7 @@ defmodule Hosting.Accounts.User do
     field(:email, :string)
     field(:password, :string, virtual: true, redact: true)
     field(:hashed_password, :string, redact: true)
+    field(:api_key, :string)
     field(:confirmed_at, :naive_datetime)
     has_many(:site_members, SiteMember)
     has_many(:sites, through: [:site_members, :site])
@@ -15,6 +16,11 @@ defmodule Hosting.Accounts.User do
     has_many(:domains, through: [:sites, :domains])
 
     timestamps()
+  end
+
+  def api_key_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:api_key])
   end
 
   @doc """

@@ -1,12 +1,33 @@
 defmodule HostingWeb.PresignedUploadControllerTest do
   use HostingWeb.ConnCase, async: true
 
-  import Hosting.SitesFixtures
+  import Hosting.AccountsFixtures
 
-  test "provides presigned upload JSON" do
-    site = site_fixture()
+  alias Hosting.Accounts
 
-    conn = build_conn()
+  test "rejects users with mismatching API keys" do
+    user = user_fixture()
+    [site] = user.sites
+
+    conn =
+      build_conn()
+      |> put_req_header("authorization", "Bearer bad-api-key")
+
+    conn = get(conn, url(~p"/sites/#{site.id}/presigned_upload"))
+
+    assert json_response(conn, 401)
+  end
+
+  test "provides presigned upload JSON to users with matching API key" do
+    user = user_fixture()
+    [site] = user.sites
+
+    {:ok, _user} = Accounts.apply_api_key(user, "my-api-key")
+
+    conn =
+      build_conn()
+      |> put_req_header("authorization", "Bearer my-api-key")
+
     conn = get(conn, url(~p"/sites/#{site.id}/presigned_upload"))
 
     response = json_response(conn, 200)
