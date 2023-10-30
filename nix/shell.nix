@@ -8,17 +8,19 @@
 mkShell {
   packages =
     (with pkgs; [
+      cargo
       (elixir_ls.override { inherit elixir; })
       google-cloud-sdk
-      nixpkgs-fmt
       inotify-tools
       jq
       kubectl
       kustomize
       mix2nix
+      nixpkgs-fmt
       nodePackages."@tailwindcss/language-server"
       nodePackages.typescript
       nodePackages.typescript-language-server
+      rustc
       shellcheck
       terraform
       terraform-lsp
