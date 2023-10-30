@@ -7,8 +7,16 @@
 }:
 mkShell {
   packages =
-    (with pkgs; [
-      cargo
+    (with pkgs; let
+      rustPkgs = [
+        cargo
+        openssl
+        pkg-config
+        rust-analyzer
+        rustc
+      ];
+    in
+    [
       (elixir_ls.override { inherit elixir; })
       google-cloud-sdk
       inotify-tools
@@ -20,11 +28,10 @@ mkShell {
       nodePackages."@tailwindcss/language-server"
       nodePackages.typescript
       nodePackages.typescript-language-server
-      rustc
       shellcheck
       terraform
       terraform-lsp
-    ])
+    ] ++ rustPkgs)
     ++ [ elixir erlang postgresql ]
     ++ extraPackages;
   shellHook = ''
