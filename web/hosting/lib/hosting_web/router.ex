@@ -33,6 +33,10 @@ defmodule HostingWeb.Router do
     plug(:fetch_current_user)
   end
 
+  pipeline :api do
+    plug(:accepts, ["json"])
+  end
+
   scope control_plane ++ [path: "/"] do
     pipe_through(:browser)
 
@@ -99,6 +103,11 @@ defmodule HostingWeb.Router do
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new
     end
+  end
+
+  scope control_plane ++ [path: "/"] do
+    pipe_through([:api])
+    get "/sites/:id/presigned_upload", PresignedUploadController, :show
   end
 
   scope path: "/stylesheets", alias: HostingWeb do

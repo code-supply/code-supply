@@ -5,6 +5,11 @@ defmodule Hosting.Uploader do
   alias Hosting.Assets
   alias Hosting.Sites.Site
 
+  defmodule PresignedUpload do
+    @derive Jason.Encoder
+    defstruct [:uploader, :url, :fields]
+  end
+
   @type record_option ::
           {:site, map()}
           | {:user, map()}
@@ -100,7 +105,7 @@ defmodule Hosting.Uploader do
     |> Enum.sort_by(fn {human_type, _entries} -> human_type == "HTML" || human_type end)
   end
 
-  def presign_upload(%UploadEntry{uuid: uuid}, socket) do
+  def presign_upload(uuid) do
     upload_request = %UploadRequest{
       algorithm: "GOOG4-RSA-SHA256",
       access_key_id: access_key_id(),
@@ -111,7 +116,7 @@ defmodule Hosting.Uploader do
 
     signed_upload = Uploads.sign(upload_request)
 
-    meta = %{
+    %PresignedUpload{
       uploader: "GCS",
       url: "https://#{bucket_name()}.storage.googleapis.com/",
       fields: %{
@@ -123,8 +128,10 @@ defmodule Hosting.Uploader do
         "x-goog-signature": signed_upload.signature
       }
     }
+  end
 
-    {:ok, meta, socket}
+  def presign_upload(%UploadEntry{uuid: uuid}, socket) do
+    {:ok, presign_upload(uuid), socket}
   end
 
   def bucket_name do
