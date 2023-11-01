@@ -1,3 +1,5 @@
+mod presigned_upload;
+use presigned_upload::PresignedUpload;
 use reqwest::header::AUTHORIZATION;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -8,6 +10,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .header(AUTHORIZATION, format!("Bearer {}", api_token))
         .send();
 
-    println!("{:#?}", resp?.text().unwrap());
+    let presigned_upload: PresignedUpload = serde_json::from_str(&resp?.text().unwrap())?;
+    println!("{:#?}", presigned_upload);
     Ok(())
 }
