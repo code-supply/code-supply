@@ -29,8 +29,8 @@ mkShell {
       nodePackages."@tailwindcss/language-server"
       nodePackages.typescript
       nodePackages.typescript-language-server
+      opentofu
       shellcheck
-      terraform
       terraform-lsp
     ] ++ rustPkgs)
     ++ [ elixir erlang postgresql ]
