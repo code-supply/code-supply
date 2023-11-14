@@ -33,7 +33,7 @@ config :hosting, HostingWeb.Endpoint,
 config :libcluster, topologies: []
 
 config :tailwind,
-  version: "3.3.3",
+  version: "3.3.5",
   default: [
     args: ~w(
         --config=tailwind.config.js
@@ -63,7 +63,7 @@ config :hosting, Hosting.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.19.3",
+  version: "0.19.5",
   default: [
     args:
       ~w(src/app.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
