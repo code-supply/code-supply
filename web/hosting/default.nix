@@ -1,10 +1,11 @@
 { lib
-, mixRelease
-, mixNixDeps
-, version
+, coreutils
 , elixir
-, tailwindcss
 , esbuild
+, mixNixDeps
+, mixRelease
+, tailwindcss
+, version
 }:
 
 let
@@ -18,6 +19,8 @@ mixRelease {
   meta.mainProgram = pname;
 
   stripDebug = true;
+
+  buildInputs = [ coreutils ];
 
   postUnpack = ''
     tailwind_version="$(${extractVersion} ${src}/config/config.exs tailwind)"
