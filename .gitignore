@@ -7,3 +7,4 @@ target
 helm/*/secrets.yaml
 .direnv
 /result
+.elixir-tools
