@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/master";
     kubenix.url = "github:hall/kubenix";
   };
 
@@ -17,7 +17,7 @@
       common =
         let
           beamPackages = with pkgs.beam_minimal; packagesWith interpreters.erlangR26;
-          elixir = beamPackages.elixir_1_15;
+          elixir = beamPackages.elixir_1_16;
           postgresql = pkgs.postgresql_15;
         in
         {

@@ -18,7 +18,7 @@ mkShell {
       ];
     in
     [
-      (elixir_ls.override { inherit elixir; })
+      elixir_ls
       google-cloud-sdk
       inotify-tools
       jq
