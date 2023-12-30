@@ -4,9 +4,9 @@ defmodule Hosting.SitesTest do
   import Hosting.{AccountsFixtures, SitesFixtures}
 
   alias Hosting.Accounts.User
+  alias Hosting.Domains.Domain
   alias Hosting.Sites
   alias Hosting.Sites.{Page, Site, SiteMember}
-  alias Hosting.Domains.Domain
 
   describe "pages" do
     test "adding a page requires correct user, broadcasts result" do
@@ -64,7 +64,7 @@ defmodule Hosting.SitesTest do
 
     @invalid_attrs %{name: nil}
 
-    defp user_and_site() do
+    defp user_and_site do
       %User{sites: [site]} = user = unconfirmed_user_fixture()
 
       {

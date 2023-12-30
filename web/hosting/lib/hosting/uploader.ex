@@ -1,9 +1,9 @@
 defmodule Hosting.Uploader do
-  alias Phoenix.LiveView.UploadEntry
-  alias Hosting.Uploads.UploadRequest
-  alias Hosting.Uploads
   alias Hosting.Assets
   alias Hosting.Sites.Site
+  alias Hosting.Uploads
+  alias Hosting.Uploads.UploadRequest
+  alias Phoenix.LiveView.UploadEntry
 
   defmodule PresignedUpload do
     @derive Jason.Encoder

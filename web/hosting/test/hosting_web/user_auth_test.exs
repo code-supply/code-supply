@@ -1,9 +1,9 @@
 defmodule HostingWeb.UserAuthTest do
   use HostingWeb.ConnCase, async: true
 
-  alias Phoenix.LiveView
   alias Hosting.Accounts
   alias HostingWeb.UserAuth
+  alias Phoenix.LiveView
   import Hosting.AccountsFixtures
 
   @remember_me_cookie "_hosting_web_user_remember_me"

@@ -15,16 +15,14 @@ defmodule Hosting.GCSStorage do
   @impl true
   def put(bucket_name, key, content) do
     with {:ok, %{token: token}} <- Goth.fetch(Hosting.Goth),
-         client <- client(token),
-         {result, metadata} <-
-           Objects.storage_objects_insert_iodata(
-             client,
-             bucket_name,
-             "multipart",
-             %GoogleApi.Storage.V1.Model.Object{name: key},
-             content
-           ) do
-      {result, metadata}
+         client <- client(token) do
+      Objects.storage_objects_insert_iodata(
+        client,
+        bucket_name,
+        "multipart",
+        %GoogleApi.Storage.V1.Model.Object{name: key},
+        content
+      )
     end
   end
 

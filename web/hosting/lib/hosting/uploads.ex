@@ -2,8 +2,8 @@ defmodule Hosting.Uploads do
   @expiration_seconds 1800
   @max_file_size 10_000_000
 
-  alias Hosting.Uploads.UploadRequest
   alias Hosting.Uploads.SignedUpload
+  alias Hosting.Uploads.UploadRequest
 
   def sign(%UploadRequest{
         algorithm: algorithm,

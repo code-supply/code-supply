@@ -22,7 +22,7 @@ defmodule Hosting.Domains do
     end
   end
 
-  def hosting_suffix() do
+  def hosting_suffix do
     ".#{strip_prefix(Application.get_env(:hosting, HostingWeb.Endpoint)[:url][:host], "hosting")}"
   end
 

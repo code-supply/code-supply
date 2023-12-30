@@ -8,12 +8,12 @@ defmodule Hosting.Sites do
     TitleUtils
   }
 
-  alias Hosting.Repo
   alias Hosting.Accounts.User
   alias Hosting.Assets
   alias Hosting.Assets.Asset
   alias Hosting.Domains
   alias Hosting.Domains.Domain
+  alias Hosting.Repo
 
   alias Ecto.Multi
 
@@ -67,7 +67,7 @@ defmodule Hosting.Sites do
     end
   end
 
-  def canonical_url(%Site{domains: [%Domain{name: name}]}, _port = nil) do
+  def canonical_url(%Site{domains: [%Domain{name: name}]}, nil = _port) do
     "//#{name}/"
   end
 
@@ -75,7 +75,7 @@ defmodule Hosting.Sites do
     "//#{name}:#{port}/"
   end
 
-  def canonical_url(%Site{domains: domains}, _port = nil) do
+  def canonical_url(%Site{domains: domains}, nil = _port) do
     domain = Enum.find(domains, &(!Domains.hosting_domain?(&1)))
 
     "//#{domain.name}/"
@@ -166,7 +166,7 @@ defmodule Hosting.Sites do
     )
   end
 
-  defp page_query() do
+  defp page_query do
     from(p in Page, order_by: p.id)
   end
 

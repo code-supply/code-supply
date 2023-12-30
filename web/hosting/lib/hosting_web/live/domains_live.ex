@@ -87,7 +87,7 @@ defmodule HostingWeb.DomainsLive do
      end)}
   end
 
-  defp k8s() do
+  defp k8s do
     Application.get_env(:hosting, :k8s)
   end
 end

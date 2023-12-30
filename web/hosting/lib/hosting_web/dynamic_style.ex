@@ -8,7 +8,7 @@ defmodule HostingWeb.DynamicStyle do
 
   def as_list(user_values) do
     Enum.reduce(@mapped_styles, [], fn {hosting_key, css_key}, acc ->
-      case {css_key, Map.get(user_values,hosting_key)} do
+      case {css_key, Map.get(user_values, hosting_key)} do
         {_, ""} ->
           acc
 

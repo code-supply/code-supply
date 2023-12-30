@@ -3,9 +3,9 @@ defmodule Hosting.AssetsTest do
 
   import Hosting.AccountsFixtures
 
+  alias Hosting.Accounts.User
   alias Hosting.Assets
   alias Hosting.Assets.Asset
-  alias Hosting.Accounts.User
   alias Hosting.Sites.Site
 
   setup do
@@ -28,7 +28,10 @@ defmodule Hosting.AssetsTest do
     end
 
     test "can get an imgproxy URL for a URL" do
-      assert Assets.to_imgproxy_url("https://example.com/some-image.jpeg", width: 400, height: 100) ==
+      assert Assets.to_imgproxy_url("https://example.com/some-image.jpeg",
+               width: 400,
+               height: 100
+             ) ==
                "https://hosting-images.code.supply/nosignature/fit/400/100/ce/0/plain/https://example.com/some-image.jpeg"
     end
 

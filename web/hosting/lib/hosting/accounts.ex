@@ -6,9 +6,9 @@ defmodule Hosting.Accounts do
   import Ecto.Query, warn: false
 
   alias Ecto.Multi
-  alias Hosting.{Repo, Sites}
-  alias Hosting.Accounts.{User, UserToken, UserNotifier}
+  alias Hosting.Accounts.{User, UserNotifier, UserToken}
   alias Hosting.Assets
+  alias Hosting.{Repo, Sites}
   alias Hosting.Sites.SiteMember
 
   def apply_api_key(user, api_key) do

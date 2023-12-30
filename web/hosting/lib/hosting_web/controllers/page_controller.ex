@@ -34,7 +34,7 @@ defmodule HostingWeb.PageController do
     end
   end
 
-  defp frame_ancestor() do
+  defp frame_ancestor do
     Application.get_env(:hosting, :frame_ancestor)
   end
 end

@@ -5,11 +5,11 @@ defmodule Hosting.SitesFixtures do
   alias Hosting.Sites
   alias Hosting.Sites.{Page, Site}
 
-  def site_fixture() do
+  def site_fixture do
     site_fixture(user_fixture())
   end
 
-  def unpersisted_site_fixture() do
+  def unpersisted_site_fixture do
     %Site{
       pages: [%Page{}]
     }
@@ -28,7 +28,7 @@ defmodule Hosting.SitesFixtures do
     site |> Sites.with_pages()
   end
 
-  def page_fixture() do
+  def page_fixture do
     user = unconfirmed_user_fixture()
     [site] = user.sites
     [page] = Sites.with_pages(site).pages

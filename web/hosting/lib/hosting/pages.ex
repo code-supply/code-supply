@@ -2,7 +2,7 @@ defmodule Hosting.Pages do
   import Ecto.Query, warn: false
 
   alias Hosting.Repo
-  alias Hosting.Sites.{Site, Page}
+  alias Hosting.Sites.{Page, Site}
   alias Hosting.URIRewriter
 
   @site_stylesheet {"link",

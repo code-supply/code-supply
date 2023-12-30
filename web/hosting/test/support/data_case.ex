@@ -16,6 +16,8 @@ defmodule Hosting.DataCase do
 
   use ExUnit.CaseTemplate
 
+  alias Ecto.Adapters.SQL.Sandbox
+
   using do
     quote do
       alias Hosting.Repo
@@ -28,10 +30,10 @@ defmodule Hosting.DataCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Hosting.Repo)
+    :ok = Sandbox.checkout(Hosting.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Hosting.Repo, {:shared, self()})
+      Sandbox.mode(Hosting.Repo, {:shared, self()})
     end
 
     :ok
@@ -53,7 +55,7 @@ defmodule Hosting.DataCase do
     end)
   end
 
-  def app_domain() do
+  def app_domain do
     Application.get_env(:hosting, HostingWeb.Endpoint)[:url][:host]
   end
 end

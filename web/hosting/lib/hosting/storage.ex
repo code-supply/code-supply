@@ -6,4 +6,3 @@ defmodule Hosting.Storage do
   @callback poll(bucket_name :: String.t(), key :: String.t(), delay :: number()) ::
               {:ok, term} | {:error, String.t()}
 end
-

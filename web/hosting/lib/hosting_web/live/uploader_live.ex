@@ -1,12 +1,13 @@
 defmodule HostingWeb.UploaderLive do
   use HostingWeb, :live_view
 
-  alias Hosting.Uploader
   alias Hosting.Accounts
   alias Hosting.Sites
+  alias Hosting.Uploader
 
   @accepted_types ~w(.css .gif .htm .html .jpeg .jpg .png .svg)
 
+  @impl Phoenix.LiveView
   def mount(_params, %{"user_token" => token}, socket) do
     user = Accounts.get_user_by_session_token(token)
 
@@ -21,10 +22,12 @@ defmodule HostingWeb.UploaderLive do
      )}
   end
 
+  @impl Phoenix.LiveView
   def handle_params(%{"site_id" => site_id} = _params, _b, socket) do
     {:noreply, assign(socket, site_id: site_id, form: to_form(%{"site_id" => site_id}))}
   end
 
+  @impl Phoenix.LiveView
   def render(%{live_action: :new} = assigns) do
     ~H"""
     <div class="container">
@@ -76,6 +79,7 @@ defmodule HostingWeb.UploaderLive do
     """
   end
 
+  @impl Phoenix.LiveView
   def handle_event("save", params, %{assigns: %{site_id: site_id, user: user}} = socket) do
     case uploaded_entries(socket, :files) do
       {[_ | _] = _complete, [] = _incomplete} ->
@@ -161,7 +165,7 @@ defmodule HostingWeb.UploaderLive do
     Uploader.strip_root(path)
   end
 
-  defp storage() do
+  defp storage do
     Application.get_env(:hosting, :storage)
   end
 end

@@ -2,8 +2,8 @@ defmodule Hosting.Sites.Site do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Hosting.Domains.Domain
   alias Hosting.Assets.Asset
+  alias Hosting.Domains.Domain
   alias Hosting.Sites.{Page, SiteMember}
 
   schema "sites" do

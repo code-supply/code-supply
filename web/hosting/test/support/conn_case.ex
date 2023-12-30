@@ -17,6 +17,8 @@ defmodule HostingWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  alias Ecto.Adapters.SQL.Sandbox
+
   using do
     quote do
       # Import conveniences for testing with connections
@@ -34,10 +36,10 @@ defmodule HostingWeb.ConnCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Hosting.Repo)
+    :ok = Sandbox.checkout(Hosting.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Hosting.Repo, {:shared, self()})
+      Sandbox.mode(Hosting.Repo, {:shared, self()})
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}
@@ -73,7 +75,7 @@ defmodule HostingWeb.ConnCase do
     "#page-nav ul li:nth-child(#{n}) a"
   end
 
-  def app_domain() do
+  def app_domain do
     Application.get_env(:hosting, HostingWeb.Endpoint)[:url][:host]
   end
 end

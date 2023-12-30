@@ -10,7 +10,9 @@ defmodule HostingWeb.CoreComponents do
   """
   use Phoenix.Component
 
+  alias Phoenix.HTML
   alias Phoenix.LiveView.JS
+
   import HostingWeb.Gettext
 
   @doc """
@@ -310,7 +312,7 @@ defmodule HostingWeb.CoreComponents do
 
   def input(%{type: "checkbox", value: value} = assigns) do
     assigns =
-      assign_new(assigns, :checked, fn -> Phoenix.HTML.Form.normalize_value("checkbox", value) end)
+      assign_new(assigns, :checked, fn -> HTML.Form.normalize_value("checkbox", value) end)
 
     ~H"""
     <div class="pt-4" phx-feedback-for={@name}>

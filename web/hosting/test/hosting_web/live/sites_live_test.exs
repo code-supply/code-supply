@@ -4,6 +4,7 @@ defmodule HostingWeb.SitesLiveTest do
 
   alias Hosting.Accounts.User
   alias Hosting.Sites.Site
+  alias HostingWeb.Router
 
   import Ecto.Query, only: [from: 2]
 
@@ -40,7 +41,7 @@ defmodule HostingWeb.SitesLiveTest do
   end
 
   defp path(conn) do
-    HostingWeb.Router.Helpers.sites_path(conn, :index)
+    Router.Helpers.sites_path(conn, :index)
     |> control_plane_path()
   end
 end

@@ -2,11 +2,11 @@ defmodule Hosting.Assets do
   import Ecto.Query, warn: false
   import Hosting.Sites, only: [site_member?: 2]
 
-  alias Hosting.Repo
   alias Hosting.Accounts.User
   alias Hosting.Assets.Asset
+  alias Hosting.Repo
 
-  def default_query() do
+  def default_query do
     from(a in Asset, order_by: [desc: a.updated_at])
   end
 

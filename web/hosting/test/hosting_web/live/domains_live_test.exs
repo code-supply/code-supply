@@ -3,9 +3,9 @@ defmodule HostingWeb.DomainsLiveTest do
   import Phoenix.LiveViewTest
 
   alias Hosting.Accounts.User
-  alias Hosting.Sites.Site
-  alias Hosting.Sites
   alias Hosting.Domains
+  alias Hosting.Sites
+  alias Hosting.Sites.Site
 
   alias Hosting.MockK8s
 

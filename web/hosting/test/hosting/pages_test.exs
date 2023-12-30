@@ -3,7 +3,7 @@ defmodule Hosting.PagesTest do
 
   alias Hosting.Pages
   alias Hosting.Sites
-  alias Hosting.Sites.{Site, Page}
+  alias Hosting.Sites.{Page, Site}
 
   import Hosting.AccountsFixtures
   import Hosting.SitesFixtures
