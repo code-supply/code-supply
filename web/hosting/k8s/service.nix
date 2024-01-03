@@ -1,6 +1,5 @@
-{}:
 {
-  spec = {
+  kubernetes.resources.services.hosting.spec = {
     type = "ClusterIP";
     selector = {
       app = "hosting";

@@ -5,12 +5,29 @@
 }:
 (kubenix.evalModules.${system} (
   {
-    module = { kubenix, ... }:
+    module = { kubenix, config, ... }:
       let
         namespace = "hosting";
       in
       {
-        imports = [ kubenix.modules.k8s ];
+        imports = [
+          kubenix.modules.k8s
+          kubenix.modules.docker
+          ./clusterRole.nix
+          ./clusterRoleBinding.nix
+          ./certificate.nix
+          ./deployment.nix
+          ./service.nix
+          ./headless-service.nix
+        ];
+
+        docker = {
+          images.hosting = {
+            name = hostingDockerImage.imageName;
+            tag = hostingDockerImage.imageTag;
+          };
+        };
+
         kubernetes = {
           inherit namespace;
 
@@ -24,16 +41,6 @@
 
           resources = {
             namespaces.${namespace} = { };
-
-            clusterRoles.hosting = import ./clusterRole.nix { };
-            clusterRoleBindings.hosting-can-manage-sites = import ./clusterRoleBinding.nix { inherit namespace; };
-            certificates.hosting-www = import ./certificate.nix { };
-            deployments.hosting = import ./deployment.nix {
-              inherit lib;
-              image = with hostingDockerImage; "${imageName}:${imageTag}";
-            };
-            services.hosting = import ./service.nix { };
-            services.hosting-headless = import ./headless-service.nix { };
             serviceAccounts.hosting = { };
           };
         };

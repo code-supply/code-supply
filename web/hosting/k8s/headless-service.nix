@@ -1,6 +1,5 @@
-{}:
 {
-  spec = {
+  kubernetes.resources.services.hosting-headless.spec = {
     type = "ClusterIP";
     clusterIP = "None";
     selector = {
