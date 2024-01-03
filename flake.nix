@@ -25,7 +25,6 @@
             beamPackages
             elixir
             hostingDockerImage
-            hostingK8sManifests
             kubenix
             postgresql
             version
@@ -75,8 +74,17 @@
           tlsLbOperator
           tlsLbOperatorDockerImage
           ;
-        hostingK8sDiff = callPackage ./web/hosting/make-k8s-script.nix { verb = "diff"; };
-        hostingK8sApply = callPackage ./web/hosting/make-k8s-script.nix { verb = "apply"; };
+
+        hostingK8sDiff = callPackage ./nix/make-k8s-script.nix {
+          verb = "diff";
+          manifests = hostingK8sManifests;
+        };
+
+        hostingK8sApply = callPackage ./nix/make-k8s-script.nix {
+          verb = "apply";
+          manifests = hostingK8sManifests;
+        };
+
         default = hosting;
       };
       devShells.${system}.default = devShell;
