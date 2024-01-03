@@ -13,8 +13,8 @@
         imports = [
           kubenix.modules.k8s
           kubenix.modules.docker
-          ./clusterRole.nix
-          ./clusterRoleBinding.nix
+          ./cluster-role.nix
+          ./cluster-role-binding.nix
           ./certificate.nix
           ./deployment.nix
           ./service.nix
