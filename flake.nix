@@ -48,7 +48,7 @@
       };
       hostingDockerImage = callPackage ./web/hosting/docker.nix { inherit hosting; };
       hostingDockerPush = callPackage ./nix/docker-push.nix { image = hostingDockerImage; };
-      hostingK8sManifests = callPackage ./web/hosting/k8s.nix { };
+      hostingK8sManifests = callPackage ./web/hosting/k8s { };
 
       tlsLbOperator = callPackage ./operators/tls-lb-operator/default.nix {
         mixNixDeps = callPackages ./operators/tls-lb-operator/deps.nix { };
@@ -75,12 +75,12 @@
           tlsLbOperatorDockerImage
           ;
 
-        hostingK8sDiff = callPackage ./nix/make-k8s-script.nix {
+        k8sDiff = callPackage ./nix/make-k8s-script.nix {
           verb = "diff";
           manifests = hostingK8sManifests;
         };
 
-        hostingK8sApply = callPackage ./nix/make-k8s-script.nix {
+        k8sApply = callPackage ./nix/make-k8s-script.nix {
           verb = "apply";
           manifests = hostingK8sManifests;
         };

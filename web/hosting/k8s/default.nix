@@ -25,15 +25,15 @@
           resources = {
             namespaces.${namespace} = { };
 
-            clusterRoles.hosting = import ./k8s/clusterRole.nix { };
-            clusterRoleBindings.hosting-can-manage-sites = import ./k8s/clusterRoleBinding.nix { inherit namespace; };
-            certificates.hosting-www = import ./k8s/certificate.nix { };
-            deployments.hosting = import ./k8s/deployment.nix {
+            clusterRoles.hosting = import ./clusterRole.nix { };
+            clusterRoleBindings.hosting-can-manage-sites = import ./clusterRoleBinding.nix { inherit namespace; };
+            certificates.hosting-www = import ./certificate.nix { };
+            deployments.hosting = import ./deployment.nix {
               inherit lib;
               image = with hostingDockerImage; "${imageName}:${imageTag}";
             };
-            services.hosting = import ./k8s/service.nix { };
-            services.hosting-headless = import ./k8s/headless-service.nix { };
+            services.hosting = import ./service.nix { };
+            services.hosting-headless = import ./headless-service.nix { };
             serviceAccounts.hosting = { };
           };
         };
