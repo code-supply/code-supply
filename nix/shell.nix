@@ -32,6 +32,7 @@ mkShell {
       opentofu
       shellcheck
       terraform-lsp
+      zola
     ] ++ rustPkgs)
     ++ [ elixir erlang postgresql ]
     ++ extraPackages;
