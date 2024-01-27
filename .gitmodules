@@ -4,3 +4,6 @@
 [submodule "web/andrewbruce-net/vendor/mrk"]
 	path = web/andrewbruce-net/vendor/mrk
 	url = https://github.com/camelpunch/mrk
+[submodule "web/andrewbruce/themes/lightspeed"]
+	path = web/andrewbruce/themes/lightspeed
+	url = https://github.com/carpetscheme/lightspeed.git
