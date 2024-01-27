@@ -9,7 +9,7 @@ dockerTools.buildImage
   name = "codesupplydocker/hosting";
   tag = version;
   config = {
-    Cmd = [ "server" ];
+    Cmd = [ "sh" "-c" "migrate && server" ];
     Env = [ "LC_ALL=C.UTF-8" ];
   };
   copyToRoot = buildEnv {
