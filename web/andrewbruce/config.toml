@@ -32,7 +32,3 @@ url = "https://github.com/camelpunch"
 [[extra.footer_links]]
 name = "LinkedIn"
 url = "https://www.linkedin.com/in/fartypants"
-
-[[extra.footer_links]]
-name = "Medium"
-url = "https://medium.com/@andrewofbruce"
