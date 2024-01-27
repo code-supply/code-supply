@@ -43,14 +43,14 @@
       callPackage = pkgs.lib.callPackageWith (pkgs // common);
       callPackages = pkgs.lib.callPackagesWith (pkgs // common);
 
-      hosting = callPackage ./web/hosting/default.nix {
+      hosting = callPackage ./web/hosting {
         mixNixDeps = callPackages ./web/hosting/deps.nix { };
       };
       hostingDockerImage = callPackage ./web/hosting/docker.nix { inherit hosting; };
       hostingDockerPush = callPackage ./nix/docker-push.nix { image = hostingDockerImage; };
       hostingK8sManifests = callPackage ./web/hosting/k8s { };
 
-      tlsLbOperator = callPackage ./operators/tls-lb-operator/default.nix {
+      tlsLbOperator = callPackage ./operators/tls-lb-operator {
         mixNixDeps = callPackages ./operators/tls-lb-operator/deps.nix { };
       };
       tlsLbOperatorDockerImage = callPackage ./operators/tls-lb-operator/docker.nix { inherit tlsLbOperator; };
