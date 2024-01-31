@@ -55,6 +55,8 @@
       };
       tlsLbOperatorDockerImage = callPackage ./operators/tls-lb-operator/docker.nix { inherit tlsLbOperator; };
 
+      andrewbruce = callPackage ./web/andrewbruce { };
+
       devShell = callPackage ./nix/shell.nix {
         extraPackages = [
           (callPackage ./nix/dnsmasq-start.nix { })
@@ -67,6 +69,8 @@
       formatter.${system} = pkgs.nixpkgs-fmt;
       packages.${system} = {
         inherit
+          andrewbruce
+
           hostingDockerImage
           hostingK8sManifests
           hostingDockerPush
