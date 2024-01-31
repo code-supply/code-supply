@@ -5,7 +5,7 @@ defmodule HostingWeb.UploaderLive do
   alias Hosting.Sites
   alias Hosting.Uploader
 
-  @accepted_types ~w(.css .gif .htm .html .jpeg .jpg .png .svg)
+  @accepted_types ~w(.css .gif .htm .html .jpeg .jpg .png .svg .txt .xml)
 
   @impl Phoenix.LiveView
   def mount(_params, %{"user_token" => token}, socket) do
