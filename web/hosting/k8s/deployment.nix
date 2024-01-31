@@ -71,20 +71,19 @@ in
                 (tcpPort "tcp-epmd" 4369)
               ];
 
-              env =
-                (mapAttrsToNameValue
-                  {
-                    BUCKET_NAME = "hosting-uploads";
-                    ELIXIR_ERL_OPTIONS = "-kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556";
-                    RELEASE_DISTRIBUTION = "name";
-                    RELEASE_NODE = "${name}@$(POD_IP)";
-                  })
-                ++ [
-                  {
-                    name = "POD_IP";
-                    valueFrom.fieldRef.fieldPath = "status.podIP";
-                  }
-                ];
+              env = [
+                {
+                  name = "POD_IP";
+                  valueFrom.fieldRef.fieldPath = "status.podIP";
+                }
+              ] ++
+              (mapAttrsToNameValue
+                {
+                  BUCKET_NAME = "hosting-uploads";
+                  ELIXIR_ERL_OPTIONS = "-kernel inet_dist_listen_min 5555 inet_dist_listen_max 5556";
+                  RELEASE_DISTRIBUTION = "name";
+                  RELEASE_NODE = "${name}@$(POD_IP)";
+                });
             };
         };
       };
