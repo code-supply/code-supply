@@ -49,12 +49,12 @@ let
 
     certifi = buildRebar3 rec {
       name = "certifi";
-      version = "2.9.0";
+      version = "2.12.0";
 
       src = fetchHex {
         pkg = "certifi";
         version = "${version}";
-        sha256 = "266da46bdb06d6c6d35fde799bcb28d36d985d424ad7c08b5bb48f5b5cdd4641";
+        sha256 = "ee68d85df22e554040cdb4be100f33873ac6051387baf6a8f6ce82272340ff1c";
       };
 
       beamDeps = [];
@@ -270,12 +270,12 @@ let
 
     finch = buildMix rec {
       name = "finch";
-      version = "0.16.0";
+      version = "0.17.0";
 
       src = fetchHex {
         pkg = "finch";
         version = "${version}";
-        sha256 = "f660174c4d519e5fec629016054d60edd822cdfe2b7270836739ac2f97735ec5";
+        sha256 = "8d014a661bb6a437263d4b5abf0bcbd3cf0deb26b1e8596f2a271d22e48934c7";
       };
 
       beamDeps = [ castore mime mint nimble_options nimble_pool telemetry ];
@@ -361,12 +361,12 @@ let
 
     hackney = buildRebar3 rec {
       name = "hackney";
-      version = "1.18.1";
+      version = "1.20.1";
 
       src = fetchHex {
         pkg = "hackney";
         version = "${version}";
-        sha256 = "a4ecdaff44297e9b5894ae499e9a070ea1888c84afdd1fd9b7b2bc384950128e";
+        sha256 = "fe9094e5f1a2a2c0a7d10918fee36bfec0ec2a979994cff8cfe8058cd9af38e3";
       };
 
       beamDeps = [ certifi idna metrics mimerl parse_trans ssl_verify_fun unicode_util_compat ];
@@ -543,12 +543,12 @@ let
 
     mint = buildMix rec {
       name = "mint";
-      version = "1.5.1";
+      version = "1.5.2";
 
       src = fetchHex {
         pkg = "mint";
         version = "${version}";
-        sha256 = "4a63e1e76a7c3956abd2c72f370a0d0aecddc3976dea5c27eccbecfa5e7d5b1e";
+        sha256 = "d77d9e9ce4eb35941907f1d3df38d8f750c357865353e21d335bdcdf6d892a02";
       };
 
       beamDeps = [ castore hpax ];
@@ -582,12 +582,12 @@ let
 
     nimble_options = buildMix rec {
       name = "nimble_options";
-      version = "1.0.2";
+      version = "1.1.0";
 
       src = fetchHex {
         pkg = "nimble_options";
         version = "${version}";
-        sha256 = "fd12a8db2021036ce12a309f26f564ec367373265b53e25403f0ee697380f1b8";
+        sha256 = "8bbbb3941af3ca9acc7835f5655ea062111c9c27bcac53e004460dfd19008a99";
       };
 
       beamDeps = [];
@@ -621,12 +621,12 @@ let
 
     parse_trans = buildRebar3 rec {
       name = "parse_trans";
-      version = "3.3.1";
+      version = "3.4.1";
 
       src = fetchHex {
         pkg = "parse_trans";
         version = "${version}";
-        sha256 = "07cd9577885f56362d414e8c4c4e6bdf10d43a8767abb92d24cbe8b24c54888b";
+        sha256 = "620a406ce75dada827b82e453c19cf06776be266f5a67cff34e1ef2cbb60e49a";
       };
 
       beamDeps = [];
@@ -751,12 +751,12 @@ let
 
     plug = buildMix rec {
       name = "plug";
-      version = "1.14.2";
+      version = "1.15.3";
 
       src = fetchHex {
         pkg = "plug";
         version = "${version}";
-        sha256 = "842fc50187e13cf4ac3b253d47d9474ed6c296a8732752835ce4a86acdf68d13";
+        sha256 = "cc4365a3c010a56af402e0809208873d113e9c38c401cabd88027ef4f5c01fd2";
       };
 
       beamDeps = [ mime plug_crypto telemetry ];
@@ -764,12 +764,12 @@ let
 
     plug_cowboy = buildMix rec {
       name = "plug_cowboy";
-      version = "2.6.1";
+      version = "2.7.0";
 
       src = fetchHex {
         pkg = "plug_cowboy";
         version = "${version}";
-        sha256 = "de36e1a21f451a18b790f37765db198075c25875c64834bcc82d90b309eb6613";
+        sha256 = "d85444fb8aa1f2fc62eabe83bbe387d81510d773886774ebdcb429b3da3c1a4a";
       };
 
       beamDeps = [ cowboy cowboy_telemetry plug ];
@@ -855,15 +855,15 @@ let
 
     swoosh = buildMix rec {
       name = "swoosh";
-      version = "1.11.4";
+      version = "1.15.1";
 
       src = fetchHex {
         pkg = "swoosh";
         version = "${version}";
-        sha256 = "d3390914022a456ae1604bfcb3431bd12509b2afe8c70296bae6c9dca4903d0f";
+        sha256 = "aa4e794bd39529f3d7e9cfd406ff1bbc422b9120e2a7ad38dfdf9b469d0c91f6";
       };
 
-      beamDeps = [ cowboy finch hackney jason mime plug_cowboy telemetry ];
+      beamDeps = [ cowboy finch hackney jason mime plug plug_cowboy telemetry ];
     };
 
     tailwind = buildMix rec {

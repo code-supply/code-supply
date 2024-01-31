@@ -58,7 +58,7 @@ defmodule Hosting.MixProject do
       {:hackney, "~> 1.17"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
-      {:swoosh, "~> 1.3"},
+      {:swoosh, "~> 1.15"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:k8s, "~> 1.1"},
       {:hammox, "~> 0.6", only: :test},
