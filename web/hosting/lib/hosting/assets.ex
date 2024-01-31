@@ -11,13 +11,15 @@ defmodule Hosting.Assets do
   end
 
   def create_uploaded(kwargs) do
+    expected_key = "asset-#{kwargs[:key]}"
+
     case Ecto.Multi.new()
          |> create_uploaded_multi(kwargs)
          |> Hosting.Repo.transaction() do
-      {:ok, %{asset: asset}} ->
+      {:ok, %{^expected_key => asset}} ->
         {:ok, asset}
 
-      {:error, :asset, changeset, _others} ->
+      {:error, ^expected_key, changeset, _others} ->
         {:error, changeset}
     end
   end
@@ -36,9 +38,9 @@ defmodule Hosting.Assets do
       )
 
     if site_member?(user, site_id) do
-      Ecto.Multi.insert(multi, :asset, changeset)
+      Ecto.Multi.insert(multi, "asset-#{key}", changeset)
     else
-      Ecto.Multi.error(multi, :asset, changeset)
+      Ecto.Multi.error(multi, "asset-#{key}", changeset)
     end
   end
 

@@ -35,6 +35,34 @@ defmodule Hosting.AssetsTest do
                "https://hosting-images.code.supply/nosignature/fit/400/100/ce/0/plain/https://example.com/some-image.jpeg"
     end
 
+    test "can create multiple assets in a multi" do
+      %User{sites: [site | _]} = user = user_fixture()
+
+      multi =
+        Ecto.Multi.new()
+        |> Assets.create_uploaded_multi(
+          user: user,
+          bucket_name: "some-bucket",
+          key: "my-key",
+          params: %{
+            "site_id" => site.id,
+            "name" => "My asset"
+          }
+        )
+        |> Assets.create_uploaded_multi(
+          user: user,
+          bucket_name: "some-bucket",
+          key: "my-other-key",
+          params: %{
+            "site_id" => site.id,
+            "name" => "My other asset"
+          }
+        )
+
+      assert Enum.map(multi.operations, fn {name, _cs} -> name end) ==
+               ~w(asset-my-other-key asset-my-key)
+    end
+
     test "creates uploaded asset with source URL when name and site are given" do
       %User{sites: [site | _]} = user = user_fixture()
 
