@@ -118,11 +118,11 @@ defmodule Hosting.Pages do
     false
   end
 
-  defp add_html_suffix("/") do
-    "/index.html"
-  end
-
   defp add_html_suffix(path) do
-    path <> ".html"
+    if String.ends_with?(path, "/") do
+      "#{path}index.html"
+    else
+      path <> ".html"
+    end
   end
 end
