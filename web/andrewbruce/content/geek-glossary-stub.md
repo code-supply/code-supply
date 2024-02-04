@@ -1,6 +1,6 @@
 +++
 title = "Geek glossary: stub"
-date = 2013-06-06
+date = 2013-07-06
 +++
 
 **Originally published on pivotallabs.com, available with comments on
