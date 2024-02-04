@@ -6,5 +6,5 @@ target
 /.postgres
 helm/*/secrets.yaml
 .direnv
-/result
+result
 .elixir-tools
