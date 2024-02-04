@@ -17,7 +17,7 @@ defmodule Hosting.Pages do
   end
 
   defp process(%Page{raw: raw}, "", current_datetime) do
-    {:ok, doc} = Floki.parse_document(raw)
+    {:ok, doc} = Floki.parse_document(raw, html_parser: Floki.HTMLParser.Html5ever)
 
     doc
     |> remove_scripts()

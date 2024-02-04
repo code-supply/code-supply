@@ -29,6 +29,29 @@ defmodule HostingWeb.PageControllerTest do
     assert response =~ "<title>my site"
   end
 
+  test "preserves whitespace inside <pre> tabs" do
+    user = user_fixture()
+    site = site_fixture(user, %{name: "my site"})
+
+    [domain] = site.domains
+
+    [page] = site.pages
+
+    {:ok, _page} =
+      Sites.update_page(
+        page,
+        %{"raw" => ~s(<pre><span>   </span></pre>)},
+        user
+      )
+
+    conn = build_conn()
+    conn = get(conn, "http://#{domain.name}" <> Routes.page_path(conn, :show, []))
+
+    response = html_response(conn, 200)
+
+    assert response =~ "<pre><span>   </span></pre>"
+  end
+
   test "404s for arbitrary missing stuff at root" do
     assert_error_sent(404, fn ->
       get(build_conn(), "http://localhost:4000/not-there.png")

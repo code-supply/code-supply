@@ -11,6 +11,14 @@ defmodule Hosting.PagesTest do
   @valid_page %Page{title: "hi", path: "/"}
   @irrelevant_datetime ~U[2001-01-01 00:00:00Z]
 
+  test "preserves whitespace inside <pre> tabs" do
+    page = %Page{
+      raw: ~s(<pre><span>   </span></pre>)
+    }
+
+    assert Pages.render(page, %Site{}, @irrelevant_datetime) =~ "<pre><span>   </span></pre>"
+  end
+
   describe "dynamic" do
     test "replacement of year" do
       page = %Page{
@@ -40,7 +48,17 @@ defmodule Hosting.PagesTest do
       }
 
       assert Pages.render(page, %Site{stylesheet: "* {}"}, @irrelevant_datetime) ==
-               ~s(<html><head><link rel="stylesheet" href="/stylesheets/app.css"/><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/></head><h1>Hi there!</h1></html>)
+               """
+               <html><head><link rel="stylesheet" href="/stylesheets/app.css"/>
+
+               <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
+               </head>
+
+               <body><h1>Hi there!</h1>
+
+               </body></html>
+               """
+               |> String.trim_trailing("\n")
     end
   end
 
@@ -53,7 +71,7 @@ defmodule Hosting.PagesTest do
       }
 
       assert Pages.render(page, %Site{stylesheet: "* {}"}, @irrelevant_datetime) ==
-               ~s(<html><head><link rel="stylesheet" href="/stylesheets/app.css"/></head><h1>Hi there!</h1></html>)
+               ~s(<html><head><link rel="stylesheet" href="/stylesheets/app.css"/></head><body><h1>Hi there!</h1>\n</body></html>)
     end
   end
 
@@ -66,7 +84,7 @@ defmodule Hosting.PagesTest do
       }
 
       assert Pages.render(page, %Site{stylesheet: ""}, @irrelevant_datetime) ==
-               ~s(<html><h1>Hi there!</h1></html>)
+               ~s(<html><head></head><body><h1>Hi there!</h1>\n</body></html>)
     end
   end
 
