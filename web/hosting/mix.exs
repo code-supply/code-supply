@@ -63,7 +63,8 @@ defmodule Hosting.MixProject do
       {:k8s, "~> 1.1"},
       {:hammox, "~> 0.6", only: :test},
       {:floki, "~> 0.35"},
-      {:html5ever, "~> 0.15"},
+      {:fast_html, "~> 2.0"},
+      {:nimble_pool, "~> 0.1"},
       {:size, "~> 0.1.0"},
       {:google_api_storage, "~> 0.34.0"}
     ]

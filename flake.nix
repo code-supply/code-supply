@@ -44,7 +44,13 @@
       callPackages = pkgs.lib.callPackagesWith (pkgs // common);
 
       hosting = callPackage ./web/hosting {
-        mixNixDeps = callPackages ./web/hosting/deps.nix { };
+        mixNixDeps = callPackages ./web/hosting/deps.nix {
+          overrides = _: prev: {
+            fast_html = prev.fast_html.override {
+              nativeBuildInputs = [ pkgs.cmake ];
+            };
+          };
+        };
       };
       hostingDockerImage = callPackage ./web/hosting/docker.nix { inherit hosting; };
       hostingDockerPush = callPackage ./nix/docker-push.nix { image = hostingDockerImage; };

@@ -1,8 +1,11 @@
 { pkgs
 , mkShell
+
+, cmake
 , elixir
 , erlang
 , postgresql
+
 , extraPackages
 }:
 mkShell {
@@ -18,6 +21,7 @@ mkShell {
       ];
     in
     [
+      cmake
       elixir_ls
       google-cloud-sdk
       inotify-tools

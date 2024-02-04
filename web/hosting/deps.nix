@@ -255,6 +255,19 @@ let
       beamDeps = [];
     };
 
+    fast_html = buildMix rec {
+      name = "fast_html";
+      version = "2.3.0";
+
+      src = fetchHex {
+        pkg = "fast_html";
+        version = "${version}";
+        sha256 = "f18e3c7668f82d3ae0b15f48d48feeb257e28aa5ab1b0dbf781c7312e5da029d";
+      };
+
+      beamDeps = [ elixir_make nimble_pool ];
+    };
+
     file_system = buildMix rec {
       name = "file_system";
       version = "0.2.10";
@@ -406,32 +419,6 @@ let
         pkg = "hpax";
         version = "${version}";
         sha256 = "2c87843d5a23f5f16748ebe77969880e29809580efdaccd615cd3bed628a8c13";
-      };
-
-      beamDeps = [];
-    };
-
-    html5ever = buildMix rec {
-      name = "html5ever";
-      version = "0.15.0";
-
-      src = fetchHex {
-        pkg = "html5ever";
-        version = "${version}";
-        sha256 = "2aae2073c45c0cd61f24a8ec9f2105824c445cb1affb15fda8df5beaaaac74ae";
-      };
-
-      beamDeps = [ rustler_precompiled ];
-    };
-
-    html_entities = buildMix rec {
-      name = "html_entities";
-      version = "0.5.2";
-
-      src = fetchHex {
-        pkg = "html_entities";
-        version = "${version}";
-        sha256 = "c53ba390403485615623b9531e97696f076ed415e8d8058b1dbaa28181f4fdcc";
       };
 
       beamDeps = [];
@@ -608,12 +595,12 @@ let
 
     nimble_pool = buildMix rec {
       name = "nimble_pool";
-      version = "1.0.0";
+      version = "0.2.6";
 
       src = fetchHex {
         pkg = "nimble_pool";
         version = "${version}";
-        sha256 = "80be3b882d2d351882256087078e1b1952a28bf98d0a287be87e4a24a710b67a";
+        sha256 = "1c715055095d3f2705c4e236c18b618420a35490da94149ff8b580a2144f653f";
       };
 
       beamDeps = [];
@@ -838,19 +825,6 @@ let
       };
 
       beamDeps = [];
-    };
-
-    rustler_precompiled = buildMix rec {
-      name = "rustler_precompiled";
-      version = "0.6.3";
-
-      src = fetchHex {
-        pkg = "rustler_precompiled";
-        version = "${version}";
-        sha256 = "e18ecca3669a7454b3a2be75ae6c3ef01d550bc9a8cf5fbddcfff843b881d7c6";
-      };
-
-      beamDeps = [ castore ];
     };
 
     size = buildMix rec {
