@@ -283,15 +283,15 @@ let
 
     floki = buildMix rec {
       name = "floki";
-      version = "0.33.1";
+      version = "0.35.3";
 
       src = fetchHex {
         pkg = "floki";
         version = "${version}";
-        sha256 = "461035fd125f13fdf30f243c85a0b1e50afbec876cbf1ceefe6fddd2e6d712c6";
+        sha256 = "6d9f07f3fc76599f3b66c39f4a81ac62c8f4d9631140268db92aacad5d0e56d4";
       };
 
-      beamDeps = [ html_entities ];
+      beamDeps = [];
     };
 
     gcs_signed_url = buildMix rec {
@@ -409,6 +409,19 @@ let
       };
 
       beamDeps = [];
+    };
+
+    html5ever = buildMix rec {
+      name = "html5ever";
+      version = "0.15.0";
+
+      src = fetchHex {
+        pkg = "html5ever";
+        version = "${version}";
+        sha256 = "2aae2073c45c0cd61f24a8ec9f2105824c445cb1affb15fda8df5beaaaac74ae";
+      };
+
+      beamDeps = [ rustler_precompiled ];
     };
 
     html_entities = buildMix rec {
@@ -825,6 +838,19 @@ let
       };
 
       beamDeps = [];
+    };
+
+    rustler_precompiled = buildMix rec {
+      name = "rustler_precompiled";
+      version = "0.6.3";
+
+      src = fetchHex {
+        pkg = "rustler_precompiled";
+        version = "${version}";
+        sha256 = "e18ecca3669a7454b3a2be75ae6c3ef01d550bc9a8cf5fbddcfff843b881d7c6";
+      };
+
+      beamDeps = [ castore ];
     };
 
     size = buildMix rec {
