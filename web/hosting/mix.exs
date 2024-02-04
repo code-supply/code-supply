@@ -62,7 +62,7 @@ defmodule Hosting.MixProject do
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:k8s, "~> 1.1"},
       {:hammox, "~> 0.6", only: :test},
-      {:floki, "~> 0.33.0"},
+      {:floki, "~> 0.35"},
       {:html5ever, "~> 0.15"},
       {:size, "~> 0.1.0"},
       {:google_api_storage, "~> 0.34.0"}
