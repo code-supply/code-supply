@@ -1,6 +1,0 @@
-[submodule "web/andrewbruce-net/vendor/idris-web-server"]
-	path = web/andrewbruce-net/vendor/idris-web-server
-	url = https://github.com/camelpunch/idris-web-server
-[submodule "web/andrewbruce-net/vendor/mrk"]
-	path = web/andrewbruce-net/vendor/mrk
-	url = https://github.com/camelpunch/mrk
