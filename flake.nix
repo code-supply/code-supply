@@ -62,6 +62,7 @@
       tlsLbOperatorDockerImage = callPackage ./operators/tls-lb-operator/docker.nix { inherit tlsLbOperator; };
 
       andrewbruce = callPackage ./web/andrewbruce { };
+      codesupply = callPackage ./web/code-supply { };
 
       devShell = callPackage ./nix/shell.nix {
         extraPackages = [
@@ -76,6 +77,7 @@
       packages.${system} = {
         inherit
           andrewbruce
+          codesupply
 
           hostingDockerImage
           hostingK8sManifests
