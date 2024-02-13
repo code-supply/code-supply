@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+verb=${1:-switch}
+
+nixos-rebuild "$verb" \
+  --target-host unhinged \
+  --flake .#unhinged \
+  --use-remote-sudo

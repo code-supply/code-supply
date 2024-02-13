@@ -1,9 +1,23 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/master";
+    nixpkgs = {
+      url = "github:NixOS/nixpkgs/nixos-unstable";
+    };
+    nix = {
+      url = "nix/2.20.1";
+    };
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    git-mob = {
+      url = "github:code-supply/rusty-git-mob";
+      # url = "/home/andrew/workspace/rusty-git-mob";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs }:
+  outputs = { self, nix, nixpkgs, home-manager, git-mob }:
     let
       system = "x86_64-linux";
       version =
@@ -12,6 +26,14 @@
         else "dirty";
 
       pkgs = nixpkgs.legacyPackages.${system};
+
+      callBox = name: import ./boxes/${name} {
+        inherit nixpkgs system;
+        nix = nix.packages.${system}.nix;
+        websites = {
+          inherit andrewbruce codesupply;
+        };
+      };
 
       common =
         let
@@ -50,5 +72,19 @@
       };
 
       devShells.${system}.default = devShell;
+
+      homeConfigurations.andrew = import ./home-manager {
+        inherit home-manager pkgs git-mob;
+      };
+
+      nixosModules = {
+        kitty = import ./home-manager/kitty.nix;
+      };
+
+      nixosConfigurations = {
+        fatty = callBox "fatty";
+        p14s = callBox "p14s";
+        unhinged = callBox "unhinged";
+      };
     };
 }
