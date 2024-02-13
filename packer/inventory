@@ -1,2 +1,0 @@
-[multi-vhost]
-35.211.191.104 ansible_user=andrew ansible_ssh_private_key_file=~/.ssh/google_compute_engine ansible_ssh_pipelining=true

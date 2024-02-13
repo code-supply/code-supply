@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-cwd="$(cd "$(dirname "$0")" && pwd)"
-cat | jq --unbuffered --raw-output --from-file "$cwd/log-parse-operator.jq"

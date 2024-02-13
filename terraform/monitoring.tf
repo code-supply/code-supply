@@ -1,11 +1,6 @@
 variable "sites" {
   type = map(any)
   default = {
-    hosting = {
-      display_name = "Hosting"
-      host         = "hosting.code.supply"
-      path         = "/"
-    },
     code-supply = {
       display_name = "Code Supply"
       host         = "code.supply"

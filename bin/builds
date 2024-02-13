@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-watch gcloud builds list --ongoing

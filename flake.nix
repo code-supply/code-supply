@@ -1,10 +1,9 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/master";
-    kubenix.url = "github:hall/kubenix";
   };
 
-  outputs = { self, nixpkgs, kubenix }:
+  outputs = { self, nixpkgs }:
     let
       system = "x86_64-linux";
       version =
@@ -16,50 +15,16 @@
 
       common =
         let
-          beamPackages = with pkgs.beam_minimal; packagesWith interpreters.erlangR26;
-          elixir = beamPackages.elixir_1_16;
           postgresql = pkgs.postgresql_15;
         in
         {
           inherit
-            beamPackages
-            elixir
-            hostingDockerImage
-            kubenix
             postgresql
             version
             ;
-
-          erlang = beamPackages.erlang;
-          hex = beamPackages.hex.override { inherit elixir; };
-
-          mixRelease =
-            beamPackages.mixRelease.override {
-              inherit elixir;
-              fetchMixDeps = beamPackages.fetchMixDeps.override { inherit elixir; };
-            };
         };
 
       callPackage = pkgs.lib.callPackageWith (pkgs // common);
-      callPackages = pkgs.lib.callPackagesWith (pkgs // common);
-
-      hosting = callPackage ./web/hosting {
-        mixNixDeps = callPackages ./web/hosting/deps.nix {
-          overrides = _: prev: {
-            fast_html = prev.fast_html.override {
-              nativeBuildInputs = [ pkgs.cmake ];
-            };
-          };
-        };
-      };
-      hostingDockerImage = callPackage ./web/hosting/docker.nix { inherit hosting; };
-      hostingDockerPush = callPackage ./nix/docker-push.nix { image = hostingDockerImage; };
-      hostingK8sManifests = callPackage ./web/hosting/k8s { };
-
-      tlsLbOperator = callPackage ./operators/tls-lb-operator {
-        mixNixDeps = callPackages ./operators/tls-lb-operator/deps.nix { };
-      };
-      tlsLbOperatorDockerImage = callPackage ./operators/tls-lb-operator/docker.nix { inherit tlsLbOperator; };
 
       andrewbruce = callPackage ./web/andrewbruce { };
       codesupply = callPackage ./web/code-supply { };
@@ -74,31 +39,16 @@
     in
     {
       formatter.${system} = pkgs.nixpkgs-fmt;
+
       packages.${system} = {
         inherit
           andrewbruce
           codesupply
-
-          hostingDockerImage
-          hostingK8sManifests
-          hostingDockerPush
-
-          tlsLbOperator
-          tlsLbOperatorDockerImage
           ;
 
-        k8sDiff = callPackage ./nix/make-k8s-script.nix {
-          verb = "diff";
-          manifests = hostingK8sManifests;
-        };
-
-        k8sApply = callPackage ./nix/make-k8s-script.nix {
-          verb = "apply";
-          manifests = hostingK8sManifests;
-        };
-
-        default = hosting;
+        default = andrewbruce;
       };
+
       devShells.${system}.default = devShell;
     };
 }

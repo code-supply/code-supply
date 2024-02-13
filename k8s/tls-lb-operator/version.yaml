@@ -1,9 +1,0 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: tls-lb-operator
-spec:
-  template:
-    metadata:
-      labels:
-        version: "0df234a"
