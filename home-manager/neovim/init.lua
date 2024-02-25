@@ -39,6 +39,14 @@ vim.api.nvim_set_keymap('n', '<leader>fh', '<cmd>Telescope help_tags<cr>', { nor
 vim.api.nvim_set_keymap('n', '<leader>fo', '<cmd>Telescope oldfiles<cr>', { noremap = true })
 
 -- vim-test
+vim.g["test#strategy"] = "kitty"
+vim.g["test#custom_transformations"] = {
+  direnv = function(cmd)
+    return 'direnv exec "$(git rev-parse --show-toplevel)" ' .. cmd
+  end
+}
+vim.g["test#transformation"] = "direnv"
+
 vim.api.nvim_set_keymap('n', '<F9>', ':w<cr>:TestNearest<cr>', { noremap = true })
 vim.api.nvim_set_keymap('n', '<F12>', ':w<cr>:TestFile<cr>', { noremap = true })
 vim.api.nvim_set_keymap('n', '<F11>', ':w<cr>:TestNearest<cr>', { noremap = true })
