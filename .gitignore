@@ -1,4 +1,4 @@
-terraform/.terraform
+tofu/.terraform
 playbook.retry
 TAGS
 service-account.json
