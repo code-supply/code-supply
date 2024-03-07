@@ -1,11 +1,8 @@
 { pkgs
 , mkShell
-
 , cmake
-, postgresql
-
-, extraPackages
 }:
+
 mkShell {
   packages =
     (with pkgs; let
@@ -25,13 +22,8 @@ mkShell {
       jq
       nixpkgs-fmt
       opentofu
-      postgresql
       shellcheck
       terraform-lsp
       zola
-    ] ++ rustPkgs)
-    ++ extraPackages;
-  shellHook = ''
-    export PGHOST="$(git rev-parse --show-toplevel)/.postgres"
-  '';
+    ] ++ rustPkgs);
 }

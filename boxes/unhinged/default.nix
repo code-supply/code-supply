@@ -12,7 +12,6 @@ nixpkgs.lib.nixosSystem {
     ./hardware-configuration.nix
     ./network.nix
     ./nix.nix
-    ./postgresql.nix
     ./tweaks.nix
   ];
 
