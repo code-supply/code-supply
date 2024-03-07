@@ -1,16 +1,4 @@
-{ pkgs, ... }:
-
 {
-  imports =
-    [
-      ../common/gui.nix
-      ../common/locale.nix
-      ../common/nix.nix
-      ../common/user.nix
-      ./hardware-configuration.nix
-      ./nvidia.nix
-    ];
-
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
