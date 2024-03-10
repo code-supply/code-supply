@@ -4,10 +4,10 @@ nixpkgs.lib.nixosSystem {
   inherit system;
 
   modules = [
-    ./configuration.nix
+    ./caddy.nix
     ../common/locale.nix
     ../common/user.nix
-    ./caddy.nix
+    ./configuration.nix
     ./dnsmasq.nix
     ./hardware-configuration.nix
     ./network.nix
