@@ -8,7 +8,6 @@ nixpkgs.lib.nixosSystem {
     ../common/locale.nix
     ../common/user.nix
     ./configuration.nix
-    ./dnsmasq.nix
     ./hardware-configuration.nix
     ./network.nix
     ./nix.nix
