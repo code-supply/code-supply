@@ -1,4 +1,4 @@
-{ websites, ... }:
+{ websites, config, ... }:
 
 {
   services.caddy = {
@@ -40,6 +40,17 @@
 
         extraConfig = ''
           redir https://code.supply{uri} permanent
+        '';
+      };
+
+      plausible = with builtins; {
+        hostName = replaceStrings
+          [ "https://" ] [ "" ]
+          config.services.plausible.server.baseUrl;
+
+        extraConfig = ''
+          encode gzip
+          reverse_proxy :${toString config.services.plausible.server.port}
         '';
       };
     };

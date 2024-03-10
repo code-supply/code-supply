@@ -8,7 +8,7 @@
     };
 
     server = {
-      baseUrl = "https://plausible.code.supply/";
+      baseUrl = "https://plausible.code.supply";
       secretKeybaseFile = "/plausible/secret";
     };
   };
