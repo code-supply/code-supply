@@ -6,7 +6,6 @@
     alejandra
     nil
     nixpkgs-fmt
-    rnix-lsp
     sumneko-lua-language-server
   ];
 }

@@ -7,7 +7,6 @@
     ];
 
     packages = with pkgs; [
-      awscli2
       binutils
       cntr
       dig
@@ -25,7 +24,6 @@
       nmap
       pass
       pciutils
-      pinentry-gnome
       ripgrep
       sysfsutils
       unzip
@@ -92,6 +90,6 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;
-    pinentryFlavor = "gnome3";
+    pinentryPackage = pkgs.pinentry-gnome3;
   };
 }
