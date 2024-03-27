@@ -11,6 +11,7 @@
           dontFixup = true;
         })
         gruvbox
+        luasnip
         idris2-vim
         null-ls-nvim
         nvim-cmp

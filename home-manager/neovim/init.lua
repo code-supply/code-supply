@@ -1,7 +1,28 @@
 local lsp = require 'lspconfig'
+local elixir = require 'elixir'
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local cmp = require 'cmp'
-local elixir = require 'elixir'
+local ls = require 'luasnip'
+
+-- completion
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      ls.lsp_expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'buffer' }
+  })
+})
 
 require('Comment').setup()
 
@@ -29,6 +50,10 @@ vim.api.nvim_set_keymap('n', '<leader>q', ':q<cr>', { noremap = true })
 
 -- clear highlighting with space
 vim.api.nvim_set_keymap('n', '<space>', ':nohlsearch<cr>', { noremap = true })
+
+-- luasnip (used for completion)
+vim.keymap.set({ "s" }, "<tab>", function() ls.jump(1) end, { silent = true })
+vim.keymap.set({ "s" }, "<s-tab>", function() ls.jump(-1) end, { silent = true })
 
 -- telescope
 vim.api.nvim_set_keymap('n', '<leader>ff', '<cmd>Telescope find_files<cr>', { noremap = true })
@@ -64,29 +89,24 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   end,
 })
 
--- completion
-cmp.setup({
-  mapping = {
-    ['<CR>'] = cmp.mapping.confirm({ select = true }),
-  },
-  sources = cmp.config.sources({
-    { name = 'nvim_lsp' },
-    { name = 'buffer' }
-  })
-})
-
 require 'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,
+  },
+  incremental_selection = {
+    enable = true,
+    keymaps = {
+      init_selection = '<CR>',
+      scope_incremental = '<CR>',
+      node_incremental = '<TAB>',
+      node_decremental = '<S-TAB>',
+    },
   },
 }
 
 local on_attach = function(client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
   local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
-
-  -- Enable completion triggered by <c-x><c-o>
-  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
   -- Mappings.
   local opts = { noremap = true, silent = true }
