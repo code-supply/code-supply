@@ -8,6 +8,7 @@
         cmp-nvim-lsp
         comment-nvim
         elixir-tools-nvim
+        fidget-nvim
         gruvbox
         luasnip
         idris2-vim
