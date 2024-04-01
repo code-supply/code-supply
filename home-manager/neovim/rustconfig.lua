@@ -1,7 +1,6 @@
 return {
-  setup = function(lsp, capabilities, on_attach)
+  setup = function(lsp)
     lsp.rust_analyzer.setup {
-      on_attach = on_attach,
       settings = {
         ["rust-analyzer"] = {
           imports = {

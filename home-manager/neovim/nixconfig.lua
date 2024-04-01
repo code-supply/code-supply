@@ -1,7 +1,6 @@
 return {
-  setup = function(lsp, capabilities, on_attach)
+  setup = function(lsp, capabilities)
     lsp.nil_ls.setup {
-      on_attach = on_attach,
       settings = {
         ["nil"] = {
           formatting = {

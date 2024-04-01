@@ -1,9 +1,9 @@
 local lsp = require 'lspconfig'
 local capabilities = require 'cmp_nvim_lsp'.default_capabilities()
-local on_attach = require 'onattach'
 
 require 'preferences'
 require 'keybindings'
+require 'onattach'
 require 'appearance'
 require 'completion'
 require 'fidgetconfig'
@@ -11,10 +11,10 @@ require 'treesitter'
 require 'Comment'.setup()
 require 'vimtest'
 
-require 'elixirconfig'.setup(capabilities, on_attach)
-require 'luaconfig'.setup(lsp, capabilities, on_attach)
-require 'nixconfig'.setup(lsp, capabilities, on_attach)
-require 'rustconfig'.setup(lsp, capabilities, on_attach)
+require 'elixirconfig'.setup(capabilities)
+require 'luaconfig'.setup(lsp, capabilities)
+require 'nixconfig'.setup(lsp, capabilities)
+require 'rustconfig'.setup(lsp)
 
 lsp.idris2_lsp.setup {}
 lsp.terraform_lsp.setup {}

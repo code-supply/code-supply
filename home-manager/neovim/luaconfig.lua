@@ -1,7 +1,6 @@
 return {
-  setup = function(lsp, capabilities, on_attach)
+  setup = function(lsp, capabilities)
     lsp.lua_ls.setup {
-      on_attach = on_attach,
       capabilities = capabilities,
 
       on_init = function(client)
