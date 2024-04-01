@@ -1,5 +1,6 @@
 require 'preferences'
 require 'keybindings'
+require 'appearance'
 local lsp = require 'lspconfig'
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local on_attach = require 'onattach'
@@ -9,8 +10,6 @@ require 'treesitter'
 require 'elixirconfig'.setup(capabilities, on_attach)
 require 'luaconfig'.setup(lsp, capabilities, on_attach)
 require 'Comment'.setup()
-
-vim.api.nvim_exec([[ autocmd vimenter * ++nested colorscheme gruvbox ]], false)
 
 -- vim-test
 vim.g["test#strategy"] = "kitty"
