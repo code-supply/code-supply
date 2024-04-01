@@ -1,4 +1,4 @@
-return function(_client, bufnr)
+return function(_, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
 
   -- Mappings.
