@@ -7,9 +7,7 @@
       plugins = with pkgs.vimPlugins; [
         cmp-nvim-lsp
         comment-nvim
-        (elixir-tools-nvim.overrideAttrs {
-          dontFixup = true;
-        })
+        elixir-tools-nvim
         gruvbox
         luasnip
         idris2-vim
