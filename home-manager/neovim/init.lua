@@ -1,3 +1,4 @@
+require 'preferences'
 local lsp = require 'lspconfig'
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local on_attach = require 'onattach'
@@ -8,17 +9,6 @@ require 'elixirconfig'.setup(capabilities, on_attach)
 require 'Comment'.setup()
 
 vim.api.nvim_exec([[ autocmd vimenter * ++nested colorscheme gruvbox ]], false)
-
-vim.opt.termguicolors = true
-vim.opt.mouse = 'a'
-vim.opt.number = true
-vim.g.mapleader = ","
-vim.g.maplocalleader = ","
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.softtabstop = 2
-vim.opt.expandtab = true
-vim.o.wrap = false
 
 -- ctrl-hjkl pane movement
 vim.api.nvim_set_keymap('n', '<c-h>', '<c-w>h', { noremap = true })
@@ -58,13 +48,6 @@ vim.api.nvim_set_keymap('n', '<F7>', ':w<cr>:TestSuite<cr>', { noremap = true })
 
 -- sort lists inside []
 vim.api.nvim_set_keymap('n', '<F5>', '!i[sort<cr>', { noremap = true })
-
--- format before save
-vim.api.nvim_create_autocmd('BufWritePre', {
-  callback = function()
-    vim.lsp.buf.format({ async = false })
-  end,
-})
 
 lsp.lua_ls.setup {
   on_attach = on_attach,
