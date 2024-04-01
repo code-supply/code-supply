@@ -1,7 +1,7 @@
 local lsp = require 'lspconfig'
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-local on_attach = function(client, bufnr)
+local on_attach = function(_client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
 
   -- Mappings.
@@ -31,7 +31,8 @@ end
 
 require 'completion'
 require 'fidgetconfig'
-require('elixirconfig').setup(capabilities, on_attach)
+require 'elixirconfig'.setup(capabilities, on_attach)
+require 'treesitter'
 
 require('Comment').setup()
 
@@ -93,21 +94,6 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     vim.lsp.buf.format({ async = false })
   end,
 })
-
-require 'nvim-treesitter.configs'.setup {
-  highlight = {
-    enable = true,
-  },
-  incremental_selection = {
-    enable = true,
-    keymaps = {
-      init_selection = '<CR>',
-      scope_incremental = '<CR>',
-      node_incremental = '<TAB>',
-      node_decremental = '<S-TAB>',
-    },
-  },
-}
 
 lsp.lua_ls.setup {
   on_attach = on_attach,
