@@ -3,7 +3,7 @@
     neovim = {
       enable = true;
       defaultEditor = true;
-      extraLuaConfig = builtins.readFile neovim/init.lua;
+      extraLuaConfig = builtins.readFile ./init.lua;
       plugins = with pkgs.vimPlugins; [
         cmp-nvim-lsp
         comment-nvim
