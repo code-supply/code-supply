@@ -1,13 +1,11 @@
 local lsp = require 'lspconfig'
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
-
 local on_attach = require 'onattach'
 require 'completion'
 require 'fidgetconfig'
-require 'elixirconfig'.setup(capabilities, on_attach)
 require 'treesitter'
-
-require('Comment').setup()
+require 'elixirconfig'.setup(capabilities, on_attach)
+require 'Comment'.setup()
 
 vim.api.nvim_exec([[ autocmd vimenter * ++nested colorscheme gruvbox ]], false)
 
