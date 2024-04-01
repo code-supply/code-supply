@@ -10,15 +10,7 @@ require 'treesitter'
 require 'elixirconfig'.setup(capabilities, on_attach)
 require 'luaconfig'.setup(lsp, capabilities, on_attach)
 require 'Comment'.setup()
-
--- vim-test
-vim.g["test#strategy"] = "kitty"
-vim.g["test#custom_transformations"] = {
-  direnv = function(cmd)
-    return 'direnv exec "$(git rev-parse --show-toplevel)" ' .. cmd
-  end
-}
-vim.g["test#transformation"] = "direnv"
+require 'vimtest'
 
 lsp.tsserver.setup {
   on_attach = on_attach,
