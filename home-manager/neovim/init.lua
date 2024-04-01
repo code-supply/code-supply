@@ -12,20 +12,6 @@ require 'luaconfig'.setup(lsp, capabilities, on_attach)
 require 'Comment'.setup()
 require 'vimtest'
 
-lsp.tsserver.setup {
-  on_attach = on_attach,
-  cmd = {
-    "typescript-language-server",
-    "--stdio",
-    "--tsserver-path",
-    "/nix/store/knd3r0pazcban9yz22sv39rmqi95bbrn-typescript-4.8.4/lib/node_modules/typescript/lib"
-  }
-}
-
-lsp.eslint.setup {
-  on_attach = on_attach,
-}
-
 lsp.idris2_lsp.setup {}
 
 lsp.terraform_lsp.setup {}

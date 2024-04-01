@@ -22,7 +22,6 @@
         null-ls-nvim
         nvim-cmp
         nvim-lspconfig
-        nvim-lsp-ts-utils
         nvim-treesitter.withAllGrammars
         plenary-nvim
         suda-vim
