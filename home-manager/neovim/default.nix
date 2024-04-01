@@ -1,9 +1,16 @@
-{ pkgs, ... }: {
+{ pkgs, lib, ... }: {
   programs = {
     neovim = {
       enable = true;
       defaultEditor = true;
-      extraLuaConfig = builtins.readFile ./init.lua;
+      extraLuaConfig =
+        let
+          luaConfigs = lib.sources.sourceFilesBySuffices ./. [ ".lua" ];
+        in
+        ''
+          package.path = '${luaConfigs}/?.lua'
+          require 'init'
+        '';
       plugins = with pkgs.vimPlugins; [
         cmp-nvim-lsp
         comment-nvim

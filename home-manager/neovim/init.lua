@@ -4,6 +4,8 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local cmp = require 'cmp'
 local ls = require 'luasnip'
 
+require 'fidgetconfig'
+
 -- completion
 cmp.setup({
   snippet = {
