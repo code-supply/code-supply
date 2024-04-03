@@ -1,4 +1,4 @@
-{ nixpkgs, system, websites, ... }:
+{ nix, nixpkgs, system, websites, ... }:
 
 nixpkgs.lib.nixosSystem {
   inherit system;
@@ -13,6 +13,7 @@ nixpkgs.lib.nixosSystem {
     ./nix.nix
     ./plausible.nix
     ./tweaks.nix
+    ({ nix.package = nix; })
   ];
 
   specialArgs =
