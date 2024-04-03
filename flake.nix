@@ -1,7 +1,6 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nix.url = "nix/2.20.1";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -13,7 +12,7 @@
     };
   };
 
-  outputs = { self, nix, nixpkgs, home-manager, git-mob }:
+  outputs = { self, nixpkgs, home-manager, git-mob }:
     let
       system = "x86_64-linux";
       version =
@@ -25,7 +24,7 @@
 
       callBox = name: import ./boxes/${name} {
         inherit nixpkgs system;
-        nix = nix.packages.${system}.nix;
+        nix = nixpkgs.legacyPackages.${system}.nixVersions.nix_2_21;
         websites = {
           inherit andrewbruce codesupply;
         };
