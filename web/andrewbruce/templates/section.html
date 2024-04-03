@@ -1,0 +1,11 @@
+{% extends "lightspeed/templates/index.html" %}
+{% block header %}
+<header role="banner">
+  <h3 style="margin-top:0;">
+    <a href="{{ config.base_url | safe }}" title="Home">{{ config.title }}</a>
+    <br /><small>Projects</small>
+  </h3>
+</header>
+<hr />
+{% endblock header %}
+{% block title %}{{ section.title }} · {{ config.title }}{% endblock title %}

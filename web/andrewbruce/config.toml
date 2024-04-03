@@ -22,6 +22,10 @@ zola = ""
 maintained_with_love = false
 
 [[extra.footer_links]]
+name = "Projects"
+url = "/projects"
+
+[[extra.footer_links]]
 name = "Email"
 url = "mailto:me@andrewbruce.net"
 
