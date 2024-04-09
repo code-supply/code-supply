@@ -15,9 +15,6 @@ home-manager.lib.homeManagerConfiguration {
     ./k8s.nix
     ./kitty.nix
     ./neovim
+    ./gnome-no-overview.nix
   ];
-
-  extraSpecialArgs = {
-    git-mob = git-mob.packages.x86_64-linux.default;
-  };
 }
