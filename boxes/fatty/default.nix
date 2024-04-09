@@ -10,6 +10,7 @@ nixpkgs.lib.nixosSystem {
     ../common/user.nix
     ./configuration.nix
     ./hardware-configuration.nix
+    ./system76.nix
     ./joycon.nix
     ({ nix.package = nix; })
     ./nvidia.nix
