@@ -4,17 +4,17 @@ home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
 
   modules = [
-    git-mob.nixosModules.homeManager
     ./cli.nix
     ./dev.nix
     ./firefox.nix
+    git-mob.nixosModules.homeManager
     ./git.nix
+    ./gnome.nix
+    ./gnome-no-overview.nix
     ./graphics.nix
-    ./gui.nix
     ./home.nix
     ./k8s.nix
     ./kitty.nix
     ./neovim
-    ./gnome-no-overview.nix
   ];
 }
