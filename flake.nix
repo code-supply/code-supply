@@ -56,7 +56,7 @@
         inherit home-manager pkgs git-mob;
       };
 
-      homeConfigurations.andrew = import ./home-manager {
+      homeConfigurations."andrew@p14s" = import ./home-manager {
         inherit home-manager pkgs git-mob;
       };
 
