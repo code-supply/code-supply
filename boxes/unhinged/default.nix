@@ -11,9 +11,10 @@ nixpkgs.lib.nixosSystem {
     ./hardware-configuration.nix
     ./network.nix
     ./nix.nix
-    ./plausible.nix
-    ./tweaks.nix
     ({ nix.package = nix; })
+    ./plausible.nix
+    ./printers.nix
+    ./tweaks.nix
   ];
 
   specialArgs =
