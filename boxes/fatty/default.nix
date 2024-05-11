@@ -3,6 +3,7 @@
 nixpkgs.lib.nixosSystem {
   inherit system;
   modules = [
+    ../common/disable-tracker-miner.nix
     ../common/gui.nix
     ../common/locale.nix
     ../common/nix.nix
