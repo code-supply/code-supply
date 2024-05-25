@@ -8,6 +8,7 @@ return {
         capabilities = capabilities
       },
       credo = {
+        version = "0.3.0",
         capabilities = capabilities
       }
     }
