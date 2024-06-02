@@ -13,12 +13,11 @@
         '';
       plugins = with pkgs.vimPlugins; [
         cmp-nvim-lsp
-        comment-nvim
         elixir-tools-nvim
         fidget-nvim
         gruvbox
-        luasnip
         idris2-vim
+        luasnip
         null-ls-nvim
         nvim-cmp
         nvim-lspconfig
@@ -26,6 +25,7 @@
         plenary-nvim
         suda-vim
         telescope-nvim
+        vim-commentary
         vim-fugitive
         vim-gitgutter
         vim-gnupg

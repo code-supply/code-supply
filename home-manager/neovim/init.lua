@@ -8,7 +8,6 @@ require 'appearance'
 require 'completion'
 require 'fidgetconfig'
 require 'treesitter'
-require 'Comment'.setup()
 require 'vimtest'
 
 require 'elixirconfig'.setup(capabilities)
