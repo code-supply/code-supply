@@ -12,6 +12,7 @@
       bespokesynth
       bschaffl
       calf
+      carla
       ChowKick
       distrho
       drumgizmo

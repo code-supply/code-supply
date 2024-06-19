@@ -61,6 +61,7 @@
       polyphone
       qjackctl
       qpwgraph
+      reaper
       scdl
       sooperlooper
     ];

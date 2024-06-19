@@ -2,6 +2,7 @@
 {
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
+      "reaper"
       "skypeforlinux"
       "spotify"
       "zoom"
