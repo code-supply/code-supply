@@ -49,6 +49,7 @@
       alsa-scarlett-gui
       ardour
       audacity
+      bitwig-studio5
       carla
       easyeffects
       elektroid
