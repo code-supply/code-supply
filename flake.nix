@@ -20,7 +20,7 @@
         then self.rev
         else "dirty";
 
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
 
       callBox = name: import ./boxes/${name} {
         inherit nixpkgs system;
