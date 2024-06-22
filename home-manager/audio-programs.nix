@@ -27,35 +27,12 @@
   home = {
     file =
       let
-        # give up and just download the thing with fetchzip?
         drivenByMoss =
           pkgs.fetchzip {
             url = "https://www.mossgrabers.de/Software/Bitwig/DrivenByMoss-23.2.2-Bitwig.zip";
             hash = "sha256-+9EKyeYgGKVIt+34Dgcz2xK4sZ7w72424RLspB5+05Q=";
             stripRoot = false;
           };
-        # drivenByMoss = with pkgs; (
-        #   let pname = "DrivenByMoss"; version = "23.2.2"; in maven.buildMavenPackage {
-        #     inherit pname version;
-
-        #     src = fetchFromGitHub {
-        #       owner = "git-moss";
-        #       repo = pname;
-        #       rev = version;
-        #       hash = "sha256-/u9Nh9TAQ8sj/nJkB0qmgUqUGEAISxyL2+8kPtMT3RE=";
-        #     };
-
-        #     mvnHash = "sha256-pzzpNWH6T03KoquaTTWQGGnMbj4yKhmBCM9ljhB+71E=";
-        #     mvnParameters = "-Dbitwig.extension.directory=target";
-
-        #     nativeBuildInputs = [ unzip ];
-
-        #     installPhase = ''
-        #       mkdir $out
-        #       cp target/DrivenByMoss-23.2.2-Bitwig.zip $out/DrivenByMoss.bwextension
-        #     '';
-        #   }
-        # );
       in
       {
         pipewire-config =
