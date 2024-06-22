@@ -1,7 +1,3 @@
-{ pkgs
-, ...
-}:
-
 {
   # Scarlett 18i8 config
   boot.extraModprobeConfig = ''
@@ -27,11 +23,5 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     jack.enable = true;
-
-    wireplumber.configPackages = [
-      (pkgs.writeTextDir
-        "share/wireplumber/wireplumber.conf.d/disable-devices.conf"
-        (builtins.readFile ./wireplumber/disable-devices.conf))
-    ];
   };
 }
