@@ -22,7 +22,7 @@
       accel-profile = "flat";
     };
     "org/gnome/desktop/input-sources" = {
-      xkb-options = [ "caps:ctrl_modifier" ];
+      xkb-options = [ "ctrl:swapcaps" ];
     };
   };
 }
