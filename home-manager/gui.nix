@@ -13,7 +13,6 @@
       wl-clipboard
       xclip
       xournal
-      youtube-dl
     ];
   };
 }
