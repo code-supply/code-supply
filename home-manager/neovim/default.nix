@@ -23,7 +23,6 @@
         nvim-lspconfig
         nvim-treesitter.withAllGrammars
         plenary-nvim
-        suda-vim
         telescope-nvim
         vim-commentary
         vim-fugitive
@@ -31,6 +30,7 @@
         vim-gnupg
         vim-repeat
         vim-shellcheck
+        vim-suda
         vim-surround
         vim-test
         vim-unimpaired
