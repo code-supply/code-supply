@@ -1,6 +1,6 @@
-{ nix, nixpkgs, system, websites, ... }:
+{ nix, system, websites, ... }:
 
-nixpkgs.lib.nixosSystem {
+{
   inherit system;
 
   modules = [

@@ -22,13 +22,13 @@
 
       pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
 
-      callBox = name: import ./boxes/${name} {
+      callBox = name: nixpkgs.lib.nixosSystem (import ./boxes/${name} {
         inherit nixpkgs system;
         nix = nixpkgs.legacyPackages.${system}.nixVersions.nix_2_21;
         websites = {
           inherit andrewbruce codesupply;
         };
-      };
+      });
 
       common = { inherit version; };
 

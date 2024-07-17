@@ -1,6 +1,6 @@
-{ nix, nixpkgs, system, ... }:
+{ nix, system, ... }:
 
-nixpkgs.lib.nixosSystem {
+{
   inherit system;
   modules = [
     ../common/disable-tracker-miner.nix
