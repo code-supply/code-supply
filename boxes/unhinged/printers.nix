@@ -14,6 +14,9 @@
           location = "69 Hillside";
           model = "samsung/ML-2010.ppd";
           deviceUri = "usb://Samsung/M2020%20Series?serial=ZFCEB8GF7C00YVL";
+          ppdOptions = {
+            PageSize = "A4";
+          };
         }
       ];
       ensureDefaultPrinter = name;
