@@ -64,8 +64,8 @@
       audacity
       # bitwig-studio5
       (
-        let version = "5.2 Beta 13"; in bitwig-studio5.overrideAttrs (finalAttrs: previousAttrs: {
-          inherit version;
+        bitwig-studio5.overrideAttrs (finalAttrs: previousAttrs: {
+          version = "5.2 Beta 13";
           buildInputs = previousAttrs.buildInputs ++ [ vulkan-loader ];
           src = fetchurl {
             url = "https://www.bitwig.com/dl/Bitwig%20Studio/5.2%20Beta%2013/installer_linux/";
