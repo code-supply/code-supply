@@ -1,0 +1,3 @@
+{
+  services.logind.lidSwitchExternalPower = "ignore";
+}

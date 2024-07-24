@@ -8,6 +8,7 @@
     ../common/user.nix
     ./gpg-ssh.nix
     ./hardware-configuration.nix
+    ./lid-switch.nix
     ./network.nix
     ./sound.nix
   ];
