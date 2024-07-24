@@ -19,7 +19,7 @@
 
   dconf.settings = {
     "org/gnome/desktop/peripherals/mouse" = {
-      accel-profile = "flat";
+      accel-profile = "adaptive";
     };
     "org/gnome/desktop/input-sources" = {
       xkb-options = [ "ctrl:swapcaps" ];
