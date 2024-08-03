@@ -4,11 +4,10 @@
     packages = with pkgs; [
       bless
       chromium
-      gnome3.gnome-tweaks
       libreoffice
       nixos-generators
       signal-desktop
-      transmission-gtk
+      transmission_4-gtk
       vlc
       wl-clipboard
       xclip
