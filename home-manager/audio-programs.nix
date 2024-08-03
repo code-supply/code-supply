@@ -62,42 +62,7 @@
       alsa-scarlett-gui
       ardour
       audacity
-      # bitwig-studio5
-      (
-        bitwig-studio5.overrideAttrs (finalAttrs: previousAttrs: {
-          version = "5.2 Beta 13";
-          buildInputs = previousAttrs.buildInputs ++ [ vulkan-loader ];
-          src = fetchurl {
-            url = "https://www.bitwig.com/dl/Bitwig%20Studio/5.2%20Beta%2013/installer_linux/";
-            hash = "sha256-+/LxVjqE3i14K6Pd3ULrCXADu9f9iUKsqtzLRsjPC9Q=";
-          };
-          postFixup = ''
-            # patchelf fails to set rpath on BitwigStudioEngine, so we use
-            # the LD_LIBRARY_PATH way
-
-            find $out -type f -executable \
-              -not -name '*.so.*' \
-              -not -name '*.so' \
-              -not -name '*.jar' \
-              -not -name 'jspawnhelper' \
-              -not -path '*/resources/*' | \
-            while IFS= read -r f ; do
-              patchelf --set-interpreter "${stdenv.cc.bintools.dynamicLinker}" $f
-              # make xdg-open overrideable at runtime
-              wrapProgram $f \
-                "''${gappsWrapperArgs[@]}" \
-                --prefix PATH : "${lib.makeBinPath [ ffmpeg ]}" \
-                --suffix PATH : "${lib.makeBinPath [ xdg-utils ]}" \
-                --suffix LD_LIBRARY_PATH : "${lib.strings.makeLibraryPath (previousAttrs.buildInputs ++ [ vulkan-loader ])}"
-            done
-
-            find $out -type f -executable -name 'jspawnhelper' | \
-            while IFS= read -r f ; do
-              patchelf --set-interpreter "${stdenv.cc.bintools.dynamicLinker}" $f
-            done
-          '';
-        })
-      )
+      bitwig-studio5
       carla
       easyeffects
       elektroid
