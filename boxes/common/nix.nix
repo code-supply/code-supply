@@ -1,7 +1,7 @@
 {
   nix = {
     extraOptions = ''
-      experimental-features = nix-command flakes repl-flake auto-allocate-uids
+      experimental-features = nix-command flakes auto-allocate-uids
       keep-derivations = true
       keep-outputs = true
     '';
