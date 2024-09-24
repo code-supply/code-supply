@@ -24,7 +24,7 @@
 
       callBox = name: nixpkgs.lib.nixosSystem (import ./boxes/${name} {
         inherit nixpkgs system;
-        nix = nixpkgs.legacyPackages.${system}.nixVersions.nix_2_21;
+        nix = nixpkgs.legacyPackages.${system}.nixVersions.nix_2_24;
         websites = {
           inherit andrewbruce codesupply;
         };
