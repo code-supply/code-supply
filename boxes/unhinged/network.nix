@@ -17,8 +17,8 @@
           };
           DHCP = "no";
           addresses = [
-            { addressConfig = { Address = "${ipv4}/24"; }; }
-            { addressConfig = { Address = "${ipv6}/64"; }; }
+            { Address = "${ipv4}/24"; }
+            { Address = "${ipv6}/64"; }
           ];
           dns = [
             "127.0.0.1"
