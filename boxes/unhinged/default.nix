@@ -12,7 +12,6 @@
     ./network.nix
     ./nix.nix
     ({ nix.package = nix; })
-    ./plausible.nix
     ./printers.nix
     ./tweaks.nix
   ];
