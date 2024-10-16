@@ -20,5 +20,9 @@
         };
       };
     };
+    signing = {
+      key = null;
+      signByDefault = true;
+    };
   };
 }
