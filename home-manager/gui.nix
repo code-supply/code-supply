@@ -11,7 +11,7 @@
       vlc
       wl-clipboard
       xclip
-      xournal
+      xournalpp
     ];
   };
 }
