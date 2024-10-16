@@ -14,6 +14,8 @@
       listen_on = "unix:/tmp/mykitty";
       allow_remote_control = "yes";
       hide_window_decorations = "yes";
+      scrollback_lines = 10000;
+      scrollback_pager_history_size = 2000; # MB
     };
     keybindings = {
       "ctrl+shift+enter" = "launch --cwd=current";
