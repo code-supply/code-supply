@@ -6,6 +6,7 @@
     ../common/nix.nix
     ../common/steam.nix
     ../common/user.nix
+    ./fonts.nix
     ./gpg-ssh.nix
     ./hardware-configuration.nix
     ./lid-switch.nix
