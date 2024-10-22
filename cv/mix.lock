@@ -1,0 +1,6 @@
+%{
+  "ex_image_info": {:hex, :ex_image_info, "0.2.5", "38104a042650db8744ef040cb698e39f16683b29e5b103b1d024859bd4ec13f5", [:mix], [], "hexpm", "31c02bef2a62e5d13450773a806c067179a57624d2ac9838bfa028ecdb742215"},
+  "mudbrick": {:hex, :mudbrick, "0.2.1", "249926dfd87e0845babc06e9e69b610334771cc97d1fe3432e1a00181e2d26aa", [:mix], [{:ex_image_info, "~> 0.2", [hex: :ex_image_info, repo: "hexpm", optional: false]}, {:opentype, "~> 0.5", [hex: :opentype, repo: "hexpm", optional: false]}], "hexpm", "3d1d659a48a12520dc8210a5ce2768d0b6c9c31d1419b6c0c753660eb52a2fa9"},
+  "opentype": {:hex, :opentype, "0.5.1", "da1b99f2a5070ade233ff44a1b5729cf7f87f45af6154b71bbfe0d825ef6d366", [:mix], [{:unicode_data, "~> 0.7.0", [hex: :unicode_data, repo: "hexpm", optional: false]}], "hexpm", "1868bfe0729fd0c18add911a169eb18b695cfb5acade210359b92bacec2f23c5"},
+  "unicode_data": {:hex, :unicode_data, "0.7.0", "10682f8d592ff1714b84aaa30bcd958e207a21b464f204eed5fc590904a6412b", [:mix], [], "hexpm", "77aaff71b16d502ac61cddb50d42ec7d7dd546ed79b19b7343117079dbdbbec1"},
+}

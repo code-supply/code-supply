@@ -1,18 +1,9 @@
 defmodule Cv do
-  @moduledoc """
-  Documentation for `Cv`.
-  """
+  import Mudbrick
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Cv.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def generate do
+    new()
+    |> render()
+    |> IO.puts()
   end
 end
