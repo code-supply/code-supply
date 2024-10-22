@@ -36,7 +36,7 @@
 
       andrewbruce = callPackage ./web/andrewbruce { };
       codesupply = callPackage ./web/code-supply { };
-      devShell = callPackage ./nix/shell.nix { };
+      devShell = callPackage ./shell.nix { };
     in
     {
       formatter.${system} = pkgs.nixpkgs-fmt;
