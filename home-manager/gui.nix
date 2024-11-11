@@ -2,7 +2,6 @@
 {
   home = {
     packages = with pkgs; [
-      bless
       chromium
       libreoffice
       nixos-generators

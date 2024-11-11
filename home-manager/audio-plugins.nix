@@ -13,7 +13,6 @@
       calf
       carla
       ChowKick
-      distrho
       drumgizmo
       drumkv1
       faust
