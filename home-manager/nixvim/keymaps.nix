@@ -28,6 +28,22 @@
 
     keymaps = [
       {
+        action = '':lua require("neotest").output_panel.toggle()<cr>'';
+        key = "<F7>";
+      }
+      {
+        action = '':lua require("neotest").output.open({ enter = true })<cr>'';
+        key = "<F8>";
+      }
+      {
+        action = '':lua require("neotest").summary.toggle()<cr>'';
+        key = "<F9>";
+      }
+      {
+        action = '':w<cr>:lua require("neotest").run.run_last()<cr>'';
+        key = "<F10>";
+      }
+      {
         action = '':w<cr>:lua require("neotest").run.run()<cr>'';
         key = "<F11>";
       }
