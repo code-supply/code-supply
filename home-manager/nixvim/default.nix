@@ -19,6 +19,12 @@
       fidget.enable = true;
       fugitive.enable = true;
       gitgutter.enable = true;
+      neotest = {
+        enable = true;
+        adapters = {
+          elixir.enable = true;
+        };
+      };
       nvim-surround.enable = true;
       telescope.enable = true;
       web-devicons.enable = true;

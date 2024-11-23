@@ -28,6 +28,14 @@
 
     keymaps = [
       {
+        action = '':w<cr>:lua require("neotest").run.run()<cr>'';
+        key = "<F11>";
+      }
+      {
+        action = '':w<cr>:lua require("neotest").run.run(vim.fn.expand("%"))<cr>'';
+        key = "<F12>";
+      }
+      {
         action = "<c-w>h";
         key = "<c-h>";
       }
