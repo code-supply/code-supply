@@ -32,7 +32,7 @@
         key = "<F7>";
       }
       {
-        action = '':lua require("neotest").output.open({ enter = true })<cr>'';
+        action = '':lua require("neotest").output.open({ enter = true, auto_close = true })<cr>'';
         key = "<F8>";
       }
       {
