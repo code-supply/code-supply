@@ -28,28 +28,43 @@
 
     keymaps = [
       {
+        action = "!i[sort<cr>";
+        key = "<F5>";
+      }
+      {
         action = '':lua require("neotest").output_panel.toggle()<cr>'';
-        key = "<F7>";
+        key = "<leader>tl";
+        options.desc = "Show test output panel";
       }
       {
         action = '':lua require("neotest").output.open({ enter = true, auto_close = true })<cr>'';
-        key = "<F8>";
+        key = "<leader>tv";
+        options.desc = "Show output of nearest test";
       }
       {
         action = '':lua require("neotest").summary.toggle()<cr>'';
-        key = "<F9>";
+        key = "<leader>tb";
+        options.desc = "Show test summary";
+      }
+      {
+        action = '':w<cr>:lua require("neotest").run.run({ suite = true })<cr>'';
+        key = "<leader>ts";
+        options.desc = "Test suite";
       }
       {
         action = '':w<cr>:lua require("neotest").run.run_last()<cr>'';
-        key = "<F10>";
+        key = "<leader>tr";
+        options.desc = "Repeat last test run";
       }
       {
         action = '':w<cr>:lua require("neotest").run.run()<cr>'';
-        key = "<F11>";
+        key = "<leader>tt";
+        options.desc = "Test nearest";
       }
       {
         action = '':w<cr>:lua require("neotest").run.run(vim.fn.expand("%"))<cr>'';
-        key = "<F12>";
+        key = "<leader>tf";
+        options.desc = "Test file";
       }
       {
         action = "<c-w>h";
@@ -70,38 +85,41 @@
       {
         action = ":q<cr>";
         key = "<leader>q";
+        options.desc = "Quit buffer";
       }
       {
         action = ":nohlsearch<cr>";
         key = "<space>";
       }
       {
-        action = "!i[sort<cr>";
-        key = "<F5>";
-      }
-      {
         action = "<cmd>Telescope find_files<cr>";
         key = "<leader>ff";
+        options.desc = "Find files";
       }
       {
         action = "<cmd>Telescope grep_string<cr>";
         key = "<leader>a";
+        options.desc = "Grep string under cursor";
       }
       {
         action = "<cmd>Telescope live_grep<cr>";
         key = "<leader>fg";
+        options.desc = "Grep files";
       }
       {
         action = "<cmd>Telescope buffers<cr>";
         key = "<leader>fb";
+        options.desc = "Find buffers";
       }
       {
         action = "<cmd>Telescope help_tags<cr>";
         key = "<leader>fh";
+        options.desc = "Find in help";
       }
       {
         action = "<cmd>Telescope oldfiles<cr>";
         key = "<leader>fo";
+        options.desc = "Find recent (old) files";
       }
     ];
   };

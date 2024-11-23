@@ -28,6 +28,7 @@
       nvim-surround.enable = true;
       telescope.enable = true;
       web-devicons.enable = true;
+      which-key.enable = true;
     };
 
     extraPlugins = with pkgs.vimPlugins; [
