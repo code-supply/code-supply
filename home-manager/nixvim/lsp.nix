@@ -8,7 +8,7 @@
       lua_ls.enable = true;
       tailwindcss.enable = true;
       terraformls.enable = true;
-      nil_ls = {
+      nixd = {
         enable = true;
         settings = {
           formatting.command = [ "nixfmt" ];
