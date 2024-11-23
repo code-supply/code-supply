@@ -5,6 +5,27 @@
     enable = true;
 
     plugins = {
+      cmp = {
+        enable = true;
+        settings = {
+          mapping = {
+            "<C-b>" = "cmp.mapping.scroll_docs(-4)";
+            "<C-f>" = "cmp.mapping.scroll_docs(4)";
+            "<C-Space>" = "cmp.mapping.complete()";
+            "<C-e>" = "cmp.mapping.abort()";
+            "<CR>" = "cmp.mapping.confirm({ select = true })";
+          };
+
+          sources = [
+            { name = "nvim_lsp"; }
+            { name = "path"; }
+            { name = "buffer"; }
+          ];
+        };
+      };
+
+      fidget.enable = true;
+
       lsp = {
         enable = true;
 
@@ -26,6 +47,64 @@
             enable = true;
           };
         };
+      };
+
+      treesitter = {
+        enable = true;
+        grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
+          awk
+          bash
+          c
+          cmake
+          comment
+          cpp
+          css
+          csv
+          diff
+          dot
+          eex
+          elixir
+          erlang
+          fish
+          git-config
+          gitignore
+          git-rebase
+          gleam
+          go
+          gomod
+          gpg
+          haskell
+          hcl
+          heex
+          helm
+          html
+          http
+          java
+          javascript
+          jq
+          json
+          kotlin
+          lua
+          make
+          markdown
+          markdown-inline
+          mermaid
+          nix
+          passwd
+          properties
+          readline
+          regex
+          rust
+          sql
+          ssh-config
+          terraform
+          toml
+          typescript
+          vim
+          vimdoc
+          xml
+          yaml
+        ];
       };
     };
 
