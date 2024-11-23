@@ -1,154 +1,40 @@
 { pkgs, ... }:
 
 {
+  imports = [
+    ./keymaps.nix
+    ./lsp.nix
+    ./treesitter.nix
+  ];
+
   programs.nixvim = {
     enable = true;
 
-    keymaps = [
-      {
-        action = "<c-w>h";
-        key = "<c-h>";
-      }
-      {
-        action = "<c-w>j";
-        key = "<c-j>";
-      }
-      {
-        action = "<c-w>k";
-        key = "<c-k>";
-      }
-      {
-        action = "<c-w>l";
-        key = "<c-l>";
-      }
-      {
-        action = ":q<cr>";
-        key = "<leader>q";
-      }
-      {
-        action = ":nohlsearch<cr>";
-        key = "<space>";
-      }
-      {
-        action = "!i[sort<cr>";
-        key = "<F5>";
-      }
-    ];
-
     plugins = {
       commentary.enable = true;
+      fidget.enable = true;
 
       cmp = {
         enable = true;
         settings = {
-          mapping = {
-            "<C-b>" = "cmp.mapping.scroll_docs(-4)";
-            "<C-f>" = "cmp.mapping.scroll_docs(4)";
-            "<C-Space>" = "cmp.mapping.complete()";
-            "<C-e>" = "cmp.mapping.abort()";
-            "<CR>" = "cmp.mapping.confirm({ select = true })";
-          };
-
           sources = [
+            { name = "buffer"; }
+            { name = "luasnip"; }
             { name = "nvim_lsp"; }
             { name = "path"; }
-            { name = "buffer"; }
           ];
+          snippet.expand = ''
+            function(args)
+              require('luasnip').lsp_expand(args.body)
+            end
+          '';
         };
-      };
-
-      fidget.enable = true;
-
-      lsp = {
-        enable = true;
-
-        servers = {
-          bashls.enable = true;
-          jsonls.enable = true;
-          lua_ls.enable = true;
-          tailwindcss.enable = true;
-          terraformls.enable = true;
-          nixd = {
-            enable = true;
-            settings = {
-              formatting.command = [ "nixfmt" ];
-            };
-          };
-          rust_analyzer = {
-            installCargo = true;
-            installRustc = true;
-            enable = true;
-          };
-        };
-      };
-
-      treesitter = {
-        enable = true;
-        grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
-          awk
-          bash
-          c
-          cmake
-          comment
-          cpp
-          css
-          csv
-          diff
-          dot
-          eex
-          elixir
-          erlang
-          fish
-          git-config
-          gitignore
-          git-rebase
-          gleam
-          go
-          gomod
-          gpg
-          haskell
-          hcl
-          heex
-          helm
-          html
-          http
-          java
-          javascript
-          jq
-          json
-          kotlin
-          lua
-          make
-          markdown
-          markdown-inline
-          mermaid
-          nix
-          passwd
-          properties
-          readline
-          regex
-          rust
-          sql
-          ssh-config
-          terraform
-          toml
-          typescript
-          vim
-          vimdoc
-          xml
-          yaml
-        ];
       };
     };
 
     extraPlugins = with pkgs.vimPlugins; [
       elixir-tools-nvim
     ];
-
-    globals = {
-      mapleader = ",";
-      maplocalleader = ",";
-    };
 
     opts = {
       number = true;
