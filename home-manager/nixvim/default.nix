@@ -15,12 +15,18 @@
     plugins = {
       commentary.enable = true;
       fidget.enable = true;
+      fugitive.enable = true;
+      gitgutter.enable = true;
+      nvim-surround.enable = true;
       telescope.enable = true;
       web-devicons.enable = true;
     };
 
     extraPlugins = with pkgs.vimPlugins; [
       elixir-tools-nvim
+      vim-gnupg
+      vim-repeat
+      vim-unimpaired
     ];
     extraConfigLua = ''
       require('elixir').setup({
