@@ -5,6 +5,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixvim = {
+      url = "github:nix-community/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     git-mob = {
       url = "github:code-supply/rusty-git-mob";
       # url = "/home/andrew/workspace/rusty-git-mob";
@@ -12,7 +16,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, git-mob }:
+  outputs = { self, nixpkgs, home-manager, nixvim, git-mob }:
     let
       system = "x86_64-linux";
       version =
@@ -57,7 +61,7 @@
       };
 
       homeConfigurations."andrew@p14s" = import ./home-manager {
-        inherit home-manager pkgs git-mob;
+        inherit home-manager nixvim pkgs git-mob;
       };
 
       nixosModules = {

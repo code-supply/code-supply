@@ -1,4 +1,4 @@
-{ home-manager, pkgs, git-mob }:
+{ home-manager, pkgs, nixvim, git-mob }:
 
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
@@ -17,7 +17,8 @@ home-manager.lib.homeManagerConfiguration {
     ./home.nix
     ./k8s.nix
     ./kitty.nix
-    ./neovim
+    nixvim.homeManagerModules.nixvim
+    ./nixvim
     ./unfree.nix
   ];
 
