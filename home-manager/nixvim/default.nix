@@ -22,6 +22,11 @@
     extraPlugins = with pkgs.vimPlugins; [
       elixir-tools-nvim
     ];
+    extraConfigLua = ''
+      require('elixir').setup({
+        elixirls = { cmd = { "elixir-ls" } }
+      })
+    '';
 
     opts = {
       number = true;
