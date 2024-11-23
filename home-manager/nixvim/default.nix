@@ -13,6 +13,8 @@
     plugins = {
       commentary.enable = true;
       fidget.enable = true;
+      telescope.enable = true;
+      web-devicons.enable = true;
 
       cmp = {
         enable = true;

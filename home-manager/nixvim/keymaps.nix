@@ -42,6 +42,30 @@
         action = "!i[sort<cr>";
         key = "<F5>";
       }
+      {
+        action = "<cmd>Telescope find_files<cr>";
+        key = "<leader>ff";
+      }
+      {
+        action = "<cmd>Telescope grep_string<cr>";
+        key = "<leader>a";
+      }
+      {
+        action = "<cmd>Telescope live_grep<cr>";
+        key = "<leader>fg";
+      }
+      {
+        action = "<cmd>Telescope buffers<cr>";
+        key = "<leader>fb";
+      }
+      {
+        action = "<cmd>Telescope help_tags<cr>";
+        key = "<leader>fh";
+      }
+      {
+        action = "<cmd>Telescope oldfiles<cr>";
+        key = "<leader>fo";
+      }
     ];
   };
 }
