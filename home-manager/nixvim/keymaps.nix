@@ -5,6 +5,19 @@
       maplocalleader = ",";
     };
 
+    plugins.lsp.keymaps = {
+      lspBuf = {
+        "gD" = "declaration";
+        "gd" = "definition";
+        "gi" = "implementation";
+        "gr" = "references";
+        "K" = "hover";
+        "<leader>k" = "signature_help";
+        "<space>ca" = "code_action";
+        "<space>rn" = "rename";
+      };
+    };
+
     plugins.cmp.settings.mapping = {
       "<C-b>" = "cmp.mapping.scroll_docs(-4)";
       "<C-f>" = "cmp.mapping.scroll_docs(4)";

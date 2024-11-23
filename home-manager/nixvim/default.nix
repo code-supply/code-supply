@@ -28,13 +28,17 @@
       })
     '';
 
-    opts = {
-      number = true;
-      tabstop = 2;
-      shiftwidth = 2;
-      softtabstop = 2;
-      expandtab = true;
-      wrap = false;
-    };
+    opts =
+      let
+        spaces = 2;
+      in
+      {
+        expandtab = true;
+        number = true;
+        shiftwidth = spaces;
+        softtabstop = spaces;
+        tabstop = spaces;
+        wrap = false;
+      };
   };
 }
