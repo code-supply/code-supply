@@ -4,6 +4,37 @@
   programs.nixvim = {
     enable = true;
 
+    keymaps = [
+      {
+        action = "<c-w>h";
+        key = "<c-h>";
+      }
+      {
+        action = "<c-w>j";
+        key = "<c-j>";
+      }
+      {
+        action = "<c-w>k";
+        key = "<c-k>";
+      }
+      {
+        action = "<c-w>l";
+        key = "<c-l>";
+      }
+      {
+        action = ":q<cr>";
+        key = "<leader>q";
+      }
+      {
+        action = ":nohlsearch<cr>";
+        key = "<space>";
+      }
+      {
+        action = "!i[sort<cr>";
+        key = "<F5>";
+      }
+    ];
+
     plugins = {
       commentary.enable = true;
 
