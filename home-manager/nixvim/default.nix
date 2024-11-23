@@ -12,6 +12,8 @@
   programs.nixvim = {
     enable = true;
 
+    colorschemes.gruvbox.enable = true;
+
     plugins = {
       commentary.enable = true;
       fidget.enable = true;
