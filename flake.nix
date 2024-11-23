@@ -43,7 +43,7 @@
       devShell = callPackage ./shell.nix { };
     in
     {
-      formatter.${system} = pkgs.nixpkgs-fmt;
+      formatter.${system} = pkgs.nixfmt-rfc-style;
 
       packages.${system} = {
         inherit
