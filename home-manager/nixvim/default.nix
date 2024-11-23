@@ -5,6 +5,8 @@
     enable = true;
 
     plugins = {
+      commentary.enable = true;
+
       cmp = {
         enable = true;
         settings = {
