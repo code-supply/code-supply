@@ -10,6 +10,7 @@
     ./gpg-ssh.nix
     ./hardware-configuration.nix
     ./lid-switch.nix
+    ./postgres.nix
     ./network.nix
     ./sound.nix
   ];

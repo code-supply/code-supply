@@ -4,6 +4,6 @@
   inherit system;
   modules = [
     ./configuration.nix
-    ({ nix.package = nix; })
+    { nix.package = nix; }
   ];
 }
