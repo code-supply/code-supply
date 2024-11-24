@@ -104,7 +104,7 @@
       {
         action = "<cmd>Telescope live_grep<cr>";
         key = "<leader>fg";
-        options.desc = "Grep files";
+        options.desc = "Find text or pattern";
       }
       {
         action = "<cmd>Telescope buffers<cr>";
