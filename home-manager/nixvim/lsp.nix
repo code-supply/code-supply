@@ -4,6 +4,7 @@
 
     servers = {
       bashls.enable = true;
+      elixirls.enable = true;
       jsonls.enable = true;
       lua_ls.enable = true;
       tailwindcss.enable = true;

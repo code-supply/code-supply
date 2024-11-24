@@ -32,16 +32,10 @@
     };
 
     extraPlugins = with pkgs.vimPlugins; [
-      elixir-tools-nvim
       vim-gnupg
       vim-repeat
       vim-unimpaired
     ];
-    extraConfigLua = ''
-      require('elixir').setup({
-        elixirls = { cmd = { "elixir-ls" } }
-      })
-    '';
 
     opts =
       let
