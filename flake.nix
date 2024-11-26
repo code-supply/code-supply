@@ -16,25 +16,38 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixvim, git-mob }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      home-manager,
+      nixvim,
+      git-mob,
+    }:
     let
       system = "x86_64-linux";
-      version =
-        if self ? rev
-        then self.rev
-        else "dirty";
+      version = if self ? rev then self.rev else "dirty";
 
-      pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
 
-      callBox = name: nixpkgs.lib.nixosSystem (import ./boxes/${name} {
-        inherit nixpkgs system;
-        nix = nixpkgs.legacyPackages.${system}.nixVersions.nix_2_24;
-        websites = {
-          inherit andrewbruce codesupply;
-        };
-      });
+      callBox =
+        name:
+        nixpkgs.lib.nixosSystem (
+          import ./boxes/${name} {
+            inherit nixpkgs system;
+            nix = nixpkgs.legacyPackages.${system}.nixVersions.nix_2_24;
+            websites = {
+              inherit andrewbruce codesupply;
+            };
+          }
+        );
 
-      common = { inherit version; };
+      common = {
+        inherit version;
+      };
 
       callPackage = pkgs.lib.callPackageWith (pkgs // common);
 
@@ -61,7 +74,12 @@
       };
 
       homeConfigurations."andrew@p14s" = import ./home-manager {
-        inherit home-manager nixvim pkgs git-mob;
+        inherit
+          home-manager
+          nixvim
+          pkgs
+          git-mob
+          ;
       };
 
       nixosModules = {
