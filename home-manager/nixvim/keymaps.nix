@@ -28,6 +28,16 @@
 
     keymaps = [
       {
+        action.__raw = "vim.diagnostic.goto_prev";
+        key = "[d";
+        options.desc = "Previous diagnostic";
+      }
+      {
+        action.__raw = "vim.diagnostic.goto_next";
+        key = "]d";
+        options.desc = "Next diagnostic";
+      }
+      {
         action = "!i[sort<cr>";
         key = "<F5>";
       }
