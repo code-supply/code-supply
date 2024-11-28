@@ -91,5 +91,9 @@
         p14s = callBox "p14s";
         unhinged = callBox "unhinged";
       };
+
+      templates.elixir = {
+        path = flake-templates/elixir;
+      };
     };
 }
