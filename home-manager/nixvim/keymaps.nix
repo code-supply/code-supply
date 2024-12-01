@@ -42,37 +42,22 @@
         key = "<F5>";
       }
       {
-        action = '':lua require("neotest").output_panel.toggle()<cr>'';
-        key = "<leader>tl";
-        options.desc = "Show test output panel";
-      }
-      {
-        action = '':lua require("neotest").output.open({ enter = true, auto_close = true })<cr>'';
-        key = "<leader>tv";
-        options.desc = "Show output of nearest test";
-      }
-      {
-        action = '':lua require("neotest").summary.toggle()<cr>'';
-        key = "<leader>tb";
-        options.desc = "Show test summary";
-      }
-      {
-        action = '':w<cr>:lua require("neotest").run.run({ suite = true })<cr>'';
+        action = '':w<cr>:TestSuite<cr>'';
         key = "<leader>ts";
         options.desc = "Test suite";
       }
       {
-        action = '':w<cr>:lua require("neotest").run.run_last()<cr>'';
+        action = '':w<cr>:TestLast<cr>'';
         key = "<leader>tr";
         options.desc = "Repeat last test run";
       }
       {
-        action = '':w<cr>:lua require("neotest").run.run()<cr>'';
+        action = '':w<cr>:TestNearest<cr>'';
         key = "<leader>tt";
         options.desc = "Test nearest";
       }
       {
-        action = '':w<cr>:lua require("neotest").run.run(vim.fn.expand("%"))<cr>'';
+        action = '':w<cr>:TestFile<cr>'';
         key = "<leader>tf";
         options.desc = "Test file";
       }

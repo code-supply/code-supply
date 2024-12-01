@@ -7,6 +7,7 @@
     ./keymaps.nix
     ./lsp.nix
     ./treesitter.nix
+    ./vim-test.nix
   ];
 
   programs.nixvim = {
@@ -19,12 +20,6 @@
       fidget.enable = true;
       fugitive.enable = true;
       gitgutter.enable = true;
-      neotest = {
-        enable = true;
-        adapters = {
-          elixir.enable = true;
-        };
-      };
       nvim-surround.enable = true;
       telescope.enable = true;
       undotree.enable = true;
