@@ -20,6 +20,19 @@
             generate (
               import nixpkgs {
                 inherit system;
+                overlays = [
+                  (
+                    self: super:
+                    let
+                      beamPackages = with super.beam_minimal; packagesWith interpreters.erlang_27;
+                    in
+                    {
+                      inherit beamPackages;
+                      erlang = beamPackages.erlang_27;
+                      elixir = beamPackages.elixir_1_17;
+                    }
+                  )
+                ];
               }
             )
           );
