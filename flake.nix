@@ -14,6 +14,7 @@
       # url = "/home/andrew/workspace/rusty-git-mob";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    catppuccin.url = "github:catppuccin/nix";
   };
 
   outputs =
@@ -23,6 +24,7 @@
       home-manager,
       nixvim,
       git-mob,
+      catppuccin,
     }:
     let
       system = "x86_64-linux";
@@ -79,6 +81,7 @@
           nixvim
           pkgs
           git-mob
+          catppuccin
           ;
       };
 

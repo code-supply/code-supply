@@ -1,4 +1,10 @@
-{ home-manager, pkgs, nixvim, git-mob }:
+{
+  home-manager,
+  pkgs,
+  nixvim,
+  git-mob,
+  catppuccin,
+}:
 
 home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
@@ -6,6 +12,7 @@ home-manager.lib.homeManagerConfiguration {
   modules = [
     ./audio-plugins.nix
     ./audio-programs.nix
+    catppuccin.homeManagerModules.catppuccin
     ./cli.nix
     ./dev.nix
     ./firefox.nix
@@ -17,8 +24,9 @@ home-manager.lib.homeManagerConfiguration {
     ./home.nix
     ./k8s.nix
     ./kitty.nix
-    nixvim.homeManagerModules.nixvim
     ./nixvim
+    nixvim.homeManagerModules.nixvim
+    ./theme.nix
     ./unfree.nix
   ];
 
