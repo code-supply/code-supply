@@ -4,8 +4,6 @@
       enable = true;
       settings = {
         sources = [
-          { name = "buffer"; }
-          { name = "luasnip"; }
           { name = "nvim_lsp"; }
           { name = "path"; }
         ];
