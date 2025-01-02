@@ -3,7 +3,7 @@
 Things in here:
 
 - bin/ : scripts for dealing with things Code Supply develops
-- terraform/ : Infra config for all clusters, VMs, domain names etc.
+- tofu/ : Infra config for all clusters, VMs, domain names etc.
 - boxes/ : laptops and server configs
 - web/ : Websites that I work on
   - andrewbruce-net/ : my homepage, hosted by Caddy.
