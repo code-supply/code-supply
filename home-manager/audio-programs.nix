@@ -22,7 +22,6 @@
     packages = with pkgs; [
       abcde
       alsa-scarlett-gui
-      ardour
       audacity
       bitwig-studio5
       elektroid
