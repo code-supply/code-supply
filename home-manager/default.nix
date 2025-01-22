@@ -10,6 +10,7 @@ home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
 
   modules = [
+    ./3d-printing.nix
     ./audio-plugins.nix
     ./audio-programs.nix
     catppuccin.homeManagerModules.catppuccin
