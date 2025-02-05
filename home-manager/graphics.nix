@@ -4,5 +4,6 @@
     ffmpeg
     gimp
     imagemagick
+    kdenlive
   ];
 }
