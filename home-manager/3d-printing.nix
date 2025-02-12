@@ -7,6 +7,7 @@ with pkgs;
     appimage-run
     blender
     cura-appimage
+    inkscape
     openscad-unstable
     prusa-slicer
   ];
