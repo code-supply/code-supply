@@ -20,13 +20,36 @@ in
   services.klipper = {
     enable = true;
     configFile = "${printerConfig}/printer.cfg";
+    logFile = "/var/lib/klipper/klipper.log";
+    user = "klipper";
+    group = "klipper";
+  };
+
+  users = {
+    users = {
+      klipper = {
+        isSystemUser = true;
+        group = "klipper";
+      };
+      moonraker.extraGroups = [ "klipper" ];
+    };
+    groups.klipper = { };
   };
 
   services.moonraker = {
     enable = true;
+    settings = {
+      authorization = {
+        force_logins = false;
+        trusted_clients = [
+          "0.0.0.0/0"
+        ];
+        cors_domains = [
+          "*"
+        ];
+      };
+    };
   };
-
-  users.groups.klipper.members = [ "moonraker" ];
 
   services.fluidd = {
     enable = true;
