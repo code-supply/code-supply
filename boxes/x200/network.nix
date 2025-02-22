@@ -1,6 +1,7 @@
 {
   networking = {
     hostName = "x200";
+    firewall.enable = false;
     wireless.enable = true;
     wireless.secretsFile = "/run/secrets/wireless.conf";
     wireless.networks.vegetables2ghz = {
