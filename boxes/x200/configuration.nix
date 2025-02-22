@@ -2,6 +2,7 @@
   imports = [
     ../common/user.nix
     ./hardware-configuration.nix
+    ./network.nix
   ];
 
   networking.wireless.enable = true;
