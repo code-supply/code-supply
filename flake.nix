@@ -93,6 +93,7 @@
         fatty = callBox "fatty";
         p14s = callBox "p14s";
         unhinged = callBox "unhinged";
+        x200 = callBox "x200";
       };
 
       templates.elixir = {
