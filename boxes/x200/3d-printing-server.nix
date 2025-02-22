@@ -26,6 +26,8 @@ in
     enable = true;
   };
 
+  users.groups.klipper.members = [ "moonraker" ];
+
   services.fluidd = {
     enable = true;
   };
