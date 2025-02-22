@@ -1,4 +1,9 @@
-{ nix, system, websites, ... }:
+{
+  nix,
+  system,
+  websites,
+  ...
+}:
 
 {
   inherit system;
@@ -6,11 +11,11 @@
   modules = [
     ./caddy.nix
     ../common/locale.nix
+    ../common/server-nix.nix
     ../common/user.nix
     ./configuration.nix
     ./hardware-configuration.nix
     ./network.nix
-    ./nix.nix
     ({ nix.package = nix; })
     ./printers.nix
     ./tweaks.nix
