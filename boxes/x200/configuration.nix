@@ -1,10 +1,17 @@
+{ pkgs, ... }:
+
 {
   imports = [
     ./3d-printing-server.nix
+    ../common/locale.nix
     ../common/server-nix.nix
     ../common/user.nix
     ./hardware-configuration.nix
     ./network.nix
+  ];
+
+  environment.systemPackages = with pkgs; [
+    lsof
   ];
 
   networking.wireless.enable = true;
