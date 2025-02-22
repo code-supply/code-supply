@@ -1,5 +1,6 @@
 {
   imports = [
+    ./3d-printing-server.nix
     ../common/server-nix.nix
     ../common/user.nix
     ./hardware-configuration.nix

@@ -15,6 +15,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     catppuccin.url = "github:catppuccin/nix";
+    shubham-klipper = {
+      url = "github:shubham0x13/ender-3-v3-se-klipper";
+      flake = false;
+    };
   };
 
   outputs =
@@ -25,6 +29,7 @@
       nixvim,
       git-mob,
       catppuccin,
+      shubham-klipper,
     }:
     let
       system = "x86_64-linux";
@@ -39,7 +44,12 @@
         name:
         nixpkgs.lib.nixosSystem (
           import ./boxes/${name} {
-            inherit home-manager nixpkgs system;
+            inherit
+              home-manager
+              nixpkgs
+              shubham-klipper
+              system
+              ;
             nix = pkgs.nixVersions.nix_2_24;
             websites = {
               inherit andrewbruce codesupply;
