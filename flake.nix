@@ -39,7 +39,7 @@
         name:
         nixpkgs.lib.nixosSystem (
           import ./boxes/${name} {
-            inherit nixpkgs system;
+            inherit home-manager nixpkgs system;
             nix = pkgs.nixVersions.nix_2_24;
             websites = {
               inherit andrewbruce codesupply;
