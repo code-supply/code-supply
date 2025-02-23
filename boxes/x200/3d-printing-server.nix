@@ -12,6 +12,20 @@ let
       < ${shubham-klipper}/printer.cfg \
       > $out/printer.cfg
 
+    echo "[virtual_sdcard]" >> $out/printer.cfg
+    echo "path: /var/lib/moonraker/gcodes" >> $out/printer.cfg
+    echo >> $out/printer.cfg
+    echo "[pause_resume]" >> $out/printer.cfg
+    echo "[display_status]" >> $out/printer.cfg
+    cat <<EOF >> $out/printer.cfg
+    [gcode_macro CANCEL_PRINT]
+    description: Cancel the actual running print
+    rename_existing: CANCEL_PRINT_BASE
+    gcode:
+      TURN_OFF_HEATERS
+      CANCEL_PRINT_BASE
+    EOF
+
     cp ${shubham-klipper}/macros.cfg $out/
   '';
 in
@@ -24,6 +38,8 @@ in
     user = "klipper";
     group = "klipper";
   };
+
+  security.polkit.enable = true;
 
   users = {
     users = {
