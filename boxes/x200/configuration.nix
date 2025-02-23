@@ -3,6 +3,7 @@
 {
   imports = [
     ./3d-printing-server.nix
+    ./boot.nix
     ../common/locale.nix
     ../common/server-nix.nix
     ../common/user.nix
@@ -13,10 +14,6 @@
   environment.systemPackages = with pkgs; [
     lsof
   ];
-
-  boot.loader.grub.enable = true;
-  boot.loader.grub.efiSupport = true;
-  boot.loader.grub.device = "nodev";
 
   system.stateVersion = "24.11";
 }
