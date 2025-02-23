@@ -5,7 +5,6 @@
 
 mkShell {
   packages = with pkgs; [
-    coreboot-utils
     elixir
     elixir_ls
     flashprog
