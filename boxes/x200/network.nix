@@ -4,11 +4,13 @@
     firewall.enable = false;
     wireless.enable = true;
     wireless.secretsFile = "/var/secrets/wireless.conf";
-    wireless.networks.vegetables2ghz = {
-      pskRaw = "ext:psk_vegetables2ghz";
-      extraConfig = ''
-        ssid="Vegetables 2Ghz"
-      '';
+    wireless.networks = {
+      vegUpstairs2g = {
+        pskRaw = "ext:psk_vegetables2ghz";
+        extraConfig = ''
+          ssid="VegUpstairs2G"
+        '';
+      };
     };
   };
 
