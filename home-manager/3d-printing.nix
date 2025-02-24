@@ -9,7 +9,7 @@ with pkgs;
     cura-appimage
     inkscape
     openscad-unstable
-    prusa-slicer
+    orca-slicer
   ];
 
   programs.nixvim = {
