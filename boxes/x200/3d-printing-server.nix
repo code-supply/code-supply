@@ -109,6 +109,7 @@ in
 
   services.moonraker = {
     enable = true;
+    address = "0.0.0.0";
     settings = {
       octoprint_compat = { };
       authorization = {
