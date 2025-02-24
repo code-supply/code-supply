@@ -4,6 +4,6 @@
     ffmpeg
     gimp
     imagemagick
-    kdenlive
+    kdePackages.kdenlive
   ];
 }
