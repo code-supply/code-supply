@@ -110,6 +110,7 @@ in
   services.moonraker = {
     enable = true;
     settings = {
+      octoprint_compat = { };
       authorization = {
         force_logins = false;
         trusted_clients = [
