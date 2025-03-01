@@ -1,7 +1,6 @@
 {
   nix,
   system,
-  shubham-klipper,
   ...
 }:
 
@@ -11,5 +10,4 @@
     ./configuration.nix
     { nix.package = nix; }
   ];
-  specialArgs = { inherit shubham-klipper; };
 }

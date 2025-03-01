@@ -189,24 +189,7 @@
         "git-mob": "git-mob",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
-        "nixvim": "nixvim",
-        "shubham-klipper": "shubham-klipper"
-      }
-    },
-    "shubham-klipper": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1740329636,
-        "narHash": "sha256-BLl+Ck6t7SjqTAv0hNxWrfP2PJMIkrkO7lCErhOG83g=",
-        "owner": "shubham0x13",
-        "repo": "ender-3-v3-se-klipper",
-        "rev": "0a6ddb8df7018a8bad064f8c5344ff4c45245167",
-        "type": "github"
-      },
-      "original": {
-        "owner": "shubham0x13",
-        "repo": "ender-3-v3-se-klipper",
-        "type": "github"
+        "nixvim": "nixvim"
       }
     },
     "systems": {
