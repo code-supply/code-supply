@@ -11,6 +11,10 @@ let
 in
 
 {
+  environment.systemPackages = with pkgs; [
+    v4l-utils
+  ];
+
   services.go2rtc = {
     enable = true;
     settings.streams = {
