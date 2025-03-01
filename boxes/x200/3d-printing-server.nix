@@ -17,8 +17,13 @@ in
 
   services.go2rtc = {
     enable = true;
-    settings.streams = {
-      cam1 = "ffmpeg:device?video=/dev/video0&input_format=h264&video_size=1920x1080";
+    settings = {
+      api = {
+        origin = "*";
+      };
+      streams = {
+        cam1 = "ffmpeg:device?video=/dev/video0&input_format=h264&video_size=1920x1080";
+      };
     };
   };
 
