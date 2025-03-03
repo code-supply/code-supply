@@ -63,6 +63,9 @@ in
           "*"
         ];
       };
+      file_manager = {
+        enable_object_processing = true;
+      };
       "webcam Sauron" = {
         service = "webrtc-go2rtc";
         target_fps = 30;
