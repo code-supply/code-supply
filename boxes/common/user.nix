@@ -6,6 +6,7 @@
       "audio"
       "docker"
       "networkmanager"
+      "video"
       "wheel"
     ];
     openssh.authorizedKeys.keys = [
