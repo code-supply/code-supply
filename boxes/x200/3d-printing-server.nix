@@ -70,7 +70,6 @@ in
         service = "webrtc-go2rtc";
         target_fps = 30;
         stream_url = "http://x200.lan:1984/stream.html?src=cam1&mode=webrtc,mse,hls,mjpeg";
-        rotation = 180;
         aspect_ratio = "16:9";
       };
     };
