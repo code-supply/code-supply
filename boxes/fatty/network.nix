@@ -1,6 +1,6 @@
 {
   networking = {
-    hostname = "fatty";
+    hostName = "fatty";
     firewall.enable = false;
   };
 
