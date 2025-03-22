@@ -21,6 +21,6 @@ home-manager.lib.homeManagerConfiguration {
     ./k8s.nix
     ./kitty.nix
     ./nixvim
-    nixvim.homeManagerModules.nivvim
+    nixvim.homeManagerModules.nixvim
   ];
 }
