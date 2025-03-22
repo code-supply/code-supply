@@ -6,12 +6,13 @@
     ../common/disable-tracker-miner.nix
     ../common/gui.nix
     ../common/locale.nix
-    ../common/nix.nix
+    ../common/server-nix.nix
     ../common/steam.nix
     ../common/user.nix
     ./configuration.nix
     ./hardware-configuration.nix
     ./joycon.nix
+    ./network.nix
     ({ nix.package = nix; })
     ./nvidia.nix
     ./steam-console.nix
