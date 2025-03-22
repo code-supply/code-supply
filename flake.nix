@@ -76,7 +76,12 @@
       devShells.${system}.default = devShell;
 
       homeConfigurations."andrew@fatty" = import ./home-manager/fatty.nix {
-        inherit home-manager pkgs git-mob;
+        inherit
+          home-manager
+          nixvim
+          pkgs
+          git-mob
+          ;
       };
 
       homeConfigurations."andrew@p14s" = import ./home-manager {

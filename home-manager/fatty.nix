@@ -1,6 +1,7 @@
 {
   home-manager,
   pkgs,
+  nixvim,
   git-mob,
 }:
 
@@ -20,5 +21,6 @@ home-manager.lib.homeManagerConfiguration {
     ./k8s.nix
     ./kitty.nix
     ./nixvim
+    nixvim.homeManagerModules.nivvim
   ];
 }
