@@ -12,7 +12,6 @@
     ../common/user.nix
     ./configuration.nix
     ./hardware-configuration.nix
-    ./joycon.nix
     ./network.nix
     ({ nix.package = nix; })
     ./nvidia.nix
