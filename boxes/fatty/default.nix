@@ -4,6 +4,7 @@
   inherit system;
   modules = [
     ../common/disable-tracker-miner.nix
+    ../common/gpg-ssh.nix
     ../common/gui.nix
     ../common/locale.nix
     ../common/server-nix.nix

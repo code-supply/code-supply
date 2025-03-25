@@ -1,13 +1,13 @@
 {
   imports = [
     ./boot.nix
+    ../common/gpg-ssh.nix
     ../common/gui.nix
     ../common/locale.nix
     ../common/server-nix.nix
     ../common/steam.nix
     ../common/user.nix
     ./fonts.nix
-    ./gpg-ssh.nix
     ./hardware-configuration.nix
     ./lid-switch.nix
     ./network.nix
