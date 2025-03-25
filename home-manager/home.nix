@@ -14,6 +14,8 @@
     # the Home Manager release notes for a list of state version
     # changes in each release.
     stateVersion = "22.11";
+
+    sessionVariables.FLAKE_CONFIG_URI = "/home/andrew/workspace/code-supply";
   };
 
   programs = {
