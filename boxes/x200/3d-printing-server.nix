@@ -77,5 +77,6 @@ in
 
   services.fluidd = {
     enable = true;
+    nginx.clientMaxBodySize = "100m";
   };
 }
