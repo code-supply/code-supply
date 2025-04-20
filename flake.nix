@@ -73,6 +73,9 @@
         default = andrewbruce;
       };
 
+      packages.aarch64-linux.ketchupKingSDCard =
+        self.nixosConfigurations.ketchup-king.config.system.build.sdImage;
+
       devShells.${system}.default = devShell;
 
       homeConfigurations."andrew@fatty" = import ./home-manager/fatty.nix {
@@ -103,6 +106,12 @@
         p14s = callBox "p14s";
         unhinged = callBox "unhinged";
         x200 = callBox "x200";
+
+        ketchup-king = nixpkgs.lib.nixosSystem (
+          import ./boxes/ketchup-king {
+            inherit nixpkgs;
+          }
+        );
       };
 
       templates.elixir = {
