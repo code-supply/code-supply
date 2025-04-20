@@ -6,6 +6,7 @@ with pkgs;
   home.packages = [
     appimage-run
     blender
+    bootterm
     cura-appimage
     inkscape
     openscad-unstable
