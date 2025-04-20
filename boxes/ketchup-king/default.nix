@@ -8,6 +8,7 @@
   modules = [
     ../common/user.nix
     ../common/ssh.nix
+    ./3d-printing-server.nix
     {
       imports = [
         "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
