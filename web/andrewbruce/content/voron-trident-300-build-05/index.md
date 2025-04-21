@@ -42,11 +42,11 @@ well. Which leads us to temperature.
 ### Temperature
 
 I bought a cheap thermometer from Amazon and magnetised it to the side of the
-enclosure, such that it can be viewed on camera (I have a webcame on legs
+enclosure, such that it can be viewed on camera (I have a webcam on legs
 inside the enclosure).
 
 To maintain sufficient heat inside the enclosure, and also to provide light for
-the camera, I'm running a filament lamb located next to one of the flaps where
+the camera, I'm running a filament lamp located next to one of the flaps where
 drafts can sneak in.
 
 Before starting a print from cold, I'll turn the lamp on, set the bed heater to
