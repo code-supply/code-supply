@@ -5,6 +5,7 @@
     extraGroups = [
       "audio"
       "dialout"
+      "disk"
       "docker"
       "networkmanager"
       "video"
