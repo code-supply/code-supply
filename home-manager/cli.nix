@@ -24,6 +24,7 @@
       nmap
       pass
       pciutils
+      pv
       ripgrep
       sysfsutils
       unzip
