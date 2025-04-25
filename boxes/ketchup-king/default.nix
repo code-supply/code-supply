@@ -6,8 +6,9 @@
 {
   system = "x86_64-linux";
   modules = [
-    ../common/user.nix
+    ../common/server-nix.nix
     ../common/ssh.nix
+    ../common/user.nix
     ./3d-printing-server.nix
     {
       imports = [
