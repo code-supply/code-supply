@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+verb=${1:-switch}
+
+nixos-rebuild "$verb" \
+  --target-host ketchup-king.lan \
+  --flake .#ketchup-king \
+  --use-remote-sudo \
+  --fast

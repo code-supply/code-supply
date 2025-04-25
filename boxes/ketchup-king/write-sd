@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -eu
+
+nix build \
+  .#packages.aarch64-linux.ketchupKingSDCard \
+  --out-link sdcard-result
+
+umount /dev/sda* || true
+
+unzstd \
+  < sdcard-result/sd-image/nixos-image-sd-card-*aarch64-linux.img.zst \
+  | pv \
+  > /dev/sda
