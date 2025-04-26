@@ -6,6 +6,10 @@
       "$HOME/workspace/google-cloud-sdk/bin"
     ];
 
+    shellAliases = {
+      "ssh" = "kitten ssh";
+    };
+
     packages = with pkgs; [
       binutils
       cntr
