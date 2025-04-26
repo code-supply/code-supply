@@ -7,5 +7,6 @@ target
 helm/*/secrets.yaml
 .direnv
 result
+sdcard-result
 .elixir-tools
 web/andrewbruce/public
