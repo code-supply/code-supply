@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -eu
+
+host=$1
+password=$2
+
+ssh "$host" -- sudo mkdir -p /var/secrets
+cat <<EOF | ssh "$host" -- "sudo tee /var/secrets/wireless.conf > /dev/null"
+psk_vegetables2ghz=$password
+EOF
