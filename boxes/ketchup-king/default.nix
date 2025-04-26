@@ -6,10 +6,11 @@
 {
   system = "x86_64-linux";
   modules = [
+    ./3d-printing-server.nix
+    ../common/3d-printing-server.nix
     ../common/server-nix.nix
     ../common/ssh.nix
     ../common/user.nix
-    ./3d-printing-server.nix
     ./network.nix
     ./rpi.nix
     {
