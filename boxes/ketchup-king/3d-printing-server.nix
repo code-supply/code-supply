@@ -13,14 +13,5 @@ in
 {
   services.klipper = {
     configFile = "${configs}/printer.cfg";
-    package =
-      (pkgs.pkgsCross.aarch64-multiplatform.klipper.override {
-        python3 = pkgs.buildPackages.python3;
-      }).overrideAttrs
-        ({
-          postBuild = ''
-            python ./chelper/__init__.py || true
-          '';
-        });
   };
 }
