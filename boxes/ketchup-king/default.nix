@@ -8,7 +8,7 @@
   modules = [
     ./3d-printing-server.nix
     ../common/3d-printing-server.nix
-    ../common/server-nix.nix
+    ../common/nix.nix
     ../common/ssh.nix
     ../common/user.nix
     ./network.nix

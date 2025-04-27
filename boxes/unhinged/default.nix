@@ -11,7 +11,7 @@
   modules = [
     ./caddy.nix
     ../common/locale.nix
-    ../common/server-nix.nix
+    ../common/nix.nix
     ../common/server-tweaks.nix
     ../common/user.nix
     ./configuration.nix

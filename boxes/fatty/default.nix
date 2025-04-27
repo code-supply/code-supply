@@ -7,7 +7,7 @@
     ../common/gpg-ssh.nix
     ../common/gui.nix
     ../common/locale.nix
-    ../common/server-nix.nix
+    ../common/nix.nix
     ../common/steam.nix
     ../common/user.nix
     ./configuration.nix
