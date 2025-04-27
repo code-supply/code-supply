@@ -18,4 +18,20 @@ in
     stream_url = "http://x200.lan:1984/stream.html?src=cam1&mode=webrtc,mse,hls,mjpeg";
     aspect_ratio = "16:9";
   };
+
+  environment.systemPackages = with pkgs; [
+    v4l-utils
+  ];
+
+  services.go2rtc = {
+    enable = true;
+    settings = {
+      api = {
+        origin = "*";
+      };
+      streams = {
+        cam1 = "ffmpeg:device?video=/dev/video0&input_format=h264&video_size=1920x1080";
+      };
+    };
+  };
 }
