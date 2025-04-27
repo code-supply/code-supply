@@ -1,5 +1,6 @@
 {
   nixpkgs,
+  nixos-hardware,
   ...
 }:
 
@@ -13,6 +14,7 @@
     ../common/user.nix
     ./network.nix
     ./rpi.nix
+    nixos-hardware.nixosModules.raspberry-pi-4
     {
       system.stateVersion = "25.05";
       imports = [

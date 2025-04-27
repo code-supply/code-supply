@@ -2,6 +2,7 @@
   networking = {
     firewall.enable = false;
     hostName = "ketchup-king";
+    networkmanager.enable = false;
     wireless.enable = true;
     wireless.secretsFile = "/var/secrets/wireless.conf";
     wireless.networks = {
