@@ -14,6 +14,7 @@
     ./network.nix
     ./rpi.nix
     {
+      system.stateVersion = "25.05";
       imports = [
         "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
       ];
