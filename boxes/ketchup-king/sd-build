@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -eu
+
+nix build \
+  .#packages.aarch64-linux.ketchupKingSDCard \
+  --out-link sdcard-result

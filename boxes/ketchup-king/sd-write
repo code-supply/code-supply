@@ -2,11 +2,11 @@
 
 set -eu
 
-nix build \
-  .#packages.aarch64-linux.ketchupKingSDCard \
-  --out-link sdcard-result
+cwd="$(dirname "$0")"
 
-umount /dev/sda* || true
+"$cwd/sd-build"
+
+umount "/run/media/$USER/"*
 
 unzstd \
   < sdcard-result/sd-image/nixos-image-sd-card-*aarch64-linux.img.zst \
