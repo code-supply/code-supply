@@ -1,9 +1,4 @@
 {
-  pkgs,
-  ...
-}:
-
-{
   services.klipper = {
     enable = true;
     logFile = "/var/lib/klipper/klipper.log";
@@ -41,12 +36,6 @@
       };
       file_manager = {
         enable_object_processing = true;
-      };
-      "webcam Sauron" = {
-        service = "webrtc-go2rtc";
-        target_fps = 30;
-        stream_url = "http://x200.lan:1984/stream.html?src=cam1&mode=webrtc,mse,hls,mjpeg";
-        aspect_ratio = "16:9";
       };
     };
   };
