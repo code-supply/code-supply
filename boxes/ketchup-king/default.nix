@@ -1,4 +1,5 @@
 {
+  isd,
   nixpkgs,
   nixos-hardware,
   ...
@@ -18,6 +19,7 @@
     ./rpi.nix
     {
       time.timeZone = "Europe/London";
+      environment.systemPackages = [ isd.packages.aarch64-linux.default ];
       system.stateVersion = "25.05";
     }
   ];

@@ -1,32 +1,37 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nixvim = {
-      url = "github:nix-community/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    catppuccin.url = "github:catppuccin/nix";
     git-mob = {
       url = "github:code-supply/rusty-git-mob";
       # url = "/home/andrew/workspace/rusty-git-mob";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    catppuccin.url = "github:catppuccin/nix";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    isd = {
+      url = "github:isd-project/isd";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixvim = {
+      url = "github:nix-community/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
       self,
-      nixpkgs,
-      nixos-hardware,
-      home-manager,
-      nixvim,
-      git-mob,
       catppuccin,
+      git-mob,
+      home-manager,
+      isd,
+      nixos-hardware,
+      nixpkgs,
+      nixvim,
     }:
     let
       system = "x86_64-linux";
@@ -111,7 +116,7 @@
 
         ketchup-king = nixpkgs.lib.nixosSystem (
           import ./boxes/ketchup-king {
-            inherit nixpkgs nixos-hardware;
+            inherit isd nixpkgs nixos-hardware;
           }
         );
       };
