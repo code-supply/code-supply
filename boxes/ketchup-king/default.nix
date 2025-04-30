@@ -16,6 +16,9 @@
     ./network.nix
     nixos-hardware.nixosModules.raspberry-pi-4
     ./rpi.nix
-    { system.stateVersion = "25.05"; }
+    {
+      time.timeZone = "Europe/London";
+      system.stateVersion = "25.05";
+    }
   ];
 }
