@@ -18,8 +18,12 @@
     nixos-hardware.nixosModules.raspberry-pi-4
     ./rpi.nix
     {
+      nixpkgs.overlays = [
+        (final: prev: {
+          isd = isd.packages.aarch64-linux.default;
+        })
+      ];
       time.timeZone = "Europe/London";
-      environment.systemPackages = [ isd.packages.aarch64-linux.default ];
       system.stateVersion = "25.05";
     }
   ];

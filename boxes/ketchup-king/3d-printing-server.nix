@@ -13,6 +13,7 @@ in
 {
   environment.systemPackages = with pkgs; [
     klipperscreen
+    isd
     xdotool
   ];
 
