@@ -11,31 +11,31 @@ let
 in
 
 {
-  environment.systemPackages = [
-    pkgs.klipperscreen
-    pkgs.xdotool
+  environment.systemPackages = with pkgs; [
+    klipperscreen
+    xdotool
   ];
 
-  services.xserver.enable = true;
+  services.xserver = {
+    enable = true;
 
-  services.xserver.displayManager.session = [
-    {
-      name = "KlipperScreen";
-      manage = "desktop";
-      start = ''
-        KlipperScreen &
-        until xdotool search --class screen.py windowsize 100% 100%
-        do
-          sleep 0.1
-        done
-        waitPID=$!
-      '';
-    }
-  ];
-  services.displayManager.defaultSession = "KlipperScreen";
-  services.xserver.displayManager.lightdm.enable = true;
-
-  services.klipper = {
-    configFile = "${configs}/printer.cfg";
+    displayManager.session = [
+      {
+        name = "KlipperScreen";
+        manage = "desktop";
+        start = ''
+          KlipperScreen &
+          until xdotool search --class screen.py windowsize 100% 100%
+          do
+            sleep 0.1
+          done
+          waitPID=$!
+        '';
+      }
+    ];
+    displayManager.lightdm.enable = true;
   };
+  services.displayManager.defaultSession = "KlipperScreen";
+
+  services.klipper.configFile = "${configs}/printer.cfg";
 }
