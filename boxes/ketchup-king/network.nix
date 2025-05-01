@@ -2,17 +2,7 @@
   networking = {
     firewall.enable = false;
     hostName = "ketchup-king";
-    networkmanager.enable = false;
-    wireless.enable = true;
-    wireless.secretsFile = "/var/secrets/wireless.conf";
-    wireless.networks = {
-      vegUpstairs2g = {
-        pskRaw = "ext:psk_vegetables2ghz";
-        extraConfig = ''
-          ssid="VegUpstairs2G"
-        '';
-      };
-    };
+    networkmanager.enable = true;
   };
   security.sudo.wheelNeedsPassword = false;
 }
