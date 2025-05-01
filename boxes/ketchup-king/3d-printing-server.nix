@@ -12,10 +12,8 @@ in
 
 {
   environment.systemPackages = with pkgs; [
-    klipperscreen
     isd
     lsof
-    xdotool
   ];
 
   boot = {
@@ -38,26 +36,11 @@ in
     loader.timeout = 0;
   };
 
-  services.xserver = {
+  services.cage = {
     enable = true;
-
-    displayManager.session = [
-      {
-        name = "KlipperScreen";
-        manage = "desktop";
-        start = ''
-          KlipperScreen &
-          until xdotool search --class screen.py windowsize 100% 100%
-          do
-            sleep 0.1
-          done
-          waitPID=$!
-        '';
-      }
-    ];
-    displayManager.lightdm.enable = true;
+    user = "andrew";
+    program = "${pkgs.klipperscreen}/bin/KlipperScreen";
   };
-  services.displayManager.defaultSession = "KlipperScreen";
 
   services.klipper.configFile = "${configs}/printer.cfg";
 }
