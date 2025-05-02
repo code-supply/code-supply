@@ -252,16 +252,16 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1745526057,
-        "narHash": "sha256-ITSpPDwvLBZBnPRS2bUcHY3gZSwis/uTe255QgMtTLA=",
-        "owner": "NixOS",
+        "lastModified": 1746199700,
+        "narHash": "sha256-tll5MFTg+d0ZFaZHSIj9zRL9LrzxafUXp3pQ1pzP9RU=",
+        "owner": "code-supply",
         "repo": "nixpkgs",
-        "rev": "f771eb401a46846c1aebd20552521b233dd7e18b",
+        "rev": "68e874f028d148a1637c83c096a0f91e52dfe01f",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "owner": "code-supply",
+        "ref": "klipperscreen-044-045",
         "repo": "nixpkgs",
         "type": "github"
       }
