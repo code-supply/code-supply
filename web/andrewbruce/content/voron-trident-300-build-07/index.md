@@ -21,13 +21,15 @@ activate. Of course, I should've tested the probe before running the Trident
 levelling macro, but I found that out afterwards.
 
 Since then, I've figured out the BTT 43 TFT screen that comes with the LDO kit
-and it's running with the Raspberry Pi 4b on NixOS nicely. I have some
-upstreaming work to do before there's an out-of-box experience for Nix users,
-but I hope to get there someday soon. I think it'd be *really* nice to have a
-web GUI that configures an SD card image for Raspberry Pi Vorons, and that's
-totally doable with Nix.
+and it's running with the Raspberry Pi 4b on NixOS nicely (I [fixed the Network
+panel for NixOS](https://github.com/NixOS/nixpkgs/pull/403654) on the way).
+There's much more work to do before there's an out-of-box experience for Nix
+users, but I hope to get there someday soon. I think it'd be *really* nice to
+have a web GUI that configures an SD card image for Raspberry Pi Vorons, and
+that's totally doable with Nix.
 
-My initial serial request video hasn't resulted in a serial yet, but I'm hoping
-with some more visuals of the full printer it'll be accepted.
+Aaaand I [have a
+serial](https://www.reddit.com/r/voroncorexy/comments/1kbc0cu/comment/mqlusql/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button):
+VT.1967!
 
 Now, about that MMU...
