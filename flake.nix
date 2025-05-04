@@ -15,7 +15,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    nixpkgs.url = "github:code-supply/nixpkgs/klipperscreen-044-045";
+    nixpkgs.url = "github:code-supply/nixpkgs";
     nixvim = {
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
