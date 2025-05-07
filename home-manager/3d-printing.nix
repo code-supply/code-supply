@@ -9,6 +9,7 @@ with pkgs;
     bootterm
     cura-appimage
     inkscape
+    klipper
     openscad-unstable
     orca-slicer
   ];
