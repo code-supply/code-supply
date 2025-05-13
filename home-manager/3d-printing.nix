@@ -8,6 +8,7 @@ with pkgs;
     blender
     bootterm
     cura-appimage
+    freecad
     inkscape
     klipper
     openscad-unstable
