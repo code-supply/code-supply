@@ -8,6 +8,13 @@ let
     mkdir $out
     sed 's#\[include \(.*\)\]#[include ${./klipper}/\1]#' < ${./klipper/printer.cfg} > $out/printer.cfg
   '';
+
+  klipperZCalibration = pkgs.fetchFromGitHub {
+    owner = "protoloft";
+    repo = "klipper_z_calibration";
+    rev = "487056ac07e7df082ea0b9acc7365b4a9874889e";
+    hash = "sha256-WWP0LqhJ3ET4nxR8hVpq1uMOSK+CX7f3LXjOAZbRY8c=";
+  };
 in
 
 {
@@ -42,5 +49,12 @@ in
     program = "${pkgs.klipperscreen}/bin/KlipperScreen";
   };
 
-  services.klipper.configFile = "${configs}/printer.cfg";
+  services.klipper = {
+    configFile = "${configs}/printer.cfg";
+    package = pkgs.klipper.overrideAttrs (old: {
+      postUnpack = ''
+        ln -s ${klipperZCalibration}/z_calibration.py source/klippy/extras/
+      '';
+    });
+  };
 }
