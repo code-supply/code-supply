@@ -15,6 +15,13 @@ let
     rev = "487056ac07e7df082ea0b9acc7365b4a9874889e";
     hash = "sha256-WWP0LqhJ3ET4nxR8hVpq1uMOSK+CX7f3LXjOAZbRY8c=";
   };
+
+  shakeTune = pkgs.fetchFromGitHub {
+    owner = "Frix-x";
+    repo = "klippain-shaketune";
+    rev = "c8ef451ec4153af492193ac31ed7eea6a52dbe4e";
+    hash = "sha256-zzskp7ZiwR7nJ2e5eTCyEilctDoRxZdBn90zncFm0Rw=";
+  };
 in
 
 {
@@ -51,10 +58,35 @@ in
 
   services.klipper = {
     configFile = "${configs}/printer.cfg";
-    package = pkgs.klipper.overrideAttrs (old: {
-      postUnpack = ''
-        ln -s ${klipperZCalibration}/z_calibration.py source/klippy/extras/
-      '';
-    });
+    package = (
+      pkgs.klipper.overrideAttrs {
+        buildInputs = [
+          (pkgs.python3.withPackages (
+            p: with p; [
+              # original deps
+              python-can
+              cffi
+              pyserial
+              greenlet
+              jinja2
+              markupsafe
+              numpy
+
+              # shaketune deps
+              GitPython
+              matplotlib
+              numpy
+              scipy
+              pywavelets
+              zstandard
+            ]
+          ))
+        ];
+        postUnpack = ''
+          ln -sfv ${klipperZCalibration}/z_calibration.py source/klippy/extras/
+          ln -nsfv ${shakeTune}/shaketune source/klippy/extras/shaketune
+        '';
+      }
+    );
   };
 }
