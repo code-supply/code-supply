@@ -6,8 +6,17 @@
 let
   configs = pkgs.runCommand "create-printer-config" { } ''
     mkdir $out
-    sed 's#\[include \(.*\)\]#[include ${./klipper}/\1]#' < ${./klipper/printer.cfg} > $out/printer.cfg
+    sed '/\[include .\/KAMP/! s#\[include \(.*\)\]#[include ${./klipper}/\1]#;s#\[include ./KAMP#[include ${kamp}/Configuration#' \
+      < ${./klipper/printer.cfg} \
+      > $out/printer.cfg
   '';
+
+  kamp = pkgs.fetchFromGitHub {
+    owner = "kyleisah";
+    repo = "Klipper-Adaptive-Meshing-Purging";
+    rev = "b0dad8ec9ee31cb644b94e39d4b8a8fb9d6c9ba0";
+    hash = "sha256-05l1rXmjiI+wOj2vJQdMf/cwVUOyq5d21LZesSowuvc=";
+  };
 
   klipperZCalibration = pkgs.fetchFromGitHub {
     owner = "protoloft";
@@ -84,7 +93,8 @@ in
         ];
         postUnpack = ''
           ln -sfv ${klipperZCalibration}/z_calibration.py source/klippy/extras/
-          ln -nsfv ${shakeTune}/shaketune source/klippy/extras/shaketune
+          ln -sfv ${shakeTune}/shaketune source/klippy/extras/shaketune
+          ln -sfv ${kamp}/Configuration source/klippy/extras/KAMP
         '';
       }
     );
