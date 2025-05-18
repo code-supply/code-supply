@@ -59,11 +59,22 @@ in
     loader.timeout = 0;
   };
 
-  services.cage = {
-    enable = true;
-    user = "andrew";
-    program = "${pkgs.klipperscreen}/bin/KlipperScreen";
-  };
+  services.cage =
+    let
+      klipperscreen = pkgs.klipperscreen.overrideAttrs {
+        src = pkgs.fetchFromGitHub {
+          owner = "code-supply";
+          repo = "KlipperScreen";
+          rev = "42e23d10391d0c37436072e05b36206d1f868078";
+          hash = "sha256-Day5+WelngfNP+nFq9z55jekDUufg83reR8FlLD65jg=";
+        };
+      };
+    in
+    {
+      enable = true;
+      user = "andrew";
+      program = "${klipperscreen}/bin/KlipperScreen";
+    };
 
   services.klipper = {
     configFile = "${configs}/printer.cfg";
