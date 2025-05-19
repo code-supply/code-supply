@@ -2,6 +2,7 @@
   isd,
   nixpkgs,
   nixos-hardware,
+  klipperscreen,
   ...
 }:
 
@@ -21,6 +22,7 @@
       nixpkgs.overlays = [
         (final: prev: {
           isd = isd.packages.aarch64-linux.default;
+          klipperscreenSrc = klipperscreen;
         })
       ];
       time.timeZone = "Europe/London";

@@ -31,6 +31,10 @@ let
     rev = "c8ef451ec4153af492193ac31ed7eea6a52dbe4e";
     hash = "sha256-zzskp7ZiwR7nJ2e5eTCyEilctDoRxZdBn90zncFm0Rw=";
   };
+
+  klipperscreen = pkgs.klipperscreen.overrideAttrs {
+    src = pkgs.klipperscreenSrc;
+  };
 in
 
 {
@@ -59,22 +63,12 @@ in
     loader.timeout = 0;
   };
 
-  services.cage =
-    let
-      klipperscreen = pkgs.klipperscreen.overrideAttrs {
-        src = pkgs.fetchFromGitHub {
-          owner = "code-supply";
-          repo = "KlipperScreen";
-          rev = "42e23d10391d0c37436072e05b36206d1f868078";
-          hash = "sha256-Day5+WelngfNP+nFq9z55jekDUufg83reR8FlLD65jg=";
-        };
-      };
-    in
-    {
-      enable = true;
-      user = "andrew";
-      program = "${klipperscreen}/bin/KlipperScreen";
-    };
+  services.cage = {
+    enable = true;
+    user = "andrew";
+    program = "${klipperscreen}/bin/KlipperScreen";
+    extraArguments = [ "-ds" ];
+  };
 
   services.klipper = {
     configFile = "${configs}/printer.cfg";

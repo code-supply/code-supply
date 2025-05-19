@@ -14,8 +14,12 @@
       url = "github:isd-project/isd";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    klipperscreen = {
+      url = "github:code-supply/KlipperScreen";
+      flake = false;
+    };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    nixpkgs.url = "github:NixOS/nixpkgs";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixvim = {
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,6 +36,7 @@
       nixos-hardware,
       nixpkgs,
       nixvim,
+      klipperscreen,
     }:
     let
       system = "x86_64-linux";
@@ -116,7 +121,12 @@
 
         ketchup-king = nixpkgs.lib.nixosSystem (
           import ./boxes/ketchup-king {
-            inherit isd nixpkgs nixos-hardware;
+            inherit
+              isd
+              nixpkgs
+              nixos-hardware
+              klipperscreen
+              ;
           }
         );
       };

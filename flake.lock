@@ -183,6 +183,22 @@
         "type": "github"
       }
     },
+    "klipperscreen": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1747679399,
+        "narHash": "sha256-BP83AUYCAeSpn9hADLFfg5LrMSV6h87G+MttU8KZb1k=",
+        "owner": "code-supply",
+        "repo": "KlipperScreen",
+        "rev": "46592f4a4b3e3e1311c3e9d7d495e445a12ce017",
+        "type": "github"
+      },
+      "original": {
+        "owner": "code-supply",
+        "repo": "KlipperScreen",
+        "type": "github"
+      }
+    },
     "nix-appimage": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -252,15 +268,16 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1747490480,
-        "narHash": "sha256-sUPxSgzpM2dQ07s49ZY6UZ5Cf0BMEUxgJ7PzNxREBWc=",
+        "lastModified": 1747467164,
+        "narHash": "sha256-JBXbjJ0t6T6BbVc9iPVquQI9XSXCGQJD8c8SgnUquus=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e3e3d3b09d63915c888293de19152346c5cb8e6c",
+        "rev": "3fcbdcfc707e0aa42c541b7743e05820472bdaec",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -366,6 +383,7 @@
         "git-mob": "git-mob",
         "home-manager": "home-manager",
         "isd": "isd",
+        "klipperscreen": "klipperscreen",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
         "nixvim": "nixvim"
