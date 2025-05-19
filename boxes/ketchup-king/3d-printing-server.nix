@@ -63,10 +63,15 @@ in
     loader.timeout = 0;
   };
 
+  programs.firefox.enable = true;
+  programs.firefox.preferences = {
+    "layout.css.devPixelsPerPx" = "1.5";
+  };
+
   services.cage = {
     enable = true;
     user = "andrew";
-    program = "${klipperscreen}/bin/KlipperScreen";
+    program = "/run/current-system/sw/bin/firefox -kiosk http://localhost/";
     extraArguments = [ "-ds" ];
   };
 
