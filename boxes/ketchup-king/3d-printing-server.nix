@@ -71,7 +71,7 @@ in
   services.cage = {
     enable = true;
     user = "andrew";
-    program = "/run/current-system/sw/bin/firefox -kiosk http://localhost/";
+    program = "${klipperscreen}/bin/KlipperScreen";
     extraArguments = [ "-ds" ];
   };
 
