@@ -78,35 +78,25 @@ in
   services.klipper = {
     configFile = "${configs}/printer.cfg";
     package = (
-      pkgs.klipper.overrideAttrs {
-        buildInputs = [
-          (pkgs.python3.withPackages (
-            p: with p; [
-              # original deps
-              python-can
-              cffi
-              pyserial
-              greenlet
-              jinja2
-              markupsafe
-              numpy
-
-              # shaketune deps
-              GitPython
-              matplotlib
-              numpy
-              scipy
-              pywavelets
-              zstandard
-            ]
-          ))
-        ];
-        postUnpack = ''
-          ln -sfv ${klipperZCalibration}/z_calibration.py source/klippy/extras/
-          ln -sfv ${shakeTune}/shaketune source/klippy/extras/shaketune
-          ln -sfv ${kamp}/Configuration source/klippy/extras/KAMP
-        '';
-      }
+      (pkgs.klipper.override {
+        extraPythonPackages =
+          p: with p; [
+            # shaketune deps
+            GitPython
+            matplotlib
+            numpy
+            scipy
+            pywavelets
+            zstandard
+          ];
+      }).overrideAttrs
+        {
+          postUnpack = ''
+            ln -sfv ${klipperZCalibration}/z_calibration.py source/klippy/extras/
+            ln -sfv ${shakeTune}/shaketune source/klippy/extras/shaketune
+            ln -sfv ${kamp}/Configuration source/klippy/extras/KAMP
+          '';
+        }
     );
   };
 }
