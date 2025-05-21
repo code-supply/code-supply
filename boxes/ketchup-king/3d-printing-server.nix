@@ -63,7 +63,7 @@ in
     loader.timeout = 0;
   };
 
-  programs.firefox.enable = true;
+  programs.firefox.enable = false;
   programs.firefox.preferences = {
     "layout.css.devPixelsPerPx" = "1.5";
   };
