@@ -4,9 +4,31 @@
 }:
 
 let
+  klipper = (
+    (pkgs.klipper.override {
+      extraPythonPackages =
+        p: with p; [
+          # shaketune deps
+          GitPython
+          matplotlib
+          numpy
+          scipy
+          pywavelets
+          zstandard
+        ];
+    }).overrideAttrs
+      {
+        postUnpack = ''
+          ln -sfv ${klipperZCalibration}/z_calibration.py source/klippy/extras/
+          ln -sfv ${shakeTune}/shaketune source/klippy/extras/shaketune
+          ln -sfv ${kamp}/Configuration source/klippy/extras/KAMP
+        '';
+      }
+  );
+
   configs = pkgs.runCommand "create-printer-config" { } ''
     mkdir $out
-    sed '/\[include .\/KAMP/! s#\[include \(.*\)\]#[include ${./klipper}/\1]#;s#\[include ./KAMP#[include ${kamp}/Configuration#' \
+    sed '/\[include extras\//! s#\[include \(.*\)\]#[include ${./klipper}/\1]#;s#\[include extras/#[include ${klipper}/lib/klipper/extras/#' \
       < ${./klipper/printer.cfg} \
       > $out/printer.cfg
   '';
@@ -77,26 +99,6 @@ in
 
   services.klipper = {
     configFile = "${configs}/printer.cfg";
-    package = (
-      (pkgs.klipper.override {
-        extraPythonPackages =
-          p: with p; [
-            # shaketune deps
-            GitPython
-            matplotlib
-            numpy
-            scipy
-            pywavelets
-            zstandard
-          ];
-      }).overrideAttrs
-        {
-          postUnpack = ''
-            ln -sfv ${klipperZCalibration}/z_calibration.py source/klippy/extras/
-            ln -sfv ${shakeTune}/shaketune source/klippy/extras/shaketune
-            ln -sfv ${kamp}/Configuration source/klippy/extras/KAMP
-          '';
-        }
-    );
+    package = klipper;
   };
 }
