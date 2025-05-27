@@ -4,11 +4,29 @@
 }:
 
 let
-  klipper = (
-    (pkgs.klipper.override {
-      extraPythonPackages =
+  plugins = [
+    {
+      name = "KAMP";
+      configLink.from = "Configuration";
+      configLink.to = "KAMP";
+      src = pkgs.fetchFromGitHub {
+        owner = "kyleisah";
+        repo = "Klipper-Adaptive-Meshing-Purging";
+        rev = "b0dad8ec9ee31cb644b94e39d4b8a8fb9d6c9ba0";
+        hash = "sha256-05l1rXmjiI+wOj2vJQdMf/cwVUOyq5d21LZesSowuvc=";
+      };
+    }
+    {
+      name = "shaketune";
+      configLink.from = "shaketune";
+      src = pkgs.fetchFromGitHub {
+        owner = "Frix-x";
+        repo = "klippain-shaketune";
+        rev = "c8ef451ec4153af492193ac31ed7eea6a52dbe4e";
+        hash = "sha256-zzskp7ZiwR7nJ2e5eTCyEilctDoRxZdBn90zncFm0Rw=";
+      };
+      deps =
         p: with p; [
-          # shaketune deps
           GitPython
           matplotlib
           numpy
@@ -16,13 +34,37 @@ let
           pywavelets
           zstandard
         ];
+    }
+    {
+      name = "z_calibration";
+      configLink.from = "z_calibration.py";
+      src = pkgs.fetchFromGitHub {
+        owner = "protoloft";
+        repo = "klipper_z_calibration";
+        rev = "487056ac07e7df082ea0b9acc7365b4a9874889e";
+        hash = "sha256-WWP0LqhJ3ET4nxR8hVpq1uMOSK+CX7f3LXjOAZbRY8c=";
+      };
+    }
+  ];
+
+  extraPythonPackages =
+    p: builtins.concatMap (plugin: if plugin ? deps then (plugin.deps p) else [ ]) plugins;
+
+  klipper = (
+    (pkgs.klipper.override {
+      inherit extraPythonPackages;
     }).overrideAttrs
       {
-        postUnpack = ''
-          ln -sfv ${klipperZCalibration}/z_calibration.py source/klippy/extras/
-          ln -sfv ${shakeTune}/shaketune source/klippy/extras/shaketune
-          ln -sfv ${kamp}/Configuration source/klippy/extras/KAMP
-        '';
+        postUnpack = builtins.foldl' (
+          acc: plugin:
+          let
+            dest = if plugin.configLink ? to then plugin.configLink.to else plugin.configLink.from;
+          in
+          acc
+          + ''
+            ln -sfv ${plugin.src}/${plugin.configLink.from} source/klippy/extras/${dest}
+          ''
+        ) "" plugins;
       }
   );
 
@@ -32,27 +74,6 @@ let
       < ${./klipper/printer.cfg} \
       > $out/printer.cfg
   '';
-
-  kamp = pkgs.fetchFromGitHub {
-    owner = "kyleisah";
-    repo = "Klipper-Adaptive-Meshing-Purging";
-    rev = "b0dad8ec9ee31cb644b94e39d4b8a8fb9d6c9ba0";
-    hash = "sha256-05l1rXmjiI+wOj2vJQdMf/cwVUOyq5d21LZesSowuvc=";
-  };
-
-  klipperZCalibration = pkgs.fetchFromGitHub {
-    owner = "protoloft";
-    repo = "klipper_z_calibration";
-    rev = "487056ac07e7df082ea0b9acc7365b4a9874889e";
-    hash = "sha256-WWP0LqhJ3ET4nxR8hVpq1uMOSK+CX7f3LXjOAZbRY8c=";
-  };
-
-  shakeTune = pkgs.fetchFromGitHub {
-    owner = "Frix-x";
-    repo = "klippain-shaketune";
-    rev = "c8ef451ec4153af492193ac31ed7eea6a52dbe4e";
-    hash = "sha256-zzskp7ZiwR7nJ2e5eTCyEilctDoRxZdBn90zncFm0Rw=";
-  };
 
   klipperscreen = pkgs.klipperscreen.overrideAttrs {
     src = pkgs.klipperscreenSrc;
