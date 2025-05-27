@@ -132,6 +132,7 @@
       };
 
       templates.elixir = {
+        description = "A starter flake for Elixir projects";
         path = flake-templates/elixir;
       };
     };
