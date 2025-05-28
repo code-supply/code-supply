@@ -4,9 +4,8 @@
 }:
 
 let
-  plugins = [
-    {
-      name = "KAMP";
+  plugins = {
+    kamp = {
       configLink.from = "Configuration";
       configLink.to = "KAMP";
       src = pkgs.fetchFromGitHub {
@@ -15,9 +14,8 @@ let
         rev = "b0dad8ec9ee31cb644b94e39d4b8a8fb9d6c9ba0";
         hash = "sha256-05l1rXmjiI+wOj2vJQdMf/cwVUOyq5d21LZesSowuvc=";
       };
-    }
-    {
-      name = "shaketune";
+    };
+    shaketune = {
       configLink.from = "shaketune";
       src = pkgs.fetchFromGitHub {
         owner = "Frix-x";
@@ -34,9 +32,8 @@ let
           pywavelets
           zstandard
         ];
-    }
-    {
-      name = "z_calibration";
+    };
+    z_calibration = {
       configLink.from = "z_calibration.py";
       src = pkgs.fetchFromGitHub {
         owner = "protoloft";
@@ -44,27 +41,27 @@ let
         rev = "487056ac07e7df082ea0b9acc7365b4a9874889e";
         hash = "sha256-WWP0LqhJ3ET4nxR8hVpq1uMOSK+CX7f3LXjOAZbRY8c=";
       };
-    }
-  ];
+    };
+  };
 
   extraPythonPackages =
-    p: builtins.concatMap (plugin: if plugin ? deps then (plugin.deps p) else [ ]) plugins;
+    p:
+    builtins.concatMap (plugin: if plugin ? deps then (plugin.deps p) else [ ]) (
+      builtins.attrValues plugins
+    );
 
   klipper = (
     (pkgs.klipper.override {
       inherit extraPythonPackages;
     }).overrideAttrs
       {
-        postUnpack = builtins.foldl' (
-          acc: plugin:
+        postUnpack = pkgs.lib.concatMapAttrsStringSep "\n" (
+          name: plugin:
           let
             dest = if plugin.configLink ? to then plugin.configLink.to else plugin.configLink.from;
           in
-          acc
-          + ''
-            ln -sfv ${plugin.src}/${plugin.configLink.from} source/klippy/extras/${dest}
-          ''
-        ) "" plugins;
+          "ln -sfv ${plugin.src}/${plugin.configLink.from} source/klippy/extras/${dest}"
+        ) plugins;
       }
   );
 
