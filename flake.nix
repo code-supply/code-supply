@@ -109,10 +109,6 @@
           ;
       };
 
-      nixosModules = {
-        kitty = import ./home-manager/kitty.nix;
-      };
-
       nixosConfigurations = {
         fatty = callBox "fatty";
         p14s = callBox "p14s";
