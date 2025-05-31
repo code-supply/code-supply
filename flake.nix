@@ -18,6 +18,10 @@
       url = "github:code-supply/KlipperScreen";
       flake = false;
     };
+    klix = {
+      url = "github:code-supply/klix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixvim = {
@@ -33,6 +37,7 @@
       git-mob,
       home-manager,
       isd,
+      klix,
       nixos-hardware,
       nixpkgs,
       nixvim,
@@ -119,6 +124,7 @@
           import ./boxes/ketchup-king {
             inherit
               isd
+              klix
               nixpkgs
               nixos-hardware
               klipperscreen

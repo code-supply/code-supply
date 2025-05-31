@@ -3,6 +3,7 @@
   nixpkgs,
   nixos-hardware,
   klipperscreen,
+  klix,
   ...
 }:
 
@@ -17,6 +18,7 @@
     ../common/user.nix
     ./network.nix
     nixos-hardware.nixosModules.raspberry-pi-4
+    klix.nixosModules.default
     ./rpi.nix
     {
       nixpkgs.overlays = [
