@@ -11,7 +11,7 @@ with pkgs;
     freecad
     inkscape
     klipper
-    openscad-unstable
+    openscad
     orca-slicer
   ];
 
