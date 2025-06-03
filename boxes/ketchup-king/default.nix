@@ -12,7 +12,6 @@
   modules = [
     "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
     ./3d-printing-server.nix
-    ../common/3d-printing-server.nix
     ../common/nix.nix
     ../common/ssh.nix
     ../common/user.nix
