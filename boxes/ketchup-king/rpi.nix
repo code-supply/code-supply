@@ -1,4 +1,3 @@
-{ pkgs, ... }:
 {
   nixpkgs.overlays = [
     (final: prev: {
@@ -6,8 +5,6 @@
       makeModulesClosure = x: prev.makeModulesClosure (x // { allowMissing = true; });
     })
   ];
-
-  boot.kernelPackages = pkgs.linuxPackages_rpi4;
 
   hardware.raspberry-pi."4" = {
     fkms-3d.enable = true;
