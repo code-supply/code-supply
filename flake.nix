@@ -15,7 +15,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     klipperscreen = {
-      url = "github:code-supply/KlipperScreen";
+      url = "github:KlipperScreen/KlipperScreen";
       flake = false;
     };
     klix = {

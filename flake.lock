@@ -186,15 +186,15 @@
     "klipperscreen": {
       "flake": false,
       "locked": {
-        "lastModified": 1747679399,
-        "narHash": "sha256-BP83AUYCAeSpn9hADLFfg5LrMSV6h87G+MttU8KZb1k=",
-        "owner": "code-supply",
+        "lastModified": 1750000006,
+        "narHash": "sha256-h5WmmIq6Q7w4/oeyFYQFFPxpFCiWTnZ6Lt485OLQl/o=",
+        "owner": "KlipperScreen",
         "repo": "KlipperScreen",
-        "rev": "46592f4a4b3e3e1311c3e9d7d495e445a12ce017",
+        "rev": "5ba4a1ff134ac1eba236043b8ec316c2298846e5",
         "type": "github"
       },
       "original": {
-        "owner": "code-supply",
+        "owner": "KlipperScreen",
         "repo": "KlipperScreen",
         "type": "github"
       }
