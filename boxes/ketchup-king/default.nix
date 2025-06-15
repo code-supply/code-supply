@@ -44,6 +44,8 @@
               z_calibration.enable = true;
             };
           };
+
+        services.klipperscreen.enable = true;
       }
     )
   ];

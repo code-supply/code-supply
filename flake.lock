@@ -183,6 +183,22 @@
         "type": "github"
       }
     },
+    "kamp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1723517933,
+        "narHash": "sha256-05l1rXmjiI+wOj2vJQdMf/cwVUOyq5d21LZesSowuvc=",
+        "owner": "kyleisah",
+        "repo": "Klipper-Adaptive-Meshing-Purging",
+        "rev": "b0dad8ec9ee31cb644b94e39d4b8a8fb9d6c9ba0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kyleisah",
+        "repo": "Klipper-Adaptive-Meshing-Purging",
+        "type": "github"
+      }
+    },
     "klipperscreen": {
       "flake": false,
       "locked": {
@@ -201,18 +217,21 @@
     },
     "klix": {
       "inputs": {
+        "kamp": "kamp",
         "klipperscreen": "klipperscreen",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": [
           "nixpkgs"
-        ]
+        ],
+        "shaketune": "shaketune",
+        "z_calibration": "z_calibration"
       },
       "locked": {
-        "lastModified": 1750026239,
-        "narHash": "sha256-A7gP5UGf0A7eskjtDnziCO1yeIE3wi+VnUU/1bbS2F8=",
+        "lastModified": 1750030364,
+        "narHash": "sha256-5MOt+S3ghuEmreZNomyKlYW3Oc2Xtj2F1Jcs+SQs16w=",
         "owner": "code-supply",
         "repo": "klix",
-        "rev": "ca9fe7b2777cdf0bbe2feb2553fb251f5f77a379",
+        "rev": "fdb0adea1d21db290472349baf83e2793df21402",
         "type": "github"
       },
       "original": {
@@ -410,6 +429,22 @@
         "nixvim": "nixvim"
       }
     },
+    "shaketune": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1745004182,
+        "narHash": "sha256-zzskp7ZiwR7nJ2e5eTCyEilctDoRxZdBn90zncFm0Rw=",
+        "owner": "Frix-x",
+        "repo": "klippain-shaketune",
+        "rev": "c8ef451ec4153af492193ac31ed7eea6a52dbe4e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Frix-x",
+        "repo": "klippain-shaketune",
+        "type": "github"
+      }
+    },
     "systemd-nix": {
       "inputs": {
         "nixpkgs": [
@@ -498,6 +533,22 @@
       "original": {
         "owner": "pyproject-nix",
         "repo": "uv2nix",
+        "type": "github"
+      }
+    },
+    "z_calibration": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1746608692,
+        "narHash": "sha256-WWP0LqhJ3ET4nxR8hVpq1uMOSK+CX7f3LXjOAZbRY8c=",
+        "owner": "protoloft",
+        "repo": "klipper_z_calibration",
+        "rev": "487056ac07e7df082ea0b9acc7365b4a9874889e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "protoloft",
+        "repo": "klipper_z_calibration",
         "type": "github"
       }
     }
