@@ -14,10 +14,6 @@
       url = "github:isd-project/isd";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    klipperscreen = {
-      url = "github:KlipperScreen/KlipperScreen";
-      flake = false;
-    };
     klix = {
       url = "github:code-supply/klix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -41,7 +37,6 @@
       nixos-hardware,
       nixpkgs,
       nixvim,
-      klipperscreen,
     }:
     let
       system = "x86_64-linux";
@@ -127,7 +122,6 @@
               klix
               nixpkgs
               nixos-hardware
-              klipperscreen
               ;
           }
         );

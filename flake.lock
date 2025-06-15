@@ -201,16 +201,17 @@
     },
     "klix": {
       "inputs": {
+        "klipperscreen": "klipperscreen",
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1750003803,
-        "narHash": "sha256-hGXdZehNSBvRZUrgEQPvLpACrH6nu/6ASh7ON5lAXmM=",
+        "lastModified": 1750005028,
+        "narHash": "sha256-INSXI7R6uaCzv2u8mGIvBk42WAV748m9rXNYwOa2otA=",
         "owner": "code-supply",
         "repo": "klix",
-        "rev": "e00feb0f81f2e92a6eedbbe998bb5bf8186c8c48",
+        "rev": "6db5fe34ec3c78fc84e51bb31051d02618b6ec61",
         "type": "github"
       },
       "original": {
@@ -403,7 +404,6 @@
         "git-mob": "git-mob",
         "home-manager": "home-manager",
         "isd": "isd",
-        "klipperscreen": "klipperscreen",
         "klix": "klix",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",

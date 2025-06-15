@@ -11,10 +11,6 @@ let
       < ${./klipper/printer.cfg} \
       > $out/printer.cfg
   '';
-
-  klipperscreen = pkgs.klipperscreen.overrideAttrs {
-    src = pkgs.klipperscreenSrc;
-  };
 in
 
 {
@@ -36,13 +32,6 @@ in
   programs.firefox.enable = false;
   programs.firefox.preferences = {
     "layout.css.devPixelsPerPx" = "1.5";
-  };
-
-  services.cage = {
-    enable = true;
-    user = "klix";
-    program = "${klipperscreen}/bin/KlipperScreen";
-    extraArguments = [ "-ds" ];
   };
 
   services.klipper = {
