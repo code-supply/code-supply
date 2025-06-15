@@ -1,6 +1,5 @@
 {
   isd,
-  nixpkgs,
   nixos-hardware,
   klipperscreen,
   klix,
@@ -10,10 +9,7 @@
 {
   system = "aarch64-linux";
   modules = [
-    "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
     ./3d-printing-server.nix
-    ../common/nix.nix
-    ../common/ssh.nix
     ../common/user.nix
     ./network.nix
     nixos-hardware.nixosModules.raspberry-pi-4
