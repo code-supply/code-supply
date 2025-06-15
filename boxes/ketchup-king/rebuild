@@ -4,7 +4,7 @@ verb=${1:-switch}
 
 nixos-rebuild "$verb" \
   --print-build-logs \
-  --target-host ketchup-king \
+  --target-host klix@ketchup-king \
   --flake .#ketchup-king \
   --use-remote-sudo \
   --fast

@@ -40,7 +40,7 @@ in
 
   services.cage = {
     enable = true;
-    user = "andrew";
+    user = "klix";
     program = "${klipperscreen}/bin/KlipperScreen";
     extraArguments = [ "-ds" ];
   };

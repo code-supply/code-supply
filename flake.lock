@@ -206,11 +206,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1749984692,
-        "narHash": "sha256-LQ3IEpoqy5SiEIDRYivPx53yDeq5gD0S7o0rDBFaCF4=",
+        "lastModified": 1750003803,
+        "narHash": "sha256-hGXdZehNSBvRZUrgEQPvLpACrH6nu/6ASh7ON5lAXmM=",
         "owner": "code-supply",
         "repo": "klix",
-        "rev": "9e0509ffe302e6c4abbfad3e07d9edc4050fbc9b",
+        "rev": "e00feb0f81f2e92a6eedbbe998bb5bf8186c8c48",
         "type": "github"
       },
       "original": {
