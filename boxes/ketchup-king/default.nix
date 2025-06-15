@@ -5,7 +5,6 @@
 }:
 
 {
-  system = "aarch64-linux";
   modules = [
     ./3d-printing-server.nix
     ../common/user.nix
