@@ -1,6 +1,5 @@
 {
   isd,
-  nixos-hardware,
   klix,
   ...
 }:
@@ -11,9 +10,7 @@
     ./3d-printing-server.nix
     ../common/user.nix
     ./network.nix
-    nixos-hardware.nixosModules.raspberry-pi-4
     klix.nixosModules.default
-    ./rpi.nix
     {
       nixpkgs.overlays = [
         (final: prev: {

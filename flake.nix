@@ -18,7 +18,6 @@
       url = "github:code-supply/klix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixvim = {
       url = "github:nix-community/nixvim";
@@ -34,7 +33,6 @@
       home-manager,
       isd,
       klix,
-      nixos-hardware,
       nixpkgs,
       nixvim,
     }:
@@ -121,7 +119,6 @@
               isd
               klix
               nixpkgs
-              nixos-hardware
               ;
           }
         );

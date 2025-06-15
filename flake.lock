@@ -202,16 +202,17 @@
     "klix": {
       "inputs": {
         "klipperscreen": "klipperscreen",
+        "nixos-hardware": "nixos-hardware",
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1750006299,
-        "narHash": "sha256-rpAI7FVTi3pclA1rmmuCAttyfdFukWaZ5glWOvqEGU8=",
+        "lastModified": 1750007343,
+        "narHash": "sha256-eBIU7Cee4Boa4PDTiiX+UFDishRUAwSkFomBc8E/7YA=",
         "owner": "code-supply",
         "repo": "klix",
-        "rev": "6337995ed25bde2b2a46bccaa7b61fc9b2685689",
+        "rev": "e7b9a6c2f61b0ef05c60dd1255c52ca5e44aed10",
         "type": "github"
       },
       "original": {
@@ -257,11 +258,11 @@
     },
     "nixos-hardware": {
       "locked": {
-        "lastModified": 1745503349,
-        "narHash": "sha256-bUGjvaPVsOfQeTz9/rLTNLDyqbzhl0CQtJJlhFPhIYw=",
+        "lastModified": 1749832440,
+        "narHash": "sha256-lfxhuxAaHlYFGr8yOrAXZqdMt8PrFLzjVqH9v3lQaoY=",
         "owner": "NixOS",
         "repo": "nixos-hardware",
-        "rev": "f7bee55a5e551bd8e7b5b82c9bc559bc50d868d1",
+        "rev": "db030f62a449568345372bd62ed8c5be4824fa49",
         "type": "github"
       },
       "original": {
@@ -405,7 +406,6 @@
         "home-manager": "home-manager",
         "isd": "isd",
         "klix": "klix",
-        "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
         "nixvim": "nixvim"
       }
