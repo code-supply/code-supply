@@ -227,11 +227,11 @@
         "z_calibration": "z_calibration"
       },
       "locked": {
-        "lastModified": 1750030364,
-        "narHash": "sha256-5MOt+S3ghuEmreZNomyKlYW3Oc2Xtj2F1Jcs+SQs16w=",
+        "lastModified": 1751470195,
+        "narHash": "sha256-GyfEcY356qRb6KYeBI9eGsdfhjHFxJCSYfO+qZFM6jk=",
         "owner": "code-supply",
         "repo": "klix",
-        "rev": "fdb0adea1d21db290472349baf83e2793df21402",
+        "rev": "887a4001b60fc651f4fcc6a3d5476cc31962d2b6",
         "type": "github"
       },
       "original": {
@@ -309,11 +309,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1748186667,
-        "narHash": "sha256-UQubDNIQ/Z42R8tPCIpY+BOhlxO8t8ZojwC9o2FW3c8=",
+        "lastModified": 1751382304,
+        "narHash": "sha256-p+UruOjULI5lV16FkBqkzqgFasLqfx0bihLBeFHiZAs=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "bdac72d387dca7f836f6ef1fe547755fb0e9df61",
+        "rev": "d31a91c9b3bee464d054633d5f8b84e17a637862",
         "type": "github"
       },
       "original": {
