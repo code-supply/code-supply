@@ -11,7 +11,6 @@ home-manager.lib.homeManagerConfiguration {
 
   modules = [
     ./3d-printing.nix
-    ./audio-plugins.nix
     ./audio-programs.nix
     catppuccin.homeManagerModules.catppuccin
     ./cli.nix
