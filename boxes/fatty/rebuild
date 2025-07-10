@@ -5,4 +5,4 @@ verb=${1:-switch}
 nixos-rebuild "$verb" \
   --target-host fatty \
   --flake .#fatty \
-  --use-remote-sudo
+  --sudo

@@ -5,4 +5,4 @@ verb=${1:-switch}
 nixos-rebuild "$verb" \
   --target-host x200 \
   --flake .#x200 \
-  --use-remote-sudo
+  --sudo
