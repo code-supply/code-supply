@@ -1,3 +1,4 @@
+{ pkgs, ... }:
 {
   imports = [
     ./boot.nix
@@ -17,7 +18,15 @@
 
   nixpkgs.config.allowUnfree = true;
   services.fwupd.enable = true;
-  services.printing.enable = true;
+  services.printing = {
+    enable = true;
+    drivers = [ pkgs.samsung-unified-linux-driver ];
+  };
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
   system.stateVersion = "22.11";
   virtualisation.docker.enable = true;
 }
