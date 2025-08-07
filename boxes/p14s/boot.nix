@@ -5,8 +5,6 @@
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
   boot.loader.systemd-boot.configurationLimit = 25;
 
-  # boot.kernelPackages = pkgs.linuxPackages_6_1;
-
   boot.initrd.secrets = {
     "/crypto_keyfile.bin" = null;
   };

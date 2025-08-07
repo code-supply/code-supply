@@ -12,6 +12,19 @@
       type = "-";
       value = "-1";
     }
+    # allow andrew user to create realtime threads
+    {
+      domain = "andrew";
+      item = "rtprio";
+      type = "-";
+      value = "99";
+    }
+  ];
+
+  # https://github.com/mixxxdj/mixxx/wiki/Adjusting-Audio-Latency
+  boot.kernelParams = [
+    "nosmt"
+    "threadirqs"
   ];
 
   services.pulseaudio.enable = false;
