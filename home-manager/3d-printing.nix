@@ -12,7 +12,7 @@ with pkgs;
     inkscape
     klipper
     openscad
-    orca-slicer
+    # orca-slicer
   ];
 
   programs.nixvim = {
