@@ -26,6 +26,7 @@
       bitwig-studio5
       elektroid
       mixxx
+      pipecontrol
       qpwgraph
     ];
   };
