@@ -1,6 +1,6 @@
 +++
 title = "I rewired my guitar"
-date = 2025-04-04
+date = 2025-04-03
 +++
 
 <img src="strat.jpg" alt="My Fender Stratocaster, hanging on the wall." />
