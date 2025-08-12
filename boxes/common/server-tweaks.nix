@@ -1,9 +1,9 @@
 {
   boot.kernelParams = [ "consoleblank=5" ];
   services.logind.lidSwitch = "ignore";
-  systemd.extraConfig = ''
-    DefaultLimitNOFILE=1048576
-  '';
+  systemd.settings.Manager = {
+    DefaultLimitNOFILE = "1048576";
+  };
 
   security.pam.loginLimits = [
     {
