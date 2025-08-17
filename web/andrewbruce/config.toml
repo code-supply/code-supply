@@ -1,6 +1,8 @@
 # The URL the site will be built for
 base_url = "https://www.andrewbruce.net"
 
+author = "me@andrewbruce.net (Andrew Bruce)"
+
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = false
 
