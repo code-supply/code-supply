@@ -54,7 +54,7 @@
               nixpkgs
               system
               ;
-            nix = pkgs.nixVersions.nix_2_24;
+            nix = pkgs.nixVersions.nix_2_30;
             websites = {
               inherit andrewbruce codesupply;
             };
