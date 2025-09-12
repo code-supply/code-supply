@@ -65,6 +65,7 @@
             nix = pkgs.nixVersions.nix_2_30;
             websites = {
               inherit andrewbruce codesupply;
+              klix = klix.packages.x86_64-linux.default;
             };
           }
         );
