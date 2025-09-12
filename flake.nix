@@ -1,6 +1,13 @@
 {
   inputs = {
-    catppuccin.url = "github:catppuccin/nix";
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    catppuccin = {
+      url = "github:catppuccin/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     git-mob = {
       url = "github:code-supply/rusty-git-mob";
       # url = "/home/andrew/workspace/rusty-git-mob";
@@ -28,6 +35,7 @@
   outputs =
     {
       self,
+      agenix,
       catppuccin,
       git-mob,
       home-manager,
@@ -99,6 +107,7 @@
 
       homeConfigurations."andrew@p14s" = import ./home-manager {
         inherit
+          agenix
           home-manager
           nixvim
           pkgs
