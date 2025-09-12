@@ -6,7 +6,6 @@
     };
     catppuccin = {
       url = "github:catppuccin/nix";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
     git-mob = {
       url = "github:code-supply/rusty-git-mob";
