@@ -5,6 +5,7 @@
       chromium
       libreoffice
       nixos-generators
+      protonvpn-gui
       signal-desktop
       transmission_4-gtk
       vlc
