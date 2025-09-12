@@ -1,7 +1,7 @@
 {
   inputs = {
-    agenix = {
-      url = "github:ryantm/agenix";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     catppuccin = {
@@ -34,7 +34,7 @@
   outputs =
     {
       self,
-      agenix,
+      sops-nix,
       catppuccin,
       git-mob,
       home-manager,
@@ -59,6 +59,7 @@
             inherit
               home-manager
               nixpkgs
+              sops-nix
               system
               ;
             nix = pkgs.nixVersions.nix_2_30;
@@ -98,6 +99,7 @@
 
       homeConfigurations."andrew@fatty" = import ./home-manager/fatty.nix {
         inherit
+          sops-nix
           home-manager
           nixvim
           pkgs
@@ -107,7 +109,7 @@
 
       homeConfigurations."andrew@p14s" = import ./home-manager {
         inherit
-          agenix
+          sops-nix
           home-manager
           nixvim
           pkgs

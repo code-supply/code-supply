@@ -1,0 +1,8 @@
+keys:
+  - &admin_andrew F6F6E949990C4DD41E79D22C2D501B260861257F
+  - &server_unhinged age1qvk9fmr47jdk2aczmv08fwa2dcfp4a86swrtgue09w3ta7w0myhsgpnkc2
+creation_rules:
+  - path_regex: boxes/.*/secrets/.*\.yaml$
+    key_groups:
+      - pgp: [*admin_andrew]
+        age: [*server_unhinged]

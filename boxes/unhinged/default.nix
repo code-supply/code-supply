@@ -1,5 +1,6 @@
 {
   nix,
+  sops-nix,
   system,
   websites,
   ...
@@ -9,6 +10,10 @@
   inherit system;
 
   modules = [
+    {
+      sops.defaultSopsFile = ./secrets/klix.yaml;
+      sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    }
     ./caddy.nix
     ../common/locale.nix
     ../common/nix.nix
@@ -19,6 +24,7 @@
     ./network.nix
     ({ nix.package = nix; })
     ./printers.nix
+    sops-nix.nixosModules.sops
     ./tweaks.nix
   ];
 

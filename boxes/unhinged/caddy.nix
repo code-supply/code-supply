@@ -1,14 +1,30 @@
-{ websites, ... }:
+{ config, websites, ... }:
 
 {
-  systemd.user.services.klix = {
+  users = {
+    groups.klix = { };
+    users.klix = {
+      isSystemUser = true;
+      group = "klix";
+    };
+  };
+
+  systemd.services.klix = {
     enable = true;
     wantedBy = [ "default.target" ];
     serviceConfig = {
+      User = "klix";
       Restart = "always";
       ExecStart = "${websites.klix}/bin/klix start";
       KillMode = "mixed";
+      EnvironmentFile = config.sops.secrets."klix/environment".path;
     };
+  };
+
+  sops.secrets."klix/environment" = {
+    restartUnits = [ "klix.service" ];
+    owner = "klix";
+    group = "klix";
   };
 
   services.caddy = {

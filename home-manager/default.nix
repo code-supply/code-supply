@@ -1,5 +1,5 @@
 {
-  agenix,
+  sops-nix,
   home-manager,
   pkgs,
   nixvim,
@@ -11,7 +11,7 @@ home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
 
   modules = [
-    { home.packages = [ agenix.packages.x86_64-linux.default ]; }
+    { home.packages = [ sops-nix.packages.x86_64-linux.default ]; }
     ./3d-printing.nix
     ./audio-programs.nix
     catppuccin.homeManagerModules.catppuccin
