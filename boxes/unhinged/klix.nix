@@ -15,10 +15,26 @@
     serviceConfig = {
       User = "klix";
       Restart = "always";
-      ExecStart = "${websites.klix}/bin/klix start";
+      ExecStartPre = "${websites.klix}/bin/migrate";
+      ExecStart = "${websites.klix}/bin/server";
       KillMode = "mixed";
       EnvironmentFile = config.sops.secrets."klix/environment".path;
     };
+  };
+
+  services.postgresql = {
+    enable = true;
+
+    ensureDatabases = [
+      "klix"
+    ];
+
+    ensureUsers = [
+      {
+        name = "klix";
+        ensureDBOwnership = true;
+      }
+    ];
   };
 
   sops.secrets."klix/environment" = {
