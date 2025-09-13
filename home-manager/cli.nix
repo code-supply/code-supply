@@ -30,6 +30,7 @@
       pciutils
       pv
       ripgrep
+      sops
       sysfsutils
       unzip
       usbutils
