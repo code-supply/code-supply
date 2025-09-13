@@ -21,6 +21,7 @@
     ../common/user.nix
     ./configuration.nix
     ./hardware-configuration.nix
+    ./klix.nix
     ./network.nix
     ({ nix.package = nix; })
     ./printers.nix
