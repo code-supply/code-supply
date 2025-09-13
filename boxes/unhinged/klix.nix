@@ -6,6 +6,8 @@
 }:
 
 {
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   users = {
     groups.klix = { };
     users.klix = {
