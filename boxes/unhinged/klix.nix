@@ -1,4 +1,9 @@
-{ config, websites, ... }:
+{
+  config,
+  nix,
+  websites,
+  ...
+}:
 
 {
   users = {
@@ -6,12 +11,15 @@
     users.klix = {
       isSystemUser = true;
       group = "klix";
+      home = "/var/klix";
+      createHome = true;
     };
   };
 
   systemd.services.klix = {
     enable = true;
     wantedBy = [ "default.target" ];
+    path = [ nix ];
     serviceConfig = {
       User = "klix";
       Restart = "always";
