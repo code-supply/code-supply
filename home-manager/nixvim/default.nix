@@ -12,6 +12,7 @@
 
   programs.nixvim = {
     enable = true;
+    defaultEditor = true;
 
     plugins = {
       commentary.enable = true;
