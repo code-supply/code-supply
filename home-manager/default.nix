@@ -27,7 +27,7 @@ home-manager.lib.homeManagerConfiguration {
     ./k8s.nix
     ./kitty.nix
     ./nixvim
-    nixvim.homeManagerModules.nixvim
+    nixvim.homeModules.nixvim
     ./theme.nix
     ./unfree.nix
   ];
