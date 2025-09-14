@@ -1,5 +1,4 @@
 {
-  isd,
   klix,
   ...
 }:
@@ -7,13 +6,10 @@
 {
   modules = [
     klix.nixosModules.default
+    ../common/server-packages.nix
     (
       { pkgs, config, ... }:
       {
-        environment.systemPackages = with pkgs; [
-          isd.packages.aarch64-linux.default
-          lsof
-        ];
 
         networking.hostName = "ketchup-king";
         time.timeZone = "Europe/London";

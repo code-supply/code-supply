@@ -46,11 +46,15 @@
       enable = true;
       enableDefaultConfig = false;
       matchBlocks = {
-        "unhinged" = {
+        klix = {
+          hostname = "46.62.161.130";
+          user = "root";
+        };
+        unhinged = {
           hostname = "192.168.1.182";
           port = 2222;
         };
-        "x200" = {
+        x200 = {
           hostname = "192.168.1.124";
         };
       };

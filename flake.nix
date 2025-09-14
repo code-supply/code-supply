@@ -58,6 +58,7 @@
           import ./boxes/${name} {
             inherit
               home-manager
+              isd
               nixpkgs
               sops-nix
               system
@@ -120,6 +121,7 @@
 
       nixosConfigurations = {
         fatty = callBox "fatty";
+        klix = callBox "klix";
         p14s = callBox "p14s";
         unhinged = callBox "unhinged";
         x200 = callBox "x200";
