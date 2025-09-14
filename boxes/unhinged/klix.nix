@@ -2,11 +2,24 @@
   config,
   nix,
   websites,
+  pkgs,
   ...
 }:
 
 {
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
+  environment.systemPackages = [
+    (pkgs.writeShellApplication {
+      name = "klix-remote";
+      text = ''
+        set -a
+        # shellcheck source=/dev/null
+        source ${config.sops.secrets."klix/environment".path}
+        ${websites.klix}/bin/klix remote
+      '';
+    })
+  ];
 
   users = {
     groups.klix = { };
