@@ -52,8 +52,12 @@
         config.allowUnfree = true;
       };
 
+      armPkgs = import nixpkgs {
+        system = "aarch64-linux";
+      };
+
       callBox =
-        name:
+        name: pkgs:
         nixpkgs.lib.nixosSystem (
           import ./boxes/${name} {
             inherit
@@ -66,7 +70,7 @@
             nix = pkgs.nixVersions.nix_2_30;
             websites = {
               inherit andrewbruce codesupply;
-              klix = klix.packages.x86_64-linux.default;
+              klix = klix.packages.aarch64-linux.default;
             };
           }
         );
@@ -120,11 +124,11 @@
       };
 
       nixosConfigurations = {
-        fatty = callBox "fatty";
-        klix = callBox "klix";
-        p14s = callBox "p14s";
-        unhinged = callBox "unhinged";
-        x200 = callBox "x200";
+        fatty = callBox "fatty" pkgs;
+        klix = callBox "klix" armPkgs;
+        p14s = callBox "p14s" pkgs;
+        unhinged = callBox "unhinged" pkgs;
+        x200 = callBox "x200" pkgs;
 
         ketchup-king = nixpkgs.lib.nixosSystem (
           import ./boxes/ketchup-king {

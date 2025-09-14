@@ -3,5 +3,6 @@
 verb=${1:-switch}
 
 nixos-rebuild "$verb" \
+  --build-host root@klix \
   --target-host root@klix \
   --flake .#klix
