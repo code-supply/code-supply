@@ -11,6 +11,7 @@
   modules = [
     sops-nix.nixosModules.sops
     {
+      boot.growPartition = true;
       sops.defaultSopsFile = ./secrets/klix.yaml;
       sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
     }
