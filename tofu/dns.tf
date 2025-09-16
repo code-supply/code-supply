@@ -78,6 +78,30 @@ resource "google_dns_record_set" "txt" {
   type = "TXT"
 }
 
+resource "google_dns_record_set" "postmark_dkim" {
+  name         = "20250916203310pm._domainkey.${google_dns_managed_zone.root.dns_name}"
+  managed_zone = google_dns_managed_zone.root.name
+
+  rrdatas = [
+    "k=rsa;p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCboqnoLGKW4hy4cf0JjATMAVvhikNoJxx/zz3qE77LmLmoph8d3VXgasc6jznzJftUdgMH20vXVrTH+Fw8cuacl8fgEDTnyKCvNXglBtqef1o0s6ZTLjoCgMaADpqm5DCFeS66Tz+pUTeGqnNoiowvDsFwA3qSTh8hRc51dWiuCwIDAQAB",
+  ]
+
+  ttl  = 21600
+  type = "TXT"
+}
+
+resource "google_dns_record_set" "postmark_return_path" {
+  name         = "pm-bounces.${google_dns_managed_zone.root.dns_name}"
+  managed_zone = google_dns_managed_zone.root.name
+
+  rrdatas = [
+    "pm.mtasv.net.",
+  ]
+
+  ttl  = 21600
+  type = "CNAME"
+}
+
 resource "google_dns_record_set" "protonmail_dkim" {
   name         = "protonmail._domainkey.${google_dns_managed_zone.root.dns_name}"
   managed_zone = google_dns_managed_zone.root.name
