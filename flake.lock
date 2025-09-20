@@ -227,11 +227,11 @@
         "z_calibration": "z_calibration"
       },
       "locked": {
-        "lastModified": 1758288102,
-        "narHash": "sha256-IHJxJZeGNoiWRTyuWjd/4SNmNnYBISSeHpE3JyRtZ18=",
+        "lastModified": 1758387797,
+        "narHash": "sha256-21bcSa/ZKmsN/1MQpZVUYgU6hZvzYc52xCZX03Q4txc=",
         "owner": "code-supply",
         "repo": "klix",
-        "rev": "273eb0e5281f5a077e339cc1b41905196dd098a1",
+        "rev": "d8633d2af9f042e7466a5445f97cc9eb10c325ef",
         "type": "github"
       },
       "original": {
