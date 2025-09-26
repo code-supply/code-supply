@@ -7,4 +7,4 @@ nixos-rebuild "$verb" \
   --target-host klix@ketchup-king \
   --flake .#ketchup-king \
   --sudo \
-  --fast
+  --no-reexec
