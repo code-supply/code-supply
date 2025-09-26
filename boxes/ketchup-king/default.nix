@@ -1,5 +1,6 @@
 {
   klix,
+  isd,
   ...
 }:
 
@@ -31,4 +32,7 @@
       }
     )
   ];
+  specialArgs = {
+    inherit isd;
+  };
 }
