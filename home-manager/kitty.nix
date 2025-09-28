@@ -22,6 +22,7 @@
     keybindings = {
       "ctrl+shift+enter" = "launch --cwd=current";
       "ctrl+shift+t" = "launch --cwd=current --type tab";
+      "ctrl+shift+y" = "launch --cwd=root --type tab";
       "ctrl+shift+f4" = "launch --location=split";
       "ctrl+shift+f5" = "launch --location=hsplit";
       "ctrl+shift+f6" = "launch --location=vsplit";
