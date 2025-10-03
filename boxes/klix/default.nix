@@ -2,6 +2,7 @@
   isd,
   nix,
   sops-nix,
+  tarballUrl,
   websites,
   ...
 }:
@@ -23,6 +24,11 @@
     ./klix.nix
   ];
   specialArgs = {
-    inherit isd nix websites;
+    inherit
+      isd
+      nix
+      websites
+      tarballUrl
+      ;
   };
 }
