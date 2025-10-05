@@ -10,6 +10,11 @@ terraform {
     google-beta = {
       version = "~> 3.51"
     }
+
+    hcloud = {
+      source = "hetznercloud/hcloud"
+      version = "~> 1.53"
+    }
   }
 }
 
