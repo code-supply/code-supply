@@ -2,7 +2,7 @@
   isd,
   nix,
   sops-nix,
-  tarballUrl,
+  klixUrl,
   websites,
   ...
 }:
@@ -28,7 +28,7 @@
       isd
       nix
       websites
-      tarballUrl
+      klixUrl
       ;
   };
 }

@@ -72,7 +72,7 @@
               inherit andrewbruce codesupply;
               klix = klix.packages.aarch64-linux.default;
             };
-            tarballUrl = klix.packages.aarch64-linux.tarball-url;
+            klixUrl = klix.packages.aarch64-linux.url;
           }
         );
 

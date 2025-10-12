@@ -2,7 +2,7 @@
   config,
   nix,
   pkgs,
-  tarballUrl,
+  klixUrl,
   websites,
   ...
 }:
@@ -18,7 +18,7 @@
         ${websites.klix}/bin/klix remote
       '';
     })
-    tarballUrl
+    klixUrl
   ];
 
   services.openssh = {
