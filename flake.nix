@@ -35,6 +35,7 @@
   };
 
   nixConfig = {
+    builders = "ssh://klix.code.supply aarch64-linux - 15 - kvm,nixos-test,big-parallel";
     extra-substituters = [
       "https://nixos-raspberrypi.cachix.org"
     ];
