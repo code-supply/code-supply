@@ -21,7 +21,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     klix = {
-      url = "github:code-supply/klix";
+      url = "github:code-supply/klix/rpi5";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-raspberrypi = {
@@ -123,6 +123,7 @@
               nixos-raspberrypi.inputs.nixos-images.nixosModules.sdimage-installer
               nixos-raspberrypi.nixosModules.raspberry-pi-5.base
               nixos-raspberrypi.nixosModules.raspberry-pi-5.page-size-16k
+              klix.nixosModules.default
 
               (
                 {
@@ -132,6 +133,10 @@
                   ...
                 }:
                 {
+                  services.klix.configDir = ./boxes/ketchup-king/klipper;
+
+                  ###
+
                   disabledModules = [
                     # disable the sd-image module that nixos-images uses
                     (modulesPath + "/installer/sd-card/sd-image-aarch64-installer.nix")
