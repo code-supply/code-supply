@@ -5,7 +5,7 @@ with pkgs;
 mkShell {
   packages = [
     elixir
-    elixir_ls
+    elixir-ls
     nixfmt-rfc-style
   ];
 

@@ -15,7 +15,7 @@
       cntr
       dig
       dive
-      du-dust
+      dust
       file
       gnupg
       htop

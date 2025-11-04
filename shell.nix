@@ -6,7 +6,7 @@
 mkShell {
   packages = with pkgs; [
     elixir
-    elixir_ls
+    elixir-ls
     flashprog
     google-cloud-sdk
     inotify-tools
