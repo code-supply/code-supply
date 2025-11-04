@@ -17,6 +17,7 @@
       dive
       dust
       file
+      ghostty
       gnupg
       htop
       iftop
