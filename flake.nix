@@ -117,46 +117,57 @@
 
       packages.aarch64-linux.rp5SDCard =
         let
-          installer = nixos-raspberrypi.lib.nixosInstaller {
-            specialArgs = inputs;
+          nixosSystem =
+            args:
+            nixos-raspberrypi.lib.nixosInstaller {
+              specialArgs = inputs;
+              modules = [
+                nixos-raspberrypi.inputs.nixos-images.nixosModules.sdimage-installer
+                klix.nixosModules.default
+                (
+                  {
+                    config,
+                    lib,
+                    modulesPath,
+                    ...
+                  }:
+                  {
+                    imports = [
+                      nixos-raspberrypi.nixosModules.raspberry-pi-5.base
+                      nixos-raspberrypi.nixosModules.raspberry-pi-5.page-size-16k
+                    ];
+
+                    disabledModules = [
+                      # disable the sd-image module that nixos-images uses
+                      (modulesPath + "/installer/sd-card/sd-image-aarch64-installer.nix")
+                    ];
+                    # nixos-images sets this with `mkForce`, thus `mkOverride 40`
+                    image.baseName =
+                      let
+                        cfg = config.boot.loader.raspberryPi;
+                      in
+                      lib.mkOverride 40 "nixos-installer-rpi${cfg.variant}-${cfg.bootloader}";
+                  }
+                )
+              ]
+              ++ args.modules;
+            };
+          rp5 = nixosSystem {
             modules = [
-              nixos-raspberrypi.inputs.nixos-images.nixosModules.sdimage-installer
-              nixos-raspberrypi.nixosModules.raspberry-pi-5.base
-              nixos-raspberrypi.nixosModules.raspberry-pi-5.page-size-16k
-              klix.nixosModules.default
+              {
+                services.klix = {
+                  configDir = ./boxes/ketchup-king/klipper;
+                };
 
-              (
-                {
-                  config,
-                  lib,
-                  modulesPath,
-                  ...
-                }:
-                {
-                  services.klix.configDir = ./boxes/ketchup-king/klipper;
-
-                  ###
-
-                  disabledModules = [
-                    # disable the sd-image module that nixos-images uses
-                    (modulesPath + "/installer/sd-card/sd-image-aarch64-installer.nix")
-                  ];
-                  # nixos-images sets this with `mkForce`, thus `mkOverride 40`
-                  image.baseName =
-                    let
-                      cfg = config.boot.loader.raspberryPi;
-                    in
-                    lib.mkOverride 40 "nixos-installer-rpi${cfg.variant}-${cfg.bootloader}";
-                  networking.hostName = "rp5";
-                  users.users.root.openssh.authorizedKeys.keys = [
-                    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCvEdU8Vs+25y3uN6YTFqNPKGdr7Z+v6lhuMQ0ppJ33pWPUh/AMMtumEr1Jb6+oAN7q4fozbu6o+9U1BlD0VXeIIAKaekru0tFzhcrvfQO8oiLs4f2TaQW8w5aprjmK8k5ZWdD2PV03jzxXnMhmFANr+zPgxLgy+J9JkoQJUcDBic1C1nbXLgHl7D0027aBT1NBGtK8ildCiDHmEh8qlCVJI6CSCS6fesZiHiyuEIVF1BG/DR9PWganyyuCHEav11fmiWiJAMUfCNwWosEoT4w0CTJ3vIhqeF9uAilo/NdUBGWJF/hLjWVFVoJ8uYjQyA70d0PY6mZjJgv+MUxsJoxYY1mQ+QqoIp3gF2/XAX1LwZPgd3Qh+cO2hkvBQ82g2TXqzu3bTSr/Gf4lUSmGPsozFhvkuRLL78wLefpY333NJ+ysp2XMwDDH0LEdQxeRbjlItpE7yEADiwe92RvsxxWgTFpHzMbxGaC95B0ZA2PUjY1izJQMPvGkV/4mx3QtC8wW/KeJJ52aWEO/Lcaec69bkKh56bOekipu6Jgs30e7CPtcgnMfllZRYbXvv05MlSKSTycgEMVssmjGEpKtVfIJiQUAhML4tQxfhZqy2t1/61tO2FgLDytoxLojQzJz9VOlsGcK7butCSJx3wrgCvU2Yc5fD3mskFJUJO+jFFqyMQ== cardno:16_019_463"
-                  ];
-                }
-              )
+                networking.hostName = "rp5";
+                users.users.root.openssh.authorizedKeys.keys = [
+                  "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCvEdU8Vs+25y3uN6YTFqNPKGdr7Z+v6lhuMQ0ppJ33pWPUh/AMMtumEr1Jb6+oAN7q4fozbu6o+9U1BlD0VXeIIAKaekru0tFzhcrvfQO8oiLs4f2TaQW8w5aprjmK8k5ZWdD2PV03jzxXnMhmFANr+zPgxLgy+J9JkoQJUcDBic1C1nbXLgHl7D0027aBT1NBGtK8ildCiDHmEh8qlCVJI6CSCS6fesZiHiyuEIVF1BG/DR9PWganyyuCHEav11fmiWiJAMUfCNwWosEoT4w0CTJ3vIhqeF9uAilo/NdUBGWJF/hLjWVFVoJ8uYjQyA70d0PY6mZjJgv+MUxsJoxYY1mQ+QqoIp3gF2/XAX1LwZPgd3Qh+cO2hkvBQ82g2TXqzu3bTSr/Gf4lUSmGPsozFhvkuRLL78wLefpY333NJ+ysp2XMwDDH0LEdQxeRbjlItpE7yEADiwe92RvsxxWgTFpHzMbxGaC95B0ZA2PUjY1izJQMPvGkV/4mx3QtC8wW/KeJJ52aWEO/Lcaec69bkKh56bOekipu6Jgs30e7CPtcgnMfllZRYbXvv05MlSKSTycgEMVssmjGEpKtVfIJiQUAhML4tQxfhZqy2t1/61tO2FgLDytoxLojQzJz9VOlsGcK7butCSJx3wrgCvU2Yc5fD3mskFJUJO+jFFqyMQ== cardno:16_019_463"
+                ];
+              }
             ];
           };
         in
-        installer.config.system.build.sdImage;
+        rp5.config.system.build.sdImage;
 
       devShells.${system}.default = devShell;
 
