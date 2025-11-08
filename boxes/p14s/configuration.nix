@@ -29,4 +29,24 @@
   };
   system.stateVersion = "22.11";
   virtualisation.docker.enable = true;
+
+  services = {
+    desktopManager.plasma6.enable = true;
+    displayManager.gdm.enable = false;
+    displayManager.sddm.enable = true;
+    displayManager.sddm.wayland.enable = true;
+  };
+
+  environment.systemPackages = with pkgs; [
+    kdePackages.ark
+    kdePackages.filelight
+    kdePackages.gwenview
+    kdePackages.kcalc
+    kdePackages.konversation
+    kdePackages.ktorrent
+    kdePackages.okular
+    krita
+  ];
+
+  programs.ssh.askPassword = pkgs.lib.mkForce "${pkgs.kdePackages.ksshaskpass.out}/bin/ksshaskpass";
 }
