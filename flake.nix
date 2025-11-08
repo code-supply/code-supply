@@ -56,7 +56,7 @@
       nixos-raspberrypi,
       nixpkgs,
       nixvim,
-    }@inputs:
+    }:
     let
       system = "x86_64-linux";
       version = if self ? rev then self.rev else "dirty";
@@ -117,44 +117,14 @@
 
       packages.aarch64-linux.rp5SDCard =
         let
-          nixosSystem =
-            args:
-            nixos-raspberrypi.lib.nixosInstaller {
-              specialArgs = inputs;
-              modules = [
-                nixos-raspberrypi.inputs.nixos-images.nixosModules.sdimage-installer
-                klix.nixosModules.default
-                (
-                  {
-                    config,
-                    lib,
-                    modulesPath,
-                    ...
-                  }:
-                  {
-                    imports = [
-                      nixos-raspberrypi.nixosModules.raspberry-pi-5.base
-                      nixos-raspberrypi.nixosModules.raspberry-pi-5.page-size-16k
-                    ];
-
-                    disabledModules = [
-                      # disable the sd-image module that nixos-images uses
-                      (modulesPath + "/installer/sd-card/sd-image-aarch64-installer.nix")
-                    ];
-                    # nixos-images sets this with `mkForce`, thus `mkOverride 40`
-                    image.baseName =
-                      let
-                        cfg = config.boot.loader.raspberryPi;
-                      in
-                      lib.mkOverride 40 "nixos-installer-rpi${cfg.variant}-${cfg.bootloader}";
-                  }
-                )
-              ]
-              ++ args.modules;
-            };
-          rp5 = nixosSystem {
+          rp5 = klix.lib.nixosSystem {
             modules = [
               {
+                imports = [
+                  nixos-raspberrypi.nixosModules.raspberry-pi-5.base
+                  nixos-raspberrypi.nixosModules.raspberry-pi-5.page-size-16k
+                ];
+
                 services.klix = {
                   configDir = ./boxes/ketchup-king/klipper;
                 };
