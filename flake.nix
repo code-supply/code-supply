@@ -24,9 +24,6 @@
       url = "github:code-supply/klix/rpi5";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-raspberrypi = {
-      url = "github:nvmd/nixos-raspberrypi/main";
-    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixvim = {
       url = "github:nix-community/nixvim";
@@ -53,7 +50,6 @@
       home-manager,
       isd,
       klix,
-      nixos-raspberrypi,
       nixpkgs,
       nixvim,
     }:
@@ -120,10 +116,7 @@
           rp5 = klix.lib.nixosSystem {
             modules = [
               {
-                imports = [
-                  nixos-raspberrypi.nixosModules.raspberry-pi-5.base
-                  nixos-raspberrypi.nixosModules.raspberry-pi-5.page-size-16k
-                ];
+                imports = klix.lib.machineImports.raspberry-pi-5;
 
                 services.klix = {
                   configDir = ./boxes/ketchup-king/klipper;
@@ -178,19 +171,6 @@
               ;
           }
         );
-
-        rp5 = nixos-raspberrypi.lib.nixosSystem {
-          modules = [
-            {
-              imports = with nixos-raspberrypi.nixosModules; [
-                raspberry-pi-5.base
-                raspberry-pi-5.page-size-16k
-              ];
-            }
-
-            { networking.hostName = "rp5"; }
-          ];
-        };
       };
 
       templates.elixir = {
