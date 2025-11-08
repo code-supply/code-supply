@@ -2,16 +2,20 @@
 {
   programs.git = {
     enable = true;
-    userName = "Andrew Bruce";
-    userEmail = "me@andrewbruce.net";
-    aliases = {
-      br = "branch";
-      ci = "commit --verbose";
-      co = "checkout";
-      di = "diff";
-      st = "status";
-    };
-    extraConfig = {
+    settings = {
+      user = {
+        name = "Andrew Bruce";
+        email = "me@andrewbruce.net";
+      };
+
+      alias = {
+        br = "branch";
+        ci = "commit --verbose";
+        co = "checkout";
+        di = "diff";
+        st = "status";
+      };
+
       core.editor = "nvim";
 
       core.pager = "${pkgs.delta}/bin/delta";
@@ -38,6 +42,7 @@
         };
       };
     };
+
     signing = {
       key = null;
       signByDefault = true;
