@@ -1,13 +1,10 @@
 {
   klix,
-  isd,
   ...
 }:
 
 {
-  modules = [
-    klix.nixosModules.default
-    ../common/server-packages.nix
+  modules = klix.lib.machineImports.raspberry-pi-4 ++ [
     (
       { pkgs, config, ... }:
       {
@@ -32,7 +29,4 @@
       }
     )
   ];
-  specialArgs = {
-    inherit isd;
-  };
 }

@@ -143,13 +143,9 @@
         unhinged = callBox "unhinged" pkgs;
         x200 = callBox "x200" pkgs;
 
-        ketchup-king = nixpkgs.lib.nixosSystem (
+        ketchup-king = klix.lib.nixosSystem (
           import ./boxes/ketchup-king {
-            inherit
-              isd
-              klix
-              nixpkgs
-              ;
+            inherit klix;
           }
         );
 
