@@ -6,6 +6,7 @@
     ../common/gui.nix
     ../common/locale.nix
     ../common/nix.nix
+    ../common/server-packages.nix
     ../common/steam.nix
     ../common/user.nix
     ./fonts.nix

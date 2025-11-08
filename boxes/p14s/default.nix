@@ -1,4 +1,9 @@
-{ nix, system, ... }:
+{
+  isd,
+  nix,
+  system,
+  ...
+}:
 
 {
   inherit system;
@@ -6,4 +11,7 @@
     ./configuration.nix
     { nix.package = nix; }
   ];
+  specialArgs = {
+    inherit isd;
+  };
 }
