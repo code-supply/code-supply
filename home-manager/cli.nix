@@ -7,7 +7,7 @@
     ];
 
     shellAliases = {
-      "ssh" = "kitten ssh";
+      "s" = "kitten ssh";
     };
 
     packages = with pkgs; [
