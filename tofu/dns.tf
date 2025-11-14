@@ -32,6 +32,22 @@ resource "google_dns_record_set" "www" {
   type         = "CNAME"
 }
 
+resource "google_dns_record_set" "klix-openobserve" {
+  name         = "openobserve.klix.${google_dns_managed_zone.root.dns_name}"
+  managed_zone = google_dns_managed_zone.root.name
+  rrdatas      = ["46.62.161.130"]
+  ttl          = 1800
+  type         = "A"
+}
+
+resource "google_dns_record_set" "klix-openobserve-ipv6" {
+  name         = "openobserve.klix.${google_dns_managed_zone.root.dns_name}"
+  managed_zone = google_dns_managed_zone.root.name
+  rrdatas      = ["2a01:4f9:c012:f4a1::1"]
+  ttl          = 1800
+  type         = "AAAA"
+}
+
 resource "google_dns_record_set" "klix" {
   name         = "klix.${google_dns_managed_zone.root.dns_name}"
   managed_zone = google_dns_managed_zone.root.name

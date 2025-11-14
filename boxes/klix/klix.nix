@@ -113,6 +113,15 @@
           redir https://klix.code.supply{uri} permanent
         '';
       };
+
+      openobserve = {
+        hostName = "openobserve.klix.code.supply";
+
+        extraConfig = ''
+          encode gzip
+          reverse_proxy localhost:5080
+        '';
+      };
     };
   };
 }
