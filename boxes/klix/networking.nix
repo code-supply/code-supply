@@ -1,7 +1,14 @@
 { lib, ... }:
 {
   networking = {
-    firewall.enable = false;
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [
+        22
+        443
+        80
+      ];
+    };
     nameservers = [
       "8.8.8.8"
     ];
