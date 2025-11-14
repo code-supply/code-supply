@@ -213,7 +213,6 @@
       "inputs": {
         "kamp": "kamp",
         "klipperscreen": "klipperscreen",
-        "nixos-hardware": "nixos-hardware",
         "nixos-raspberrypi": "nixos-raspberrypi",
         "nixpkgs": [
           "nixpkgs"
@@ -223,33 +222,16 @@
         "z_calibration": "z_calibration"
       },
       "locked": {
-        "lastModified": 1762606743,
-        "narHash": "sha256-u4kK6rnQWjDdWpEdS6IXPGYq0ui3xaU/irtlILYJYhc=",
+        "lastModified": 1763130735,
+        "narHash": "sha256-YnfB5Ir0gcsp7olcnB8hXm40dtDEOFhZsM+0Z60dXaw=",
         "owner": "code-supply",
         "repo": "klix",
-        "rev": "5a103e9181b3027f71d504930be835100f7483bb",
+        "rev": "d096f600763f8d8f145c5cdaaaadbf1f1a9d3b80",
         "type": "github"
       },
       "original": {
         "owner": "code-supply",
-        "ref": "rpi5",
         "repo": "klix",
-        "type": "github"
-      }
-    },
-    "nixos-hardware": {
-      "locked": {
-        "lastModified": 1749832440,
-        "narHash": "sha256-lfxhuxAaHlYFGr8yOrAXZqdMt8PrFLzjVqH9v3lQaoY=",
-        "owner": "NixOS",
-        "repo": "nixos-hardware",
-        "rev": "db030f62a449568345372bd62ed8c5be4824fa49",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "master",
-        "repo": "nixos-hardware",
         "type": "github"
       }
     },
