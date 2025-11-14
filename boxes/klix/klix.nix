@@ -52,6 +52,19 @@
     };
   };
 
+  systemd.services.openobserve = {
+    enable = true;
+    wantedBy = [ "default.target" ];
+    serviceConfig = {
+      DynamicUser = true;
+      Restart = "on-failure";
+      LimitNOFILE = 65535;
+      ExecStart = pkgs.openobserve;
+      ExecStop = "${pkgs.coreutils}/bin/kill -s QUIT $MAINPID";
+      EnvironmentFile = config.sops.secrets."klix/openobserve".path;
+    };
+  };
+
   services.postgresql = {
     enable = true;
     package = pkgs.postgresql_18;
