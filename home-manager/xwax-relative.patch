@@ -1,0 +1,21 @@
+diff --git a/timecoder.c b/timecoder.c
+index 383e22b..53fcd74 100644
+--- a/timecoder.c
++++ b/timecoder.c
+@@ -64,6 +64,16 @@
+ #define SWITCH_POLARITY 0x4 /* read bit values in negative (not positive) */
+ 
+ static struct timecode_def timecodes[] = {
++    {
++        .name = "serato_2a_relative",
++        .desc = "Serato 2nd Ed., side A",
++        .resolution = 1000,
++        .bits = 20,
++        .seed = 0x59017,
++        .taps = 0x361e4,
++        .length = 0,
++        .safe = 707000,
++    },
+     {
+         .name = "serato_2a",
+         .desc = "Serato 2nd Ed., side A",
