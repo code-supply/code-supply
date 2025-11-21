@@ -14,6 +14,7 @@
               default.clock.quantum = 16;
               default.clock.min-quantum = 16;
               default.clock.max-quantum = 16;
+              default.clock.force-quantum = 128;
             };
           };
         };
