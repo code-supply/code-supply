@@ -68,8 +68,16 @@
           text = ''
             set -m
 
+            # shellcheck disable=SC2046
             xwax \
+              --no-decor \
               --crate ~/Music \
+              $(
+              for pl in ~/Music/*.m3u
+              do
+                echo --crate "$pl"
+              done
+              ) \
               --timecode traktor_pro_phase_relative \
               --jack left \
               --jack right \
