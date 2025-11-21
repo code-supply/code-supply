@@ -110,6 +110,7 @@
         alsa-scarlett-gui
         audacity
         bitwig-studio5
+        bpm-tools
         elektroid
         mixxx
         pipecontrol
