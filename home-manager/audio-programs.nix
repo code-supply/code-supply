@@ -69,7 +69,7 @@
 
             xwax \
               --crate ~/Music \
-              --timecode serato_2a_relative \
+              --timecode traktor_pro_phase_relative \
               --jack left \
               --jack right \
               --geometry /2 \
