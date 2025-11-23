@@ -4,6 +4,7 @@
 
     servers = {
       bashls.enable = true;
+      ccls.enable = true;
       elixirls.enable = true;
       jsonls.enable = true;
       lua_ls.enable = true;
