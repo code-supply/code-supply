@@ -71,6 +71,7 @@
             # shellcheck disable=SC2046
             xwax \
               --no-decor \
+              --crate ~/audio-workspace/samples \
               --crate ~/Music \
               $(
               for pl in ~/Music/*.m3u
