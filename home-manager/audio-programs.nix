@@ -79,7 +79,7 @@
                 echo --crate "$pl"
               done
               ) \
-              --timecode traktor_pro_phase_relative \
+              --timecode serato_2a_relative \
               --jack left \
               --jack right \
               --geometry /2 \
