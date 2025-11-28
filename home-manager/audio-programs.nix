@@ -113,7 +113,17 @@
         bitwig-studio5
         bpm-tools
         elektroid
-        mixxx
+        # mixxx
+        (mixxx.overrideAttrs {
+          pname = "mixxx-beta";
+          version = "2.6";
+          src = fetchFromGitHub {
+            owner = "mixxxdj";
+            repo = "mixxx";
+            rev = "2.6";
+            hash = "sha256-leauU9G15+MyKIfMNSF5gS0pOzjPMHXBmovY9pIjndc=";
+          };
+        })
         pipecontrol
         qpwgraph
         xwax-beta
