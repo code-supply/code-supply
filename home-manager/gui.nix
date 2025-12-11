@@ -2,6 +2,7 @@
 {
   home = {
     packages = with pkgs; [
+      arduino-ide
       chromium
       libreoffice
       nixos-generators
