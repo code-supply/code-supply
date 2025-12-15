@@ -28,10 +28,10 @@ difference() {
   translate([adapter_offset_x, adapter_offset_y, -adapter_max_depth])
     cyl(l=adapter_max_depth, r1=adapter_diameter / 2, r2=adapter_diameter / 2, center=false);
 
-  translate([adapter_offset_x - (adapter_diameter / 2) + 16.25, 0, -adapter_first_depth])
+  translate([adapter_offset_x - (adapter_diameter / 2) + 15.25, 0, -adapter_first_depth])
     cuboid(size=[110, 120, 20], anchor=FRONT + LEFT + TOP);
 
-  translate([adapter_offset_x - (adapter_diameter / 2) + 16.25, 0, -adapter_first_depth])
+  translate([adapter_offset_x - (adapter_diameter / 2) + 15.25, 0, -adapter_first_depth])
     rotate(a=45, v=[0, 1, 0])
       cuboid(size=[110, 120, 20], anchor=FRONT + LEFT + TOP);
 }
