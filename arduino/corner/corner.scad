@@ -6,7 +6,7 @@ $fs = 0.4;
 
 platter_diameter = 345;
 
-adapter_diameter = 38.9;
+adapter_diameter = 39.5;
 adapter_first_depth = 5;
 adapter_max_depth = 9;
 adapter_offset_x = 32.8;
