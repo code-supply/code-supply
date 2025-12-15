@@ -6,7 +6,7 @@ $fs = 0.4;
 
 platter_diameter = 345;
 
-adapter_diameter = 39.5;
+adapter_diameter = 39;
 adapter_first_depth = 5;
 adapter_max_depth = 9;
 adapter_offset_x = 32.8;
@@ -15,7 +15,7 @@ adapter_offset_y = 34.0;
 difference() {
   cuboid(size=[110, 120, 0.4], chamfer=0, anchor=FRONT + LEFT + BOT);
 
-  translate([175, 175, -1])
+  translate([170, 175, -1])
     cyl(
       l=20,
       r1=platter_diameter / 2,
