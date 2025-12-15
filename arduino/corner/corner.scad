@@ -4,11 +4,11 @@ include <BOSL2/shapes3d.scad>
 $fa = 1;
 $fs = 0.4;
 
-platter_diameter = 345;
+platter_diameter = 343;
 
 adapter_diameter = 39;
-adapter_first_depth = 5;
-adapter_max_depth = 9;
+adapter_first_depth = 7;
+adapter_max_depth = 10;
 adapter_offset_x = 32.8;
 adapter_offset_y = 34.0;
 
