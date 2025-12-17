@@ -12,15 +12,22 @@ adapter_max_depth = 10;
 adapter_offset_x = 32.8;
 adapter_offset_y = 34.0;
 
+main_depth = 10;
+
 difference() {
-  cuboid(size=[110, 120, 0.4], chamfer=0, anchor=FRONT + LEFT + BOT);
+  cuboid(
+    size=[110, 120, main_depth],
+    rounding=4,
+    edges=TOP + LEFT + FRONT, anchor=FRONT + LEFT + BOT
+  );
 
   translate([170, 175, -1])
     cyl(
-      l=20,
+      l=main_depth + 2,
       r1=platter_diameter / 2,
       r2=platter_diameter / 2,
-      center=false
+      center=false,
+      rounding=-6
     );
 }
 
