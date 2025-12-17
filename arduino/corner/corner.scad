@@ -1,4 +1,5 @@
 include <BOSL2/std.scad>
+include <BOSL2/shapes2d.scad>
 include <BOSL2/shapes3d.scad>
 
 $fa = 1;
@@ -14,15 +15,33 @@ adapter_offset_y = 34.0;
 
 main_depth = 10;
 
-translate([48.5, 37, 2.25])
-  rotate(a=180, v=[0, 0, 1])
-    import("/home/andrew/Downloads/Pro Micro usb C.stl", convexity=10);
-
 module board() {
-  cuboid(
-    size=[19, 38, 5],
-    anchor=FRONT + LEFT + BOT
-  );
+  translate([36.5, 47.5, 1.5])
+    rotate(a=90, v=[0, 0, 1])
+      import("/home/andrew/Downloads/Pro Micro usb C.stl", convexity=10);
+}
+
+// board();
+
+board_length = 37;
+board_width = 18.2;
+board_padding = 0.5;
+
+module board_cutout() {
+  translate([2, 0, 0])
+    cuboid(
+      size=[board_length + board_padding, board_width + board_padding, 5],
+      anchor=FRONT + LEFT + BOT
+    );
+
+  translate([0, 9.5, 2.75])
+    rotate(a=90, v=[0, 1, 0])
+      linear_extrude(3)
+        rect(
+          [3.5, 10],
+          rounding=1,
+          anchor=[0, 0]
+        );
 }
 
 difference() {
@@ -33,8 +52,8 @@ difference() {
     anchor=FRONT + LEFT + BOT
   );
 
-  translate([30, -1, 2])
-    board();
+  translate([-1, 3, 2])
+    board_cutout();
 
   translate([170, 175, -1])
     cyl(
@@ -42,7 +61,14 @@ difference() {
       r1=platter_diameter / 2,
       r2=platter_diameter / 2,
       center=false,
-      rounding=-6
+      rounding2=-6
+    );
+
+  // cut in half for assembly
+  translate([0, 0, 5])
+    cuboid(
+      size=[150, 130, main_depth],
+      anchor=FRONT + LEFT + BOT
     );
 }
 
