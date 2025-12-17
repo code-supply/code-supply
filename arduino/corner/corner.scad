@@ -14,12 +14,27 @@ adapter_offset_y = 34.0;
 
 main_depth = 10;
 
+translate([48.5, 37, 2.25])
+  rotate(a=180, v=[0, 0, 1])
+    import("/home/andrew/Downloads/Pro Micro usb C.stl", convexity=10);
+
+module board() {
+  cuboid(
+    size=[19, 38, 5],
+    anchor=FRONT + LEFT + BOT
+  );
+}
+
 difference() {
   cuboid(
-    size=[110, 120, main_depth],
+    size=[150, 130, main_depth],
     rounding=4,
-    edges=TOP + LEFT + FRONT, anchor=FRONT + LEFT + BOT
+    edges=TOP + LEFT + FRONT,
+    anchor=FRONT + LEFT + BOT
   );
+
+  translate([30, -1, 2])
+    board();
 
   translate([170, 175, -1])
     cyl(
