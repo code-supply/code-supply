@@ -10,8 +10,8 @@ platter_diameter = 343;
 adapter_diameter = 39;
 adapter_first_depth = 7;
 adapter_max_depth = 10;
-adapter_offset_x = 32.8;
-adapter_offset_y = 34.0;
+adapter_offset_x = 31;
+adapter_offset_y = 32;
 
 main_depth = 10;
 
@@ -55,7 +55,7 @@ difference() {
   translate([-1, 3, 2])
     board_cutout();
 
-  translate([170, 175, -1])
+  translate([167, 173, -1])
     cyl(
       l=main_depth + 2,
       r1=platter_diameter / 2,
