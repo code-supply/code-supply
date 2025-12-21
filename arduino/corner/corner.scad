@@ -54,6 +54,13 @@ module board_cutout() {
       );
 }
 
+module encoder_cutout() {
+  cuboid(
+    size=[14.5, 14.5, 5],
+    anchor=FRONT + LEFT + BOT
+  );
+}
+
 difference() {
   cuboid(
     size=[150, 130, main_depth],
@@ -65,6 +72,10 @@ difference() {
   rotate(a=-45, v=[0, 0, 1])
     translate([-30, 47, 2])
       board_cutout();
+
+  translate([17, 25, 2])
+    rotate(a=-45, v=[0, 0, 1])
+      encoder_cutout();
 
   translate([167, 173, -1])
     cyl(
