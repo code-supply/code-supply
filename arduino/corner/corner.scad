@@ -15,6 +15,13 @@ adapter_offset_y = 32;
 
 main_depth = 10;
 
+plug_width = 12.4;
+plug_length = 40;
+
+board_length = 37;
+board_width = 18.2;
+board_padding = 0.5;
+
 module board() {
   translate([36.5, 47.5, 1.5])
     rotate(a=90, v=[0, 0, 1])
@@ -22,10 +29,6 @@ module board() {
 }
 
 // board();
-
-board_length = 37;
-board_width = 18.2;
-board_padding = 0.5;
 
 module board_cutout() {
   translate([2, 0, 0])
@@ -42,6 +45,13 @@ module board_cutout() {
           rounding=1,
           anchor=[0, 0]
         );
+
+  translate([0, ( (board_width + board_padding) / 2) - ( (plug_width + board_padding) / 2), 0])
+    rotate(a=90, v=[0, 0, 1])
+      cuboid(
+        size=[plug_width + board_padding, plug_length, 5],
+        anchor=FRONT + LEFT + BOT
+      );
 }
 
 difference() {
@@ -52,8 +62,9 @@ difference() {
     anchor=FRONT + LEFT + BOT
   );
 
-  translate([-1, 3, 2])
-    board_cutout();
+  rotate(a=-45, v=[0, 0, 1])
+    translate([-30, 47, 2])
+      board_cutout();
 
   translate([167, 173, -1])
     cyl(
