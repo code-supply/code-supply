@@ -10,8 +10,8 @@ platter_diameter = 343;
 adapter_diameter = 39;
 adapter_first_depth = 7;
 adapter_max_depth = 10;
-adapter_offset_x = 31;
-adapter_offset_y = 32;
+adapter_offset_x = 29;
+adapter_offset_y = 30;
 
 main_depth = 10;
 
