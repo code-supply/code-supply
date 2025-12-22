@@ -129,13 +129,13 @@ difference() {
       button_holes();
   }
 
-  translate([167, 173, -1])
+  translate([167, 173, -9])
     cyl(
-      l=main_depth + 2,
+      l=main_depth + 10,
       r1=platter_diameter / 2,
       r2=platter_diameter / 2,
       center=false,
-      rounding2=-6
+      rounding2=-8
     );
 
   // cut in half for assembly
