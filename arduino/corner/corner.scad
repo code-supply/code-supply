@@ -8,10 +8,16 @@ $fs = 0.4;
 platter_diameter = 343;
 
 adapter_diameter = 39;
-adapter_first_depth = 7;
+adapter_first_depth = 6;
 adapter_max_depth = 10;
 adapter_offset_x = 29;
 adapter_offset_y = 30;
+
+encoder_cutout_width = 14.5;
+encoder_cutout_length = 13;
+encoder_pin_width = 1;
+encoder_pin_depth = 0.5;
+encoder_switch_pin_distance = 5;
 
 main_depth = 10;
 
@@ -55,10 +61,24 @@ module board_cutout() {
 }
 
 module encoder_cutout() {
-  cuboid(
-    size=[14.5, 14.5, 5],
-    anchor=FRONT + LEFT + BOT
-  );
+  difference() {
+    cuboid(
+      size=[encoder_cutout_width, encoder_cutout_length, 5],
+      anchor=FRONT + LEFT + BOT
+    );
+
+    translate([0, 0, 2.5])
+      cuboid(
+        size=[encoder_cutout_width, 1, 0.5],
+        anchor=FRONT + LEFT + BOT
+      );
+
+    translate([0, encoder_cutout_length - 1, 2.5])
+      cuboid(
+        size=[encoder_cutout_width, 1, 0.5],
+        anchor=FRONT + LEFT + BOT
+      );
+  }
 }
 
 difference() {
