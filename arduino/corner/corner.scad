@@ -13,11 +13,16 @@ adapter_max_depth = 10;
 adapter_offset_x = 29;
 adapter_offset_y = 30;
 
+button_leg_diameter = 1;
+button_distance = 13;
+
 encoder_cutout_width = 14.5;
 encoder_cutout_length = 13;
 encoder_pin_width = 1;
 encoder_pin_depth = 0.5;
 encoder_switch_pin_distance = 5;
+
+hole_spacing = 2.54;
 
 main_depth = 10;
 
@@ -81,6 +86,28 @@ module encoder_cutout() {
   }
 }
 
+module button_holes() {
+  cuboid(
+    size=[button_leg_diameter, button_leg_diameter, 5]
+  );
+
+  translate([hole_spacing * 2, 0, 0])
+    cuboid(
+      size=[button_leg_diameter, button_leg_diameter, 5]
+    );
+
+  translate([0, hole_spacing * 3, 0]) {
+    cuboid(
+      size=[button_leg_diameter, button_leg_diameter, 5]
+    );
+
+    translate([hole_spacing * 2, 0, 0])
+      cuboid(
+        size=[button_leg_diameter, button_leg_diameter, 5]
+      );
+  }
+}
+
 difference() {
   cuboid(
     size=[150, 130, main_depth],
@@ -96,6 +123,11 @@ difference() {
   translate([17, 25, 2])
     rotate(a=-45, v=[0, 0, 1])
       encoder_cutout();
+
+  for (distance = [0:button_distance:button_distance * 3]) {
+    translate([40 + distance, 7.5, 3])
+      button_holes();
+  }
 
   translate([167, 173, -1])
     cyl(
