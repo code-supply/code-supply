@@ -110,37 +110,70 @@ module button_holes() {
   }
 }
 
-difference() {
-  cuboid(
-    size=[150, 130, main_depth],
-    rounding=4,
-    edges=TOP + LEFT + FRONT,
-    anchor=FRONT + LEFT + BOT
-  );
-
-  rotate(a=-45, v=[0, 0, 1])
-    translate([-30, 47, 2])
-      board_cutout();
-
-  translate([15, 23, 0.01])
-    rotate(a=-45, v=[0, 0, 1])
-      encoder_cutout();
-
-  for (distance = [0:button_distance:button_distance * 3]) {
-    translate([40 + distance, 7.5, 3])
-      button_holes();
-  }
-
-  translate([167, 173, -9])
-    cyl(
-      l=main_depth + 10,
-      r1=platter_diameter / 2,
-      r2=platter_diameter / 2,
-      center=false,
-      rounding2=-8
+module body() {
+  difference() {
+    cuboid(
+      size=[150, 130, main_depth],
+      rounding=4,
+      edges=TOP + LEFT + FRONT,
+      anchor=FRONT + LEFT + BOT
     );
 
-  // cut in half for assembly
+    rotate(a=-45, v=[0, 0, 1])
+      translate([-30, 47, 2])
+        board_cutout();
+
+    translate([15, 23, 0.01])
+      rotate(a=-45, v=[0, 0, 1])
+        encoder_cutout();
+
+    for (distance = [0:button_distance:button_distance * 3]) {
+      translate([40 + distance, 7.5, 3])
+        button_holes();
+    }
+
+    translate([167, 173, -9])
+      cyl(
+        l=main_depth + 10,
+        r1=platter_diameter / 2,
+        r2=platter_diameter / 2,
+        center=false,
+        rounding2=-8
+      );
+  }
+
+  difference() {
+    translate([adapter_offset_x, adapter_offset_y, -adapter_max_depth])
+      cyl(l=adapter_max_depth, r1=adapter_diameter / 2, r2=adapter_diameter / 2, center=false);
+
+    translate([adapter_offset_x - (adapter_diameter / 2) + 13, 0, -adapter_first_depth])
+      cuboid(size=[110, 120, 20], anchor=FRONT + LEFT + TOP);
+
+    translate([adapter_offset_x - (adapter_diameter / 2) + 13, 0, -adapter_first_depth])
+      rotate(a=45, v=[0, 1, 0])
+        cuboid(size=[110, 120, 20], anchor=FRONT + LEFT + TOP);
+  }
+}
+
+module main_board() {
+  difference() {
+    body();
+    lid_cut();
+  }
+}
+
+module lid() {
+  difference() {
+    intersection() {
+      body();
+      lid_cut();
+    }
+
+    bubble();
+  }
+}
+
+module lid_cut() {
   translate([0, 0, 5])
     cuboid(
       size=[150, 130, main_depth],
@@ -148,14 +181,17 @@ difference() {
     );
 }
 
-difference() {
-  translate([adapter_offset_x, adapter_offset_y, -adapter_max_depth])
-    cyl(l=adapter_max_depth, r1=adapter_diameter / 2, r2=adapter_diameter / 2, center=false);
-
-  translate([adapter_offset_x - (adapter_diameter / 2) + 13, 0, -adapter_first_depth])
-    cuboid(size=[110, 120, 20], anchor=FRONT + LEFT + TOP);
-
-  translate([adapter_offset_x - (adapter_diameter / 2) + 13, 0, -adapter_first_depth])
-    rotate(a=45, v=[0, 1, 0])
-      cuboid(size=[110, 120, 20], anchor=FRONT + LEFT + TOP);
+module bubble() {
+  translate([0, 0, 4.5])
+    linear_extrude(5)
+      polygon(
+        points=[
+          [10, 5],
+          [110, 5],
+          [10, 55],
+        ]
+      );
 }
+
+main_board();
+// lid();
