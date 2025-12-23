@@ -17,7 +17,9 @@ button_leg_diameter = 1;
 button_distance = 13;
 
 encoder_cutout_width = 14.5;
-encoder_cutout_length = 13;
+encoder_cutout_length = 14;
+encoder_cutout_depth = 5;
+encoder_cutout_lip_depth = 0.5;
 encoder_pin_width = 1;
 encoder_pin_depth = 0.5;
 encoder_switch_pin_distance = 5;
@@ -68,19 +70,19 @@ module board_cutout() {
 module encoder_cutout() {
   difference() {
     cuboid(
-      size=[encoder_cutout_width, encoder_cutout_length, 5],
+      size=[encoder_cutout_width, encoder_cutout_length, encoder_cutout_depth],
       anchor=FRONT + LEFT + BOT
     );
 
-    translate([0, 0, 2.5])
+    translate([0, 0, encoder_cutout_depth - encoder_cutout_lip_depth])
       cuboid(
-        size=[encoder_cutout_width, 1, 0.5],
+        size=[encoder_cutout_width, 1, encoder_cutout_lip_depth],
         anchor=FRONT + LEFT + BOT
       );
 
-    translate([0, encoder_cutout_length - 1, 2.5])
+    translate([0, encoder_cutout_length - 1, encoder_cutout_depth - encoder_cutout_lip_depth])
       cuboid(
-        size=[encoder_cutout_width, 1, 0.5],
+        size=[encoder_cutout_width, 1, encoder_cutout_lip_depth],
         anchor=FRONT + LEFT + BOT
       );
   }
@@ -120,7 +122,7 @@ difference() {
     translate([-30, 47, 2])
       board_cutout();
 
-  translate([17, 25, 2])
+  translate([15, 23, 0.01])
     rotate(a=-45, v=[0, 0, 1])
       encoder_cutout();
 
