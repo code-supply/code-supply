@@ -26,7 +26,7 @@ encoder_switch_pin_distance = 5;
 
 hole_spacing = 2.54;
 
-main_depth = 10;
+main_depth = 11.5;
 
 plug_width = 12.4;
 plug_length = 40;
@@ -40,8 +40,6 @@ module board() {
     rotate(a=90, v=[0, 0, 1])
       import("/home/andrew/Downloads/Pro Micro usb C.stl", convexity=10);
 }
-
-// board();
 
 module board_cutout() {
   translate([2, 0, 0])
@@ -162,6 +160,34 @@ module main_board() {
   }
 }
 
+module bubble() {
+  translate([0, 0, 4.5])
+    linear_extrude(3)
+      polygon(
+        points=[
+          [10, 5],
+          [110, 5],
+          [10, 55],
+        ]
+      );
+
+  translate([15, 23, 0.01]) {
+    rotate(a=-45, v=[0, 0, 1]) {
+      translate([0, 0, 5])
+        cuboid(
+          size=[encoder_cutout_width, encoder_cutout_length, 6],
+          anchor=FRONT + LEFT + BOT
+        );
+
+      translate([encoder_cutout_width / 2, encoder_cutout_length / 2, 20])
+        cyl(
+          h=30,
+          r=3.5
+        );
+    }
+  }
+}
+
 module lid() {
   difference() {
     intersection() {
@@ -181,17 +207,6 @@ module lid_cut() {
     );
 }
 
-module bubble() {
-  translate([0, 0, 4.5])
-    linear_extrude(5)
-      polygon(
-        points=[
-          [10, 5],
-          [110, 5],
-          [10, 55],
-        ]
-      );
-}
-
 main_board();
+// bubble();
 // lid();
