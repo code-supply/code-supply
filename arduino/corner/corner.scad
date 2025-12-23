@@ -2,8 +2,8 @@ include <BOSL2/std.scad>
 include <BOSL2/shapes2d.scad>
 include <BOSL2/shapes3d.scad>
 
-$fa = 1;
-$fs = 0.4;
+$fa = 2;
+$fs = 0.8;
 
 platter_diameter = 343;
 
