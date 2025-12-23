@@ -13,8 +13,12 @@ adapter_max_depth = 10;
 adapter_offset_x = 29;
 adapter_offset_y = 30;
 
-button_leg_diameter = 1;
+button_x_offset = 40;
+button_y_offset = 7.5;
+button_leg_diameter = 1.25;
 button_distance = 13;
+button_hole_spacing = 2.54;
+button_shaft_radius = 2.5;
 
 encoder_cutout_width = 14.5;
 encoder_cutout_length = 14;
@@ -23,8 +27,6 @@ encoder_cutout_lip_depth = 0.5;
 encoder_pin_width = 1;
 encoder_pin_depth = 0.5;
 encoder_switch_pin_distance = 5;
-
-hole_spacing = 2.54;
 
 main_depth = 11.5;
 
@@ -91,17 +93,17 @@ module button_holes() {
     size=[button_leg_diameter, button_leg_diameter, 5]
   );
 
-  translate([hole_spacing * 2, 0, 0])
+  translate([button_hole_spacing * 2, 0, 0])
     cuboid(
       size=[button_leg_diameter, button_leg_diameter, 5]
     );
 
-  translate([0, hole_spacing * 3, 0]) {
+  translate([0, button_hole_spacing * 3, 0]) {
     cuboid(
       size=[button_leg_diameter, button_leg_diameter, 5]
     );
 
-    translate([hole_spacing * 2, 0, 0])
+    translate([button_hole_spacing * 2, 0, 0])
       cuboid(
         size=[button_leg_diameter, button_leg_diameter, 5]
       );
@@ -111,9 +113,9 @@ module button_holes() {
 module body() {
   difference() {
     cuboid(
-      size=[150, 130, main_depth],
-      rounding=4,
-      edges=TOP + LEFT + FRONT,
+      size=[110, 75, main_depth],
+      rounding=5,
+      edges=TOP,
       anchor=FRONT + LEFT + BOT
     );
 
@@ -126,7 +128,7 @@ module body() {
         encoder_cutout();
 
     for (distance = [0:button_distance:button_distance * 3]) {
-      translate([40 + distance, 7.5, 3])
+      translate([button_x_offset + distance, button_y_offset, 3])
         button_holes();
     }
 
@@ -171,6 +173,7 @@ module bubble() {
         ]
       );
 
+  // encoder knob cutout
   translate([15, 23, 0.01]) {
     rotate(a=-45, v=[0, 0, 1]) {
       translate([0, 0, 5])
@@ -186,6 +189,21 @@ module bubble() {
         );
     }
   }
+
+  for (distance = [0:button_distance:button_distance * 3]) {
+    translate([button_x_offset + distance - 0.5, 0, 0])
+      button_cutout();
+  }
+}
+
+module button_cutout() {
+  translate([0, 8.25, 5])
+    cuboid(
+      size=[6.1, 6.1, 3.8],
+      anchor=FRONT + LEFT + BOT
+    );
+  translate([6.1 / 2, 11.5, 20])
+    cyl(h=30, r=button_shaft_radius);
 }
 
 module lid() {
@@ -209,4 +227,4 @@ module lid_cut() {
 
 main_board();
 // bubble();
-// lid();
+lid();
