@@ -13,6 +13,7 @@ adapter_max_depth = 10;
 adapter_offset_x = 29;
 adapter_offset_y = 30;
 
+button_cutout_diameter = 7;
 button_x_offset = 40;
 button_y_offset = 7.5;
 button_leg_diameter = 1.25;
@@ -114,7 +115,7 @@ module body() {
   difference() {
     cuboid(
       size=[110, 75, main_depth],
-      rounding=5,
+      chamfer=3,
       edges=TOP,
       anchor=FRONT + LEFT + BOT
     );
@@ -168,7 +169,7 @@ module bubble() {
       polygon(
         points=[
           [10, 5],
-          [110, 5],
+          [105, 5],
           [10, 55],
         ]
       );
@@ -199,10 +200,10 @@ module bubble() {
 module button_cutout() {
   translate([0, 8.25, 5])
     cuboid(
-      size=[6.1, 6.1, 3.8],
+      size=[button_cutout_diameter, button_cutout_diameter, 3.8],
       anchor=FRONT + LEFT + BOT
     );
-  translate([6.1 / 2, 11.5, 20])
+  translate([button_cutout_diameter / 2, 11.5, 20])
     cyl(h=30, r=button_shaft_radius);
 }
 
@@ -225,6 +226,6 @@ module lid_cut() {
     );
 }
 
-main_board();
+// main_board();
 // bubble();
 lid();
