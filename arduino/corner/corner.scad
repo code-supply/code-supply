@@ -204,7 +204,20 @@ module button_cutout() {
       anchor=FRONT + LEFT + BOT
     );
   translate([button_cutout_diameter / 2, 11.5, 20])
-    cyl(h=30, r=button_shaft_radius);
+    cyl(h=30, r=button_shaft_radius + 0.4);
+
+  translate([0, 11, 9.25])
+    cuboid(size=[1.1, 1.1, 1.75], anchor=FRONT + LEFT + BOT);
+
+  translate([button_shaft_radius + 3.5, 11, 9.25])
+    cuboid(size=[1.1, 1.1, 1.75], anchor=FRONT + LEFT + BOT);
+}
+
+module button() {
+  cyl(h=4, r=button_shaft_radius);
+
+  translate([0, 0, -1.5])
+    cuboid(size=[button_shaft_radius + 5, 1, 1]);
 }
 
 module lid() {
@@ -225,6 +238,9 @@ module lid_cut() {
       anchor=FRONT + LEFT + BOT
     );
 }
+
+translate([button_x_offset + button_shaft_radius + 0.4, 11.5, 11.5])
+  button();
 
 // main_board();
 // bubble();
