@@ -19,7 +19,7 @@ plug_length = 40;
 
 arduino_socket_width = 9.5;
 
-diff()
+diff(keep="lip")
 
   cuboid(
     size=[110, 75, board_depth],
@@ -33,6 +33,14 @@ diff()
     align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
       back(35) right(25)
           arduino();
+
+    back(20) right(15)
+        align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
+          cuboid(size=[14, 14.5, 5], spin=45)
+            tag("lip")
+              align(LEFT + FRONT + TOP, inside=true)
+                color("red")
+                  rect_tube(size=[14, 14.5], wall=1, h=0.5);
   }
 
 module arduino() {
