@@ -24,19 +24,21 @@ support_thickness = 0.2;
 
 shaft_diameter = shaft_socket_diameter - 1.25;
 
-diff(keep="shaft")
-  cyl(d=box_diameter, h=box_height, anchor=BOTTOM)
+module button() {
+  diff(keep="shaft")
+    cyl(d=box_diameter, h=box_height, anchor=BOTTOM)
 
-    align(BOTTOM, inside=true, shiftout=eps)
-      cuboid(size=[switch_socket_diameter, switch_socket_diameter, switch_socket_depth])
-        align(TOP, overlap=eps)
-          cyl(d=shaft_socket_diameter, h=box_height + 0.1)
-            align(BOTTOM, inside=true) {
-              cuboid(size=[shaft_socket_diameter + 2, 1, track_height]);
-              cuboid(size=[1, shaft_socket_diameter + 2, track_height]);
-              up(shaft_bottom_gap)
-                shaft();
-            }
+      align(BOTTOM, inside=true, shiftout=eps)
+        cuboid(size=[switch_socket_diameter, switch_socket_diameter, switch_socket_depth])
+          align(TOP, overlap=eps)
+            cyl(d=shaft_socket_diameter, h=box_height + 0.1)
+              align(BOTTOM, inside=true) {
+                cuboid(size=[shaft_socket_diameter + 2, 1, track_height]);
+                cuboid(size=[1, shaft_socket_diameter + 2, track_height]);
+                up(shaft_bottom_gap)
+                  shaft();
+              }
+}
 
 module shaft() {
   tag("shaft")
