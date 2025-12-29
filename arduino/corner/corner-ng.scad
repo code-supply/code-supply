@@ -14,6 +14,10 @@ arduino_width = 18.2;
 arduino_depth = 2.75;
 arduino_padding = 0.5;
 
+button_hole_spacing = 2.54;
+button_leg_diameter = 1.25;
+button_distance = 13;
+
 plug_width = 12.4;
 plug_length = 40;
 
@@ -41,6 +45,17 @@ diff(keep="lip")
               align(LEFT + FRONT + TOP, inside=true)
                 color("red")
                   rect_tube(size=[14, 14.5], wall=1, h=0.5);
+
+    align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
+      back(12.5) right(35)
+          button_leg_holes()
+            align(RIGHT) right(button_distance)
+                button_leg_holes()
+                  align(RIGHT) right(button_distance)
+                      button_leg_holes()
+                        align(RIGHT) right(button_distance)
+                            button_leg_holes();
+    ;
   }
 
 module arduino() {
@@ -71,4 +86,26 @@ module platter() {
     d=platter_diameter,
     chamfer2=-4
   );
+}
+
+module button_leg_holes() {
+  button_leg_hole() {
+    right(button_hole_spacing)
+      align(RIGHT)
+        button_leg_hole();
+
+    fwd(button_hole_spacing)
+      align(FRONT)
+        button_leg_hole();
+
+    right(button_hole_spacing) fwd(button_hole_spacing)
+        align(FRONT + RIGHT)
+          button_leg_hole();
+
+    children();
+  }
+}
+
+module button_leg_hole() {
+  cuboid(size=[button_leg_diameter, button_leg_diameter, 5]) children();
 }
