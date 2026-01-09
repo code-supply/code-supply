@@ -27,6 +27,7 @@
       nix-index
       nix-tree
       nmap
+      opensc
       pass
       pciutils
       pv
