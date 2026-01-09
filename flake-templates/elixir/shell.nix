@@ -6,7 +6,7 @@ mkShell {
   packages = [
     elixir
     elixir-ls
-    nixfmt-rfc-style
+    nixfmt
   ];
 
   shellHook = ''

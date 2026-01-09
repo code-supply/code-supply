@@ -91,7 +91,7 @@
       devShell = callPackage ./shell.nix { };
     in
     {
-      formatter.${system} = pkgs.nixfmt-rfc-style;
+      formatter.${system} = pkgs.nixfmt;
 
       packages.${system} = {
         inherit
