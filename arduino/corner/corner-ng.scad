@@ -4,9 +4,10 @@ include <BOSL2/shapes3d.scad>
 
 $fa = 2;
 $fs = 0.8;
-eps = 0.001;
+eps = 0.005;
 
-board_depth = 10;
+board_depth = 5;
+lid_depth = 5;
 platter_diameter = 360;
 
 arduino_length = 37;
@@ -23,40 +24,66 @@ plug_length = 40;
 
 arduino_socket_width = 9.5;
 
-diff(keep="lip")
+up(lid_depth)
+  lid();
+// board();
 
-  cuboid(
-    size=[110, 75, board_depth],
-    edges=TOP,
-    anchor=FRONT + LEFT + BOT
-  ) {
-    align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
-      back(60) right(35)
-          platter();
+module lid() {
+  diff(keep="lip")
 
-    align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
-      back(35) right(25)
-          arduino();
+    cuboid(
+      size=[110, 75, board_depth],
+      anchor=FRONT + LEFT + BOT
+    ) {
+      align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
+        back(60) right(35)
+            platter();
 
-    back(20) right(15)
-        align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
-          cuboid(size=[14, 14.5, 5], spin=45)
-            tag("lip")
-              align(LEFT + FRONT + TOP, inside=true)
-                color("red")
-                  rect_tube(size=[14, 14.5], wall=1, h=0.5);
+      align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
+        back(20) right(15)
+            encoder();
+    }
+}
 
-    align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
-      back(12.5) right(35)
-          button_leg_holes()
-            align(RIGHT) right(button_distance)
-                button_leg_holes()
-                  align(RIGHT) right(button_distance)
-                      button_leg_holes()
-                        align(RIGHT) right(button_distance)
-                            button_leg_holes();
-    ;
-  }
+module board() {
+  diff(keep="lip")
+
+    cuboid(
+      size=[110, 75, board_depth],
+      anchor=FRONT + LEFT + BOT
+    ) {
+      align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
+        back(60) right(35)
+            platter();
+
+      align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
+        back(35) right(25)
+            arduino();
+
+      align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
+        back(20) right(15)
+            encoder();
+
+      align(LEFT + FRONT + TOP, inside=true, shiftout=eps)
+        back(12.5) right(35)
+            button_leg_holes()
+              align(RIGHT) right(button_distance)
+                  button_leg_holes()
+                    align(RIGHT) right(button_distance)
+                        button_leg_holes()
+                          align(RIGHT) right(button_distance)
+                              button_leg_holes();
+      ;
+    }
+}
+
+module encoder() {
+  cuboid(size=[14, 14.5, 5], spin=45)
+    tag("lip")
+      align(LEFT + FRONT + TOP, inside=true)
+        color("red")
+          rect_tube(size=[14, 14.5], wall=1, h=0.5);
+}
 
 module arduino() {
   cuboid(
@@ -83,8 +110,7 @@ module arduino() {
 module platter() {
   cyl(
     h=board_depth + 10,
-    d=platter_diameter,
-    chamfer2=-4
+    d=platter_diameter
   );
 }
 

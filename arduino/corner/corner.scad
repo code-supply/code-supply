@@ -13,13 +13,11 @@ adapter_max_depth = 10;
 adapter_offset_x = 29;
 adapter_offset_y = 30;
 
-button_cutout_diameter = 7;
 button_x_offset = 40;
 button_y_offset = 7.5;
 button_leg_diameter = 1.25;
 button_distance = 13;
 button_hole_spacing = 2.54;
-button_shaft_radius = 2.5;
 
 encoder_cutout_width = 14.5;
 encoder_cutout_length = 14;
@@ -75,7 +73,7 @@ module encoder_cutout() {
       anchor=FRONT + LEFT + BOT
     );
 
-    translate([0, 0, encoder_cutout_depth - encoder_cutout_lip_depth])
+j   translate([0, 0, encoder_cutout_depth - encoder_cutout_lip_depth])
       cuboid(
         size=[encoder_cutout_width, 1, encoder_cutout_lip_depth],
         anchor=FRONT + LEFT + BOT
@@ -165,7 +163,7 @@ module main_board() {
 
 module bubble() {
   translate([0, 0, 4.5])
-    linear_extrude(3)
+    linear_extrude(1)
       polygon(
         points=[
           [10, 5],
@@ -190,34 +188,6 @@ module bubble() {
         );
     }
   }
-
-  for (distance = [0:button_distance:button_distance * 3]) {
-    translate([button_x_offset + distance - 0.5, 0, 0])
-      button_cutout();
-  }
-}
-
-module button_cutout() {
-  translate([0, 8.25, 5])
-    cuboid(
-      size=[button_cutout_diameter, button_cutout_diameter, 3.8],
-      anchor=FRONT + LEFT + BOT
-    );
-  translate([button_cutout_diameter / 2, 11.5, 20])
-    cyl(h=30, r=button_shaft_radius + 0.4);
-
-  translate([0, 11, 9.25])
-    cuboid(size=[1.1, 1.1, 1.75], anchor=FRONT + LEFT + BOT);
-
-  translate([button_shaft_radius + 3.5, 11, 9.25])
-    cuboid(size=[1.1, 1.1, 1.75], anchor=FRONT + LEFT + BOT);
-}
-
-module button() {
-  cyl(h=4, r=button_shaft_radius);
-
-  translate([0, 0, -1.5])
-    cuboid(size=[button_shaft_radius + 5, 1, 1]);
 }
 
 module lid() {
@@ -232,16 +202,13 @@ module lid() {
 }
 
 module lid_cut() {
-  translate([0, 0, 5])
+  up(5)
     cuboid(
       size=[150, 130, main_depth],
       anchor=FRONT + LEFT + BOT
     );
 }
 
-translate([button_x_offset + button_shaft_radius + 0.4, 11.5, 11.5])
-  button();
-
-// main_board();
+main_board();
 // bubble();
-lid();
+// lid();

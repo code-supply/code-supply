@@ -10,9 +10,8 @@ eps = 0.001;
 box_diameter = 20;
 box_height = 10;
 
+// base();
 lid();
-
-base();
 
 module lid() {
   intersection() {
