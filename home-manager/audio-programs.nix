@@ -112,7 +112,6 @@
         audacity
         bitwig-studio5
         bpm-tools
-        elektroid
         # mixxx
         (mixxx.overrideAttrs (oldAttrs: {
           pname = "mixxx-beta";
