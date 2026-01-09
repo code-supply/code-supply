@@ -114,16 +114,17 @@
         bpm-tools
         elektroid
         # mixxx
-        (mixxx.overrideAttrs {
+        (mixxx.overrideAttrs (oldAttrs: {
           pname = "mixxx-beta";
           version = "2.6";
           src = fetchFromGitHub {
             owner = "mixxxdj";
             repo = "mixxx";
             rev = "2.6";
-            hash = "sha256-leauU9G15+MyKIfMNSF5gS0pOzjPMHXBmovY9pIjndc=";
+            hash = "sha256-5LJfmFCNuAJa2LDI+8zQxJt1bVExU3UPfjUZnn988v4=";
           };
-        })
+          cmakeFlags = oldAttrs.cmakeFlags ++ [ "-DENGINEPRIME=OFF" ];
+        }))
         pipecontrol
         qpwgraph
         xwax-beta
