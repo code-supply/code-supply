@@ -2,10 +2,10 @@
 {
   imports = [
     ./boot.nix
-    ../common/gpg-ssh.nix
     ../common/gui.nix
     ../common/locale.nix
     ../common/nix.nix
+    ../common/nonstandard-ssh.nix
     ../common/server-packages.nix
     ../common/steam.nix
     ../common/user.nix
