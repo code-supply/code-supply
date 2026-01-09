@@ -1,5 +1,4 @@
 {
-  isd,
   nix,
   sops-nix,
   klixUrl,
@@ -25,7 +24,6 @@
   ];
   specialArgs = {
     inherit
-      isd
       nix
       websites
       klixUrl

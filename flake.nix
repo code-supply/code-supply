@@ -16,10 +16,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    isd = {
-      url = "github:isd-project/isd";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     klix = {
       url = "github:code-supply/klix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -48,7 +44,6 @@
       catppuccin,
       git-mob,
       home-manager,
-      isd,
       klix,
       nixpkgs,
       nixvim,
@@ -72,7 +67,6 @@
           import ./boxes/${name} {
             inherit
               home-manager
-              isd
               nixpkgs
               sops-nix
               system
