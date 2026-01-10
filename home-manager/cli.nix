@@ -1,4 +1,7 @@
 { pkgs, ... }:
+let
+  pkcs11Library = "${pkgs.yubico-piv-tool}/lib/libykcs11.so";
+in
 {
   home = {
     sessionPath = [
@@ -8,6 +11,7 @@
 
     shellAliases = {
       "s" = "kitten ssh";
+      "ssh-add" = "ssh-add -s ${pkcs11Library}";
     };
 
     packages = with pkgs; [
@@ -46,7 +50,7 @@
   programs = {
     ssh = {
       extraOptionOverrides = {
-        PKCS11Provider = "${pkgs.yubico-piv-tool}/lib/libykcs11.so";
+        PKCS11Provider = pkcs11Library;
       };
       enable = true;
       enableDefaultConfig = false;
