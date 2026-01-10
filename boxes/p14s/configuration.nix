@@ -5,7 +5,6 @@
     ../common/gui.nix
     ../common/locale.nix
     ../common/nix.nix
-    ../common/nonstandard-ssh.nix
     ../common/server-packages.nix
     ../common/steam.nix
     ../common/user.nix
@@ -30,4 +29,11 @@
   };
   system.stateVersion = "22.11";
   virtualisation.docker.enable = true;
+
+  services.pcscd.enable = true;
+  services.gnome.gcr-ssh-agent.enable = false;
+  programs.ssh = {
+    startAgent = true;
+    agentPKCS11Whitelist = "*libykcs11.so*";
+  };
 }
