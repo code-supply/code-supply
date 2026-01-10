@@ -41,6 +41,21 @@
           pushInsteadOf = "https://github.com/";
         };
       };
+
+      gpg = {
+        format = "ssh";
+        ssh.defaultKeyCommand = "ssh-add -L";
+        ssh.allowedSignersFile =
+          let
+            path = pkgs.writeTextFile {
+              name = "allowed-signers";
+              text = ''
+                me@andrewbruce.net namespaces="git" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOfher5cvUlwuLyrhTjbQSj8UWT7LTQ/eXd3rSXrJOFU
+              '';
+            };
+          in
+          "${path}";
+      };
     };
 
     signing = {
