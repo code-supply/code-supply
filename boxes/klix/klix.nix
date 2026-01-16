@@ -83,6 +83,8 @@
     ];
   };
 
+  services.postgresqlBackup.enable = true;
+
   sops.secrets."klix/environment" = {
     restartUnits = [ "klix.service" ];
     owner = "klix";
