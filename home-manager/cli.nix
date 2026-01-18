@@ -34,6 +34,7 @@ in
       opensc
       pass
       pciutils
+      proton-pass-cli
       pv
       ripgrep
       sops
