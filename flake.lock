@@ -161,6 +161,7 @@
       },
       "original": {
         "owner": "code-supply",
+        "ref": "main",
         "repo": "klix",
         "type": "github"
       }
