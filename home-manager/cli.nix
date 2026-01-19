@@ -82,6 +82,7 @@ in
         opensc
         pass
         pciutils
+        pinentry-gnome3
         proton-pass-cli
         pv
         ripgrep
