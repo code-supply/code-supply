@@ -5,6 +5,7 @@
     ../common/gui.nix
     ../common/locale.nix
     ../common/nix.nix
+    ../common/openobserve.nix
     ../common/server-packages.nix
     ../common/steam.nix
     ../common/user.nix
@@ -17,21 +18,32 @@
   ];
 
   nixpkgs.config.allowUnfree = true;
-  services.fwupd.enable = true;
-  services.printing = {
-    enable = true;
-    drivers = [ pkgs.samsung-unified-linux-driver ];
-  };
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
-  };
+
   system.stateVersion = "22.11";
+
   virtualisation.docker.enable = true;
 
-  services.pcscd.enable = true;
-  services.gnome.gcr-ssh-agent.enable = false;
+  services = {
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+      openFirewall = true;
+    };
+
+    fwupd.enable = true;
+
+    gnome.gcr-ssh-agent.enable = false;
+
+    openobserve.enable = true;
+
+    pcscd.enable = true;
+
+    printing = {
+      enable = true;
+      drivers = [ pkgs.samsung-unified-linux-driver ];
+    };
+  };
+
   programs.ssh = {
     startAgent = true;
     agentPKCS11Whitelist = "*libykcs11.so*";

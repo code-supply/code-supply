@@ -8,6 +8,8 @@
 }:
 
 {
+  imports = [ ../common/openobserve.nix ];
+
   environment.systemPackages = [
     (pkgs.writeShellApplication {
       name = "klix-remote";
@@ -49,21 +51,6 @@
       ExecStart = "${websites.klix}/bin/server";
       KillMode = "mixed";
       EnvironmentFile = config.sops.secrets."klix/environment".path;
-    };
-  };
-
-  systemd.services.openobserve = {
-    enable = true;
-    wantedBy = [ "default.target" ];
-    serviceConfig = {
-      DynamicUser = true;
-      Restart = "on-failure";
-      LimitNOFILE = 65535;
-      ExecStart = "${pkgs.openobserve}/bin/openobserve";
-      ExecStop = "${pkgs.coreutils}/bin/kill -s QUIT $MAINPID";
-      EnvironmentFile = "${config.sops.secrets."openobserve/environment".path}";
-      StateDirectory = "openobserve";
-      Environment = [ ''ZO_DATA_DIR="/var/lib/openobserve"'' ];
     };
   };
 
