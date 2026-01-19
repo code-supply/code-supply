@@ -14,38 +14,84 @@ in
       "ssh-add" = "ssh-add -s ${pkcs11Library}";
     };
 
-    packages = with pkgs; [
-      binutils
-      cntr
-      dig
-      dive
-      dust
-      file
-      ghostty
-      gnupg
-      htop
-      iftop
-      jq
-      lsof
-      moreutils
-      nix-index
-      nix-tree
-      nmap
-      opensc
-      pass
-      pciutils
-      proton-pass-cli
-      pv
-      ripgrep
-      sops
-      sysfsutils
-      unzip
-      usbutils
-      wget
-      whois
-      yubikey-manager
-      zip
-    ];
+    packages =
+      with pkgs;
+      let
+        age-plugin-yubikey-57 = (
+          rustPlatform.buildRustPackage rec {
+            pname = "age-plugin-yubikey";
+            version = "0.5.0-unstable-2024-11-02";
+
+            src = fetchFromGitHub {
+              owner = "str4d";
+              repo = "age-plugin-yubikey";
+              rev = "f8e16b7c6fad9d85855467d60ad635b21aaba115";
+              hash = "sha256-wH9w6DbTdVrfrts7mdiYNkSa0xZKwhteHpHbgMnxqZo=";
+            };
+
+            cargoHash = "sha256-jomC3CpL1uXmWoqSZReeZH2VtEEquKvLesX/UFxI3h4=";
+
+            nativeBuildInputs = [
+              pkg-config
+            ];
+
+            buildInputs = [
+              openssl
+            ]
+            ++ lib.optionals stdenv.hostPlatform.isLinux [ pcsclite ];
+
+            meta = {
+              description = "YubiKey plugin for age";
+              mainProgram = "age-plugin-yubikey";
+              homepage = "https://github.com/str4d/age-plugin-yubikey";
+              changelog = "https://github.com/str4d/age-plugin-yubikey/blob/${src.rev}/CHANGELOG.md";
+              license = with lib.licenses; [
+                mit
+                asl20
+              ];
+              maintainers = with lib.maintainers; [
+                kranzes
+                vtuan10
+                adamcstephens
+              ];
+            };
+          }
+        );
+      in
+      [
+        age
+        age-plugin-yubikey-57
+        binutils
+        cntr
+        dig
+        dive
+        dust
+        file
+        ghostty
+        gnupg
+        htop
+        iftop
+        jq
+        lsof
+        moreutils
+        nix-index
+        nix-tree
+        nmap
+        opensc
+        pass
+        pciutils
+        proton-pass-cli
+        pv
+        ripgrep
+        sops
+        sysfsutils
+        unzip
+        usbutils
+        wget
+        whois
+        yubikey-manager
+        zip
+      ];
   };
 
   programs = {
