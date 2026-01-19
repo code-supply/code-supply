@@ -14,6 +14,8 @@ in
       "ssh-add" = "ssh-add -s ${pkcs11Library}";
     };
 
+    sessionVariables.SOPS_AGE_KEY_CMD = "age-plugin-yubikey -i";
+
     packages =
       with pkgs;
       let
