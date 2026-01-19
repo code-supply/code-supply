@@ -81,6 +81,9 @@
         ensureDBOwnership = true;
       }
     ];
+
+    authentication = "local all postgres trust";
+    identMap = "andrew_can_be_postgres andrew postgres";
   };
 
   services.postgresqlBackup.enable = true;

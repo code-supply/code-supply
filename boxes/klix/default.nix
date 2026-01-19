@@ -19,6 +19,7 @@
     ../common/locale.nix
     ../common/nix.nix
     ../common/server-packages.nix
+    ../common/user.nix
     ./configuration.nix
     ./klix.nix
   ];
