@@ -1,6 +1,6 @@
 {
   boot.kernelParams = [ "consoleblank=5" ];
-  services.logind.lidSwitch = "ignore";
+  services.logind.settings.Login.HandleLidSwitch = "ignore";
   systemd.settings.Manager = {
     DefaultLimitNOFILE = "1048576";
   };
