@@ -119,8 +119,9 @@
           src = fetchFromGitHub {
             owner = "mixxxdj";
             repo = "mixxx";
-            rev = "2.6";
-            hash = "sha256-5LJfmFCNuAJa2LDI+8zQxJt1bVExU3UPfjUZnn988v4=";
+            # rev = "2.6";
+            rev = "28d586b71ce58ecd495d7b33883777031a24051f";
+            hash = "sha256-cGLFxRgqVTsgDcEDMHBz8Ga/PDvimSNZRzlQR5E0jh4=";
           };
           cmakeFlags = oldAttrs.cmakeFlags ++ [ "-DENGINEPRIME=OFF" ];
         }))
