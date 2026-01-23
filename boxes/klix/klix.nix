@@ -73,6 +73,11 @@
     identMap = "andrew_can_be_postgres andrew postgres";
   };
 
+  environment.sessionVariables = {
+    PGDATABASE = "klix";
+    PGUSER = "postgres";
+  };
+
   services.postgresqlBackup.enable = true;
 
   sops.secrets."klix/environment" = {
