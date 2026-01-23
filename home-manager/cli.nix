@@ -14,7 +14,11 @@ in
       "ssh-add" = "ssh-add -s ${pkcs11Library}";
     };
 
-    sessionVariables.SOPS_AGE_KEY_CMD = "age-plugin-yubikey -i";
+    sessionVariables = {
+      SOPS_AGE_KEY_CMD = "age-plugin-yubikey -i";
+      PGUSER = "postgres";
+      PGDATABASE = "klix_dev";
+    };
 
     packages =
       with pkgs;
