@@ -1,2 +1,2 @@
 dir="$(dirname $0)"
-ssh klix.code.supply -- psql -U postgres -d klix < "$dir/builds.sql"
+ssh klix.code.supply -- psql < "$dir/builds.sql"
