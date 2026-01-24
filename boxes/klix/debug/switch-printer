@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+nixos-rebuild switch \
+  --print-build-logs \
+  --target-host klix@jitters \
+  --flake .#default \
+  --sudo \
+  --no-reexec \
+  --option builders "ssh://klix.code.supply aarch64-linux - 15 - kvm,nixos-test,big-parallel" \
+  --option extra-substituters "https://nixos-raspberrypi.cachix.org" \
+  --option extra-trusted-public-keys "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI="

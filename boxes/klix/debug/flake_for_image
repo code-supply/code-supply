@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -e
+
+current_dir="$(dirname "$0")"
+output_dir="$(mktemp -d)"
+
+ssh klix.code.supply -- \
+  psql \
+  --quiet \
+  --no-align \
+  --tuples-only \
+  --variable "image_id=$1" \
+  < "$current_dir/flake_nix.sql" \
+  > "$output_dir/flake.nix"
+
+ssh klix.code.supply -- \
+  psql \
+  --quiet \
+  --no-align \
+  --tuples-only \
+  --variable "image_id=$1" \
+  < "$current_dir/flake_lock.sql" \
+  > "$output_dir/flake.lock"
+
+echo "$output_dir"
