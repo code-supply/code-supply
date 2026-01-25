@@ -11,7 +11,7 @@ ssh klix.code.supply -- \
   --no-align \
   --tuples-only \
   --variable "image_id=$1" \
-  < "$current_dir/flake_nix.sql" \
+  < "$current_dir/flake-nix.sql" \
   > "$output_dir/flake.nix"
 
 ssh klix.code.supply -- \
@@ -20,7 +20,7 @@ ssh klix.code.supply -- \
   --no-align \
   --tuples-only \
   --variable "image_id=$1" \
-  < "$current_dir/flake_lock.sql" \
+  < "$current_dir/flake-lock.sql" \
   > "$output_dir/flake.lock"
 
 echo "$output_dir"
