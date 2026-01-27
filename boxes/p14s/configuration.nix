@@ -19,6 +19,19 @@
 
   nixpkgs.config.allowUnfree = true;
 
+  nix.buildMachines = [
+    {
+      hostName = "klix.code.supply";
+      system = "aarch64-linux";
+      supportedFeatures = [
+        "kvm"
+        "nixos-test"
+        "big-parallel"
+      ];
+      maxJobs = 15;
+    }
+  ];
+
   system.stateVersion = "22.11";
 
   virtualisation.docker.enable = true;
