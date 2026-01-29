@@ -33,11 +33,11 @@
     },
     "flake-compat": {
       "locked": {
-        "lastModified": 1747046372,
-        "narHash": "sha256-CIVLLkVgvHYbgI2UpXvIIBJ12HWgX+fjA8Xf8PUmqCY=",
+        "lastModified": 1767039857,
+        "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
         "owner": "edolstra",
         "repo": "flake-compat",
-        "rev": "9100a0f413b0c601e0533d1d94ffd501ce2e7885",
+        "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
         "type": "github"
       },
       "original": {
@@ -147,16 +147,15 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "nixpkgs-nooverrides": "nixpkgs-nooverrides",
         "shaketune": "shaketune",
         "z_calibration": "z_calibration"
       },
       "locked": {
-        "lastModified": 1769386444,
-        "narHash": "sha256-qtdhzemmmU4Rw/e0lXDU2ZwDSJi6vWbbMeEnFku7NZI=",
+        "lastModified": 1769677559,
+        "narHash": "sha256-zh72002XTAb2WwDai7mlrTNxR6m5coZ02h35ccE936g=",
         "owner": "code-supply",
         "repo": "klix",
-        "rev": "c3560444a90335d1b74cba18815c05904103f09a",
+        "rev": "1e3de32e6b99b117590518f37a88e96f1187ae05",
         "type": "github"
       },
       "original": {
@@ -199,55 +198,27 @@
         "argononed": "argononed",
         "flake-compat": "flake-compat",
         "nixos-images": "nixos-images",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": [
+          "klix",
+          "nixpkgs"
+        ]
       },
       "locked": {
-        "lastModified": 1760456116,
-        "narHash": "sha256-7wfJCxCSiY7CuuvQpX1rIlvDH68XKT4sQTjQnwc+eXc=",
+        "lastModified": 1769535288,
+        "narHash": "sha256-aplC3zt8qnX5gJ2NMxDOOoyqUYFkuyoMaPacSWXQEJ8=",
         "owner": "nvmd",
         "repo": "nixos-raspberrypi",
-        "rev": "41c8447c259c5869437b1f1e98439a148542cef7",
+        "rev": "13352ea8e5238a2bd448cf3ba3ab5edff2234061",
         "type": "github"
       },
       "original": {
         "owner": "nvmd",
+        "ref": "remove-options-compat",
         "repo": "nixos-raspberrypi",
         "type": "github"
       }
     },
     "nixpkgs": {
-      "locked": {
-        "lastModified": 1760455578,
-        "narHash": "sha256-qWdXMNF/wSVsRSIIFE3GMtaIzwlCbgqNPGPPzz/OZNk=",
-        "owner": "nvmd",
-        "repo": "nixpkgs",
-        "rev": "09926a8925567372a0509605959a024bb319f6c9",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nvmd",
-        "ref": "modules-with-keys-25.05",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs-nooverrides": {
-      "locked": {
-        "lastModified": 1760524057,
-        "narHash": "sha256-EVAqOteLBFmd7pKkb0+FIUyzTF61VKi7YmvP1tw4nEw=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "544961dfcce86422ba200ed9a0b00dd4b1486ec5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_2": {
       "locked": {
         "lastModified": 1767892417,
         "narHash": "sha256-dhhvQY67aboBk8b0/u0XB6vwHdgbROZT3fJAjyNh5Ww=",
@@ -291,7 +262,7 @@
         "git-mob": "git-mob",
         "home-manager": "home-manager",
         "klix": "klix",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs",
         "nixvim": "nixvim",
         "sops-nix": "sops-nix"
       }
