@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -eu
+
+current_dir="$(dirname "$0")"
+
+ssh klix.code.supply -- \
+  psql \
+  --variable "image_id=$1" \
+  --variable "klix_version=$2" \
+  < "$current_dir/change-image-klix-version.sql"
