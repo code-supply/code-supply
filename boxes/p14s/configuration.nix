@@ -19,6 +19,8 @@
 
   nixpkgs.config.allowUnfree = true;
 
+  nix.distributedBuilds = true;
+  nix.settings.builders-use-substitutes = true;
   nix.buildMachines = [
     {
       hostName = "klix.code.supply";
