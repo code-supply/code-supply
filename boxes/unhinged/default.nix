@@ -1,7 +1,6 @@
 {
   nix,
   system,
-  websites,
   ...
 }:
 
@@ -9,7 +8,6 @@
   inherit system;
 
   modules = [
-    ./caddy.nix
     ../common/locale.nix
     ../common/nix.nix
     ../common/server-packages.nix
@@ -28,7 +26,7 @@
       prefix-ipv6 = "2001:8b0:b184:5567";
     in
     {
-      inherit nix websites;
+      inherit nix;
       router-ipv4 = "192.168.1.1";
       router-ipv6 = "${prefix-ipv6}::1";
       ipv4 = "192.168.1.182";

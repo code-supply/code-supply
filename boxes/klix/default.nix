@@ -30,7 +30,7 @@
     ../common/user.nix
     ./configuration.nix
     ./klix.nix
-    ../unhinged/caddy.nix
+    ./other-websites.nix
   ];
   specialArgs = {
     inherit
