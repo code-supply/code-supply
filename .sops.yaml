@@ -11,3 +11,7 @@ creation_rules:
           - *admin_andrew_age
           - *server_unhinged 
           - *server_klix
+  - path_regex: tofu/secrets.yaml
+    key_groups:
+      - pgp: [*admin_andrew]
+        age: [*admin_andrew_age]

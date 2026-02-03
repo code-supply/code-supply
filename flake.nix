@@ -49,11 +49,10 @@
       nixvim,
     }:
     let
-      system = "x86_64-linux";
       version = if self ? rev then self.rev else "dirty";
 
-      pkgs = import nixpkgs {
-        inherit system;
+      x86Pkgs = import nixpkgs {
+        system = "x86_64-linux";
         config.allowUnfree = true;
       };
 
@@ -69,8 +68,8 @@
               home-manager
               nixpkgs
               sops-nix
-              system
               ;
+            system = pkgs.stdenv.hostPlatform.system;
             nix = pkgs.nixVersions.nix_2_30;
             websites = {
               inherit andrewbruce codesupply;
@@ -84,39 +83,31 @@
         inherit version;
       };
 
-      callPackage = pkgs.lib.callPackageWith (pkgs // common);
+      x86CallPackage = x86Pkgs.lib.callPackageWith (x86Pkgs // common);
+      armCallPackage = armPkgs.lib.callPackageWith (armPkgs // common);
 
-      andrewbruce = callPackage ./web/andrewbruce { };
-      codesupply = callPackage ./web/code-supply { };
-      devShell = callPackage ./shell.nix { };
+      andrewbruce = armCallPackage ./web/andrewbruce { };
+      codesupply = armCallPackage ./web/code-supply { };
+      devShell = x86CallPackage ./shell.nix { };
     in
     {
-      formatter.${system} = pkgs.nixfmt;
-
-      packages.${system} = {
-        inherit
-          andrewbruce
-          codesupply
-          ;
-
-        default = andrewbruce;
-      };
+      formatter.x86_64-linux = x86Pkgs.nixfmt;
 
       packages.aarch64-linux.ketchupKingSDCard =
         self.nixosConfigurations.ketchup-king.config.system.build.sdImage;
 
       packages.aarch64-linux.rp5SDCard = self.nixosConfigurations.rp5.config.system.build.sdImage;
 
-      devShells.${system}.default = devShell;
+      devShells.x86_64-linux.default = devShell;
 
       homeConfigurations."andrew@fatty" = import ./home-manager/fatty.nix {
         inherit
           sops-nix
           home-manager
           nixvim
-          pkgs
           git-mob
           ;
+        pkgs = x86Pkgs;
       };
 
       homeConfigurations."andrew@p14s" = import ./home-manager {
@@ -124,18 +115,18 @@
           sops-nix
           home-manager
           nixvim
-          pkgs
           git-mob
           catppuccin
           ;
+        pkgs = x86Pkgs;
       };
 
       nixosConfigurations = {
-        fatty = callBox "fatty" pkgs;
+        fatty = callBox "fatty" x86Pkgs;
         klix = callBox "klix" armPkgs;
-        p14s = callBox "p14s" pkgs;
-        unhinged = callBox "unhinged" pkgs;
-        x200 = callBox "x200" pkgs;
+        p14s = callBox "p14s" x86Pkgs;
+        unhinged = callBox "unhinged" x86Pkgs;
+        x200 = callBox "x200" x86Pkgs;
 
         ketchup-king = klix.lib.nixosSystem (
           import ./boxes/ketchup-king {

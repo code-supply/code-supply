@@ -11,16 +11,16 @@ resource "google_dns_managed_zone" "root" {
 resource "google_dns_record_set" "root" {
   name         = google_dns_managed_zone.root.dns_name
   managed_zone = google_dns_managed_zone.root.name
-  rrdatas      = [local.main-ipv4-address]
-  ttl          = 86400
+  rrdatas      = ["46.62.161.130"]
+  ttl          = 300
   type         = "A"
 }
 
 resource "google_dns_record_set" "root-ipv6" {
   name         = google_dns_managed_zone.root.dns_name
   managed_zone = google_dns_managed_zone.root.name
-  rrdatas      = [local.unhinged-ipv6-address]
-  ttl          = 86400
+  rrdatas      = ["2a01:4f9:c012:f4a1::1"]
+  ttl          = 300
   type         = "AAAA"
 }
 
@@ -32,42 +32,26 @@ resource "google_dns_record_set" "www" {
   type         = "CNAME"
 }
 
-resource "google_dns_record_set" "klix-openobserve" {
-  name         = "openobserve.klix.${google_dns_managed_zone.root.dns_name}"
-  managed_zone = google_dns_managed_zone.root.name
-  rrdatas      = ["46.62.161.130"]
-  ttl          = 1800
-  type         = "A"
-}
-
-resource "google_dns_record_set" "klix-openobserve-ipv6" {
-  name         = "openobserve.klix.${google_dns_managed_zone.root.dns_name}"
-  managed_zone = google_dns_managed_zone.root.name
-  rrdatas      = ["2a01:4f9:c012:f4a1::1"]
-  ttl          = 1800
-  type         = "AAAA"
-}
-
 resource "google_dns_record_set" "klix" {
   name         = "klix.${google_dns_managed_zone.root.dns_name}"
   managed_zone = google_dns_managed_zone.root.name
-  rrdatas      = ["46.62.161.130"]
+  rrdatas      = [google_dns_managed_zone.root.dns_name]
   ttl          = 1800
-  type         = "A"
+  type         = "CNAME"
 }
 
-resource "google_dns_record_set" "klix-ipv6" {
-  name         = "klix.${google_dns_managed_zone.root.dns_name}"
+resource "google_dns_record_set" "klix-openobserve" {
+  name         = "openobserve.klix.${google_dns_managed_zone.root.dns_name}"
   managed_zone = google_dns_managed_zone.root.name
-  rrdatas      = ["2a01:4f9:c012:f4a1::1"]
+  rrdatas      = [google_dns_managed_zone.root.dns_name]
   ttl          = 1800
-  type         = "AAAA"
+  type         = "CNAME"
 }
 
 resource "google_dns_record_set" "www-klix" {
   name         = "www.klix.${google_dns_managed_zone.root.dns_name}"
   managed_zone = google_dns_managed_zone.root.name
-  rrdatas      = [google_dns_record_set.klix.name]
+  rrdatas      = [google_dns_managed_zone.root.dns_name]
   ttl          = 1800
   type         = "CNAME"
 }
@@ -162,7 +146,7 @@ resource "google_dns_managed_zone" "ab" {
 resource "google_dns_record_set" "ab-root" {
   name         = google_dns_managed_zone.ab.dns_name
   managed_zone = google_dns_managed_zone.ab.name
-  rrdatas      = [local.main-ipv4-address]
+  rrdatas      = ["46.62.161.130"]
   ttl          = 300
   type         = "A"
 }
@@ -170,7 +154,7 @@ resource "google_dns_record_set" "ab-root" {
 resource "google_dns_record_set" "ab-root-ipv6" {
   name         = google_dns_managed_zone.ab.dns_name
   managed_zone = google_dns_managed_zone.ab.name
-  rrdatas      = [local.unhinged-ipv6-address]
+  rrdatas      = google_dns_record_set.root-ipv6.rrdatas
   ttl          = 300
   type         = "AAAA"
 }
@@ -178,25 +162,9 @@ resource "google_dns_record_set" "ab-root-ipv6" {
 resource "google_dns_record_set" "ab-www" {
   name         = "www.${google_dns_managed_zone.ab.dns_name}"
   managed_zone = google_dns_managed_zone.ab.name
-  rrdatas      = [google_dns_record_set.ab-root.name]
+  rrdatas      = [google_dns_managed_zone.root.dns_name]
   ttl          = 300
   type         = "CNAME"
-}
-
-resource "google_dns_record_set" "ab-wildcard" {
-  name         = "*.${google_dns_managed_zone.ab.dns_name}"
-  managed_zone = google_dns_managed_zone.ab.name
-  rrdatas      = [local.main-ipv4-address]
-  ttl          = 300
-  type         = "A"
-}
-
-resource "google_dns_record_set" "ab-wildcard-ipv6" {
-  name         = "*.${google_dns_managed_zone.ab.dns_name}"
-  managed_zone = google_dns_managed_zone.ab.name
-  rrdatas      = [local.unhinged-ipv6-address]
-  ttl          = 300
-  type         = "AAAA"
 }
 
 resource "google_dns_record_set" "ab-mx" {
@@ -254,22 +222,4 @@ resource "google_dns_record_set" "ab-dkim3" {
 
   ttl  = 21600
   type = "CNAME"
-}
-
-resource "google_dns_record_set" "ab-main" {
-  name         = "main.${google_dns_managed_zone.ab.dns_name}"
-  managed_zone = google_dns_managed_zone.ab.name
-
-  rrdatas = [local.main-ipv4-address]
-  ttl     = 86400
-  type    = "A"
-}
-
-resource "google_dns_record_set" "ab-main-ipv6" {
-  name         = "main.${google_dns_managed_zone.ab.dns_name}"
-  managed_zone = google_dns_managed_zone.ab.name
-
-  rrdatas = [local.unhinged-ipv6-address]
-  ttl     = 600
-  type    = "AAAA"
 }
