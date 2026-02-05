@@ -2,7 +2,6 @@
   home-manager,
   pkgs,
   nixvim,
-  git-mob,
 }:
 
 home-manager.lib.homeManagerConfiguration {
@@ -12,7 +11,6 @@ home-manager.lib.homeManagerConfiguration {
     ./cli.nix
     ./dev.nix
     ./firefox.nix
-    git-mob.nixosModules.homeManager
     ./git.nix
     ./gnome.nix
     ./gnome-no-overview.nix

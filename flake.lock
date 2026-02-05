@@ -67,26 +67,6 @@
         "type": "github"
       }
     },
-    "git-mob": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1714907486,
-        "narHash": "sha256-c8VvqJiTznRGdOo8IGKuAwozMIcWMr10LTNE0kQc5iw=",
-        "owner": "code-supply",
-        "repo": "rusty-git-mob",
-        "rev": "4e80e21b8282f6fef551b5c7bce45c5de6950ef1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "code-supply",
-        "repo": "rusty-git-mob",
-        "type": "github"
-      }
-    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -259,7 +239,6 @@
     "root": {
       "inputs": {
         "catppuccin": "catppuccin",
-        "git-mob": "git-mob",
         "home-manager": "home-manager",
         "klix": "klix",
         "nixpkgs": "nixpkgs",

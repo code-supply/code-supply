@@ -3,7 +3,6 @@
   home-manager,
   pkgs,
   nixvim,
-  git-mob,
   catppuccin,
 }:
 
@@ -18,7 +17,6 @@ home-manager.lib.homeManagerConfiguration {
     ./cli.nix
     ./dev.nix
     ./firefox.nix
-    git-mob.nixosModules.homeManager
     ./git.nix
     ./gnome.nix
     ./graphics.nix
@@ -31,8 +29,4 @@ home-manager.lib.homeManagerConfiguration {
     ./theme.nix
     ./unfree.nix
   ];
-
-  extraSpecialArgs = {
-    git-mob = git-mob.packages.x86_64-linux.default;
-  };
 }

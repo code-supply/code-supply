@@ -7,11 +7,6 @@
     catppuccin = {
       url = "github:catppuccin/nix";
     };
-    git-mob = {
-      url = "github:code-supply/rusty-git-mob";
-      # url = "/home/andrew/workspace/rusty-git-mob";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -41,7 +36,6 @@
       self,
       sops-nix,
       catppuccin,
-      git-mob,
       home-manager,
       klix,
       nixpkgs,
@@ -104,7 +98,6 @@
           sops-nix
           home-manager
           nixvim
-          git-mob
           ;
         pkgs = x86Pkgs;
       };
@@ -114,7 +107,6 @@
           sops-nix
           home-manager
           nixvim
-          git-mob
           catppuccin
           ;
         pkgs = x86Pkgs;
