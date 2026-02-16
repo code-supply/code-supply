@@ -109,6 +109,11 @@ in
       enable = true;
       enableDefaultConfig = false;
       matchBlocks = {
+        "github.com" = {
+          hostname = "ssh.github.com";
+          port = 443;
+          user = "git";
+        };
         unhinged = {
           hostname = "192.168.1.182";
           port = 2222;
