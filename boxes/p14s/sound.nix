@@ -40,9 +40,8 @@
         "monitor.alsa.rules" = [
           {
             matches = [
-              {
-                "device.name" = "~Scarlett.*";
-              }
+              { "device.name" = "~Scarlett.*"; }
+              { "device.name" = "~XONE.*"; }
             ];
             actions = {
               update-props = {
