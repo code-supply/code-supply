@@ -30,6 +30,7 @@
     ../common/openobserve.nix
     ../common/server-packages.nix
     ../common/user.nix
+    ./forgejo.nix
     ./hardware-configuration.nix
     ./klix.nix
     ./networking.nix # generated at runtime by nixos-infect
