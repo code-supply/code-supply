@@ -8,8 +8,6 @@
 }:
 
 {
-  imports = [ ../common/openobserve.nix ];
-
   environment.systemPackages = [
     (pkgs.writeShellApplication {
       name = "klix-remote";
@@ -86,8 +84,6 @@
     group = "klix";
   };
 
-  sops.secrets."openobserve/environment" = { };
-
   services.caddy = {
     enable = true;
     email = "me@andrewbruce.net";
@@ -108,15 +104,6 @@
 
         extraConfig = ''
           redir https://klix.code.supply{uri} permanent
-        '';
-      };
-
-      openobserve = {
-        hostName = "openobserve.klix.code.supply";
-
-        extraConfig = ''
-          encode gzip
-          reverse_proxy localhost:5080
         '';
       };
     };
