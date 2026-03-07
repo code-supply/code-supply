@@ -32,6 +32,14 @@ resource "google_dns_record_set" "www" {
   type         = "CNAME"
 }
 
+resource "google_dns_record_set" "forgejo" {
+  name         = "forgejo.${google_dns_managed_zone.root.dns_name}"
+  managed_zone = google_dns_managed_zone.root.name
+  rrdatas      = [google_dns_managed_zone.root.dns_name]
+  ttl          = 1800
+  type         = "CNAME"
+}
+
 resource "google_dns_record_set" "klix" {
   name         = "klix.${google_dns_managed_zone.root.dns_name}"
   managed_zone = google_dns_managed_zone.root.name
