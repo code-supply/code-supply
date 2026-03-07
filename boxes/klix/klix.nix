@@ -38,6 +38,8 @@
     };
   };
 
+  security.sudo.wheelNeedsPassword = false;
+
   systemd.services.klix = {
     enable = true;
     wantedBy = [ "default.target" ];
